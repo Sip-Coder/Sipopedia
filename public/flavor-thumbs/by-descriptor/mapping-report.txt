@@ -1,0 +1,204 @@
+OK|allspice|allspice.png|allspice-1.png
+OK|almond|almond.png|almond-1.png
+OK|angelica|angelica.png|angelica-1.png
+OK|anise|anise.png|anise-1.png
+OK|apple|apple.png|apple-1.png
+OK|apricot|apricot.png|apricot-1.png
+OK|ash|ash.png|ash-1.png
+OK|asparagus|asparagus.png|asparagus-1.png
+OK|banana|banana.png|banana-1.png
+OK|bay|bay.png|bay-1.png
+OK|bay leaf|bay-leaf.png|bay-leaf-1.png
+OK|bergamot|bergamot.png|bergamot-1.png
+OK|biscuit|biscuit.png|biscuit-1.png
+OK|black cherry|black-cherry.png|black-cherry-1.png
+OK|black currant|black-currant.png|black-currant-1.png
+OK|black pepper|black-pepper.png|black-pepper-1.png
+OK|black tea|black-tea.png|black-tea-1.png
+OK|blackberry|blackberry.png|blackberry-1.png
+OK|blueberry|blueberry.png|blueberry-1.png
+OK|bourbon|bourbon.png|bourbon-1.png
+OK|bread crust|bread-crust.png|bread-crust-1.png
+OK|brioche|brioche.png|brioche-1.png
+OK|broth|broth.png|broth-1.png
+OK|brown sugar|brown-sugar.png|brown-sugar-1.png
+MISS|brownie|brownie.png|
+OK|bubblegum|bubblegum.png|bubblegum-1.png
+OK|burnt amber|burnt-amber.png|burnt-amber-1.png
+OK|burnt sugar|burnt-sugar.png|burnt-sugar-1.png
+OK|burnt toast|burnt-toast.png|burnt-toast-1.png
+OK|butterscotch|butterscotch.png|butterscotch-1.png
+OK|cacao|cacao.png|cacao-1.png
+OK|cacao nib|cacao-nib.png|cacao-nib-1.png
+OK|campfire|campfire.png|campfire-1.png
+OK|candied orange|candied-orange.png|candied-orange-1.png
+MISS|cannabis|cannabis.png|
+OK|caramel|caramel.png|cananel-1.png
+OK|cardamom|cardamom.png|cardamom-1.png
+OK|cedar|cedar.png|cedar-1.png
+OK|cereal|cereal.png|cereal-1.png
+OK|chalk|chalk.png|chalk-1.png
+OK|chamomile|chamomile.png|chamomile-1.png
+OK|char|char.png|char-1.png
+OK|cherry|cherry.png|cherry-1.png
+OK|chestnut|chestnut.png|chestnut-1.png
+OK|chile|chile.png|chile-1.png
+OK|cider-like|cider-like.png|cider-like-1.png
+OK|cinnamon|cinnamon.png|cinnamon-1.png
+OK|citron|citron.png|citron-1.png
+OK|citrus blossom|citrus-blossom.png|citrus-blossom-1.png
+OK|citrus peel|citrus-peel.png|citrus-peel-1.png
+OK|clove|clove.png|clove-1.png
+OK|cocoa nib|cocoa-nib.png|cocoa-nib-1.png
+OK|coconut|coconut.png|coconut-1.png
+OK|coffee|coffee.png|coffee-1.png
+OK|coriander|coriander.png|coriander-1.png
+OK|cornbread|cornbread.png|cornbread-1.png
+OK|cracker|cracker.png|cracker-1.png
+OK|cranberry|cranberry.png|cranberry-1.png
+OK|currant|currant.png|currant-1.png
+OK|cut grass|cut-grass.png|cut-grass-1.png
+OK|dark chocolate|dark-chocolate.png|dark-chocolate-1.png
+OK|date|date.png|date-1.png
+OK|dill|dill.png|dill-1.png
+OK|dried apricot|dried-apricot.png|dried-apricot-1.png
+OK|dried date|dried-date.png|dried-fate-1.png
+OK|dried fig|dried-fig.png|dried-fig-1.png
+OK|edamame|edamame.png|edamame-1.png
+OK|elderflower|elderflower.png|elderflower-1.png
+OK|espresso|espresso.png|espresso-1.png
+MISS|eucalyptus|eucalyptus.png|
+OK|fennel|fennel.png|fennel-1.png
+OK|fig|fig.png|fig-1.png
+OK|fig jam|fig-jam.png|fig-jam-1.png
+OK|flint|flint.png|flint-1.png
+OK|forest floor|forest-floor.png|forest-floor-1.png
+OK|fudge|fudge.png|fudge-1.png
+OK|gardenia|gardenia.png|gardenia-1.png
+OK|gentian|gentian.png|gentian-1.png
+OK|ginger|ginger.png|ginger-1.png
+OK|gooseberry|gooseberry.png|gooseberry-1.png
+OK|grape|grape.png|grape-1.png
+OK|grape must|grape-must.png|grape-must-1.png
+OK|grapefruit|grapefruit.png|grapefruit-1.png
+OK|grapefruit zest|grapefruit-zest.png|grapefruit-zest-1.png
+OK|graphite|graphite.png|grahite-1.png
+OK|green apple|green-apple.png|green-apple-1.png
+OK|green peppercorn|green-peppercorn.png|green-peppercorn-1.png
+OK|guava|guava.png|guava-1.png
+MISS|hazelnut|hazelnut.png|
+MISS|herbal resin|herbal-resin.png|
+OK|herbal root|herbal-root.png|gramert-1.png
+OK|honey|honey.png|honey-1.png
+OK|honeysuckle|honeysuckle.png|honeysuckle-1.png
+OK|iodine|iodine.png|iodine-1.png
+OK|jasmine|jasmine.png|jasmine-1.png
+OK|juniper|juniper.png|juniper-1.png
+OK|kumquat|kumquat.png|kumquat-1.png
+OK|lactic tang|lactic-tang.png|lactic-tang-1.png
+OK|lavender|lavender.png|lavender-1.png
+OK|leather|leather.png|leather-1.png
+OK|lemon|lemon.png|lemon-1.png
+OK|lemon oil|lemon-oil.png|lemon-oil-1.png
+OK|lemon peel|lemon-peel.png|lemon-peel-1.png
+OK|lilac|lilac.png|lilac-1.png
+OK|lily|lily.png|lily-1.png
+OK|lime|lime.png|lime-1.png
+OK|loam|loam.png|loam-1.png
+OK|lychee|lychee.png|lychee-1.png
+OK|malted barley|malted-barley.png|malted-barley-1.png
+OK|malted cocoa|malted-cocoa.png|malted-cocoa-1.png
+OK|mandarin|mandarin.png|mandarin-1.png
+OK|mango|mango.png|mango-1.png
+OK|maple|maple.png|maple-1.png
+MISS|marzipan|marzipan.png|
+OK|medicinal|medicinal.png|medicinal-1.png
+OK|meyer lemon|meyer-lemon.png|meyer-lemon-1.png
+OK|milk chocolate|milk-chocolate.png|milk-chocolate-1.png
+OK|mint|mint.png|mint-1.png
+OK|molasses|molasses.png|molasses-1.png
+OK|mushroom|mushroom.png|mushroom-1.png
+OK|nectarine|nectarine.png|nectarine-1.png
+OK|nori|nori.png|nori-1.png
+OK|nougat|nougat.png|nougat-1.png
+OK|nutmeg|nutmeg.png|nutmeg-1.png
+OK|oak|oak.png|oak-1.png
+OK|oak tannin|oak-tannin.png|oak-tannin-1.png
+OK|oat biscuit|oat-biscuit.png|oat-biscuit-1.png
+OK|old wood|old-wood.png|old-wood-1.png
+OK|orange blossom|orange-blossom.png|orange-blossom-1.png
+OK|orange peel|orange-peel.png|orange-peel-1.png
+OK|orange zest|orange-zest.png|orange-zest-1.png
+OK|orchid|orchid.png|orchid-1.png
+OK|orris|orris.png|orris-1.png
+OK|oxidized sherry|oxidized-sherry.png|oxidized-sherry-1.png
+OK|papaya|papaya.png|papaya-1.png
+OK|passionfruit|passionfruit.png|passionfruit-1.png
+OK|peach|peach.png|peach-1.png
+OK|peanut brittle|peanut-brittle.png|peanut-brittle-1.png
+OK|peanut skin|peanut-skin.png|peanut-skin-1.png
+MISS|pear|pear.png|
+OK|pear drop|pear-drop.png|pear-drop-1.png
+OK|peat|peat.png|peat-1.png
+OK|pecan|pecan.png|pecan-1.png
+OK|pepper|pepper.png|pepper-1.png
+OK|pine|pine.png|pine-1.png
+OK|pine smoke|pine-smoke.png|pine-smoke-1.png
+OK|pineapple|pineapple.png|pineapple-1.png
+OK|plum|plum.png|plum-1.png
+OK|pomegranate|pomegranate.png|pomegranate-1.png
+OK|porridge|porridge.png|porridge-1.png
+OK|praline|praline.png|praline-1.png
+MISS|raisin|raisin.png|
+MISS|rancio|rancio.png|
+OK|raspberry|raspberry.png|raspberry-1.png
+OK|red apple|red-apple.png|red-apple-1.png
+OK|red currant|red-currant.png|red-currant-1.png
+OK|resin|resin.png|resin-1.png
+OK|river pebble|river-pebble.png|river-pebble-1.png
+OK|rock sugar|rock-sugar.png|rock-sugar-1.png
+OK|rose|rose.png|rose-1.png
+OK|rose petal|rose-petal.png|rose-petal-1.png
+OK|rum|rum.png|rum-1.png
+OK|rye spice|rye-spice.png|rye-spice-1.png
+OK|sage|sage.png|sage-1.png
+OK|saline|saline.png|saline-1.png
+MISS|sap|sap.png|
+OK|sea spray|sea-spray.png|saline-1.png
+OK|seaweed|seaweed.png|seaweed-1.png
+OK|sesame|sesame.png|sesame-1.png
+OK|shell|shell.png|river-pebble-1.png
+MISS|slate|slate.png|
+OK|smoke|smoke.png|smoke-1.png
+MISS|smoked tea|smoked-tea.png|
+MISS|snap pea|snap-pea.png|
+MISS|soy|soy.png|
+MISS|soy caramel|soy-caramel.png|
+MISS|spinach|spinach.png|
+MISS|star anise|star-anise.png|
+MISS|stone fruit|stone-fruit.png|
+OK|strawberry|strawberry.png|strawberry-1.png
+OK|sweet corn|sweet-corn.png|sweet-corn-1.png
+OK|sweet smoke|sweet-smoke.png|wood-smoke-1.png
+MISS|tannin|tannin.png|
+MISS|tar|tar.png|
+MISS|thyme|thyme.png|
+MISS|toast|toast.png|
+MISS|toasted nori|toasted-nori.png|
+MISS|toasted rice|toasted-rice.png|
+MISS|toasted sugar|toasted-sugar.png|
+OK|tobacco|tobacco.png|tobacco-1.png
+OK|toffee|toffee.png|toffee-1.png
+MISS|treacle|treacle.png|
+MISS|truffle|truffle.png|
+MISS|vanilla|vanilla.png|
+OK|violet|violet.png|violet-1.png
+OK|walnut|walnut.png|walnut-1.png
+MISS|wet earth|wet-earth.png|
+OK|wet slate|wet-slate.png|river-pebble-1.png
+OK|wet stone|wet-stone.png|river-pebble-1.png
+MISS|wheat cream|wheat-cream.png|
+OK|white pepper|white-pepper.png|white-pepper-1.png
+MISS|wormwood|wormwood.png|
+OK|yogurt|yogurt.png|yogurt-1.png
+MISS|yuzu|yuzu.png|

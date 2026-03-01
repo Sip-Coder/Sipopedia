@@ -1,0 +1,94 @@
+{
+  "colorScheme": "dark",
+  "fonts": [
+    {
+      "family": "Lora",
+      "count": 106
+    },
+    {
+      "family": "sans-serif",
+      "count": 3
+    },
+    {
+      "family": "grange-extended",
+      "count": 2
+    }
+  ],
+  "colors": {
+    "primary": "#EDD4A8",
+    "accent": "#785133",
+    "background": "#817985",
+    "textPrimary": "#785133",
+    "link": "#785133"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "sans-serif",
+      "heading": "grange-extended"
+    },
+    "fontStacks": {
+      "body": [
+        "sans-serif"
+      ],
+      "heading": [
+        "grange-extended"
+      ],
+      "paragraph": [
+        "Lora"
+      ]
+    },
+    "fontSizes": {
+      "h1": "64px",
+      "h2": "33.6px",
+      "body": "24px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "0px"
+  },
+  "components": {
+    "input": {
+      "background": "#FFFFFF",
+      "textColor": "#000000",
+      "borderColor": "#6A472D",
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "none"
+    }
+  },
+  "images": {
+    "logo": "File saved at: attached_assets/logo.webp",
+    "favicon": "File saved at: attached_assets/favicon.webp",
+    "ogImage": "http://static1.squarespace.com/static/60ebc279dcf3287a46adfe4e/t/6528a77c9e50a62d381db428/1697163132724/zc4SandXV_m818A3pbTh4aleIIHYMGju32_KH5cT2D?format=1500w"
+  },
+  "__framework_hints": [],
+  "__llm_logo_reasoning": {
+    "selectedIndex": 1,
+    "reasoning": "Strong indicators: header logo linking to homepage, header location, visible, src contains logo, class contains logo, alt exactly matches brand name \"Sip Studies\", reasonable size. Score: 120 (clear winner by 65 points)",
+    "confidence": 0.9
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "secondary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "confidence": 0
+  },
+  "confidence": {
+    "buttons": 0,
+    "colors": 0,
+    "overall": 0
+  }
+}

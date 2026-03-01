@@ -1,0 +1,232 @@
+# descriptor | filename
+allspice | allspice.png
+almond | almond.png
+andean gooseberry | andean-gooseberry.png
+angelica | angelica.png
+anise | anise.png
+apple | apple.png
+apricot | apricot.png
+aronia berry | aronia-berry.png
+ash | ash.png
+asian pear | asian-pear.png
+asparagus | asparagus.png
+banana | banana.png
+bay | bay.png
+bay leaf | bay-leaf.png
+bergamot | bergamot.png
+bilberry | bilberry.png
+biscuit | biscuit.png
+black cherry | black-cherry.png
+black currant | black-currant.png
+black pepper | black-pepper.png
+black tea | black-tea.png
+blackberry | blackberry.png
+blueberry | blueberry.png
+bourbon | bourbon.png
+bread crust | bread-crust.png
+brioche | brioche.png
+broth | broth.png
+brown sugar | brown-sugar.png
+brownie | brownie.png
+bubblegum | bubblegum.png
+burnt amber | burnt-amber.png
+burnt sugar | burnt-sugar.png
+burnt toast | burnt-toast.png
+butterscotch | butterscotch.png
+cacao | cacao.png
+cacao nib | cacao-nib.png
+campfire | campfire.png
+candied orange | candied-orange.png
+cannabis | cannabis.png
+caramel | caramel.png
+cardamom | cardamom.png
+cassis | cassis.png
+cedar | cedar.png
+cereal | cereal.png
+chalk | chalk.png
+chamomile | chamomile.png
+char | char.png
+cherry | cherry.png
+chestnut | chestnut.png
+chile | chile.png
+chokeberry | chokeberry.png
+cider-like | cider-like.png
+cinnamon | cinnamon.png
+citron | citron.png
+citrus blossom | citrus-blossom.png
+citrus peel | citrus-peel.png
+cloudberry | cloudberry.png
+clove | clove.png
+cocoa nib | cocoa-nib.png
+coconut | coconut.png
+coffee | coffee.png
+coriander | coriander.png
+cornbread | cornbread.png
+cornelian cherry | cornelian-cherry.png
+cracker | cracker.png
+cranberry | cranberry.png
+currant | currant.png
+cut grass | cut-grass.png
+dark chocolate | dark-chocolate.png
+date | date.png
+dill | dill.png
+dried apricot | dried-apricot.png
+dried date | dried-date.png
+dried fig | dried-fig.png
+edamame | edamame.png
+elderberry | elderberry.png
+elderflower | elderflower.png
+espresso | espresso.png
+eucalyptus | eucalyptus.png
+feijoa | feijoa.png
+fennel | fennel.png
+fig | fig.png
+fig jam | fig-jam.png
+flint | flint.png
+forest floor | forest-floor.png
+fudge | fudge.png
+gardenia | gardenia.png
+gentian | gentian.png
+ginger | ginger.png
+gooseberry | gooseberry.png
+grape | grape.png
+grape must | grape-must.png
+grapefruit | grapefruit.png
+grapefruit zest | grapefruit-zest.png
+graphite | graphite.png
+green apple | green-apple.png
+green peppercorn | green-peppercorn.png
+guava | guava.png
+haskap | haskap.png
+hazelnut | hazelnut.png
+herbal resin | herbal-resin.png
+herbal root | herbal-root.png
+honey | honey.png
+honeysuckle | honeysuckle.png
+iodine | iodine.png
+jackfruit | jackfruit.png
+jasmine | jasmine.png
+juniper | juniper.png
+kiwi | kiwi.png
+kumquat | kumquat.png
+lactic tang | lactic-tang.png
+lavender | lavender.png
+leather | leather.png
+lemon | lemon.png
+lemon oil | lemon-oil.png
+lemon peel | lemon-peel.png
+lilac | lilac.png
+lily | lily.png
+lime | lime.png
+lingonberry | lingonberry.png
+loam | loam.png
+lychee | lychee.png
+malted barley | malted-barley.png
+malted cocoa | malted-cocoa.png
+mandarin | mandarin.png
+mango | mango.png
+maple | maple.png
+marzipan | marzipan.png
+medicinal | medicinal.png
+meyer lemon | meyer-lemon.png
+milk chocolate | milk-chocolate.png
+mint | mint.png
+molasses | molasses.png
+mountain papaya | mountain-papaya.png
+mulberry | mulberry.png
+mushroom | mushroom.png
+nectarine | nectarine.png
+nori | nori.png
+nougat | nougat.png
+nutmeg | nutmeg.png
+oak | oak.png
+oak tannin | oak-tannin.png
+oat biscuit | oat-biscuit.png
+old wood | old-wood.png
+olive | olive.png
+orange | orange.png
+orange blossom | orange-blossom.png
+orange peel | orange-peel.png
+orange zest | orange-zest.png
+orchid | orchid.png
+orris | orris.png
+oxidized sherry | oxidized-sherry.png
+papaya | papaya.png
+passionfruit | passionfruit.png
+peach | peach.png
+peanut brittle | peanut-brittle.png
+peanut skin | peanut-skin.png
+pear | pear.png
+pear drop | pear-drop.png
+peat | peat.png
+pecan | pecan.png
+pepper | pepper.png
+pine | pine.png
+pine smoke | pine-smoke.png
+pineapple | pineapple.png
+plum | plum.png
+pomegranate | pomegranate.png
+pomelo | pomelo.png
+porridge | porridge.png
+praline | praline.png
+prickly pear | prickly-pear.png
+quince | quince.png
+raisin | raisin.png
+rancio | rancio.png
+raspberry | raspberry.png
+red apple | red-apple.png
+red currant | red-currant.png
+resin | resin.png
+river pebble | river-pebble.png
+rock sugar | rock-sugar.png
+rose | rose.png
+rose petal | rose-petal.png
+rowan berry | rowan-berry.png
+rum | rum.png
+rye spice | rye-spice.png
+sage | sage.png
+saline | saline.png
+sap | sap.png
+sea buckthorn | sea-buckthorn.png
+sea spray | sea-spray.png
+seaweed | seaweed.png
+sesame | sesame.png
+shell | shell.png
+slate | slate.png
+sloe | sloe.png
+smoke | smoke.png
+smoked tea | smoked-tea.png
+snap pea | snap-pea.png
+sour cherry | sour-cherry.png
+soy | soy.png
+soy caramel | soy-caramel.png
+spinach | spinach.png
+star anise | star-anise.png
+stone fruit | stone-fruit.png
+strawberry | strawberry.png
+sweet corn | sweet-corn.png
+sweet smoke | sweet-smoke.png
+tannin | tannin.png
+tar | tar.png
+thyme | thyme.png
+toast | toast.png
+toasted nori | toasted-nori.png
+toasted rice | toasted-rice.png
+toasted sugar | toasted-sugar.png
+tobacco | tobacco.png
+toffee | toffee.png
+treacle | treacle.png
+truffle | truffle.png
+vanilla | vanilla.png
+violet | violet.png
+walnut | walnut.png
+wet earth | wet-earth.png
+wet slate | wet-slate.png
+wet stone | wet-stone.png
+wheat cream | wheat-cream.png
+white peach | white-peach.png
+white pepper | white-pepper.png
+wormwood | wormwood.png
+yellow peach | yellow-peach.png
+yogurt | yogurt.png
+yuzu | yuzu.png
