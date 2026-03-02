@@ -13,6 +13,7 @@ const loadBeverageNews = () => import("./components/BeverageNews");
 const loadTerminology = () => import("./components/Terminology");
 const loadTerminologyAdmin = () => import("./components/TerminologyAdmin");
 const loadTastingJournal = () => import("./components/TastingJournal");
+const loadFlavors = () => import("./components/Flavors");
 const loadTastingGroups = () => import("./components/TastingGroups");
 const loadRegions = () => import("./components/Regions");
 const loadSommEvents = () => import("./components/SommEvents");
@@ -27,6 +28,7 @@ const BeverageNews = lazy(() => loadBeverageNews().then((module) => ({ default: 
 const Terminology = lazy(() => loadTerminology().then((module) => ({ default: module.Terminology })));
 const TerminologyAdmin = lazy(() => loadTerminologyAdmin().then((module) => ({ default: module.TerminologyAdmin })));
 const TastingJournal = lazy(() => loadTastingJournal().then((module) => ({ default: module.TastingJournal })));
+const Flavors = lazy(() => loadFlavors().then((module) => ({ default: module.Flavors })));
 const TastingGroups = lazy(() => loadTastingGroups().then((module) => ({ default: module.TastingGroups })));
 const Regions = lazy(() => loadRegions().then((module) => ({ default: module.Regions })));
 const SommEvents = lazy(() => loadSommEvents().then((module) => ({ default: module.SommEvents })));
@@ -38,6 +40,7 @@ type SipStudiosTab =
   | "sipopedia"
   | "flavor-wheel"
   | "tasting-journal"
+  | "flavors"
   | "tasting-groups"
   | "beverage-quiz"
   | "beverage-news"
@@ -61,6 +64,7 @@ const sipStudiosNavItems: SipStudiosNavItem[] = [
   { id: "beverage-quiz", label: "Beverage Quiz", section: "learn" },
   { id: "regions", label: "Regions", section: "learn" },
   { id: "tasting-journal", label: "Flavor Journal", section: "taste" },
+  { id: "flavors", label: "Flavors", section: "taste" },
   { id: "flavor-wheel", label: "Flavor Wheel", section: "taste" },
   { id: "tasting-groups", label: "Tasting Groups", section: "connect" },
   { id: "beverage-news", label: "Beverage News", section: "connect" }
@@ -77,7 +81,7 @@ function regionSlugFromPage(page: AppPage): string | null {
 }
 
 function sipStudiosSectionFromPage(page: AppPage): SipStudiosSection {
-  if (page === "tasting-journal" || page === "flavor-wheel") return "taste";
+  if (page === "tasting-journal" || page === "flavors" || page === "flavor-wheel") return "taste";
   if (page === "tasting-groups" || page === "beverage-news") return "connect";
   return "learn";
 }
@@ -91,6 +95,7 @@ function isKnownHash(hash: string): boolean {
     hash === "terminology" ||
     hash === "flavor-wheel" ||
     hash === "tasting-journal" ||
+    hash === "flavors" ||
     hash === "flavor-journal" ||
     hash === "tasting-groups" ||
     hash === "beverage-quiz" ||
@@ -115,6 +120,7 @@ function pageFromHash(hashValue?: string): AppPage {
   if (hash === "sipopedia" || hash === "terminology") return "sipopedia";
   if (hash === "flavor-wheel") return "flavor-wheel";
   if (hash === "tasting-journal" || hash === "flavor-journal") return "tasting-journal";
+  if (hash === "flavors") return "flavors";
   if (hash === "tasting-groups") return "tasting-groups";
   if (hash === "beverage-quiz") return "beverage-quiz";
   if (hash === "beverage-news") return "beverage-news";
@@ -136,6 +142,7 @@ function hashForPage(page: AppPage): string {
   if (page === "sipopedia") return "sipopedia";
   if (page === "flavor-wheel") return "flavor-wheel";
   if (page === "tasting-journal") return "flavor-journal";
+  if (page === "flavors") return "flavors";
   if (page === "tasting-groups") return "tasting-groups";
   if (page === "beverage-quiz") return "beverage-quiz";
   if (page === "beverage-news") return "beverage-news";
@@ -164,6 +171,10 @@ function preloadPage(target: AppPage): void {
   }
   if (target === "tasting-journal") {
     void loadTastingJournal();
+    return;
+  }
+  if (target === "flavors") {
+    void loadFlavors();
     return;
   }
   if (target === "tasting-groups") {
@@ -350,6 +361,8 @@ function App() {
       <Terminology />
     ) : page === "tasting-journal" ? (
       <TastingJournal />
+    ) : page === "flavors" ? (
+      <Flavors />
     ) : page === "tasting-groups" ? (
       <TastingGroups />
     ) : page === "ai-news" ? (
