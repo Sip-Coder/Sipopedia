@@ -20,6 +20,7 @@
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
   color: var(--ink);
   font-family: "Outfit", "Trebuchet MS", sans-serif;
   background:
@@ -40,6 +41,11 @@ h4 {
 p {
   margin: 0;
   line-height: 1.6;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 .page {
@@ -163,6 +169,7 @@ p {
 .hero-brand.compact {
   padding: 0.3rem 0.75rem;
   border-radius: 18px;
+  overflow: visible;
 }
 
 .hero-brand.compact .hero-brand-full {
@@ -173,7 +180,7 @@ p {
 }
 
 .hero-brand.compact .hero-brand-compact {
-  max-height: 170px;
+  max-height: none;
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
@@ -360,6 +367,56 @@ p {
   border-color: #98b8bd;
   background: #e6f3f5;
   color: #144d58;
+}
+
+.app-shell-state {
+  margin-top: 1.3rem;
+  padding: 1.25rem;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  animation: rise-in 550ms ease-out;
+}
+
+.app-shell-state h2,
+.app-shell-state h3 {
+  margin-bottom: 0.45rem;
+}
+
+.app-shell-state p {
+  margin-top: 0.2rem;
+  max-width: 70ch;
+}
+
+.app-shell-actions {
+  margin-top: 0.95rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.app-shell-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.app-shell-loading::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -45%;
+  width: 45%;
+  background: linear-gradient(90deg, rgba(31, 95, 99, 0), rgba(31, 95, 99, 0.2), rgba(31, 95, 99, 0));
+  animation: app-shell-sweep 1.45s ease-in-out infinite;
+}
+
+.app-shell-empty {
+  border-style: dashed;
+}
+
+.app-shell-error {
+  border-color: rgba(155, 28, 28, 0.35);
+  background: linear-gradient(145deg, #f8ecdf 0%, #f7e6d6 100%);
 }
 
 .auth-panel,
@@ -3208,6 +3265,46 @@ p {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.regions-location-card {
+  margin-top: 0.9rem;
+}
+
+.regions-single-row {
+  margin-top: 0.8rem;
+}
+
+.regions-location-content {
+  margin-top: 0.35rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.regions-location-line {
+  margin: 0;
+  color: #455f61;
+  line-height: 1.6;
+  white-space: normal;
+}
+
+.regions-location-line.is-bullet {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.regions-location-line.is-bullet::before {
+  content: "-";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #47605f;
+  font-weight: 700;
+}
+
+.regions-location-line strong {
+  color: #314f53;
+  font-weight: 700;
+}
+
 .regions-info-card {
   border: 1px solid #d3ddd4;
   border-radius: 12px;
@@ -3330,6 +3427,15 @@ p {
   }
 }
 
+@keyframes app-shell-sweep {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(320%);
+  }
+}
+
 @media (max-width: 980px) {
   .hero-brand-head {
     gap: 0.3rem;
@@ -3348,18 +3454,55 @@ p {
   }
 
   .hero-brand.compact .hero-brand-compact {
-    max-height: 180px;
-    flex-direction: column;
-    align-items: stretch;
+    max-height: none;
+    flex-wrap: nowrap;
+    gap: 0.65rem;
+    align-items: center;
   }
 
   .hero-brand-home-trigger {
     justify-content: center;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .hero-brand-compact-house {
-    margin-left: 0;
-    justify-content: center;
+    margin-left: auto;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+
+  .hero-brand-compact-tabs {
+    flex-wrap: nowrap;
+  }
+
+  .brand-house-tab {
+    width: 78px;
+    height: 78px;
+  }
+
+  .hero-wordmark-compact {
+    width: 148px;
+  }
+
+  .hero-brand-seal-compact {
+    max-width: 74px;
+  }
+
+  .page-nav-tier,
+  .page-nav-sub {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 0.2rem;
+  }
+
+  .page-nav-tier .btn,
+  .page-nav-sub .btn {
+    white-space: nowrap;
+    flex: 0 0 auto;
   }
 
   .auth-panel,
@@ -3508,6 +3651,22 @@ p {
     padding: 1.2rem;
   }
 
+  .hero-brand.compact .hero-brand-compact {
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .hero-brand-home-trigger {
+    width: 100%;
+  }
+
+  .hero-brand-compact-house {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
   .hero-brand-seal {
     max-width: 150px;
   }
@@ -3517,20 +3676,38 @@ p {
   }
 
   .hero-wordmark-compact {
-    width: 150px;
+    width: clamp(120px, 36vw, 150px);
   }
 
   .hero-brand-seal-compact {
     max-width: 64px;
   }
 
-  .brand-house-tab {
-    width: 64px;
-    height: 64px;
+  .hero-brand-compact-tabs {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
   }
 
-  .hero-brand-compact-tabs {
-    justify-content: center;
+  .brand-house-tab {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .page-nav-tier {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .page-nav-sub {
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+  }
+
+  .page-nav-sub .btn {
+    scroll-snap-align: start;
   }
 
   .terminology-sidebar {

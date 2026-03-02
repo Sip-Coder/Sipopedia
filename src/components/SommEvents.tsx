@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import sipStudiosLogo from "../assets/brand/logo-sip-studios.png";
-import aiRnDLogo from "../assets/brand/logo-ai-rnd.png";
-import sommSupportLogo from "../assets/brand/logo-somm-support.png";
+import sipStudiosLogo from "../assets/brand/logo-sip-studios-opt.webp";
+import aiRnDLogo from "../assets/brand/logo-ai-rnd-opt.webp";
+import sommSupportLogo from "../assets/brand/logo-somm-support-opt.webp";
 
 type ThemeId = "sage-sunset" | "ocean-glow" | "citrus-night" | "wine-forest";
 type SocialPlatformKey = "facebook" | "instagram" | "youtube" | "tiktok" | "x" | "linkedin" | "substack";
@@ -387,7 +387,7 @@ export function SommEvents() {
             <div className="somm-events-preview-overlay" />
             <div className="somm-events-preview-content">
               <header className="somm-events-profile">
-                <img src={sommSupportLogo} alt="" />
+                <img src={sommSupportLogo} alt="" decoding="async" />
                 <div>
                   <h3>{profile.name || "Somm Support"}</h3>
                   <p>{profile.handle || "@somm-support"}</p>
@@ -420,7 +420,7 @@ export function SommEvents() {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        {src ? <img src={src} alt="" /> : null}
+                        {src ? <img src={src} alt="" loading="lazy" decoding="async" /> : null}
                         <div>
                           <p className="news-card-tag">{block.tag || "Module"}</p>
                           <h4>{block.title || "Untitled Link"}</h4>

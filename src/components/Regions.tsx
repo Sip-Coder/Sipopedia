@@ -16,6 +16,32 @@ type RegionsProps = {
   onNavigate: (page: "regions" | `regions/${string}`) => void;
 };
 
+type ParsedLocationLine = {
+  label: string | null;
+  text: string;
+  isBullet: boolean;
+};
+
+function parseLocationLines(location: string): ParsedLocationLine[] {
+  return location
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      const isBullet = line.startsWith("- ");
+      const content = isBullet ? line.slice(2).trim() : line;
+      const colonIndex = content.indexOf(":");
+
+      if (colonIndex > 0) {
+        const label = content.slice(0, colonIndex).trim();
+        const text = content.slice(colonIndex + 1).trim();
+        return { label, text, isBullet };
+      }
+
+      return { label: null, text: content, isBullet };
+    });
+}
+
 function toContinentAnchor(continent: ContinentId): string {
   return `continent-${continent}`;
 }
@@ -196,6 +222,7 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
 
   const profile = country.profile;
   const activeRegion = profile.majorRegions[activeSlide] ?? null;
+  const locationLines = parseLocationLines(profile.location);
 
   return (
     <section className="regions-shell">
@@ -218,19 +245,36 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
         <p>{profile.winesOverview}</p>
       </header>
 
-      <div className="regions-country-layout">
+      <div className="regions-list-layout">
         <article className="regions-info-card">
           <h3>Country's Wines Overview</h3>
           <p>{profile.winesOverview}</p>
         </article>
         <article className="regions-info-card">
-          <h3>Location</h3>
-          <p>{profile.location}</p>
-        </article>
-        <article className="regions-info-card">
           <h3>Terroir</h3>
           <p>{profile.terroir}</p>
         </article>
+      </div>
+
+      <article className="regions-info-card regions-location-card">
+        <h3>Location</h3>
+        <div className="regions-location-content">
+          {locationLines.map((line, index) => (
+            <p key={`${line.label ?? line.text}-${index}`} className={`regions-location-line ${line.isBullet ? "is-bullet" : ""}`}>
+              {line.label ? (
+                <>
+                  <strong>{line.label}:</strong>
+                  {line.text ? ` ${line.text}` : ""}
+                </>
+              ) : (
+                line.text
+              )}
+            </p>
+          ))}
+        </div>
+      </article>
+
+      <div className="regions-country-layout">
         <article className="regions-info-card">
           <h3>Style of Production</h3>
           <p>{profile.productionStyle}</p>
@@ -265,27 +309,25 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
         </article>
       </div>
 
-      <div className="regions-list-layout">
-        <article className="regions-info-card">
-          <h3>Terminology</h3>
-          <ul>
-            {profile.terminology.map((term) => (
-              <li key={term}>{term}</li>
-            ))}
-          </ul>
-        </article>
+      <article className="regions-info-card regions-single-row">
+        <h3>Terminology</h3>
+        <ul>
+          {profile.terminology.map((term) => (
+            <li key={term}>{term}</li>
+          ))}
+        </ul>
+      </article>
 
-        <article className="regions-info-card">
-          <h3>Biggest Towns Nearby (for tourism)</h3>
-          <ul>
-            {profile.nearbyTowns.map((town) => (
-              <li key={town}>{town}</li>
-            ))}
-          </ul>
-        </article>
-      </div>
+      <article className="regions-info-card regions-single-row">
+        <h3>Biggest Towns Nearby (for tourism)</h3>
+        <ul>
+          {profile.nearbyTowns.map((town) => (
+            <li key={town}>{town}</li>
+          ))}
+        </ul>
+      </article>
 
-      <article className="regions-info-card">
+      <article className="regions-info-card regions-single-row">
         <h3>Resources for Further Exploration</h3>
         <ul className="regions-resource-list">
           {profile.resources.map((resource) => (

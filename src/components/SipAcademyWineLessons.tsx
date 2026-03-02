@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import romaGuide from "../assets/brand/characters/roma-guide.jpg";
-import sippyGuide from "../assets/brand/characters/sippy-guide.jpg";
-import romaCalm from "../assets/brand/characters/variants/roma-calm.jpg";
-import romaCelebrate from "../assets/brand/characters/variants/roma-celebrate.jpg";
-import romaCoach from "../assets/brand/characters/variants/roma-coach.jpg";
-import romaSpark from "../assets/brand/characters/variants/roma-spark.jpg";
-import sippyCalm from "../assets/brand/characters/variants/sippy-calm.jpg";
-import sippyCelebrate from "../assets/brand/characters/variants/sippy-celebrate.jpg";
-import sippyCoach from "../assets/brand/characters/variants/sippy-coach.jpg";
-import sippySpark from "../assets/brand/characters/variants/sippy-spark.jpg";
+import romaCalm from "../assets/brand/characters/variants/roma-calm-opt.webp";
+import romaCelebrate from "../assets/brand/characters/variants/roma-celebrate-opt.webp";
+import romaCoach from "../assets/brand/characters/variants/roma-coach-opt.webp";
+import romaSpark from "../assets/brand/characters/variants/roma-spark-opt.webp";
+import sippyCalm from "../assets/brand/characters/variants/sippy-calm-opt.webp";
+import sippyCelebrate from "../assets/brand/characters/variants/sippy-celebrate-opt.webp";
+import sippyCoach from "../assets/brand/characters/variants/sippy-coach-opt.webp";
+import sippySpark from "../assets/brand/characters/variants/sippy-spark-opt.webp";
 
 type LessonTag = "Foundations" | "Aromas" | "Structure" | "Service";
 type MentorId = "sippy" | "roma";
@@ -218,9 +216,9 @@ const LESSONS: Lesson[] = [
   }
 ];
 
-const MENTORS: Record<MentorId, { name: string; title: string; image: string }> = {
-  sippy: { name: "Sippy", title: "Lead Beverage Educator", image: sippyGuide },
-  roma: { name: "Roma", title: "Senior Sensory Educator", image: romaGuide }
+const MENTORS: Record<MentorId, { name: string; title: string }> = {
+  sippy: { name: "Sippy", title: "Lead Beverage Educator" },
+  roma: { name: "Roma", title: "Senior Sensory Educator" }
 };
 
 const MENTOR_VARIANTS: Record<MentorId, Record<MentorMood, string>> = {
@@ -660,7 +658,7 @@ export function SipAcademyWineLessons() {
       <section className="academy-mentors" aria-label="Sippy and Roma lesson guidance">
         <article className={`academy-mentor-card ${guideState.speaker === "sippy" ? "active" : ""}`}>
           <div className="academy-mentor-portrait-wrap">
-            <img className="academy-mentor-portrait" src={sippyImage} alt="Sippy, beverage educator" />
+            <img className="academy-mentor-portrait" src={sippyImage} alt="Sippy, beverage educator" loading="lazy" decoding="async" />
           </div>
           <div className="academy-mentor-meta">
             <strong>{MENTORS.sippy.name}</strong>
@@ -669,7 +667,7 @@ export function SipAcademyWineLessons() {
         </article>
         <article className={`academy-mentor-card ${guideState.speaker === "roma" ? "active" : ""}`}>
           <div className="academy-mentor-portrait-wrap">
-            <img className="academy-mentor-portrait" src={romaImage} alt="Roma, beverage educator" />
+            <img className="academy-mentor-portrait" src={romaImage} alt="Roma, beverage educator" loading="lazy" decoding="async" />
           </div>
           <div className="academy-mentor-meta">
             <strong>{MENTORS.roma.name}</strong>
@@ -844,8 +842,8 @@ export function SipAcademyWineLessons() {
             </h3>
             <p>Your next luxury lesson is ready. Sippy and Roma are waiting at the next node.</p>
             <div className="academy-unlock-mentors" aria-hidden="true">
-              <img src={sippyCelebrate} alt="" />
-              <img src={romaCelebrate} alt="" />
+              <img src={sippyCelebrate} alt="" loading="lazy" decoding="async" />
+              <img src={romaCelebrate} alt="" loading="lazy" decoding="async" />
             </div>
             <button type="button" className="btn btn-primary" onClick={() => setUnlockCeremony(null)}>
               Continue

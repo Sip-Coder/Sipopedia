@@ -531,95 +531,95 @@ export const enabledWineRegionSlugs = new Set<string>([
 
 const countryImageBySlug: Record<string, string> = {
   austria:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/281580bb-3689-4ae5-a912-6bcb5027c404/Nieder%C3%B6sterreich.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637811215278-J11GWCC631HA78DG3V3B/Austria.jpg",
   bulgaria:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/9d4e17d8-f380-4b12-b918-9cea10e670ba/Southern+Region+02.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637811231527-ATHRKS6GVBSPATXFIGJZ/Bulgaria.jpg",
   canada:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/91585ca7-b3de-4b22-a03d-86778d57d88f/Ontario.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637968793026-9818RB6JDIATS6GGIVA9/Canada+-+Okanagan+Valley.jpg",
   chile:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/84306b96-ce77-448f-8f88-97545aa4d56f/Aconcagua+Valley.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637970359567-QO791RE29LB3AJAW06W9/Chile+02.jpg",
   china:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/4f53fd8a-d4ca-46ec-96c2-995bcf8f17f9/Ningxia.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638061594848-77GWJQ9QGP58U26RWKO8/China.jpg",
   crimea:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/d8df2676-eef6-4a87-b02c-cce5d845f8ce/South+Crimean+Coast.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638062214470-DY45ZIB4JCF39KOTKV17/Crimea+-+05.jpg",
   croatia:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/47df52bb-04cb-476f-915b-97fb09221758/Central+Dalmatia.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637813860767-JYICQMWVB2PQ8WVX8UZ1/Croatia+-+Rovinj.jpg",
   cyprus:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1f918fdb-4935-4f32-a5f6-7d0f09049f9c/Mountains.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638062342720-9DB8E7M2SOL36IFQEJVE/Cyprus+-+Kyrenia.jpg",
   ethiopia:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/0fc24ca5-e6f0-4813-af9e-ec9f6bc0f52a/Rift+Valley.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638057681723-P8A948NPN49L5PYC2UNQ/Ethiopia+-+Rift+Valley+-+Simien+Mountains.jpg",
   england:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/241b7253-8d97-40ca-982e-727e495a9b48/Sussex.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637965457473-FLDGT74QG3SI5KWR6TMZ/England+-+Villages+01.jpg",
   georgia:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/6c42aff3-4430-4bb6-8a85-ba8ad8a9195d/Kakheti.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638062428255-XKARZ1JFF0GX3MC8K5RA/Georgia.jpg",
   france:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/8d37ea31-c433-4406-9728-ab3071ee5295/Loire+Valley.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637965544854-Q26P2N9KO8M59MVAAAAU/France+-+Colmar.jpg",
   germany:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/df15e85c-1151-4a86-9971-c8b14032a898/Pfalz.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637965596124-YVKHULO5AG9R90T8793N/Germany.jpg",
   greece:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/6597dfbc-0c8e-46ea-9b3d-0b3588729531/Crete.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637965756884-RABEL6Y5VK0Y5YI2ZWPQ/Greece.jpg",
   hungary:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/7cea4b3f-f4ed-4ec0-9e8b-fb38a55336b0/Balaton.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637965903888-IID67N45IBTOI3V6DXPT/Hungary.jpg",
   india:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/30843e98-a7ec-4cc6-86ea-863372495336/Nashik.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638062657710-ABXWZ5PIPHOVQHF58UTL/India+-+Munnar.jpg",
   israel:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/8bbe1c24-c467-4f88-ab6f-6b10d9e9f1e4/Galilee.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638064884383-EE81GXRK2NSSG0I0HKSA/Israel+-+Golan+Heights+02.jpg",
   italy:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/0a5bf8f2-e134-44e9-889a-22129762724c/Veneto.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637966087722-S16FN84JAZ49VICBPA51/Italy+-+Cinque+Terra+02.jpg",
   japan:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/7cf84f8f-4eb3-40ba-961f-09fc5fa1f658/Yamanashi.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638064903128-C53N2JR14M2G7OEPOM5K/Japan+-+Koshu+Valley+01.jpg",
   kenya:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/d874f00a-3790-40bd-a61e-5f5f9b3f4f40/Rift+Valley.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638067131456-IMETNPOFH0KJJXUWKXWG/Kenyan%2BVineyards.jpg",
   lebanon:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/caec42d6-f572-4fc5-b4d0-78ff57f96f6a/Bekaa+Valley.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638064992009-GOFDN9D6DPHNMWLRR5DV/Lebanon+-+02.jpg",
   moldova:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/56e04798-be76-4f86-ba86-4e1db3029333/Valul+lui+Traian.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1711695306347-KJ8Z3CVHS2MO0RZTQ833/image-asset.jpeg",
   mexico:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/6f1932f7-c23b-4f7e-95a2-e273677f5ca4/Baja+California.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637968890645-TI8XVFTVUNLOLX7JK7PA/Mexico+-+vineyards.jpg",
   portugal:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/612aff5c-b4c4-4f0e-bf1e-4ce4f8176f0f/Vinho+Verde.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637966283959-WMBNKMS7NQFM3LYPGPQP/Portugal+-+Oporto+02.jpg",
   romania:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/8ecba68e-47ce-4cb9-bf9d-f1ba6a9bb8f2/07+Crisana.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637966486069-0NDJDA96S89QQYOLKR0L/Romania+-+Transylvania.jpg",
   serbia:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/8afe26dc-2267-4f5a-8ffa-9964ce83f0f5/Fru%C5%A1ka+Gora.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1713765913325-YL18UG4I0O17HQP1RJXL/image-asset.jpeg",
   slovenia:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/95e3546e-8e0a-4190-8c2e-41f5ceff2470/Podravje+Wine+Region.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637966585852-370Q8LIWBURQINHVNP4F/Slovenia.jpg",
   spain:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/06dc31f6-b6ff-4b31-b99f-c93d3ec12b6f/Andaluc%C3%ADa.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637967021360-ULEAJLQPTZVQAHEIP3Y1/Spain+-+Ribera+del+Duero.jpg",
   switzerland:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/83d92979-478c-4f6f-96c2-16513d316b0e/Valais.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637967185426-SCEPQRUNOEINSW2S8JWI/Switzerland+-+Landscape+01.jpg",
   armenia:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/8c6d98b6-f64b-4f1e-8614-bff4d273c332/Vayots+Dzor.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1711691213718-4XNU7V4RNPHVNTFAAA6U/image-asset.jpeg",
   argentina:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/ea5d5bd1-a14e-4269-afef-63995bc406f8/Mendoza.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637969153891-ANYKOQB9YKY7BCQ7442K/Argentina+-+Cafayates.jpg",
   brasil:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/b7155f69-f7f1-4bb4-8fcc-191f6031413b/Serra+Ga%C3%BAcha.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637969777419-E5RUTJYBT9NIDQNJ3C7A/Brasil.jpg",
   uruguay:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/5472d90e-afdb-4d5a-b64b-df8e15db43a2/Canelones.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637971426375-VZIJZYTGQ0G567Q8UBKE/Uruguay+03.jpg",
   australia:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/7586ff95-b586-4c82-95ad-7c5fb09f7145/Barossa+Valley.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638052818128-A6JNQHIQJXE3Q632X8O1/Australia+-+Barossa+Valley+02.jpg",
   "new-zealand":
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/fd1bf843-c6d6-4e55-b53f-8557f3f78fe4/Hawke%E2%80%99s+Bay.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638052949409-PWZXBRH0NXEJZNWOTI0G/New+Zealand.jpg",
   tahiti:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/4d5f11cd-4ef5-4199-8cbf-67ca8fd4dc4d/Tahiti.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638053076215-GQGRD81KJIE9NBX85A56/Tahiti+02.jpg",
   algeria:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/43f2b0f9-fe0a-4ca4-bf3a-a445fef9dc5b/Oran.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638053495265-HQVJZXN2K9C78T8VOG2L/Algeria+-+01.jpg",
   "cape-verde":
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/a27f07bc-e8e4-4d5c-b9df-413a6a135051/Fogo+Island.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638054929007-Z7IFW0PI4VUJ1OAPYFZD/Cape+Verde+-+Ch%C3%A3+das+Caldeiras.jpg",
   morocco:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/c8f0f845-eb8d-4f06-a7b2-92953831985f/Mekn%C3%A8s.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638060317007-RLUKPDVIWPO6OJEDQQQA/Morocco+-+Chefchaouen.jpg",
   "south-africa":
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/6bc17b4d-f365-4cb1-8ea6-d411d6f08be7/Paarl.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638055591337-XWXIXBS1ZMUCRZ7X5RM4/South+Africa+-+Table+Mountain.jpg",
   tanzania:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/340da2d5-c656-4df5-967b-4f396fcdbbc9/Northern+Highlands.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638059523359-6GBKWGJUGDIW5KMQACJS/Tanzania.jpg",
   tunisia:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/3d53ef44-1460-4f42-a4e6-69f7542ad93c/Cap+Bon.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638059415983-SNLIS2TF9Q2SV6VSDI6A/Tunisia+-+03.jpg",
   uganda:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/3b31daa6-1858-4315-bfc4-d5124ce84308/Central+Region.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638061450227-Y6OHDTV1HP5YQ0CAU7S1/Uganda+-+Lake+Bunyonyi.jpg",
   turkey:
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/3f25be6d-a251-41db-b026-c97616cd1405/Aegean+Region.jpg",
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1638065197460-UTR1FC0NNX9WI88WS12A/Turkey+-+Cappadocia.jpg",
   "united-states":
-    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/6aadf0d2-76ec-4cb0-ab6f-bf164f8f72d2/Napa+Valley.jpg"
+    "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/1637969076073-O402IKZ7B0OSZPE1XK8C/United+States+-+California.jpg"
 };
 
 const featuredProfiles: Record<string, ProfileOverride> = {

@@ -1,20 +1,36 @@
-import { useEffect, useMemo, useState } from "react";
-import { SipAcademyWineLessons } from "./components/SipAcademyWineLessons";
-import { FlavorWheel } from "./components/FlavorWheel";
-import { BeverageQuiz } from "./components/BeverageQuiz";
-import { BeverageNews } from "./components/BeverageNews";
-import { Terminology } from "./components/Terminology";
-import { TerminologyAdmin } from "./components/TerminologyAdmin";
-import { TastingJournal } from "./components/TastingJournal";
-import { TastingGroups } from "./components/TastingGroups";
-import { Regions } from "./components/Regions";
-import { SommEvents } from "./components/SommEvents";
-import { AiNews } from "./components/AiNews";
-import mainLogo from "./assets/brand/sip-studies-main-logo.png";
-import wordmark from "./assets/brand/wordmark-ruthligos.png";
-import aiRnDLogo from "./assets/brand/logo-ai-rnd.png";
-import sommSupportLogo from "./assets/brand/logo-somm-support.png";
-import sipStudiosLogo from "./assets/brand/logo-sip-studios.png";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import mainLogo from "./assets/brand/sip-studies-main-logo-opt.webp";
+import wordmark from "./assets/brand/wordmark-ruthligos-opt.webp";
+import aiRnDLogo from "./assets/brand/logo-ai-rnd-opt.webp";
+import sommSupportLogo from "./assets/brand/logo-somm-support-opt.webp";
+import sipStudiosLogo from "./assets/brand/logo-sip-studios-opt.webp";
+import { trackEvent } from "./lib/analytics";
+
+const loadSipAcademyWineLessons = () => import("./components/SipAcademyWineLessons");
+const loadFlavorWheel = () => import("./components/FlavorWheel");
+const loadBeverageQuiz = () => import("./components/BeverageQuiz");
+const loadBeverageNews = () => import("./components/BeverageNews");
+const loadTerminology = () => import("./components/Terminology");
+const loadTerminologyAdmin = () => import("./components/TerminologyAdmin");
+const loadTastingJournal = () => import("./components/TastingJournal");
+const loadTastingGroups = () => import("./components/TastingGroups");
+const loadRegions = () => import("./components/Regions");
+const loadSommEvents = () => import("./components/SommEvents");
+const loadAiNews = () => import("./components/AiNews");
+
+const SipAcademyWineLessons = lazy(() =>
+  loadSipAcademyWineLessons().then((module) => ({ default: module.SipAcademyWineLessons }))
+);
+const FlavorWheel = lazy(() => loadFlavorWheel().then((module) => ({ default: module.FlavorWheel })));
+const BeverageQuiz = lazy(() => loadBeverageQuiz().then((module) => ({ default: module.BeverageQuiz })));
+const BeverageNews = lazy(() => loadBeverageNews().then((module) => ({ default: module.BeverageNews })));
+const Terminology = lazy(() => loadTerminology().then((module) => ({ default: module.Terminology })));
+const TerminologyAdmin = lazy(() => loadTerminologyAdmin().then((module) => ({ default: module.TerminologyAdmin })));
+const TastingJournal = lazy(() => loadTastingJournal().then((module) => ({ default: module.TastingJournal })));
+const TastingGroups = lazy(() => loadTastingGroups().then((module) => ({ default: module.TastingGroups })));
+const Regions = lazy(() => loadRegions().then((module) => ({ default: module.Regions })));
+const SommEvents = lazy(() => loadSommEvents().then((module) => ({ default: module.SommEvents })));
+const AiNews = lazy(() => loadAiNews().then((module) => ({ default: module.AiNews })));
 
 type RegionsPage = "regions" | `regions/${string}`;
 type SipStudiosTab =
@@ -31,6 +47,7 @@ type BrandTier = "sip-studios" | "ai-rnd" | "somm-support";
 type SipStudiosSection = "learn" | "taste" | "connect";
 type SipStudiosSectionItem = { id: SipStudiosSection; label: string; defaultPage: SipStudiosTab };
 type SipStudiosNavItem = { id: SipStudiosTab; label: string; section: SipStudiosSection };
+type MenuSource = "brand-house" | "section-nav" | "sub-nav" | "content-nav";
 
 const sipStudiosSections: SipStudiosSectionItem[] = [
   { id: "learn", label: "Learn", defaultPage: "sip-academy" },
@@ -65,11 +82,35 @@ function sipStudiosSectionFromPage(page: AppPage): SipStudiosSection {
   return "learn";
 }
 
-function pageFromHash(): AppPage {
-  if (typeof window === "undefined") {
+function isKnownHash(hash: string): boolean {
+  if (
+    hash === "" ||
+    hash === "home" ||
+    hash === "sip-academy" ||
+    hash === "sipopedia" ||
+    hash === "terminology" ||
+    hash === "flavor-wheel" ||
+    hash === "tasting-journal" ||
+    hash === "flavor-journal" ||
+    hash === "tasting-groups" ||
+    hash === "beverage-quiz" ||
+    hash === "beverage-news" ||
+    hash === "regions" ||
+    hash === "ai-news" ||
+    hash === "somm-events" ||
+    hash === "somm-news" ||
+    hash === "terminology-admin"
+  ) {
+    return true;
+  }
+  return hash.startsWith("regions/");
+}
+
+function pageFromHash(hashValue?: string): AppPage {
+  if (typeof window === "undefined" && !hashValue) {
     return "sip-academy";
   }
-  const hash = window.location.hash.replace(/^#/, "");
+  const hash = (hashValue ?? window.location.hash.replace(/^#/, "")).trim();
   if (hash === "sip-academy" || hash === "home") return "sip-academy";
   if (hash === "sipopedia" || hash === "terminology") return "sipopedia";
   if (hash === "flavor-wheel") return "flavor-wheel";
@@ -108,12 +149,76 @@ function isHomeHash(hash: string): boolean {
   return hash === "" || hash === "home";
 }
 
+function preloadPage(target: AppPage): void {
+  if (target === "sip-academy") {
+    void loadSipAcademyWineLessons();
+    return;
+  }
+  if (target === "sipopedia") {
+    void loadTerminology();
+    return;
+  }
+  if (target === "flavor-wheel") {
+    void loadFlavorWheel();
+    return;
+  }
+  if (target === "tasting-journal") {
+    void loadTastingJournal();
+    return;
+  }
+  if (target === "tasting-groups") {
+    void loadTastingGroups();
+    return;
+  }
+  if (target === "beverage-quiz") {
+    void loadBeverageQuiz();
+    return;
+  }
+  if (target === "beverage-news") {
+    void loadBeverageNews();
+    return;
+  }
+  if (target === "ai-news") {
+    void loadAiNews();
+    return;
+  }
+  if (target === "somm-events") {
+    void loadSommEvents();
+    return;
+  }
+  if (target === "terminology-admin") {
+    void loadTerminologyAdmin();
+    return;
+  }
+  void loadRegions();
+}
+
+function AppShellLoading() {
+  return (
+    <section className="app-shell-state app-shell-loading" role="status" aria-live="polite">
+      <h3>Loading module...</h3>
+      <p>Preparing your next Sip Studies workspace.</p>
+    </section>
+  );
+}
+
+function AppShellUnavailable({ onHome }: { onHome: () => void }) {
+  return (
+    <section className="app-shell-state app-shell-empty">
+      <h3>Page unavailable</h3>
+      <p>This route could not be resolved. Return to Sip Academy to continue.</p>
+      <button type="button" className="btn btn-primary" onClick={onHome}>
+        Go to Sip Academy
+      </button>
+    </section>
+  );
+}
+
 function App() {
-  const initialPage = pageFromHash();
   const initialHash = typeof window === "undefined" ? "" : window.location.hash.replace(/^#/, "");
-  const [page, setPage] = useState<AppPage>(initialPage);
+  const [page, setPage] = useState<AppPage>(pageFromHash(initialHash));
   const [sipStudiosSection, setSipStudiosSection] = useState<SipStudiosSection>(() =>
-    sipStudiosSectionFromPage(initialPage)
+    sipStudiosSectionFromPage(pageFromHash(initialHash))
   );
   const [isHomeHeroExpanded, setIsHomeHeroExpanded] = useState<boolean>(() =>
     initialHash === "" || initialHash === "home" || initialHash === "sip-academy"
@@ -121,13 +226,35 @@ function App() {
   const brandTier = brandTierFromPage(page);
 
   useEffect(() => {
+    const canonicalHash = hashForPage(page);
+    trackEvent("page_view", { page, brandTier, hash: canonicalHash });
+    preloadPage(page);
+  }, [brandTier, page]);
+
+  useEffect(() => {
+    const redirectInvalidHash = (hash: string) => {
+      trackEvent("invalid_hash_redirected", { hash, fallback: "sip-academy" });
+      window.location.hash = "sip-academy";
+    };
+
+    const initialCurrentHash = window.location.hash.replace(/^#/, "");
+    if (initialCurrentHash && !isKnownHash(initialCurrentHash)) {
+      redirectInvalidHash(initialCurrentHash);
+      return;
+    }
+
     const onHashChange = () => {
       const nextHash = window.location.hash.replace(/^#/, "");
-      setPage(pageFromHash());
+      if (nextHash && !isKnownHash(nextHash)) {
+        redirectInvalidHash(nextHash);
+        return;
+      }
+      setPage(pageFromHash(nextHash));
       if (isHomeHash(nextHash)) {
         setIsHomeHeroExpanded(true);
       }
     };
+
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
@@ -146,36 +273,61 @@ function App() {
     window.location.hash = nextHash;
   };
 
-  const switchBrandTier = (target: BrandTier) => {
+  const collapseHeroAndScrollToTop = () => {
     setIsHomeHeroExpanded(false);
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  };
+
+  const navigateFromMenu = (target: AppPage, source: MenuSource) => {
+    trackEvent("menu_navigate", {
+      source,
+      fromPage: page,
+      targetPage: target,
+      brandTier,
+      section: brandTier === "sip-studios" ? sipStudiosSection : "n/a"
+    });
+    collapseHeroAndScrollToTop();
+    preloadPage(target);
+    switchPage(target);
+  };
+
+  const switchBrandTier = (target: BrandTier) => {
     if (target === "sip-studios") {
-      switchPage("sip-academy");
+      navigateFromMenu("sip-academy", "brand-house");
       return;
     }
     if (target === "ai-rnd") {
-      switchPage("ai-news");
+      navigateFromMenu("ai-news", "brand-house");
       return;
     }
-    switchPage("somm-events");
+    navigateFromMenu("somm-events", "brand-house");
   };
 
   const switchSipStudiosSection = (sectionId: SipStudiosSection) => {
-    setIsHomeHeroExpanded(false);
     setSipStudiosSection(sectionId);
     const section = sipStudiosSections.find((item) => item.id === sectionId);
-    if (section) switchPage(section.defaultPage);
+    if (section) {
+      navigateFromMenu(section.defaultPage, "section-nav");
+    }
   };
 
   const switchToHomeHero = () => {
+    trackEvent("home_hero_expanded", { fromPage: page, brandTier });
     setIsHomeHeroExpanded(true);
-    if (typeof window !== "undefined") {
-      const currentHash = window.location.hash.replace(/^#/, "");
-      if (currentHash !== "home") {
-        window.location.hash = "home";
-      } else {
-        setPage("sip-academy");
-      }
+    const currentHash = window.location.hash.replace(/^#/, "");
+    if (currentHash !== "home") {
+      window.location.hash = "home";
+    } else {
+      setPage("sip-academy");
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     }
+  };
+
+  const switchFromContent = (target: AppPage) => {
+    trackEvent("content_navigate", { fromPage: page, targetPage: target });
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    preloadPage(target);
+    switchPage(target);
   };
 
   const sipStudiosSectionTabs = useMemo(
@@ -183,14 +335,47 @@ function App() {
     [sipStudiosSection]
   );
 
+  const renderedPage =
+    page === "sip-academy" ? (
+      <SipAcademyWineLessons />
+    ) : page === "flavor-wheel" ? (
+      <FlavorWheel />
+    ) : page === "beverage-quiz" ? (
+      <BeverageQuiz />
+    ) : page === "beverage-news" ? (
+      <BeverageNews />
+    ) : isRegionsPage(page) ? (
+      <Regions regionSlug={regionSlugFromPage(page)} onNavigate={switchFromContent} />
+    ) : page === "sipopedia" ? (
+      <Terminology />
+    ) : page === "tasting-journal" ? (
+      <TastingJournal />
+    ) : page === "tasting-groups" ? (
+      <TastingGroups />
+    ) : page === "ai-news" ? (
+      <AiNews />
+    ) : page === "somm-events" ? (
+      <SommEvents />
+    ) : page === "terminology-admin" ? (
+      <TerminologyAdmin />
+    ) : (
+      <AppShellUnavailable onHome={() => switchFromContent("sip-academy")} />
+    );
+
   return (
     <div className="page">
       <header className={`hero hero-brand ${isHomeHeroExpanded ? "expanded" : "compact"}`}>
         <div className="hero-brand-full" aria-hidden={!isHomeHeroExpanded}>
           <div className="hero-brand-head">
-            <img className="hero-brand-seal" src={mainLogo} alt="Sip Studies logo" />
+            <img
+              className="hero-brand-seal"
+              src={mainLogo}
+              alt="Sip Studies logo"
+              decoding="async"
+              fetchPriority="high"
+            />
             <div className="hero-brand-copy">
-              <img className="hero-wordmark" src={wordmark} alt="Sip Studies wordmark in Ruthligos style" />
+              <img className="hero-wordmark" src={wordmark} alt="Sip Studies wordmark in Ruthligos style" decoding="async" />
               <p className="hero-subtitle">Learn. Engage. Teach.</p>
               <p>
                 Expand beverage knowledge, connect culture with AI, and support communities through education that
@@ -207,31 +392,37 @@ function App() {
                   type="button"
                   className={`brand-house-btn ${brandTier === "sip-studios" ? "active" : ""}`}
                   onClick={() => switchBrandTier("sip-studios")}
+                  onMouseEnter={() => preloadPage("sip-academy")}
+                  onFocus={() => preloadPage("sip-academy")}
                   aria-label="Open Sip Studios"
                   aria-pressed={brandTier === "sip-studios"}
                   disabled={!isHomeHeroExpanded}
                 >
-                  <img src={sipStudiosLogo} alt="" />
+                  <img src={sipStudiosLogo} alt="" decoding="async" />
                 </button>
                 <button
                   type="button"
                   className={`brand-house-btn ${brandTier === "ai-rnd" ? "active" : ""}`}
                   onClick={() => switchBrandTier("ai-rnd")}
+                  onMouseEnter={() => preloadPage("ai-news")}
+                  onFocus={() => preloadPage("ai-news")}
                   aria-label="Open Ai RnD"
                   aria-pressed={brandTier === "ai-rnd"}
                   disabled={!isHomeHeroExpanded}
                 >
-                  <img src={aiRnDLogo} alt="" />
+                  <img src={aiRnDLogo} alt="" decoding="async" />
                 </button>
                 <button
                   type="button"
                   className={`brand-house-btn ${brandTier === "somm-support" ? "active" : ""}`}
                   onClick={() => switchBrandTier("somm-support")}
+                  onMouseEnter={() => preloadPage("somm-events")}
+                  onFocus={() => preloadPage("somm-events")}
                   aria-label="Open Somm Support"
                   aria-pressed={brandTier === "somm-support"}
                   disabled={!isHomeHeroExpanded}
                 >
-                  <img src={sommSupportLogo} alt="" />
+                  <img src={sommSupportLogo} alt="" decoding="async" />
                 </button>
               </div>
             </article>
@@ -246,8 +437,8 @@ function App() {
             disabled={isHomeHeroExpanded}
             aria-label="Open full home header"
           >
-            <img className="hero-brand-seal hero-brand-seal-compact" src={mainLogo} alt="Sip Studies logo" />
-            <img className="hero-wordmark hero-wordmark-compact" src={wordmark} alt="Sip Studies" />
+            <img className="hero-brand-seal hero-brand-seal-compact" src={mainLogo} alt="Sip Studies logo" decoding="async" />
+            <img className="hero-wordmark hero-wordmark-compact" src={wordmark} alt="Sip Studies" decoding="async" />
           </button>
           <div className="hero-brand-compact-house">
             <p className="hero-brand-compact-label">Brand House</p>
@@ -256,28 +447,34 @@ function App() {
                 type="button"
                 className={`brand-house-tab ${brandTier === "sip-studios" ? "active" : ""}`}
                 onClick={() => switchBrandTier("sip-studios")}
+                onMouseEnter={() => preloadPage("sip-academy")}
+                onFocus={() => preloadPage("sip-academy")}
                 disabled={isHomeHeroExpanded}
                 aria-label="Open Sip Studios"
               >
-                <img src={sipStudiosLogo} alt="" />
+                <img src={sipStudiosLogo} alt="" decoding="async" />
               </button>
               <button
                 type="button"
                 className={`brand-house-tab ${brandTier === "ai-rnd" ? "active" : ""}`}
                 onClick={() => switchBrandTier("ai-rnd")}
+                onMouseEnter={() => preloadPage("ai-news")}
+                onFocus={() => preloadPage("ai-news")}
                 disabled={isHomeHeroExpanded}
                 aria-label="Open Ai RnD"
               >
-                <img src={aiRnDLogo} alt="" />
+                <img src={aiRnDLogo} alt="" decoding="async" />
               </button>
               <button
                 type="button"
                 className={`brand-house-tab ${brandTier === "somm-support" ? "active" : ""}`}
                 onClick={() => switchBrandTier("somm-support")}
+                onMouseEnter={() => preloadPage("somm-events")}
+                onFocus={() => preloadPage("somm-events")}
                 disabled={isHomeHeroExpanded}
                 aria-label="Open Somm Support"
               >
-                <img src={sommSupportLogo} alt="" />
+                <img src={sommSupportLogo} alt="" decoding="async" />
               </button>
             </div>
           </div>
@@ -292,6 +489,8 @@ function App() {
                 key={section.id}
                 className={`btn ${sipStudiosSection === section.id ? "btn-primary" : "btn-light"}`}
                 onClick={() => switchSipStudiosSection(section.id)}
+                onMouseEnter={() => preloadPage(section.defaultPage)}
+                onFocus={() => preloadPage(section.defaultPage)}
               >
                 {section.label}
               </button>
@@ -304,10 +503,9 @@ function App() {
                 <button
                   key={item.id}
                   className={`btn ${active ? "btn-primary" : "btn-light"}`}
-                  onClick={() => {
-                    setIsHomeHeroExpanded(false);
-                    switchPage(item.id);
-                  }}
+                  onClick={() => navigateFromMenu(item.id, "sub-nav")}
+                  onMouseEnter={() => preloadPage(item.id)}
+                  onFocus={() => preloadPage(item.id)}
                 >
                   {item.label}
                 </button>
@@ -319,10 +517,9 @@ function App() {
         <nav className="page-nav page-nav-sub" aria-label="Ai RnD tabs">
           <button
             className={`btn ${page === "ai-news" ? "btn-primary" : "btn-light"}`}
-            onClick={() => {
-              setIsHomeHeroExpanded(false);
-              switchPage("ai-news");
-            }}
+            onClick={() => navigateFromMenu("ai-news", "sub-nav")}
+            onMouseEnter={() => preloadPage("ai-news")}
+            onFocus={() => preloadPage("ai-news")}
           >
             News
           </button>
@@ -331,39 +528,16 @@ function App() {
         <nav className="page-nav page-nav-sub" aria-label="Somm Support tabs">
           <button
             className={`btn ${page === "somm-events" ? "btn-primary" : "btn-light"}`}
-            onClick={() => {
-              setIsHomeHeroExpanded(false);
-              switchPage("somm-events");
-            }}
+            onClick={() => navigateFromMenu("somm-events", "sub-nav")}
+            onMouseEnter={() => preloadPage("somm-events")}
+            onFocus={() => preloadPage("somm-events")}
           >
             Events
           </button>
         </nav>
       )}
 
-      {page === "sip-academy" ? (
-        <SipAcademyWineLessons />
-      ) : page === "flavor-wheel" ? (
-        <FlavorWheel />
-      ) : page === "beverage-quiz" ? (
-        <BeverageQuiz />
-      ) : page === "beverage-news" ? (
-        <BeverageNews />
-      ) : isRegionsPage(page) ? (
-        <Regions regionSlug={regionSlugFromPage(page)} onNavigate={switchPage} />
-      ) : page === "sipopedia" ? (
-        <Terminology />
-      ) : page === "tasting-journal" ? (
-        <TastingJournal />
-      ) : page === "tasting-groups" ? (
-        <TastingGroups />
-      ) : page === "ai-news" ? (
-        <AiNews />
-      ) : page === "somm-events" ? (
-        <SommEvents />
-      ) : (
-        <TerminologyAdmin />
-      )}
+      <Suspense fallback={<AppShellLoading />}>{renderedPage}</Suspense>
     </div>
   );
 }
