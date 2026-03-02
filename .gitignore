@@ -7,3 +7,8 @@ dist
 **/__pycache__/
 *.tsbuildinfo
 tmp_*
+
+# Local secrets workspace (ignore all real secret files)
+local-secrets/*
+!local-secrets/README.md
+!local-secrets/.env.example

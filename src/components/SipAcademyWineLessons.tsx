@@ -36,11 +36,22 @@ type Exercise = ChoiceExercise | OrderExercise;
 type Lesson = {
   id: string;
   unit: number;
+  realm: string;
   title: string;
   tag: LessonTag;
+  mission: "Scout" | "Challenge" | "Boss";
+  difficulty: number;
+  mentor: MentorId;
   subtitle: string;
   xpBonus: number;
   exercises: Exercise[];
+};
+
+type Realm = {
+  unit: number;
+  title: string;
+  lore: string;
+  bossLessonId: string;
 };
 
 type LessonProgress = {
@@ -73,6 +84,7 @@ type SummaryState = {
   accuracy: number;
   xp: number;
   bestCombo: number;
+  heartsLeft: number;
 };
 
 type UnlockCeremony = {
@@ -81,137 +93,898 @@ type UnlockCeremony = {
   unit: number;
 };
 
-const STORAGE_KEY = "sip-studies:academy:wine:v1";
+const STORAGE_KEY = "sip-studies:academy:wine:v2";
 const VOICE_MODE_KEY = "sip-studies:academy:wine:voice-mode:v1";
 const MAX_HEARTS = 5;
 const PASS_TARGET = 0.7;
 const MAX_MASTERY = 5;
 
+const REALMS: Realm[] = [
+  {
+    unit: 1,
+    title: "Crystal Atrium",
+    lore: "Build your tasting HUD and unlock your first service protocol.",
+    bossLessonId: "wine-4"
+  },
+  {
+    unit: 2,
+    title: "Varietal Wilds",
+    lore: "Track grape clues and map styles across classic families.",
+    bossLessonId: "wine-8"
+  },
+  {
+    unit: 3,
+    title: "Terroir Peaks",
+    lore: "Read climate and soil signals like a deduction specialist.",
+    bossLessonId: "wine-12"
+  },
+  {
+    unit: 4,
+    title: "Cellar Citadel",
+    lore: "Master pairings, vessels, and faults under table-side pressure.",
+    bossLessonId: "wine-16"
+  },
+  {
+    unit: 5,
+    title: "Grand Sommelier Arena",
+    lore: "Final gauntlet with Sippy and Roma guiding every decision chain.",
+    bossLessonId: "wine-20"
+  }
+];
+
+function choice(
+  id: string,
+  prompt: string,
+  options: string[],
+  correctIndex: number,
+  explanation: string
+): ChoiceExercise {
+  return { id, kind: "choice", prompt, options, correctIndex, explanation };
+}
+
+function order(id: string, prompt: string, options: string[], answer: string[], explanation: string): OrderExercise {
+  return { id, kind: "order", prompt, options, answer, explanation };
+}
+
 const LESSONS: Lesson[] = [
   {
     id: "wine-1",
     unit: 1,
+    realm: "Crystal Atrium",
     title: "Glass Basics",
     tag: "Foundations",
-    subtitle: "Short wins for core tasting language.",
+    mission: "Scout",
+    difficulty: 1,
+    mentor: "sippy",
+    subtitle: "Calibrate your tasting HUD with quick foundational wins.",
     xpBonus: 14,
     exercises: [
-      {
-        id: "wine-1-1",
-        kind: "choice",
-        prompt: "Dry wine means:",
-        options: ["No sugar is perceived", "The wine has no aroma", "The wine is high alcohol only", "The wine is old"],
-        correctIndex: 0,
-        explanation: "Dry refers to perceived sugar, not age or alcohol."
-      },
-      {
-        id: "wine-1-2",
-        kind: "choice",
-        prompt: "ABV on a label tells you:",
-        options: ["Alcohol by volume", "Residual sugar", "Serving temperature", "Bottle age"],
-        correctIndex: 0,
-        explanation: "ABV is alcohol by volume."
-      },
-      {
-        id: "wine-1-3",
-        kind: "order",
-        prompt: "Arrange the tasting sequence.",
-        options: ["Look", "Smell", "Taste", "Conclude"],
-        answer: ["Look", "Smell", "Taste", "Conclude"],
-        explanation: "Systematic sequence improves consistency."
-      },
-      {
-        id: "wine-1-4",
-        kind: "choice",
-        prompt: "A mouthwatering finish usually points to:",
-        options: ["Acidity", "Oak", "Sugar", "High pH"],
-        correctIndex: 0,
-        explanation: "Acidity drives freshness and salivation."
-      }
+      choice(
+        "wine-1-1",
+        "Dry wine means:",
+        ["No sugar is perceived", "The wine has no aroma", "The wine is high alcohol only", "The wine is old"],
+        0,
+        "Dry refers to perceived sugar, not age or alcohol."
+      ),
+      choice(
+        "wine-1-2",
+        "ABV on a label tells you:",
+        ["Alcohol by volume", "Residual sugar", "Serving temperature", "Bottle age"],
+        0,
+        "ABV is alcohol by volume."
+      ),
+      order(
+        "wine-1-3",
+        "Arrange the tasting sequence.",
+        ["Look", "Smell", "Taste", "Conclude"],
+        ["Look", "Smell", "Taste", "Conclude"],
+        "Systematic sequence improves consistency."
+      ),
+      choice(
+        "wine-1-4",
+        "A mouthwatering finish usually points to:",
+        ["Acidity", "Oak", "Sugar", "High pH"],
+        0,
+        "Acidity drives freshness and salivation."
+      )
     ]
   },
   {
     id: "wine-2",
     unit: 1,
+    realm: "Crystal Atrium",
     title: "Aroma Families",
     tag: "Aromas",
-    subtitle: "Build reliable descriptor buckets.",
+    mission: "Scout",
+    difficulty: 1,
+    mentor: "roma",
+    subtitle: "Sort scent clues into reliable families with Roma.",
     xpBonus: 16,
     exercises: [
-      {
-        id: "wine-2-1",
-        kind: "choice",
-        prompt: "Cassis and blackberry are typically:",
-        options: ["Floral notes", "Black fruit notes", "Mineral notes", "Oxidative notes"],
-        correctIndex: 1,
-        explanation: "These belong to the black fruit family."
-      },
-      {
-        id: "wine-2-2",
-        kind: "choice",
-        prompt: "Lavender and violet are:",
-        options: ["Herbal notes", "Floral notes", "Oak notes", "Spice notes"],
-        correctIndex: 1,
-        explanation: "Both are floral cues."
-      },
-      {
-        id: "wine-2-3",
-        kind: "order",
-        prompt: "Order fruit development from fresh to aged.",
-        options: ["Fresh apple", "Baked apple", "Dried apple"],
-        answer: ["Fresh apple", "Baked apple", "Dried apple"],
-        explanation: "Fruit notes often evolve from fresh to baked to dried."
-      },
-      {
-        id: "wine-2-4",
-        kind: "choice",
-        prompt: "Vanilla, toast, and cedar often indicate:",
-        options: ["Fault", "Oak influence", "Lactic fermentation", "Carbonic maceration"],
-        correctIndex: 1,
-        explanation: "These are common oak signatures."
-      }
+      choice(
+        "wine-2-1",
+        "Cassis and blackberry are typically:",
+        ["Floral notes", "Black fruit notes", "Mineral notes", "Oxidative notes"],
+        1,
+        "These belong to the black fruit family."
+      ),
+      choice(
+        "wine-2-2",
+        "Lavender and violet are:",
+        ["Herbal notes", "Floral notes", "Oak notes", "Spice notes"],
+        1,
+        "Both are floral cues."
+      ),
+      order(
+        "wine-2-3",
+        "Order fruit development from fresh to aged.",
+        ["Fresh apple", "Baked apple", "Dried apple"],
+        ["Fresh apple", "Baked apple", "Dried apple"],
+        "Fruit notes often evolve from fresh to baked to dried."
+      ),
+      choice(
+        "wine-2-4",
+        "Vanilla, toast, and cedar often indicate:",
+        ["Fault", "Oak influence", "Lactic fermentation", "Carbonic maceration"],
+        1,
+        "These are common oak signatures."
+      )
     ]
   },
   {
     id: "wine-3",
-    unit: 2,
+    unit: 1,
+    realm: "Crystal Atrium",
     title: "Structure Drill",
     tag: "Structure",
-    subtitle: "Train palate logic under time pressure.",
+    mission: "Challenge",
+    difficulty: 2,
+    mentor: "sippy",
+    subtitle: "Read acid, tannin, and finish like a tactical chain.",
     xpBonus: 20,
     exercises: [
-      {
-        id: "wine-3-1",
-        kind: "choice",
-        prompt: "Drying grip on gums usually comes from:",
-        options: ["Sugar", "Tannin", "Acidity", "Carbon dioxide"],
-        correctIndex: 1,
-        explanation: "Tannin creates that drying sensation."
-      },
-      {
-        id: "wine-3-2",
-        kind: "choice",
-        prompt: "Cool-climate style commonly shows:",
-        options: ["Lower acidity", "Higher freshness", "Higher residual sugar", "No aroma"],
-        correctIndex: 1,
-        explanation: "Cool climates often preserve acidity and lift."
-      },
-      {
-        id: "wine-3-3",
-        kind: "order",
-        prompt: "Build a deduction chain.",
-        options: ["Assess acidity", "Assess ripeness", "Estimate climate", "State conclusion"],
-        answer: ["Assess acidity", "Assess ripeness", "Estimate climate", "State conclusion"],
-        explanation: "Start with sensory evidence, then infer context."
-      },
-      {
-        id: "wine-3-4",
-        kind: "choice",
-        prompt: "A long finish can suggest:",
-        options: ["Lower quality only", "Concentration and quality", "A random fault", "Only high sugar"],
-        correctIndex: 1,
-        explanation: "Length can correlate with concentration."
-      }
+      choice(
+        "wine-3-1",
+        "Drying grip on gums usually comes from:",
+        ["Sugar", "Tannin", "Acidity", "Carbon dioxide"],
+        1,
+        "Tannin creates that drying sensation."
+      ),
+      choice(
+        "wine-3-2",
+        "Cool-climate style commonly shows:",
+        ["Lower acidity", "Higher freshness", "Higher residual sugar", "No aroma"],
+        1,
+        "Cool climates often preserve acidity and lift."
+      ),
+      order(
+        "wine-3-3",
+        "Build a deduction chain.",
+        ["Assess acidity", "Assess ripeness", "Estimate climate", "State conclusion"],
+        ["Assess acidity", "Assess ripeness", "Estimate climate", "State conclusion"],
+        "Start with sensory evidence, then infer context."
+      ),
+      choice(
+        "wine-3-4",
+        "A long finish can suggest:",
+        ["Lower quality only", "Concentration and quality", "A random fault", "Only high sugar"],
+        1,
+        "Length can correlate with concentration."
+      )
+    ]
+  },
+  {
+    id: "wine-4",
+    unit: 1,
+    realm: "Crystal Atrium",
+    title: "Atrium Gate Service",
+    tag: "Service",
+    mission: "Boss",
+    difficulty: 2,
+    mentor: "roma",
+    subtitle: "Boss round: execute the opening service ritual with precision.",
+    xpBonus: 24,
+    exercises: [
+      choice(
+        "wine-4-1",
+        "First step before presenting a bottle table-side:",
+        ["Confirm producer and vintage with the guest", "Pour immediately", "Decant first", "Chill with ice"],
+        0,
+        "Verification comes first so the guest confirms the selection."
+      ),
+      order(
+        "wine-4-2",
+        "Order a clean still-wine service flow.",
+        ["Present label", "Open bottle", "Offer host taste", "Serve guests"],
+        ["Present label", "Open bottle", "Offer host taste", "Serve guests"],
+        "This keeps hospitality and control aligned."
+      ),
+      choice(
+        "wine-4-3",
+        "Small under-pour in the host taste is best because it:",
+        ["Reduces aroma loss and allows easy swirl", "Looks cheaper", "Warms wine faster", "Proves speed"],
+        0,
+        "A measured host taste is practical and professional."
+      ),
+      choice(
+        "wine-4-4",
+        "Who is usually served first after host approval?",
+        ["Nearest guest clockwise", "Host", "Youngest guest", "Anyone asking first"],
+        0,
+        "Use house standard, often starting nearest the host and moving clockwise."
+      )
+    ]
+  },
+  {
+    id: "wine-5",
+    unit: 2,
+    realm: "Varietal Wilds",
+    title: "Noble Grapes I",
+    tag: "Foundations",
+    mission: "Scout",
+    difficulty: 2,
+    mentor: "sippy",
+    subtitle: "Identify benchmark grapes and their common style signals.",
+    xpBonus: 22,
+    exercises: [
+      choice(
+        "wine-5-1",
+        "Cabernet Sauvignon is commonly linked with:",
+        ["High tannin and black fruit", "Low acid and rose notes", "No tannin and banana", "Petrol and slate only"],
+        0,
+        "Cabernet usually shows black fruit, tannin, and structure."
+      ),
+      choice(
+        "wine-5-2",
+        "Riesling often shows:",
+        ["High acidity and citrus/stone fruit", "High tannin and smoke", "Very dark color always", "Mandatory oak"],
+        0,
+        "Riesling is known for acidity and aromatic lift."
+      ),
+      choice(
+        "wine-5-3",
+        "Pinot Noir is usually:",
+        ["Lighter color with red fruit profile", "Deeply opaque and massively tannic", "Always sweet", "Only grown in hot climates"],
+        0,
+        "Pinot Noir often leans lighter in color with red-fruit notes."
+      ),
+      order(
+        "wine-5-4",
+        "Order common body progression (light to full).",
+        ["Pinot Noir", "Merlot", "Cabernet Sauvignon"],
+        ["Pinot Noir", "Merlot", "Cabernet Sauvignon"],
+        "Body often scales this way in classic references."
+      )
+    ]
+  },
+  {
+    id: "wine-6",
+    unit: 2,
+    realm: "Varietal Wilds",
+    title: "Noble Grapes II",
+    tag: "Aromas",
+    mission: "Scout",
+    difficulty: 2,
+    mentor: "roma",
+    subtitle: "Deepen aromatic recognition across major white and red varieties.",
+    xpBonus: 24,
+    exercises: [
+      choice(
+        "wine-6-1",
+        "Sauvignon Blanc often shows:",
+        ["Gooseberry and herb", "Chocolate and tar", "Banana and coconut only", "No aroma"],
+        0,
+        "Herbal and citrus-gooseberry cues are classic."
+      ),
+      choice(
+        "wine-6-2",
+        "Syrah/Shiraz commonly includes:",
+        ["Black pepper and dark fruit", "Only floral candy", "Low color and no spice", "High sugar by law"],
+        0,
+        "Pepper and dark fruit are hallmark clues."
+      ),
+      choice(
+        "wine-6-3",
+        "Gewurztraminer commonly shows:",
+        ["Lychee and rose", "Cassis and cedar", "Wet wool fault", "Zero aroma"],
+        0,
+        "Lychee and rose are signature aromatic notes."
+      ),
+      order(
+        "wine-6-4",
+        "Order oak aroma intensity from subtle to pronounced.",
+        ["Old neutral oak", "Large old cask", "New small oak"],
+        ["Old neutral oak", "Large old cask", "New small oak"],
+        "New, smaller oak tends to show stronger aromatic impact."
+      )
+    ]
+  },
+  {
+    id: "wine-7",
+    unit: 2,
+    realm: "Varietal Wilds",
+    title: "Old World vs New World",
+    tag: "Structure",
+    mission: "Challenge",
+    difficulty: 3,
+    mentor: "sippy",
+    subtitle: "Train style deduction through climate, ripeness, and oak signals.",
+    xpBonus: 28,
+    exercises: [
+      choice(
+        "wine-7-1",
+        "A restrained fruit profile with higher acidity often suggests:",
+        ["Cooler-climate or Old World style", "Dessert wine only", "Faulty winemaking", "Carbonic wine by default"],
+        0,
+        "Leaner fruit and lift often point to cooler style references."
+      ),
+      choice(
+        "wine-7-2",
+        "Riper fruit + higher alcohol more often suggests:",
+        ["Warmer-climate style", "Only sparkling wine", "No relation to climate", "Low phenolic ripeness"],
+        0,
+        "Warmer climates can push ripeness and alcohol."
+      ),
+      order(
+        "wine-7-3",
+        "Order deduction logic from clue to conclusion.",
+        ["Observe acidity", "Estimate ripeness", "Infer climate", "State likely style family"],
+        ["Observe acidity", "Estimate ripeness", "Infer climate", "State likely style family"],
+        "Evidence first, interpretation second."
+      ),
+      choice(
+        "wine-7-4",
+        "Which clue is strongest for oak handling?",
+        ["Vanilla/toast/cedar signatures", "Bottle shape", "Capsule color", "Label font"],
+        0,
+        "Aroma and flavor markers are strongest clues for oak."
+      )
+    ]
+  },
+  {
+    id: "wine-8",
+    unit: 2,
+    realm: "Varietal Wilds",
+    title: "Varietal Wilds Boss",
+    tag: "Service",
+    mission: "Boss",
+    difficulty: 3,
+    mentor: "roma",
+    subtitle: "Boss round: pair guest cues with grape and service choices quickly.",
+    xpBonus: 32,
+    exercises: [
+      choice(
+        "wine-8-1",
+        "Guest asks for high-acid white with no obvious oak. Best first offer:",
+        ["Sauvignon Blanc or dry Riesling", "Oaked warm-climate Chardonnay", "High-tannin red blend", "Sweet fortified wine"],
+        0,
+        "This request points to bright, non-oaky white styles."
+      ),
+      choice(
+        "wine-8-2",
+        "Guest requests elegant low-tannin red. Best first direction:",
+        ["Pinot Noir", "Young Cabernet Sauvignon", "Tannat", "Petit Verdot"],
+        0,
+        "Pinot Noir is a common elegant low-tannin recommendation."
+      ),
+      order(
+        "wine-8-3",
+        "Service response order for guest preference matching.",
+        ["Clarify preferences", "Offer two options", "Confirm final choice", "Serve at target temperature"],
+        ["Clarify preferences", "Offer two options", "Confirm final choice", "Serve at target temperature"],
+        "Clear preference capture leads to better guest outcomes."
+      ),
+      choice(
+        "wine-8-4",
+        "If a guest says wine tastes flat, first structural check is:",
+        ["Acidity level", "Bottle weight", "Cork length", "Label design"],
+        0,
+        "Low perceived acidity can read as flat on the palate."
+      )
+    ]
+  },
+  {
+    id: "wine-9",
+    unit: 3,
+    realm: "Terroir Peaks",
+    title: "Climate Compass",
+    tag: "Foundations",
+    mission: "Scout",
+    difficulty: 3,
+    mentor: "sippy",
+    subtitle: "Use climate clues to project fruit ripeness and acid profile.",
+    xpBonus: 30,
+    exercises: [
+      choice(
+        "wine-9-1",
+        "Cooler climates generally preserve:",
+        ["Acidity", "Sugar only", "Tannin only", "Alcohol only"],
+        0,
+        "Acidity is often better preserved in cooler conditions."
+      ),
+      choice(
+        "wine-9-2",
+        "Warmer climates often produce wines with:",
+        ["Riper fruit character", "Always lower alcohol", "No aroma", "Only sparkling styles"],
+        0,
+        "Riper fruit expression often increases in warmer sites."
+      ),
+      choice(
+        "wine-9-3",
+        "Large day-night temperature swing can help:",
+        ["Retain aromatics and acidity", "Erase fruit character", "Increase volatile acidity by default", "Prevent ripening entirely"],
+        0,
+        "Diurnal shift can preserve freshness while allowing ripening."
+      ),
+      order(
+        "wine-9-4",
+        "Order climatic deduction from evidence to call.",
+        ["Taste freshness", "Assess fruit ripeness", "Estimate climate", "State likely style"],
+        ["Taste freshness", "Assess fruit ripeness", "Estimate climate", "State likely style"],
+        "Sensory evidence drives climate inference."
+      )
+    ]
+  },
+  {
+    id: "wine-10",
+    unit: 3,
+    realm: "Terroir Peaks",
+    title: "Soil Signals",
+    tag: "Aromas",
+    mission: "Scout",
+    difficulty: 3,
+    mentor: "roma",
+    subtitle: "Connect texture and aroma accents to vineyard environment clues.",
+    xpBonus: 32,
+    exercises: [
+      choice(
+        "wine-10-1",
+        "Limestone-linked descriptions often include:",
+        ["Lifted acidity and chalky impression", "Low acid and jam only", "No minerality ever", "Heavy sweetness"],
+        0,
+        "Chalky/mineral impressions are common language around limestone sites."
+      ),
+      choice(
+        "wine-10-2",
+        "Volcanic soils are often discussed with:",
+        ["Smoky/mineral tension descriptors", "Automatic sweetness", "No structural impact", "Always low acidity"],
+        0,
+        "Volcanic sites are often linked with smoky/mineral narratives."
+      ),
+      choice(
+        "wine-10-3",
+        "Water-retentive clay can support:",
+        ["Steady vine hydration in dry periods", "Permanent high acidity only", "Zero canopy growth", "No flavor development"],
+        0,
+        "Clay can hold water and buffer drought stress."
+      ),
+      order(
+        "wine-10-4",
+        "Order evidence evaluation for site clues.",
+        ["Assess structure", "Assess aromatic accent", "Cross-check climate profile", "Propose terroir hypothesis"],
+        ["Assess structure", "Assess aromatic accent", "Cross-check climate profile", "Propose terroir hypothesis"],
+        "Blend structure and aroma evidence before final hypothesis."
+      )
+    ]
+  },
+  {
+    id: "wine-11",
+    unit: 3,
+    realm: "Terroir Peaks",
+    title: "Region Snapshot Runs",
+    tag: "Structure",
+    mission: "Challenge",
+    difficulty: 3,
+    mentor: "sippy",
+    subtitle: "Rapidly pair regions with signature style cues.",
+    xpBonus: 34,
+    exercises: [
+      choice(
+        "wine-11-1",
+        "Classic Sancerre benchmark:",
+        ["High-acid Sauvignon Blanc", "Sweet late-harvest Syrah", "Full-bodied oaked Merlot", "Fortified Muscat"],
+        0,
+        "Sancerre is classically tied to Sauvignon Blanc."
+      ),
+      choice(
+        "wine-11-2",
+        "Barolo is based on:",
+        ["Nebbiolo", "Tempranillo", "Pinot Grigio", "Zinfandel"],
+        0,
+        "Barolo is a Nebbiolo appellation."
+      ),
+      choice(
+        "wine-11-3",
+        "Chablis is associated with:",
+        ["Unoaked or lightly oaked Chardonnay style", "Heavy sweet red blend", "Fortified oxidative style", "Aromatic Gewurztraminer"],
+        0,
+        "Chablis is Chardonnay with a typically crisp profile."
+      ),
+      order(
+        "wine-11-4",
+        "Order this region-memory routine.",
+        ["Recall grape", "Recall climate signature", "Recall structure profile", "State likely region family"],
+        ["Recall grape", "Recall climate signature", "Recall structure profile", "State likely region family"],
+        "Memory anchors are strongest when tied to structure."
+      )
+    ]
+  },
+  {
+    id: "wine-12",
+    unit: 3,
+    realm: "Terroir Peaks",
+    title: "Blind Grid Sprint",
+    tag: "Service",
+    mission: "Boss",
+    difficulty: 4,
+    mentor: "roma",
+    subtitle: "Boss round: complete a full blind-style deduction pipeline.",
+    xpBonus: 38,
+    exercises: [
+      choice(
+        "wine-12-1",
+        "Best first move in blind tasting:",
+        ["Assess structural markers before naming region", "Guess producer", "Guess price", "Check capsule shape"],
+        0,
+        "Start with objective structure and sensory facts."
+      ),
+      order(
+        "wine-12-2",
+        "Order the deduction grid.",
+        ["Sight", "Nose", "Palate", "Conclusion"],
+        ["Sight", "Nose", "Palate", "Conclusion"],
+        "This sequence keeps evaluations consistent and defensible."
+      ),
+      choice(
+        "wine-12-3",
+        "If acidity and tannin conflict with your initial guess, you should:",
+        ["Revisit conclusion and update it", "Ignore and submit quickly", "Assume glassware error", "Skip structure"],
+        0,
+        "Revision is part of good blind tasting discipline."
+      ),
+      choice(
+        "wine-12-4",
+        "Strong blind conclusion language should be:",
+        ["Probabilistic and evidence-based", "Absolute with no support", "Only poetic", "Single aroma only"],
+        0,
+        "Use confidence bands and evidence, not over-claims."
+      )
+    ]
+  },
+  {
+    id: "wine-13",
+    unit: 4,
+    realm: "Cellar Citadel",
+    title: "Oak and Vessel Lab",
+    tag: "Foundations",
+    mission: "Scout",
+    difficulty: 3,
+    mentor: "sippy",
+    subtitle: "Compare oak formats and neutral vessels for style outcomes.",
+    xpBonus: 34,
+    exercises: [
+      choice(
+        "wine-13-1",
+        "New small oak often increases:",
+        ["Aromatic and tannin impact", "Residual sugar", "Bottle pressure", "Acidity directly"],
+        0,
+        "Smaller new oak boosts surface contact and flavor impact."
+      ),
+      choice(
+        "wine-13-2",
+        "Neutral vessel aging tends to emphasize:",
+        ["Fruit purity and site expression", "Heavy vanilla tones", "Stronger oak lactones", "Intentional oxidation only"],
+        0,
+        "Neutral vessels reduce overt oak signature."
+      ),
+      choice(
+        "wine-13-3",
+        "Lees stirring can contribute:",
+        ["Texture and creamy mouthfeel", "Tannin extraction", "Carbonation", "Alcohol reduction"],
+        0,
+        "Lees work is often tied to textural gain."
+      ),
+      order(
+        "wine-13-4",
+        "Order oak influence from lowest to highest.",
+        ["Stainless steel", "Old large oak", "New small oak"],
+        ["Stainless steel", "Old large oak", "New small oak"],
+        "This is a useful quick-reference hierarchy."
+      )
+    ]
+  },
+  {
+    id: "wine-14",
+    unit: 4,
+    realm: "Cellar Citadel",
+    title: "Pairing Physics",
+    tag: "Aromas",
+    mission: "Scout",
+    difficulty: 3,
+    mentor: "roma",
+    subtitle: "Match intensity, acidity, and texture to food structure.",
+    xpBonus: 36,
+    exercises: [
+      choice(
+        "wine-14-1",
+        "High-acid wine often pairs well with rich food because it:",
+        ["Cuts through fat and refreshes palate", "Adds bitterness", "Removes aroma", "Always tastes sweet"],
+        0,
+        "Acidity adds contrast and lift against richness."
+      ),
+      choice(
+        "wine-14-2",
+        "Spicy food is often safer with:",
+        ["Lower alcohol and some fruit sweetness", "High tannin only", "Very oaky dry reds", "Oxidized old wine"],
+        0,
+        "Heat can be amplified by high alcohol and harsh tannin."
+      ),
+      choice(
+        "wine-14-3",
+        "Delicate fish usually needs:",
+        ["Lighter-bodied wine with clean profile", "Big tannic red", "Fortified sweet wine", "High-toast oak bomb"],
+        0,
+        "Delicate dishes call for balanced, lighter pairings."
+      ),
+      order(
+        "wine-14-4",
+        "Order pairing checks before recommending.",
+        ["Assess dish intensity", "Assess dominant taste", "Match or contrast structure", "Offer final pair"],
+        ["Assess dish intensity", "Assess dominant taste", "Match or contrast structure", "Offer final pair"],
+        "This flow keeps pairings both strategic and guest-friendly."
+      )
+    ]
+  },
+  {
+    id: "wine-15",
+    unit: 4,
+    realm: "Cellar Citadel",
+    title: "Fault Finder",
+    tag: "Structure",
+    mission: "Challenge",
+    difficulty: 4,
+    mentor: "sippy",
+    subtitle: "Diagnose common wine faults versus stylistic variation.",
+    xpBonus: 40,
+    exercises: [
+      choice(
+        "wine-15-1",
+        "Wet cardboard / musty aroma often indicates:",
+        ["Cork taint (TCA)", "Healthy bottle age", "New oak", "Carbonic maceration"],
+        0,
+        "TCA is classically described as musty/cardboard."
+      ),
+      choice(
+        "wine-15-2",
+        "Nail polish remover character points to:",
+        ["Volatile acidity at excessive level", "Normal primary fruit", "Lees aging", "Cold stabilization"],
+        0,
+        "Excess VA can smell like acetone/nail polish."
+      ),
+      choice(
+        "wine-15-3",
+        "Rotten egg or struck match can suggest:",
+        ["Sulfur-related reduction", "High residual sugar", "Botrytis", "Malolactic completion"],
+        0,
+        "Reduction can present sulfur-like notes."
+      ),
+      order(
+        "wine-15-4",
+        "Order fault triage protocol.",
+        ["Confirm aroma repeatedly", "Compare against style expectations", "Decide fault vs style", "Take service action"],
+        ["Confirm aroma repeatedly", "Compare against style expectations", "Decide fault vs style", "Take service action"],
+        "Diagnosis should be verified before service decisions."
+      )
+    ]
+  },
+  {
+    id: "wine-16",
+    unit: 4,
+    realm: "Cellar Citadel",
+    title: "Citadel Table Boss",
+    tag: "Service",
+    mission: "Boss",
+    difficulty: 4,
+    mentor: "roma",
+    subtitle: "Boss round: navigate pairings, faults, and guest communication.",
+    xpBonus: 44,
+    exercises: [
+      choice(
+        "wine-16-1",
+        "A guest says wine seems corked. First response:",
+        ["Acknowledge and reassess the bottle professionally", "Argue and refuse", "Top up the glass", "Ignore and continue"],
+        0,
+        "Professional acknowledgment and verification protect guest trust."
+      ),
+      choice(
+        "wine-16-2",
+        "Best pairing move when dish has high acid (tomato/lemon):",
+        ["Choose wine with equal or higher acidity", "Choose very low-acid wine", "Pick highest tannin possible", "Only serve sweet wine"],
+        0,
+        "Wine acidity should keep pace with acidic food."
+      ),
+      order(
+        "wine-16-3",
+        "Order a smooth recovery sequence after bottle issue.",
+        ["Apologize and remove bottle", "Confirm replacement preference", "Present replacement", "Resume service"],
+        ["Apologize and remove bottle", "Confirm replacement preference", "Present replacement", "Resume service"],
+        "Clear communication and clean execution recover confidence."
+      ),
+      choice(
+        "wine-16-4",
+        "If a wine is too warm, first fix is usually:",
+        ["Controlled cooling before service", "Aggressive decant only", "Add ice to glass", "Ignore temperature"],
+        0,
+        "Temperature correction is part of quality service."
+      )
+    ]
+  },
+  {
+    id: "wine-17",
+    unit: 5,
+    realm: "Grand Sommelier Arena",
+    title: "Sparkling Systems",
+    tag: "Foundations",
+    mission: "Scout",
+    difficulty: 4,
+    mentor: "sippy",
+    subtitle: "Master sparkling production pathways and style outcomes.",
+    xpBonus: 42,
+    exercises: [
+      choice(
+        "wine-17-1",
+        "Traditional method secondary fermentation happens:",
+        ["In bottle", "In open vat", "In amphora only", "After bottling for still wine"],
+        0,
+        "Traditional method ferments again in bottle."
+      ),
+      choice(
+        "wine-17-2",
+        "Charmat method secondary fermentation is usually:",
+        ["In tank", "In each bottle", "In cask", "Skipped entirely"],
+        0,
+        "Tank fermentation defines Charmat."
+      ),
+      choice(
+        "wine-17-3",
+        "Lees contact in sparkling often adds:",
+        ["Brioche/toast texture and aroma", "Tannin", "Higher sweetness by default", "Lower pressure"],
+        0,
+        "Autolysis can add pastry-like notes and texture."
+      ),
+      order(
+        "wine-17-4",
+        "Order key traditional-method stages.",
+        ["Base wine", "Second fermentation", "Aging on lees", "Disgorgement"],
+        ["Base wine", "Second fermentation", "Aging on lees", "Disgorgement"],
+        "This sequence captures the core production arc."
+      )
+    ]
+  },
+  {
+    id: "wine-18",
+    unit: 5,
+    realm: "Grand Sommelier Arena",
+    title: "Fortified and Sweet",
+    tag: "Aromas",
+    mission: "Scout",
+    difficulty: 4,
+    mentor: "roma",
+    subtitle: "Decode sweetness balance, fortification timing, and aromatic cues.",
+    xpBonus: 44,
+    exercises: [
+      choice(
+        "wine-18-1",
+        "Fortification means:",
+        ["Adding spirit to wine", "Adding sugar after bottling only", "Carbonating", "Diluting with water"],
+        0,
+        "Fortification is the addition of spirit."
+      ),
+      choice(
+        "wine-18-2",
+        "Stopping fermentation early generally leaves:",
+        ["More residual sugar", "More tannin", "Less alcohol always", "No aroma"],
+        0,
+        "Sugar remains when fermentation is arrested early."
+      ),
+      choice(
+        "wine-18-3",
+        "A balanced sweet wine usually requires:",
+        ["Acidity to offset sweetness", "No acidity", "High tannin only", "Heavy oak only"],
+        0,
+        "Acidity keeps sweetness from feeling cloying."
+      ),
+      order(
+        "wine-18-4",
+        "Order dessert pairing logic.",
+        ["Assess dessert sweetness", "Ensure wine is equally sweet or sweeter", "Check acid balance", "Serve in small pour"],
+        ["Assess dessert sweetness", "Ensure wine is equally sweet or sweeter", "Check acid balance", "Serve in small pour"],
+        "Sweet pairing works best when sweetness and freshness are balanced."
+      )
+    ]
+  },
+  {
+    id: "wine-19",
+    unit: 5,
+    realm: "Grand Sommelier Arena",
+    title: "Exam Strategy Run",
+    tag: "Structure",
+    mission: "Challenge",
+    difficulty: 5,
+    mentor: "sippy",
+    subtitle: "Optimize pacing, confidence language, and scoring discipline.",
+    xpBonus: 46,
+    exercises: [
+      choice(
+        "wine-19-1",
+        "Best way to avoid over-calling in blind tasting:",
+        ["State likely range with evidence", "Always claim exact producer", "Ignore structure", "Answer as fast as possible"],
+        0,
+        "Evidence-based ranges are stronger than unsupported certainty."
+      ),
+      choice(
+        "wine-19-2",
+        "When uncertain between two regions, strongest move is:",
+        ["Pick one and justify with structural clues", "Leave blank", "Guess grape first then ignore clues", "Switch randomly"],
+        0,
+        "Defensible logic can earn points even with partial uncertainty."
+      ),
+      choice(
+        "wine-19-3",
+        "Time management in service practical favors:",
+        ["Consistent routine over rushed improvisation", "Maximum speed only", "Skipping confirmation", "Silent service with no communication"],
+        0,
+        "Consistent routines reduce errors under pressure."
+      ),
+      order(
+        "wine-19-4",
+        "Order exam response protocol.",
+        ["Gather evidence", "Form hypothesis", "Stress-test hypothesis", "Deliver concise conclusion"],
+        ["Gather evidence", "Form hypothesis", "Stress-test hypothesis", "Deliver concise conclusion"],
+        "A structured response is clear, fast, and score-friendly."
+      )
+    ]
+  },
+  {
+    id: "wine-20",
+    unit: 5,
+    realm: "Grand Sommelier Arena",
+    title: "Sippy and Roma Final",
+    tag: "Service",
+    mission: "Boss",
+    difficulty: 5,
+    mentor: "roma",
+    subtitle: "Final boss: full-spectrum tasting, pairing, and service execution.",
+    xpBonus: 56,
+    exercises: [
+      choice(
+        "wine-20-1",
+        "Final table asks for one red and one white by-the-glass with food. First move:",
+        ["Clarify flavor, body, and price preferences", "Pour house default immediately", "Pick most expensive options", "Offer only one style"],
+        0,
+        "Clarification enables accurate and confident recommendations."
+      ),
+      order(
+        "wine-20-2",
+        "Order the final decision chain.",
+        ["Assess guest goal", "Choose style options", "Confirm serving details", "Execute polished service"],
+        ["Assess guest goal", "Choose style options", "Confirm serving details", "Execute polished service"],
+        "Great service blends diagnosis, recommendation, and execution."
+      ),
+      choice(
+        "wine-20-3",
+        "In blind analysis, if aroma says ripe but acid is high, best interpretation is:",
+        ["Reconcile both clues before concluding", "Ignore acid", "Ignore aroma", "Assume faulty wine"],
+        0,
+        "Conflicting clues should be integrated, not ignored."
+      ),
+      choice(
+        "wine-20-4",
+        "Best closing behavior after successful service:",
+        ["Check guest satisfaction and re-engage naturally", "Leave immediately", "Upsell aggressively without cues", "Clear glasses too early"],
+        0,
+        "Follow-up reinforces hospitality and professionalism."
+      )
     ]
   }
 ];
@@ -233,6 +1006,53 @@ const MENTOR_VARIANTS: Record<MentorId, Record<MentorMood, string>> = {
     coach: romaCoach,
     spark: romaSpark,
     celebrate: romaCelebrate
+  }
+};
+
+const REALM_MEDIA: Record<
+  number,
+  {
+    poster: string;
+    sippy: string;
+    roma: string;
+    trailer: string;
+    cue: string;
+  }
+> = {
+  1: {
+    poster: sippyCalm,
+    sippy: sippyCoach,
+    roma: romaCalm,
+    trailer: "4s intro loop",
+    cue: "Crystal reflections and confident first pours as the academy gates open."
+  },
+  2: {
+    poster: romaSpark,
+    sippy: sippySpark,
+    roma: romaCoach,
+    trailer: "8s varietal chase",
+    cue: "Fast aromatic clue-hunting through the Varietal Wilds."
+  },
+  3: {
+    poster: sippySpark,
+    sippy: sippyCoach,
+    roma: romaSpark,
+    trailer: "8s summit reveal",
+    cue: "High-altitude terroir scans with structural deduction overlays."
+  },
+  4: {
+    poster: romaCoach,
+    sippy: sippyCalm,
+    roma: romaCoach,
+    trailer: "8s table-side boss prelude",
+    cue: "Citadel service pressure with elegant recovery choreography."
+  },
+  5: {
+    poster: romaCelebrate,
+    sippy: sippyCelebrate,
+    roma: romaCelebrate,
+    trailer: "12s final arena cinematic",
+    cue: "Grand arena finale where Sippy and Roma co-lead the capstone run."
   }
 };
 
@@ -319,6 +1139,32 @@ function tagClass(tag: LessonTag) {
   return "service";
 }
 
+function missionClass(mission: Lesson["mission"]) {
+  if (mission === "Scout") return "scout";
+  if (mission === "Challenge") return "challenge";
+  return "boss";
+}
+
+function missionLabel(mission: Lesson["mission"]) {
+  if (mission === "Scout") return "Scout";
+  if (mission === "Challenge") return "Challenge";
+  return "Boss";
+}
+
+function summaryRank(accuracy: number, passed: boolean) {
+  if (!passed) return "Retry";
+  if (accuracy >= 1) return "S";
+  if (accuracy >= 0.9) return "A";
+  if (accuracy >= 0.8) return "B";
+  return "C";
+}
+
+function lessonPortrait(lesson: Lesson) {
+  if (lesson.mission === "Boss") return MENTOR_VARIANTS[lesson.mentor].spark;
+  if (lesson.mission === "Challenge") return MENTOR_VARIANTS[lesson.mentor].coach;
+  return MENTOR_VARIANTS[lesson.mentor].calm;
+}
+
 export function SipAcademyWineLessons() {
   const [progress, setProgress] = useState<AcademyProgress>(() => parseProgress(window.localStorage.getItem(STORAGE_KEY)));
   const [voiceMode, setVoiceMode] = useState<MentorVoiceMode>(() => {
@@ -368,6 +1214,26 @@ export function SipAcademyWineLessons() {
   const completedCount = LESSONS.filter((lesson) => (progress.lessons[lesson.id]?.completions ?? 0) > 0).length;
   const masteryTotal = LESSONS.reduce((sum, lesson) => sum + (progress.lessons[lesson.id]?.mastery ?? 0), 0);
   const completionRatio = LESSONS.length > 0 ? completedCount / LESSONS.length : 0;
+  const nextLesson =
+    LESSONS.find((lesson) => {
+      const lessonProgress = progress.lessons[lesson.id];
+      return (lessonProgress?.unlocked ?? false) && (lessonProgress?.completions ?? 0) === 0;
+    }) ??
+    LESSONS.find((lesson) => progress.lessons[lesson.id]?.unlocked) ??
+    LESSONS[0];
+  const realmProgress = REALMS.map((realm) => {
+    const lessons = LESSONS.filter((lesson) => lesson.unit === realm.unit);
+    const completed = lessons.filter((lesson) => (progress.lessons[lesson.id]?.completions ?? 0) > 0).length;
+    const unlocked = lessons.filter((lesson) => progress.lessons[lesson.id]?.unlocked).length;
+    const boss = lessons.find((lesson) => lesson.id === realm.bossLessonId) ?? lessons[lessons.length - 1];
+    const bossCleared = boss ? (progress.lessons[boss.id]?.completions ?? 0) > 0 : false;
+    const ratio = lessons.length > 0 ? completed / lessons.length : 0;
+    return { ...realm, lessons, completed, unlocked, boss, bossCleared, ratio };
+  });
+  const summaryLesson = summary ? LESSONS.find((lesson) => lesson.id === summary.lessonId) ?? null : null;
+  const highlightedRealmUnit = activeLesson?.unit ?? summaryLesson?.unit ?? nextLesson.unit;
+  const highlightedRealm = realmProgress.find((realm) => realm.unit === highlightedRealmUnit) ?? realmProgress[0];
+  const activeRealmMedia = REALM_MEDIA[highlightedRealm?.unit ?? 1] ?? REALM_MEDIA[1];
   const lowHearts = activeLesson ? hearts <= 2 : false;
 
   const prepareExercise = (lesson: Lesson, index: number) => {
@@ -472,7 +1338,8 @@ export function SipAcademyWineLessons() {
       total,
       accuracy,
       xp,
-      bestCombo
+      bestCombo,
+      heartsLeft: heartsAfter
     });
     if (passed && nextId && nextWasLocked) {
       const nextLesson = LESSONS.find((item) => item.id === nextId);
@@ -528,21 +1395,22 @@ export function SipAcademyWineLessons() {
         : "Select the strongest option and commit. Fast, clean, confident.";
     };
 
+    const summaryLesson = summary ? LESSONS.find((lesson) => lesson.id === summary.lessonId) ?? null : null;
     const lessonMentor: MentorId =
-      activeLesson && (activeLesson.tag === "Aromas" || activeLesson.tag === "Service") ? "roma" : "sippy";
+      activeLesson?.mentor ?? summaryLesson?.mentor ?? (activeLesson && (activeLesson.tag === "Aromas" || activeLesson.tag === "Service") ? "roma" : "sippy");
     const supportMentor: MentorId = lessonMentor === "roma" ? "sippy" : "roma";
 
     if (summary) {
       if (summary.passed) {
         return {
-          speaker: "roma" as MentorId,
+          speaker: lessonMentor,
           mood: "celebrate" as MentorMood,
           expression: "celebrate" as MentorMood,
           line: lineByMode("celebrate", lessonMentor)
         };
       }
       return {
-        speaker: "sippy" as MentorId,
+        speaker: supportMentor,
         mood: "coach" as MentorMood,
         expression: "coach" as MentorMood,
         line: lineByMode("coach", lessonMentor)
@@ -615,9 +1483,18 @@ export function SipAcademyWineLessons() {
     >
       <header className="academy-game-header">
         <div>
-          <p className="academy-kicker">Sip Academy Reserve</p>
-          <h2>Wine Atlas Lessons</h2>
-          <p>Luxury-focused micro lessons that make wine fundamentals playful, elegant, and easy to retain.</p>
+          <p className="academy-kicker">Sip Academy Adventure Mode</p>
+          <h2>Sippy and Roma: Wine Quest Campaign</h2>
+          <p>Twenty guided missions across five realms. Build tasting skill trees, clear boss rounds, and level your service game.</p>
+        </div>
+        <div className="academy-campaign-spotlight">
+          <p className="academy-campaign-kicker">Next Quest</p>
+          <h3>
+            Unit {nextLesson.unit}: {nextLesson.title}
+          </h3>
+          <p>
+            {nextLesson.realm} - {missionLabel(nextLesson.mission)} mission with {MENTORS[nextLesson.mentor].name}. Difficulty {nextLesson.difficulty}/5.
+          </p>
         </div>
         <div className="academy-level-band">
           <div>
@@ -655,6 +1532,56 @@ export function SipAcademyWineLessons() {
         </div>
       </header>
 
+      <section className="academy-realms" aria-label="Sip Academy realm map">
+        {realmProgress.map((realm) => (
+          <article
+            key={realm.unit}
+            className={`academy-realm-card ${highlightedRealm?.unit === realm.unit ? "active" : ""}`}
+            aria-label={`Unit ${realm.unit} ${realm.title}`}
+          >
+            <div className="academy-realm-head">
+              <p>Unit {realm.unit}</p>
+              <span>{realm.completed}/{realm.lessons.length} cleared</span>
+            </div>
+            <h3>{realm.title}</h3>
+            <p>{realm.lore}</p>
+            <div className="academy-realm-meter" aria-hidden="true">
+              <div className="academy-realm-meter-value" style={{ width: `${Math.round(realm.ratio * 100)}%` }} />
+            </div>
+            <div className="academy-realm-foot">
+              <small>Unlocked {realm.unlocked}/{realm.lessons.length}</small>
+              <small className={`academy-realm-boss ${realm.bossCleared ? "cleared" : ""}`}>
+                Boss {realm.bossCleared ? "Cleared" : "Pending"}
+              </small>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <section className="academy-cinematic" aria-label="Active realm cinematic preview">
+        <div className="academy-cinematic-stage">
+          <img
+            className="academy-cinematic-poster"
+            src={activeRealmMedia.poster}
+            alt={`${highlightedRealm?.title ?? "Sip Academy"} cinematic poster`}
+            loading="lazy"
+            decoding="async"
+          />
+          <img className="academy-cinematic-guide academy-cinematic-sippy" src={activeRealmMedia.sippy} alt="" loading="lazy" decoding="async" />
+          <img className="academy-cinematic-guide academy-cinematic-roma" src={activeRealmMedia.roma} alt="" loading="lazy" decoding="async" />
+        </div>
+        <div className="academy-cinematic-meta">
+          <p className="academy-campaign-kicker">Realm Cinematic</p>
+          <h3>{highlightedRealm?.title ?? "Sip Academy Realm"}</h3>
+          <p>{activeRealmMedia.cue}</p>
+          <div className="academy-cinematic-tags">
+            <span>{activeRealmMedia.trailer}</span>
+            <span>Image prompt deck ready</span>
+            <span>Sora prompt deck ready</span>
+          </div>
+        </div>
+      </section>
+
       <section className="academy-mentors" aria-label="Sippy and Roma lesson guidance">
         <article className={`academy-mentor-card ${guideState.speaker === "sippy" ? "active" : ""}`}>
           <div className="academy-mentor-portrait-wrap">
@@ -684,10 +1611,19 @@ export function SipAcademyWineLessons() {
 
       <div className="academy-game-layout">
         <aside className="academy-path">
-          <h3>Wine Path</h3>
-          <p>{completedCount}/{LESSONS.length} lessons completed</p>
+          <h3>Campaign Path</h3>
+          <p>
+            {completedCount}/{LESSONS.length} missions cleared - Active realm: {highlightedRealm?.title ?? "Crystal Atrium"}
+          </p>
           <div className="academy-path-track" aria-hidden="true">
             <div className="academy-path-track-value" style={{ width: `${Math.round(completionRatio * 100)}%` }} />
+          </div>
+          <div className="academy-quest-log">
+            <p className="academy-quest-kicker">Quest Log</p>
+            <strong>{nextLesson.title}</strong>
+            <small>
+              {nextLesson.realm} - {missionLabel(nextLesson.mission)} - Mentor {MENTORS[nextLesson.mentor].name}
+            </small>
           </div>
           <div className="academy-path-list">
             {LESSONS.map((lesson) => {
@@ -707,7 +1643,15 @@ export function SipAcademyWineLessons() {
                 >
                   <div className="academy-node-top">
                     <span className="academy-node-unit">Unit {lesson.unit}</span>
+                    <span className={`academy-mission academy-mission-${missionClass(lesson.mission)}`}>{missionLabel(lesson.mission)}</span>
+                  </div>
+                  <div className="academy-node-top">
                     <span className={`academy-tag academy-tag-${tagClass(lesson.tag)}`}>{lesson.tag}</span>
+                    <span className="academy-node-difficulty">Difficulty {lesson.difficulty}/5</span>
+                  </div>
+                  <div className="academy-node-art">
+                    <img src={lessonPortrait(lesson)} alt="" loading="lazy" decoding="async" />
+                    <small>Mentor {MENTORS[lesson.mentor].name}</small>
                   </div>
                   <strong>{lesson.title}</strong>
                   <small>{lesson.subtitle}</small>
@@ -726,11 +1670,15 @@ export function SipAcademyWineLessons() {
           {activeLesson && activeExercise ? (
             <>
               <div className="academy-session-head">
-                <p className="academy-round-kicker">Reserve Round</p>
+                <p className="academy-round-kicker">
+                  {activeLesson.realm} - {missionLabel(activeLesson.mission)} Mission
+                </p>
                 <h3>{activeLesson.title}</h3>
                 <div className="academy-session-metrics">
                   <span className="academy-session-chip">Question {exerciseIndex + 1}/{activeLesson.exercises.length}</span>
                   <span className="academy-session-chip">Combo {combo}</span>
+                  <span className="academy-session-chip">Mentor {MENTORS[activeLesson.mentor].name}</span>
+                  <span className="academy-session-chip">Difficulty {activeLesson.difficulty}/5</span>
                   <span className={`academy-session-chip academy-session-chip-hearts${lowHearts ? " is-danger" : ""}`}>
                     Hearts {hearts}
                   </span>
@@ -810,10 +1758,12 @@ export function SipAcademyWineLessons() {
               <h3>{summary.lessonTitle}</h3>
               <p>{summary.passed ? "Lesson cleared and next node unlocked." : "Lesson not cleared yet. Practice again."}</p>
               <div className="academy-summary-grid">
+                <span>Rank {summaryRank(summary.accuracy, summary.passed)}</span>
                 <span>Score {summary.correct}/{summary.total}</span>
                 <span>Accuracy {Math.round(summary.accuracy * 100)}%</span>
                 <span>XP +{summary.xp}</span>
                 <span>Best Combo {summary.bestCombo}</span>
+                <span>Hearts Left {summary.heartsLeft}</span>
               </div>
               <div className="academy-actions">
                 <button type="button" className="btn btn-primary" onClick={() => startLesson(summary.lessonId)}>Practice Again</button>
@@ -822,13 +1772,22 @@ export function SipAcademyWineLessons() {
             </div>
           ) : (
             <div className="academy-idle">
-              <h3>Start Wine Lessons</h3>
-              <p>Pick an unlocked lesson from the path. Pass at 70% accuracy before hearts run out.</p>
+              <h3>Launch Your Next Mission</h3>
+              <p>Pick an unlocked node from the campaign path. Pass at 70% accuracy before hearts run out.</p>
               <ul>
-                <li>Short rounds with instant feedback.</li>
-                <li>Elegant mastery progression for each lesson node.</li>
-                <li>Daily streak and XP rewards to keep momentum.</li>
+                <li>20 lessons across 5 realms with Scout, Challenge, and Boss missions.</li>
+                <li>Sippy and Roma adapt guidance style in classic, tactical, or story voice.</li>
+                <li>Stack combo bonuses, preserve hearts, and clear bosses to complete each realm.</li>
               </ul>
+              <div className="academy-idle-next">
+                <p className="academy-quest-kicker">Recommended Next Mission</p>
+                <strong>
+                  Unit {nextLesson.unit}: {nextLesson.title}
+                </strong>
+                <small>
+                  {nextLesson.realm} - {missionLabel(nextLesson.mission)} - Mentor {MENTORS[nextLesson.mentor].name}
+                </small>
+              </div>
             </div>
           )}
         </article>
@@ -854,3 +1813,4 @@ export function SipAcademyWineLessons() {
     </section>
   );
 }
+
