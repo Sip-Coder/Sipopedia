@@ -47,7 +47,6 @@ export function Terminology() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState("");
   const [refreshTick, setRefreshTick] = useState(0);
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -137,16 +136,9 @@ export function Terminology() {
   }, []);
 
   const topImportant = pageSizeMode === "TOP_100";
-  const advancedFiltersActive = bucket !== "ALL" || pageSizeMode !== "TOP_100";
   const topAllByLetter = topImportant && bucket === "ALL";
   const effectivePageSize = topAllByLetter ? 104 : topImportant ? 100 : Number(pageSizeMode);
   const pageCount = useMemo(() => Math.max(1, Math.ceil(total / effectivePageSize)), [effectivePageSize, total]);
-
-  useEffect(() => {
-    if (advancedFiltersActive) {
-      setShowAdvancedFilters(true);
-    }
-  }, [advancedFiltersActive]);
 
   const handlePrevious = () => {
     setPage((value) => Math.max(0, value - 1));
@@ -160,6 +152,26 @@ export function Terminology() {
     }
     setPage((value) => Math.min(pageCount - 1, value + 1));
   };
+
+  const renderPagination = (className?: string) => (
+    <div className={`terminology-pagination${className ? ` ${className}` : ""}`}>
+      <button className="btn btn-light" onClick={handlePrevious} disabled={topImportant || page === 0}>
+        Previous
+      </button>
+      <span className="pagination-sep" aria-hidden="true">
+        |
+      </span>
+      <span>
+        Page {page + 1} of {pageCount} ({total.toLocaleString()} terms)
+      </span>
+      <span className="pagination-sep" aria-hidden="true">
+        |
+      </span>
+      <button className="btn btn-light" onClick={handleNext} disabled={topImportant ? false : page >= pageCount - 1}>
+        Next
+      </button>
+    </div>
+  );
 
   return (
     <section className="terminology">
@@ -208,63 +220,45 @@ export function Terminology() {
             </div>
           </div>
 
-          <div className="terminology-quick-start">
-            <p>Start with search. Open advanced filters only when you need tighter control.</p>
-            <button
-              type="button"
-              className="btn btn-light terminology-advanced-toggle"
-              onClick={() => setShowAdvancedFilters((value) => !value)}
-              aria-expanded={showAdvancedFilters}
+          <div className="terminology-controls">
+            <label htmlFor="term-page-size">Terms per page</label>
+            <select
+              id="term-page-size"
+              value={pageSizeMode}
+              onChange={(event) => {
+                setPageSizeMode(event.target.value as PageSizeMode);
+                setPage(0);
+              }}
             >
-              {showAdvancedFilters ? "Hide Advanced Filters" : "Show Advanced Filters"}
-            </button>
+              {pageSizeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {showAdvancedFilters ? (
-            <>
-              <div className="terminology-controls">
-                <label htmlFor="term-page-size">Terms per page</label>
-                <select
-                  id="term-page-size"
-                  value={pageSizeMode}
-                  onChange={(event) => {
-                    setPageSizeMode(event.target.value as PageSizeMode);
-                    setPage(0);
-                  }}
-                >
-                  {pageSizeOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="terminology-bucket-grid" role="tablist" aria-label="Term buckets">
-                {buckets.map((item) => (
-                  <button
-                    key={item}
-                    role="tab"
-                    aria-selected={item === bucket}
-                    className={`bucket-pill terminology-bucket-pill ${item === bucket ? "active" : ""}`}
-                    onClick={() => {
-                      setBucket(item);
-                      setPage(0);
-                    }}
-                  >
-                    {item === "ALL" ? "All" : item}
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : (
-            <p className="hint terminology-filter-summary">
-              Default view: Top 100 curated terms across all letters. Search remains active.
-            </p>
-          )}
+          <div className="terminology-bucket-grid" role="tablist" aria-label="Term buckets">
+            {buckets.map((item) => (
+              <button
+                key={item}
+                role="tab"
+                aria-selected={item === bucket}
+                className={`bucket-pill terminology-bucket-pill ${item === bucket ? "active" : ""}`}
+                onClick={() => {
+                  setBucket(item);
+                  setPage(0);
+                }}
+              >
+                {item === "ALL" ? "All" : item}
+              </button>
+            ))}
+          </div>
         </aside>
 
         <div className="terminology-main">
+          {renderPagination("terminology-pagination-top")}
+
           <div className="terminology-list">
             {loading ? <p>Loading terms...</p> : null}
             {error ? <p className="error">{error}</p> : null}
@@ -282,27 +276,7 @@ export function Terminology() {
               : null}
           </div>
 
-          <div className="terminology-pagination">
-            <button className="btn btn-light" onClick={handlePrevious} disabled={topImportant || page === 0}>
-              Previous
-            </button>
-            <span className="pagination-sep" aria-hidden="true">
-              |
-            </span>
-            <span>
-              Page {page + 1} of {pageCount} ({total.toLocaleString()} terms)
-            </span>
-            <span className="pagination-sep" aria-hidden="true">
-              |
-            </span>
-            <button
-              className="btn btn-light"
-              onClick={handleNext}
-              disabled={topImportant ? false : page >= pageCount - 1}
-            >
-              Next
-            </button>
-          </div>
+          {renderPagination()}
         </div>
       </div>
 

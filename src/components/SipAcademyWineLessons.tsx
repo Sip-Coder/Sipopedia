@@ -1,15 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import romaCalm from "../assets/brand/characters/variants/roma-calm-opt.webp";
-import romaCelebrate from "../assets/brand/characters/variants/roma-celebrate-opt.webp";
-import romaCoach from "../assets/brand/characters/variants/roma-coach-opt.webp";
-import romaSpark from "../assets/brand/characters/variants/roma-spark-opt.webp";
-import sippyCalm from "../assets/brand/characters/variants/sippy-calm-opt.webp";
-import sippyCelebrate from "../assets/brand/characters/variants/sippy-celebrate-opt.webp";
-import sippyCoach from "../assets/brand/characters/variants/sippy-coach-opt.webp";
-import sippySpark from "../assets/brand/characters/variants/sippy-spark-opt.webp";
 
 type LessonTag = "Foundations" | "Aromas" | "Structure" | "Service";
-type MentorId = "sippy" | "roma";
+type MentorId = "sippy" | "roma" | "hummin";
 type MentorMood = "calm" | "coach" | "spark" | "celebrate";
 type MentorVoiceMode = "classic" | "tactical" | "story";
 
@@ -98,6 +90,7 @@ const VOICE_MODE_KEY = "sip-studies:academy:wine:voice-mode:v1";
 const MAX_HEARTS = 5;
 const PASS_TARGET = 0.7;
 const MAX_MASTERY = 5;
+const MENTOR_ROTATION: MentorId[] = ["sippy", "roma", "hummin"];
 
 const REALMS: Realm[] = [
   {
@@ -127,7 +120,7 @@ const REALMS: Realm[] = [
   {
     unit: 5,
     title: "Grand Sommelier Arena",
-    lore: "Final gauntlet with Sippy and Roma guiding every decision chain.",
+    lore: "Final gauntlet with Sippy, Roma, and Hummin guiding every decision chain.",
     bossLessonId: "wine-20"
   }
 ];
@@ -146,7 +139,7 @@ function order(id: string, prompt: string, options: string[], answer: string[], 
   return { id, kind: "order", prompt, options, answer, explanation };
 }
 
-const LESSONS: Lesson[] = [
+const LESSONS: Lesson[] = ([
   {
     id: "wine-1",
     unit: 1,
@@ -949,7 +942,7 @@ const LESSONS: Lesson[] = [
     id: "wine-20",
     unit: 5,
     realm: "Grand Sommelier Arena",
-    title: "Sippy and Roma Final",
+    title: "Sippy, Roma, and Hummin Final",
     tag: "Service",
     mission: "Boss",
     difficulty: 5,
@@ -987,25 +980,41 @@ const LESSONS: Lesson[] = [
       )
     ]
   }
-];
+ ] as Lesson[]).map((lesson, index) => ({
+  ...lesson,
+  mentor: MENTOR_ROTATION[index % MENTOR_ROTATION.length]
+}));
+
+const ACADEMY_GUIDES = {
+  sippy: "/academy/guides/sippy-guide.jpg",
+  roma: "/academy/guides/roma-guide.jpg",
+  hummin: "/academy/guides/hummin-guide.jpg"
+} as const;
 
 const MENTORS: Record<MentorId, { name: string; title: string }> = {
   sippy: { name: "Sippy", title: "Lead Beverage Educator" },
-  roma: { name: "Roma", title: "Senior Sensory Educator" }
+  roma: { name: "Roma", title: "Senior Sensory Educator" },
+  hummin: { name: "Hummin", title: "Enologist & Cellar Master" }
 };
 
 const MENTOR_VARIANTS: Record<MentorId, Record<MentorMood, string>> = {
   sippy: {
-    calm: sippyCalm,
-    coach: sippyCoach,
-    spark: sippySpark,
-    celebrate: sippyCelebrate
+    calm: ACADEMY_GUIDES.sippy,
+    coach: ACADEMY_GUIDES.sippy,
+    spark: ACADEMY_GUIDES.sippy,
+    celebrate: ACADEMY_GUIDES.sippy
   },
   roma: {
-    calm: romaCalm,
-    coach: romaCoach,
-    spark: romaSpark,
-    celebrate: romaCelebrate
+    calm: ACADEMY_GUIDES.roma,
+    coach: ACADEMY_GUIDES.roma,
+    spark: ACADEMY_GUIDES.roma,
+    celebrate: ACADEMY_GUIDES.roma
+  },
+  hummin: {
+    calm: ACADEMY_GUIDES.hummin,
+    coach: ACADEMY_GUIDES.hummin,
+    spark: ACADEMY_GUIDES.hummin,
+    celebrate: ACADEMY_GUIDES.hummin
   }
 };
 
@@ -1015,44 +1024,50 @@ const REALM_MEDIA: Record<
     poster: string;
     sippy: string;
     roma: string;
+    hummin: string;
     trailer: string;
     cue: string;
   }
 > = {
   1: {
-    poster: sippyCalm,
-    sippy: sippyCoach,
-    roma: romaCalm,
-    trailer: "4s intro loop",
+    poster: "/academy/realms/realm-1-crystal-atrium.jpg",
+    sippy: ACADEMY_GUIDES.sippy,
+    roma: ACADEMY_GUIDES.roma,
+    hummin: ACADEMY_GUIDES.hummin,
+    trailer: "Realm key art",
     cue: "Crystal reflections and confident first pours as the academy gates open."
   },
   2: {
-    poster: romaSpark,
-    sippy: sippySpark,
-    roma: romaCoach,
-    trailer: "8s varietal chase",
+    poster: "/academy/realms/realm-2-varietal-wilds.jpg",
+    sippy: ACADEMY_GUIDES.sippy,
+    roma: ACADEMY_GUIDES.roma,
+    hummin: ACADEMY_GUIDES.hummin,
+    trailer: "Realm key art",
     cue: "Fast aromatic clue-hunting through the Varietal Wilds."
   },
   3: {
-    poster: sippySpark,
-    sippy: sippyCoach,
-    roma: romaSpark,
-    trailer: "8s summit reveal",
+    poster: "/academy/realms/realm-3-terroir-peaks.jpg",
+    sippy: ACADEMY_GUIDES.sippy,
+    roma: ACADEMY_GUIDES.roma,
+    hummin: ACADEMY_GUIDES.hummin,
+    trailer: "Realm key art",
     cue: "High-altitude terroir scans with structural deduction overlays."
   },
   4: {
-    poster: romaCoach,
-    sippy: sippyCalm,
-    roma: romaCoach,
-    trailer: "8s table-side boss prelude",
+    poster: "/academy/realms/realm-4-cellar-citadel.jpg",
+    sippy: ACADEMY_GUIDES.sippy,
+    roma: ACADEMY_GUIDES.roma,
+    hummin: ACADEMY_GUIDES.hummin,
+    trailer: "Realm key art",
     cue: "Citadel service pressure with elegant recovery choreography."
   },
   5: {
-    poster: romaCelebrate,
-    sippy: sippyCelebrate,
-    roma: romaCelebrate,
-    trailer: "12s final arena cinematic",
-    cue: "Grand arena finale where Sippy and Roma co-lead the capstone run."
+    poster: "/academy/realms/realm-5-grand-sommelier-arena.jpg",
+    sippy: ACADEMY_GUIDES.sippy,
+    roma: ACADEMY_GUIDES.roma,
+    hummin: ACADEMY_GUIDES.hummin,
+    trailer: "Realm key art",
+    cue: "Grand arena finale where Sippy, Roma, and Hummin co-lead the capstone run."
   }
 };
 
@@ -1165,6 +1180,12 @@ function lessonPortrait(lesson: Lesson) {
   return MENTOR_VARIANTS[lesson.mentor].calm;
 }
 
+function nextMentorInCycle(mentor: MentorId): MentorId {
+  const index = MENTOR_ROTATION.indexOf(mentor);
+  if (index < 0) return MENTOR_ROTATION[0];
+  return MENTOR_ROTATION[(index + 1) % MENTOR_ROTATION.length];
+}
+
 export function SipAcademyWineLessons() {
   const [progress, setProgress] = useState<AcademyProgress>(() => parseProgress(window.localStorage.getItem(STORAGE_KEY)));
   const [voiceMode, setVoiceMode] = useState<MentorVoiceMode>(() => {
@@ -1205,12 +1226,6 @@ export function SipAcademyWineLessons() {
     return () => window.clearTimeout(timer);
   }, [flashUnlockedLessonId]);
 
-  useEffect(() => {
-    if (!unlockCeremony) return;
-    const timer = window.setTimeout(() => setUnlockCeremony(null), 3800);
-    return () => window.clearTimeout(timer);
-  }, [unlockCeremony]);
-
   const completedCount = LESSONS.filter((lesson) => (progress.lessons[lesson.id]?.completions ?? 0) > 0).length;
   const masteryTotal = LESSONS.reduce((sum, lesson) => sum + (progress.lessons[lesson.id]?.mastery ?? 0), 0);
   const completionRatio = LESSONS.length > 0 ? completedCount / LESSONS.length : 0;
@@ -1231,6 +1246,10 @@ export function SipAcademyWineLessons() {
     return { ...realm, lessons, completed, unlocked, boss, bossCleared, ratio };
   });
   const summaryLesson = summary ? LESSONS.find((lesson) => lesson.id === summary.lessonId) ?? null : null;
+  const summaryNextLesson =
+    summary && summary.passed
+      ? LESSONS.find((lesson) => lesson.id === nextLessonId(summary.lessonId)) ?? null
+      : null;
   const highlightedRealmUnit = activeLesson?.unit ?? summaryLesson?.unit ?? nextLesson.unit;
   const highlightedRealm = realmProgress.find((realm) => realm.unit === highlightedRealmUnit) ?? realmProgress[0];
   const activeRealmMedia = REALM_MEDIA[highlightedRealm?.unit ?? 1] ?? REALM_MEDIA[1];
@@ -1371,7 +1390,9 @@ export function SipAcademyWineLessons() {
         if (mood === "celebrate") return "Excellent execution. Unlock achieved. Advance to the next node.";
         if (mood === "spark") return "Correct. Keep momentum and preserve combo.";
         if (mood === "coach") return lowHearts ? "Hearts critical. Slow down and verify evidence." : "Re-check cue and select strongest evidence match.";
-        return lessonMentor === "roma" ? "Use aroma precision. Select only after signal confirmation." : "Use structure-first logic before choosing.";
+        if (lessonMentor === "roma") return "Use aroma precision. Select only after signal confirmation.";
+        if (lessonMentor === "hummin") return "Run a quick system check: clue quality, sequence, then confident execution.";
+        return "Use structure-first logic before choosing.";
       }
       if (voiceMode === "story") {
         if (mood === "celebrate") return "A golden pour of progress. Your next chapter is now uncorked.";
@@ -1380,9 +1401,9 @@ export function SipAcademyWineLessons() {
           return lowHearts
             ? "The glass runs low. Breathe, reset, and answer with intention."
             : "Close call. Let the clues tell their full story.";
-        return lessonMentor === "roma"
-          ? "Listen for the perfume of the wine, then commit."
-          : "Read the backbone of the wine before your final choice.";
+        if (lessonMentor === "roma") return "Listen for the perfume of the wine, then commit.";
+        if (lessonMentor === "hummin") return "Let your internal sensors align the clues, then lock the answer in.";
+        return "Read the backbone of the wine before your final choice.";
       }
       if (mood === "celebrate") return "Elegant work. You cleared the lesson and unlocked your next pour on the path.";
       if (mood === "spark") return combo >= 2 ? "Beautiful streak. Keep that rhythm and collect your combo bonus." : "Yes. Precision first.";
@@ -1390,15 +1411,14 @@ export function SipAcademyWineLessons() {
         return lowHearts
           ? "Hearts are low. Slow down and trust structure before answering."
           : "Close. Read the cue, then answer from evidence.";
-      return lessonMentor === "roma"
-        ? "Select the strongest aroma or service cue and commit."
-        : "Select the strongest option and commit. Fast, clean, confident.";
+      if (lessonMentor === "roma") return "Select the strongest aroma or service cue and commit.";
+      if (lessonMentor === "hummin") return "Run your signal check, then lock the strongest answer.";
+      return "Select the strongest option and commit. Fast, clean, confident.";
     };
 
     const summaryLesson = summary ? LESSONS.find((lesson) => lesson.id === summary.lessonId) ?? null : null;
-    const lessonMentor: MentorId =
-      activeLesson?.mentor ?? summaryLesson?.mentor ?? (activeLesson && (activeLesson.tag === "Aromas" || activeLesson.tag === "Service") ? "roma" : "sippy");
-    const supportMentor: MentorId = lessonMentor === "roma" ? "sippy" : "roma";
+    const lessonMentor: MentorId = activeLesson?.mentor ?? summaryLesson?.mentor ?? "sippy";
+    const supportMentor: MentorId = nextMentorInCycle(lessonMentor);
 
     if (summary) {
       if (summary.passed) {
@@ -1457,7 +1477,7 @@ export function SipAcademyWineLessons() {
     }
 
     return {
-      speaker: "roma" as MentorId,
+      speaker: "sippy" as MentorId,
       mood: "calm" as MentorMood,
       expression: "calm" as MentorMood,
       line:
@@ -1469,11 +1489,13 @@ export function SipAcademyWineLessons() {
     };
   }, [activeExercise, activeLesson, combo, feedback, lowHearts, summary, voiceMode]);
   const activeMentor = MENTORS[guideState.speaker];
-  const secondaryMentor = MENTORS[guideState.speaker === "roma" ? "sippy" : "roma"];
+  const secondaryMentor = MENTORS[nextMentorInCycle(guideState.speaker)];
   const sippyImage =
     guideState.speaker === "sippy" ? MENTOR_VARIANTS.sippy[guideState.expression] : MENTOR_VARIANTS.sippy.calm;
   const romaImage =
     guideState.speaker === "roma" ? MENTOR_VARIANTS.roma[guideState.expression] : MENTOR_VARIANTS.roma.calm;
+  const humminImage =
+    guideState.speaker === "hummin" ? MENTOR_VARIANTS.hummin[guideState.expression] : MENTOR_VARIANTS.hummin.calm;
 
   return (
     <section
@@ -1484,7 +1506,7 @@ export function SipAcademyWineLessons() {
       <header className="academy-game-header">
         <div>
           <p className="academy-kicker">Sip Academy Adventure Mode</p>
-          <h2>Sippy and Roma: Wine Quest Campaign</h2>
+          <h2>Sippy, Roma, and Hummin: Wine Quest Campaign</h2>
           <p>Twenty guided missions across five realms. Build tasting skill trees, clear boss rounds, and level your service game.</p>
         </div>
         <div className="academy-campaign-spotlight">
@@ -1568,6 +1590,7 @@ export function SipAcademyWineLessons() {
             decoding="async"
           />
           <img className="academy-cinematic-guide academy-cinematic-sippy" src={activeRealmMedia.sippy} alt="" loading="lazy" decoding="async" />
+          <img className="academy-cinematic-guide academy-cinematic-hummin" src={activeRealmMedia.hummin} alt="" loading="lazy" decoding="async" />
           <img className="academy-cinematic-guide academy-cinematic-roma" src={activeRealmMedia.roma} alt="" loading="lazy" decoding="async" />
         </div>
         <div className="academy-cinematic-meta">
@@ -1582,7 +1605,7 @@ export function SipAcademyWineLessons() {
         </div>
       </section>
 
-      <section className="academy-mentors" aria-label="Sippy and Roma lesson guidance">
+      <section className="academy-mentors" aria-label="Sippy, Roma, and Hummin lesson guidance">
         <article className={`academy-mentor-card ${guideState.speaker === "sippy" ? "active" : ""}`}>
           <div className="academy-mentor-portrait-wrap">
             <img className="academy-mentor-portrait" src={sippyImage} alt="Sippy, beverage educator" loading="lazy" decoding="async" />
@@ -1599,6 +1622,15 @@ export function SipAcademyWineLessons() {
           <div className="academy-mentor-meta">
             <strong>{MENTORS.roma.name}</strong>
             <span>{MENTORS.roma.title}</span>
+          </div>
+        </article>
+        <article className={`academy-mentor-card ${guideState.speaker === "hummin" ? "active" : ""}`}>
+          <div className="academy-mentor-portrait-wrap">
+            <img className="academy-mentor-portrait" src={humminImage} alt="Hummin, beverage educator" loading="lazy" decoding="async" />
+          </div>
+          <div className="academy-mentor-meta">
+            <strong>{MENTORS.hummin.name}</strong>
+            <span>{MENTORS.hummin.title}</span>
           </div>
         </article>
         <div className={`academy-mentor-dialog mood-${guideState.mood}`}>
@@ -1766,7 +1798,12 @@ export function SipAcademyWineLessons() {
                 <span>Hearts Left {summary.heartsLeft}</span>
               </div>
               <div className="academy-actions">
-                <button type="button" className="btn btn-primary" onClick={() => startLesson(summary.lessonId)}>Practice Again</button>
+                {summaryNextLesson ? (
+                  <button type="button" className="btn btn-primary" onClick={() => startLesson(summaryNextLesson.id)}>
+                    Next Lesson
+                  </button>
+                ) : null}
+                <button type="button" className="btn btn-light" onClick={() => startLesson(summary.lessonId)}>Practice Again</button>
                 <button type="button" className="btn btn-light" onClick={() => setSummary(null)}>Back to Path</button>
               </div>
             </div>
@@ -1776,7 +1813,7 @@ export function SipAcademyWineLessons() {
               <p>Pick an unlocked node from the campaign path. Pass at 70% accuracy before hearts run out.</p>
               <ul>
                 <li>20 lessons across 5 realms with Scout, Challenge, and Boss missions.</li>
-                <li>Sippy and Roma adapt guidance style in classic, tactical, or story voice.</li>
+                <li>Sippy, Roma, and Hummin adapt guidance style in classic, tactical, or story voice.</li>
                 <li>Stack combo bonuses, preserve hearts, and clear bosses to complete each realm.</li>
               </ul>
               <div className="academy-idle-next">
@@ -1793,16 +1830,17 @@ export function SipAcademyWineLessons() {
         </article>
       </div>
       {unlockCeremony ? (
-        <div className="academy-unlock-overlay" role="status" aria-live="polite" onClick={() => setUnlockCeremony(null)}>
-          <div className="academy-unlock-card" onClick={(event) => event.stopPropagation()}>
+        <div className="academy-unlock-overlay" role="dialog" aria-modal="true" aria-live="polite">
+          <div className="academy-unlock-card">
             <p className="academy-unlock-kicker">Lesson Unlocked</p>
             <h3>
               Unit {unlockCeremony.unit}: {unlockCeremony.title}
             </h3>
-            <p>Your next luxury lesson is ready. Sippy and Roma are waiting at the next node.</p>
+            <p>Your next luxury lesson is ready. Sippy, Roma, and Hummin are waiting at the next node.</p>
             <div className="academy-unlock-mentors" aria-hidden="true">
-              <img src={sippyCelebrate} alt="" loading="lazy" decoding="async" />
-              <img src={romaCelebrate} alt="" loading="lazy" decoding="async" />
+              <img src={ACADEMY_GUIDES.sippy} alt="" loading="lazy" decoding="async" />
+              <img src={ACADEMY_GUIDES.roma} alt="" loading="lazy" decoding="async" />
+              <img src={ACADEMY_GUIDES.hummin} alt="" loading="lazy" decoding="async" />
             </div>
             <button type="button" className="btn btn-primary" onClick={() => setUnlockCeremony(null)}>
               Continue

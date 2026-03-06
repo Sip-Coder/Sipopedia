@@ -35,3 +35,20 @@ pm.cmd run build after elderflower mapping fix: successful.
 - Verification passed after UI/media wiring:
   - `npx.cmd tsc -p tsconfig.app.json --noEmit --pretty false`
   - `npx.cmd vite build`
+- Live Image API generation attempt executed after key load, but all jobs failed with OpenAI error: `billing_hard_limit_reached`.
+- Because billing hard limit is reached, both ImageGen and likely Sora live generation are blocked until billing/payment limits are adjusted.
+- Security note: API key was pasted in chat and used in terminal command context; key should be revoked/rotated immediately.
+- Analyzed newly added `DUMP IN` content and inventoried major buckets: maps/docs (`CWE Maps 2025`), logos/flavor assets, and new character/art drop in `Sippy & Roma`.
+- Selected and integrated existing local artwork into Sip Academy realm cinematics (no API generation):
+  - `/academy/realms/realm-1-crystal-atrium.jpg` (from `image (20).jpg`)
+  - `/academy/realms/realm-2-varietal-wilds.jpg` (from `image (24).jpg`)
+  - `/academy/realms/realm-3-terroir-peaks.jpg` (from `image (27).jpg`)
+  - `/academy/realms/realm-4-cellar-citadel.jpg` (from `image (23).jpg`)
+  - `/academy/realms/realm-5-grand-sommelier-arena.jpg` (from `image (22).jpg`)
+  - Guide portraits: `/academy/guides/sippy-guide.jpg`, `/academy/guides/roma-guide.jpg`
+- Wired `REALM_MEDIA` in `src/components/SipAcademyWineLessons.tsx` to these local files.
+- Integrated `DUMP IN/BG` assets into Sip Academy shell for stronger game feel:
+  - `/academy/ui/bg-stars.png`
+  - `/academy/ui/bg-grid.png`
+  via layered CSS backgrounds in `src/styles.css`.
+- Validation: `npm.cmd run build` passed after local DUMP IN artwork integration (TypeScript + Vite build successful).
