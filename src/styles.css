@@ -1028,8 +1028,14 @@ img {
   display: flex;
   gap: 1rem;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start;
+  flex-wrap: wrap;
   margin-bottom: 1rem;
+}
+
+.section-header-copy {
+  display: grid;
+  gap: 0.35rem;
 }
 
 .section-header h2 {
@@ -1039,6 +1045,10 @@ img {
 .section-header p {
   max-width: 700px;
   color: #555e69;
+}
+
+.section-header-action {
+  flex: 0 0 auto;
 }
 
 .path-shell {
@@ -2743,6 +2753,23 @@ img {
   text-decoration: underline;
 }
 
+.editorial-process-modal {
+  width: min(760px, 96vw);
+}
+
+.editorial-process-body {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.editorial-process-body ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
 .term-infographic {
   width: 100%;
   border-radius: 10px;
@@ -3727,6 +3754,14 @@ img {
 
   .path-map {
     padding: 0.85rem 0.7rem 1rem;
+  }
+
+  .section-header {
+    align-items: stretch;
+  }
+
+  .section-header-action {
+    width: fit-content;
   }
 
   .guide-card {

@@ -47,6 +47,7 @@ export function Terminology() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState("");
   const [refreshTick, setRefreshTick] = useState(0);
+  const [editorialProcessOpen, setEditorialProcessOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -81,6 +82,7 @@ export function Terminology() {
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setSelectedTermId(null);
+        setEditorialProcessOpen(false);
       }
     };
 
@@ -176,12 +178,17 @@ export function Terminology() {
   return (
     <section className="terminology">
       <div className="section-header">
-        <h2>Terminology</h2>
-        <p>
-          Book-sourced beverage definitions with full attribution, purchase links, practical guidance, references, examples, and related ideas.
-          All Sipopedia entries are original editorial rewrites (no verbatim source excerpts).
-          Sorted as # first, then A-Z.
-        </p>
+        <div className="section-header-copy">
+          <h2>Terminology</h2>
+          <p>
+            Book-sourced beverage definitions with full attribution, purchase links, practical guidance, references, examples, and related ideas.
+            All Sipopedia entries are original editorial rewrites (no verbatim source excerpts).
+            Sorted as # first, then A-Z.
+          </p>
+        </div>
+        <button type="button" className="btn btn-light section-header-action" onClick={() => setEditorialProcessOpen(true)}>
+          Editorial Process
+        </button>
       </div>
 
       <div className="terminology-layout">
@@ -390,16 +397,48 @@ export function Terminology() {
                     )}
                     <h4>Editorial policy</h4>
                     <p>Original editorial definition. No verbatim source excerpts are published in Sipopedia.</p>
-                    {selectedTerm.source_note ? (
-                      <>
-                        <h4>Source note</h4>
-                        <p>{selectedTerm.source_note}</p>
-                      </>
-                    ) : null}
                   </aside>
                 </div>
               </>
             ) : null}
+          </article>
+        </div>
+      ) : null}
+
+      {editorialProcessOpen ? (
+        <div className="term-modal-overlay" onClick={() => setEditorialProcessOpen(false)}>
+          <article className="term-modal editorial-process-modal" onClick={(event) => event.stopPropagation()}>
+            <header className="term-modal-header">
+              <div>
+                <p className="lesson-chip">Sipopedia Standard</p>
+                <h3>Editorial Process</h3>
+                <p>How Sipopedia uses AI-assisted editorial production to scale beverage knowledge responsibly.</p>
+              </div>
+              <button className="btn btn-light" onClick={() => setEditorialProcessOpen(false)}>
+                Close
+              </button>
+            </header>
+
+            <div className="editorial-process-body">
+              <p>
+                Sipopedia uses AI as a drafting tool, not as a source authority. We use it to accelerate first-pass glossary production across wine,
+                beer, spirits, coffee, tea, water, dairy, juice, kombucha, and other beverage categories where the vocabulary load is large and growing.
+              </p>
+              <p>
+                Each published definition is written as original editorial prose. The goal is not to reproduce another author&apos;s sentence, but to distill
+                the professional meaning of a term into clear language that works for service, tasting, production, retail, and study.
+              </p>
+              <ul>
+                <li>We draft definitions in a professional beverage voice designed for working users and serious learners.</li>
+                <li>We cite respected books and reference works so users can see the intellectual lineage behind the topic.</li>
+                <li>We include purchase links to help redirect readers toward the original authors and publishers who built the field.</li>
+                <li>We do not publish verbatim source excerpts as glossary definitions inside Sipopedia.</li>
+              </ul>
+              <p>
+                The result is a community-facing knowledge layer: original definitions for fast understanding, plus transparent citation and author credit
+                for deeper study. Sipopedia is intended to widen access without obscuring provenance.
+              </p>
+            </div>
           </article>
         </div>
       ) : null}
