@@ -82,6 +82,7 @@ function parseRegionRoute(regionSlug: string | null): ParsedRegionRoute {
 export function Regions({ regionSlug, onNavigate }: RegionsProps) {
   const route = useMemo(() => parseRegionRoute(regionSlug), [regionSlug]);
   const selectedCategory = route.category;
+  const [selectedContinent, setSelectedContinent] = useState<ContinentId | null>(null);
   const selectedCategoryCountries = useMemo(() => regionCountriesByBeverage[selectedCategory], [selectedCategory]);
   const country = useMemo(() => {
     if (!route.countrySlug) return null;
@@ -100,10 +101,18 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
     () => continentOrder.filter((continent) => countriesByContinent[continent].length > 0),
     [countriesByContinent]
   );
+  const filteredContinents = useMemo(() => {
+    if (!selectedContinent) return visibleContinents;
+    return visibleContinents.includes(selectedContinent) ? [selectedContinent] : visibleContinents;
+  }, [selectedContinent, visibleContinents]);
 
   useEffect(() => {
     setActiveSlide(0);
   }, [country?.slug]);
+
+  useEffect(() => {
+    setSelectedContinent(null);
+  }, [selectedCategory]);
 
   const jumpToContinent = (continent: ContinentId) => {
     const target = document.getElementById(toContinentAnchor(continent));
@@ -165,15 +174,32 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
         ) : (
           <>
         <div className="regions-continent-jump" aria-label="Jump to continent">
+          <button
+            type="button"
+            className={`regions-continent-chip ${selectedContinent ? "" : "is-active"}`}
+            aria-pressed={selectedContinent === null}
+            onClick={() => setSelectedContinent(null)}
+          >
+            All <span>{selectedCategoryCountries.length}</span>
+          </button>
           {visibleContinents.map((continent) => (
-            <button key={continent} type="button" className="regions-continent-chip" onClick={() => jumpToContinent(continent)}>
+            <button
+              key={continent}
+              type="button"
+              className={`regions-continent-chip ${selectedContinent === continent ? "is-active" : ""}`}
+              aria-pressed={selectedContinent === continent}
+              onClick={() => {
+                setSelectedContinent(continent);
+                jumpToContinent(continent);
+              }}
+            >
               {continentLabels[continent]} <span>{countriesByContinent[continent].length}</span>
             </button>
           ))}
         </div>
 
         <div className="regions-continent-stack">
-          {visibleContinents.map((continent) => (
+          {filteredContinents.map((continent) => (
             <section className="regions-continent" id={toContinentAnchor(continent)} key={continent}>
               <div className="regions-continent-head">
                 <h3>{continentLabels[continent]}</h3>
@@ -384,3 +410,4 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
     </section>
   );
 }
+

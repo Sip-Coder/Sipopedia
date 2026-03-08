@@ -85,6 +85,15 @@ type UnlockCeremony = {
   unit: number;
 };
 
+type MentorProfile = {
+  name: string;
+  title: string;
+  image: string;
+  role: string;
+  bio: string;
+  supports: string[];
+};
+
 const STORAGE_KEY = "sip-studies:academy:wine:v2";
 const VOICE_MODE_KEY = "sip-studies:academy:wine:voice-mode:v1";
 const MAX_HEARTS = 5;
@@ -991,10 +1000,55 @@ const ACADEMY_GUIDES = {
   hummin: "/academy/guides/hummin-guide.jpg"
 } as const;
 
+const MENTOR_CARD_IMAGES = {
+  sippy: "/academy/guides/sippy-card-coffee.png",
+  roma: "/academy/guides/roma-card-tea.png",
+  hummin: "/academy/guides/hummin-card-wine.png"
+} as const;
+
 const MENTORS: Record<MentorId, { name: string; title: string }> = {
   sippy: { name: "Sippy", title: "Lead Beverage Educator" },
   roma: { name: "Roma", title: "Senior Sensory Educator" },
   hummin: { name: "Hummin", title: "Enologist & Cellar Master" }
+};
+
+const MENTOR_PROFILES: Record<MentorId, MentorProfile> = {
+  sippy: {
+    name: "Sippy",
+    title: "Lead Beverage Educator",
+    image: MENTOR_CARD_IMAGES.sippy,
+    role: "Student learning coach for core beverage foundations and exam confidence.",
+    bio: "Sippy guides students through tasting structure, service flow, and practical study plans so each lesson feels clear and manageable.",
+    supports: [
+      "Builds step-by-step training paths for new and returning students.",
+      "Translates complex wine topics into practical tasting language.",
+      "Helps students prepare for quizzes, blind tasting drills, and service exams."
+    ]
+  },
+  roma: {
+    name: "Roma",
+    title: "Senior Sensory Educator",
+    image: MENTOR_CARD_IMAGES.roma,
+    role: "Aroma and palate specialist focused on sensory accuracy.",
+    bio: "Roma helps students sharpen aroma recognition and flavor analysis so they can identify style clues faster and make better tasting calls.",
+    supports: [
+      "Trains sensory calibration using consistent aroma families and descriptors.",
+      "Coaches students on tasting note precision and communication.",
+      "Reinforces pattern recognition for varietal, region, and style discovery."
+    ]
+  },
+  hummin: {
+    name: "Hummin",
+    title: "Enologist & Cellar Master",
+    image: MENTOR_CARD_IMAGES.hummin,
+    role: "Technical mentor for wine science, cellar logic, and quality decisions.",
+    bio: "Hummin connects production science to real-world tasting outcomes, helping students understand why wines behave the way they do in bottle and in service.",
+    supports: [
+      "Explains fermentation, maturation, and stability in practical terms.",
+      "Links structure clues to climate, soil, and winemaking choices.",
+      "Guides fault detection and corrective service decisions."
+    ]
+  }
 };
 
 const MENTOR_VARIANTS: Record<MentorId, Record<MentorMood, string>> = {
@@ -1025,6 +1079,7 @@ const REALM_MEDIA: Record<
     sippy: string;
     roma: string;
     hummin: string;
+    showGuides?: boolean;
     trailer: string;
     cue: string;
   }
@@ -1046,10 +1101,11 @@ const REALM_MEDIA: Record<
     cue: "Fast aromatic clue-hunting through the Varietal Wilds."
   },
   3: {
-    poster: "/academy/realms/realm-3-terroir-peaks.jpg",
+    poster: "/academy/realms/realm-3-terroir-peaks.png",
     sippy: ACADEMY_GUIDES.sippy,
     roma: ACADEMY_GUIDES.roma,
     hummin: ACADEMY_GUIDES.hummin,
+    showGuides: false,
     trailer: "Realm key art",
     cue: "High-altitude terroir scans with structural deduction overlays."
   },
@@ -1205,6 +1261,7 @@ export function SipAcademyWineLessons() {
   const [summary, setSummary] = useState<SummaryState | null>(null);
   const [unlockCeremony, setUnlockCeremony] = useState<UnlockCeremony | null>(null);
   const [flashUnlockedLessonId, setFlashUnlockedLessonId] = useState<string | null>(null);
+  const [profileMentorId, setProfileMentorId] = useState<MentorId | null>(null);
 
   const activeLesson = useMemo(
     () => (activeLessonId ? LESSONS.find((lesson) => lesson.id === activeLessonId) ?? null : null),
@@ -1225,6 +1282,20 @@ export function SipAcademyWineLessons() {
     const timer = window.setTimeout(() => setFlashUnlockedLessonId(null), 2200);
     return () => window.clearTimeout(timer);
   }, [flashUnlockedLessonId]);
+
+  useEffect(() => {
+    if (!profileMentorId) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setProfileMentorId(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [profileMentorId]);
 
   const completedCount = LESSONS.filter((lesson) => (progress.lessons[lesson.id]?.completions ?? 0) > 0).length;
   const masteryTotal = LESSONS.reduce((sum, lesson) => sum + (progress.lessons[lesson.id]?.mastery ?? 0), 0);
@@ -1490,12 +1561,10 @@ export function SipAcademyWineLessons() {
   }, [activeExercise, activeLesson, combo, feedback, lowHearts, summary, voiceMode]);
   const activeMentor = MENTORS[guideState.speaker];
   const secondaryMentor = MENTORS[nextMentorInCycle(guideState.speaker)];
-  const sippyImage =
-    guideState.speaker === "sippy" ? MENTOR_VARIANTS.sippy[guideState.expression] : MENTOR_VARIANTS.sippy.calm;
-  const romaImage =
-    guideState.speaker === "roma" ? MENTOR_VARIANTS.roma[guideState.expression] : MENTOR_VARIANTS.roma.calm;
-  const humminImage =
-    guideState.speaker === "hummin" ? MENTOR_VARIANTS.hummin[guideState.expression] : MENTOR_VARIANTS.hummin.calm;
+  const sippyImage = MENTOR_CARD_IMAGES.sippy;
+  const romaImage = MENTOR_CARD_IMAGES.roma;
+  const humminImage = MENTOR_CARD_IMAGES.hummin;
+  const activeProfile = profileMentorId ? MENTOR_PROFILES[profileMentorId] : null;
 
   return (
     <section
@@ -1589,9 +1658,13 @@ export function SipAcademyWineLessons() {
             loading="lazy"
             decoding="async"
           />
-          <img className="academy-cinematic-guide academy-cinematic-sippy" src={activeRealmMedia.sippy} alt="" loading="lazy" decoding="async" />
-          <img className="academy-cinematic-guide academy-cinematic-hummin" src={activeRealmMedia.hummin} alt="" loading="lazy" decoding="async" />
-          <img className="academy-cinematic-guide academy-cinematic-roma" src={activeRealmMedia.roma} alt="" loading="lazy" decoding="async" />
+          {activeRealmMedia.showGuides !== false && (
+            <>
+              <img className="academy-cinematic-guide academy-cinematic-sippy" src={activeRealmMedia.sippy} alt="" loading="lazy" decoding="async" />
+              <img className="academy-cinematic-guide academy-cinematic-hummin" src={activeRealmMedia.hummin} alt="" loading="lazy" decoding="async" />
+              <img className="academy-cinematic-guide academy-cinematic-roma" src={activeRealmMedia.roma} alt="" loading="lazy" decoding="async" />
+            </>
+          )}
         </div>
         <div className="academy-cinematic-meta">
           <p className="academy-campaign-kicker">Realm Cinematic</p>
@@ -1606,7 +1679,14 @@ export function SipAcademyWineLessons() {
       </section>
 
       <section className="academy-mentors" aria-label="Sippy, Roma, and Hummin lesson guidance">
-        <article className={`academy-mentor-card ${guideState.speaker === "sippy" ? "active" : ""}`}>
+        <button
+          type="button"
+          className={`academy-mentor-card ${guideState.speaker === "sippy" ? "active" : ""}`}
+          onClick={() => setProfileMentorId("sippy")}
+          aria-haspopup="dialog"
+          aria-expanded={profileMentorId === "sippy"}
+          aria-controls="academy-mentor-profile-modal"
+        >
           <div className="academy-mentor-portrait-wrap">
             <img className="academy-mentor-portrait" src={sippyImage} alt="Sippy, beverage educator" loading="lazy" decoding="async" />
           </div>
@@ -1614,8 +1694,15 @@ export function SipAcademyWineLessons() {
             <strong>{MENTORS.sippy.name}</strong>
             <span>{MENTORS.sippy.title}</span>
           </div>
-        </article>
-        <article className={`academy-mentor-card ${guideState.speaker === "roma" ? "active" : ""}`}>
+        </button>
+        <button
+          type="button"
+          className={`academy-mentor-card ${guideState.speaker === "roma" ? "active" : ""}`}
+          onClick={() => setProfileMentorId("roma")}
+          aria-haspopup="dialog"
+          aria-expanded={profileMentorId === "roma"}
+          aria-controls="academy-mentor-profile-modal"
+        >
           <div className="academy-mentor-portrait-wrap">
             <img className="academy-mentor-portrait" src={romaImage} alt="Roma, beverage educator" loading="lazy" decoding="async" />
           </div>
@@ -1623,8 +1710,15 @@ export function SipAcademyWineLessons() {
             <strong>{MENTORS.roma.name}</strong>
             <span>{MENTORS.roma.title}</span>
           </div>
-        </article>
-        <article className={`academy-mentor-card ${guideState.speaker === "hummin" ? "active" : ""}`}>
+        </button>
+        <button
+          type="button"
+          className={`academy-mentor-card ${guideState.speaker === "hummin" ? "active" : ""}`}
+          onClick={() => setProfileMentorId("hummin")}
+          aria-haspopup="dialog"
+          aria-expanded={profileMentorId === "hummin"}
+          aria-controls="academy-mentor-profile-modal"
+        >
           <div className="academy-mentor-portrait-wrap">
             <img className="academy-mentor-portrait" src={humminImage} alt="Hummin, beverage educator" loading="lazy" decoding="async" />
           </div>
@@ -1632,7 +1726,7 @@ export function SipAcademyWineLessons() {
             <strong>{MENTORS.hummin.name}</strong>
             <span>{MENTORS.hummin.title}</span>
           </div>
-        </article>
+        </button>
         <div className={`academy-mentor-dialog mood-${guideState.mood}`}>
           <p className="academy-mentor-speaker">
             {activeMentor.name} guiding now - backup by {secondaryMentor.name}
@@ -1829,6 +1923,43 @@ export function SipAcademyWineLessons() {
           )}
         </article>
       </div>
+      {activeProfile ? (
+        <div className="academy-mentor-modal-overlay" role="presentation" onClick={(event) => event.target === event.currentTarget && setProfileMentorId(null)}>
+          <div
+            id="academy-mentor-profile-modal"
+            className="academy-mentor-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="academy-mentor-modal-title"
+          >
+            <button type="button" className="academy-mentor-modal-close" aria-label="Close mentor profile" onClick={() => setProfileMentorId(null)}>
+              x
+            </button>
+            <div className="academy-mentor-modal-grid">
+              <img
+                className="academy-mentor-modal-image"
+                src={activeProfile.image}
+                alt={`${activeProfile.name} mentor profile`}
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="academy-mentor-modal-copy">
+                <p className="academy-mentor-modal-kicker">Sip Studies Mentor Profile</p>
+                <h3 id="academy-mentor-modal-title">{activeProfile.name}</h3>
+                <p className="academy-mentor-modal-title">{activeProfile.title}</p>
+                <p className="academy-mentor-modal-role">{activeProfile.role}</p>
+                <p>{activeProfile.bio}</p>
+                <h4>How {activeProfile.name} helps students</h4>
+                <ul>
+                  {activeProfile.supports.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
       {unlockCeremony ? (
         <div className="academy-unlock-overlay" role="dialog" aria-modal="true" aria-live="polite">
           <div className="academy-unlock-card">

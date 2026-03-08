@@ -70,6 +70,44 @@ Redeploy after changing secrets:
 supabase functions deploy ai-router --no-verify-jwt
 ```
 
+## Scheduled terminology harvesting (daily cron)
+
+This repo now includes:
+
+- `supabase/functions/terminology-harvester/index.ts`
+- `supabase/migrations/202603080001_terminology_harvester_cron.sql`
+
+What it does:
+- Runs daily by `pg_cron`
+- Calls `terminology-harvester`
+- Uses OpenAI web search to research current professional beverage terminology
+- Dedupes against existing `public.terminology_entries`
+- Inserts up to `500` new schema-compliant terms each run
+- Logs each run to `public.terminology_harvest_runs`
+
+Deploy/update steps:
+
+```bash
+supabase functions deploy terminology-harvester --no-verify-jwt
+supabase db push
+```
+
+Required secrets:
+
+```bash
+supabase secrets set OPENAI_API_KEY=YOUR_KEY
+supabase secrets set OPENAI_MODEL=gpt-4.1-mini
+```
+
+Optional hardening secret (recommended):
+
+```bash
+supabase secrets set TERMINOLOGY_CRON_SECRET=YOUR_RANDOM_SECRET
+```
+
+Cron expression in migration:
+- `0 16 * * *` (16:00 UTC daily = 08:00 PST fixed UTC-8)
+
 ## Step 6: Test in app
 
 Open the website and use the **Safe AI test box**.
