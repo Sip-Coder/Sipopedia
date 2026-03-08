@@ -1,0 +1,2502 @@
+[
+  {
+    "term": "Aglianico",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Albarino",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Amarone",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Ampelography",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Appellation",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Assemblage",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Astringency",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Autolysis",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Barbera",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Barolo",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Barrique",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Biodynamic",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Blanc",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Bobal",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Botrytis",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Bourgogne",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Brix",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Brunello",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Cabernet",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Carbonic",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Carmenere",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Carignan",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Chablis",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Champagne",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Chaptalization",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Clone",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Decanting",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Dosage",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Elegance",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Extraction",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Filtration",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Fining",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Fronsac",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Gamay",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Grenache",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Harvest",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Hermitage",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Jeroboam",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Jura",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Lambrusco",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Languedoc",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Lees",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Maceration",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Malbec",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Malolactic",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Marsanne",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Merlot",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Minerality",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Monastrell",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Mourvedre",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Muscadet",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Muscat",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Nebbiolo",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Oenology",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Oxidation",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Parellada",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Pigeage",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Pinot",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Pomerol",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Primitivo",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Pumpover",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Racking",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Reduction",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Reserva",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Riesling",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Ripasso",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Rondinella",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Sangiovese",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Sauternes",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Sommelier",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Syrah",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Tannin",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Tempranillo",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Teroldego",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Torrontes",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Trebbiano",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Typicity",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Vendange",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Veraison",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Verdelho",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Vermentino",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Viognier",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Vintage",
+    "beverage_type": "wine",
+    "category": "terroir"
+  },
+  {
+    "term": "Viscosity",
+    "beverage_type": "wine",
+    "category": "location"
+  },
+  {
+    "term": "Volatile",
+    "beverage_type": "wine",
+    "category": "production style"
+  },
+  {
+    "term": "Zinfandel",
+    "beverage_type": "wine",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Adjunct",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Ale",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Altbier",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Amber",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Amylase",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Barleywine",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Berlinerweisse",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Bitterness",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Bock",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Brett",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Brut",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Cascade",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Cask",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Centennial",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Chinook",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Citra",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Columbus",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Conditioning",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Decoction",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Dextrin",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Diacetyl",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Dortmunder",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Dryhopping",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Dunkel",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Ebc",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Ester",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Fuggles",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Gueuze",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Hallertau",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Haze",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Hefeweizen",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Helles",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Hopback",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Hopstand",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Hydrometer",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Ibu",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Infusion",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Isomerization",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Kolsch",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Krausen",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Lactobacillus",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Lambic",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Lager",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Lauter",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Lovibond",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Malt",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Mash",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Mosaic",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Flocculation",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Attenuation",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Pasteurization",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Phenolic",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Pilsner",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Plato",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Porter",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Priming",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Reinheitsgebot",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Saaz",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Saison",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Sediment",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Simcoe",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Sparge",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Stout",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Tettnang",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Trappist",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Trub",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Whirlpool",
+    "beverage_type": "beer",
+    "category": "terroir"
+  },
+  {
+    "term": "Witbier",
+    "beverage_type": "beer",
+    "category": "location"
+  },
+  {
+    "term": "Wort",
+    "beverage_type": "beer",
+    "category": "production style"
+  },
+  {
+    "term": "Fermentor",
+    "beverage_type": "beer",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Absinthe",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Aguardiente",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Agricole",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Alambic",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Aquavit",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Arak",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Armagnac",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Azeotrope",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Backset",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Batching",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Bottling",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Brandy",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Calvados",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Cachaca",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Charcoal",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Congeners",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Curacao",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Demerara",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Distillate",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Distillation",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Dunder",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "EauDeVie",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Evaporation",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Feints",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Fusel",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Gin",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Grappa",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Heads",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Hearts",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Highproof",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Juniper",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Kirsch",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Liqueur",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Macerate",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Maturation",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Mezcal",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Moonshine",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Nosing",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Overproof",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Peated",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Potstill",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Proofing",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Rectification",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Rhum",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Rye",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Solera",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Sourmash",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Stillage",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Stripping",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Sugarcane",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Tails",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Tequila",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Tincture",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Vermouth",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Washback",
+    "beverage_type": "spirits",
+    "category": "terroir"
+  },
+  {
+    "term": "Whiskey",
+    "beverage_type": "spirits",
+    "category": "location"
+  },
+  {
+    "term": "Wormtub",
+    "beverage_type": "spirits",
+    "category": "production style"
+  },
+  {
+    "term": "Newmake",
+    "beverage_type": "spirits",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Arabica",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Robusta",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Typica",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Caturra",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Catuai",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Pacamara",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Geisha",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Liberica",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Excelsa",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Catimor",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Maragogipe",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "MundoNovo",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Bourbon",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Heirloom",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Natural",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Washed",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Honey",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Anaerobic",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Pulping",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Mucilage",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Demucilage",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Drymill",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Wetmill",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Defect",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Screening",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Roastery",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Roast",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Maillard",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Caramelization",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Development",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Degassing",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Refractometer",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Dose",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Yield",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Espresso",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Ristretto",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Lungo",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Americano",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Cappuccino",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Macchiato",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Cortado",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Dripper",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Chemex",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Kalita",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Aeropress",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Frenchpress",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Siphon",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Turkish",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Portafilter",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Tamper",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Grouphead",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Backflush",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Channeling",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Crema",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Aftertaste",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Sweetness",
+    "beverage_type": "coffee",
+    "category": "location"
+  },
+  {
+    "term": "Fragrance",
+    "beverage_type": "coffee",
+    "category": "production style"
+  },
+  {
+    "term": "Cupping",
+    "beverage_type": "coffee",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Cupper",
+    "beverage_type": "coffee",
+    "category": "terroir"
+  },
+  {
+    "term": "Assam",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Darjeeling",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Ceylon",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Nilgiri",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Yunnan",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Anji",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Longjing",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Biluochun",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Tieguanyin",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Dahongpao",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Wuyi",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Lapsang",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Keemun",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Dianhong",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Sencha",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Gyokuro",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Kabusecha",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Bancha",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Hojicha",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Kukicha",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Genmaicha",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Matcha",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Tencha",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Tamaryokucha",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Shincha",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Puerh",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Sheng",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Shou",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Gaba",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Baozhong",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Jasmine",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Osmanthus",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Baihao",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Baimudan",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Shoumei",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Yabukita",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Saemidori",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Benifuki",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Cultivar",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Plucking",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Withering",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Rolling",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Oxidative",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Firing",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Steaming",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Panfiring",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Roasting",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Compression",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Steeping",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Astringent",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Briskness",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Liquor",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Tippy",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Muscatel",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Clonal",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Terpene",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Catechin",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Theanine",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Polyphenol",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Camellia",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Orthodox",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Ctc",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Flush",
+    "beverage_type": "tea",
+    "category": "terroir"
+  },
+  {
+    "term": "Vernal",
+    "beverage_type": "tea",
+    "category": "location"
+  },
+  {
+    "term": "Monsoonal",
+    "beverage_type": "tea",
+    "category": "production style"
+  },
+  {
+    "term": "Autumnal",
+    "beverage_type": "tea",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Scoby",
+    "beverage_type": "kombucha",
+    "category": "production style"
+  },
+  {
+    "term": "Pellicle",
+    "beverage_type": "kombucha",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Acetobacter",
+    "beverage_type": "kombucha",
+    "category": "terroir"
+  },
+  {
+    "term": "Gluconacetobacter",
+    "beverage_type": "kombucha",
+    "category": "location"
+  },
+  {
+    "term": "Saccharomyces",
+    "beverage_type": "kombucha",
+    "category": "production style"
+  },
+  {
+    "term": "Brettanomyces",
+    "beverage_type": "kombucha",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Inoculum",
+    "beverage_type": "kombucha",
+    "category": "terroir"
+  },
+  {
+    "term": "Backslop",
+    "beverage_type": "kombucha",
+    "category": "location"
+  },
+  {
+    "term": "Acetic",
+    "beverage_type": "kombucha",
+    "category": "production style"
+  },
+  {
+    "term": "Gluconic",
+    "beverage_type": "kombucha",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Lactic",
+    "beverage_type": "kombucha",
+    "category": "terroir"
+  },
+  {
+    "term": "Malic",
+    "beverage_type": "kombucha",
+    "category": "location"
+  },
+  {
+    "term": "Succinic",
+    "beverage_type": "kombucha",
+    "category": "production style"
+  },
+  {
+    "term": "Carbonation",
+    "beverage_type": "kombucha",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Effervescence",
+    "beverage_type": "kombucha",
+    "category": "terroir"
+  },
+  {
+    "term": "Fizz",
+    "beverage_type": "kombucha",
+    "category": "location"
+  },
+  {
+    "term": "Vinegar",
+    "beverage_type": "kombucha",
+    "category": "production style"
+  },
+  {
+    "term": "Tanginess",
+    "beverage_type": "kombucha",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Dryness",
+    "beverage_type": "kombucha",
+    "category": "terroir"
+  },
+  {
+    "term": "Headspace",
+    "beverage_type": "kombucha",
+    "category": "location"
+  },
+  {
+    "term": "Biofilm",
+    "beverage_type": "kombucha",
+    "category": "production style"
+  },
+  {
+    "term": "Cooling",
+    "beverage_type": "kombucha",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Flavoring",
+    "beverage_type": "kombucha",
+    "category": "terroir"
+  },
+  {
+    "term": "Secondary",
+    "beverage_type": "kombucha",
+    "category": "location"
+  },
+  {
+    "term": "Primary",
+    "beverage_type": "kombucha",
+    "category": "production style"
+  },
+  {
+    "term": "Acidification",
+    "beverage_type": "kombucha",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Sanitation",
+    "beverage_type": "kombucha",
+    "category": "terroir"
+  },
+  {
+    "term": "Contamination",
+    "beverage_type": "kombucha",
+    "category": "location"
+  },
+  {
+    "term": "Mold",
+    "beverage_type": "kombucha",
+    "category": "production style"
+  },
+  {
+    "term": "Kahm",
+    "beverage_type": "kombucha",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Culture",
+    "beverage_type": "kombucha",
+    "category": "terroir"
+  },
+  {
+    "term": "Symbiosis",
+    "beverage_type": "kombucha",
+    "category": "location"
+  },
+  {
+    "term": "Dilution",
+    "beverage_type": "kombucha",
+    "category": "production style"
+  },
+  {
+    "term": "Sourness",
+    "beverage_type": "kombucha",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Ethanol",
+    "beverage_type": "kombucha",
+    "category": "terroir"
+  },
+  {
+    "term": "Acetate",
+    "beverage_type": "kombucha",
+    "category": "location"
+  },
+  {
+    "term": "Cellulose",
+    "beverage_type": "kombucha",
+    "category": "production style"
+  },
+  {
+    "term": "Nectar",
+    "beverage_type": "juice",
+    "category": "production style"
+  },
+  {
+    "term": "Concentrate",
+    "beverage_type": "juice",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Reconstitution",
+    "beverage_type": "juice",
+    "category": "terroir"
+  },
+  {
+    "term": "Clarifier",
+    "beverage_type": "juice",
+    "category": "location"
+  },
+  {
+    "term": "Pectinase",
+    "beverage_type": "juice",
+    "category": "production style"
+  },
+  {
+    "term": "Enzyme",
+    "beverage_type": "juice",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Cloudiness",
+    "beverage_type": "juice",
+    "category": "terroir"
+  },
+  {
+    "term": "Pulp",
+    "beverage_type": "juice",
+    "category": "location"
+  },
+  {
+    "term": "Pressing",
+    "beverage_type": "juice",
+    "category": "production style"
+  },
+  {
+    "term": "Aseptic",
+    "beverage_type": "juice",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Sweetener",
+    "beverage_type": "juice",
+    "category": "terroir"
+  },
+  {
+    "term": "Acidulant",
+    "beverage_type": "juice",
+    "category": "location"
+  },
+  {
+    "term": "Stabilizer",
+    "beverage_type": "juice",
+    "category": "production style"
+  },
+  {
+    "term": "Deaeration",
+    "beverage_type": "juice",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Browning",
+    "beverage_type": "juice",
+    "category": "terroir"
+  },
+  {
+    "term": "Ascorbate",
+    "beverage_type": "juice",
+    "category": "location"
+  },
+  {
+    "term": "Citric",
+    "beverage_type": "juice",
+    "category": "production style"
+  },
+  {
+    "term": "Tartaric",
+    "beverage_type": "juice",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Turbidity",
+    "beverage_type": "juice",
+    "category": "terroir"
+  },
+  {
+    "term": "Sedimentation",
+    "beverage_type": "juice",
+    "category": "location"
+  },
+  {
+    "term": "Retort",
+    "beverage_type": "juice",
+    "category": "production style"
+  },
+  {
+    "term": "Chiller",
+    "beverage_type": "juice",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Conveyor",
+    "beverage_type": "juice",
+    "category": "terroir"
+  },
+  {
+    "term": "Mouthfeel",
+    "beverage_type": "juice",
+    "category": "location"
+  },
+  {
+    "term": "Flavor",
+    "beverage_type": "juice",
+    "category": "production style"
+  },
+  {
+    "term": "Color",
+    "beverage_type": "juice",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Hue",
+    "beverage_type": "juice",
+    "category": "terroir"
+  },
+  {
+    "term": "Pomace",
+    "beverage_type": "juice",
+    "category": "location"
+  },
+  {
+    "term": "Coldpress",
+    "beverage_type": "juice",
+    "category": "production style"
+  },
+  {
+    "term": "Juiciness",
+    "beverage_type": "juice",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Ripening",
+    "beverage_type": "juice",
+    "category": "terroir"
+  },
+  {
+    "term": "Storage",
+    "beverage_type": "juice",
+    "category": "location"
+  },
+  {
+    "term": "Labeling",
+    "beverage_type": "juice",
+    "category": "production style"
+  },
+  {
+    "term": "Distribution",
+    "beverage_type": "juice",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Refreshment",
+    "beverage_type": "juice",
+    "category": "terroir"
+  },
+  {
+    "term": "Casein",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Lactose",
+    "beverage_type": "milk",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Lactase",
+    "beverage_type": "milk",
+    "category": "terroir"
+  },
+  {
+    "term": "Whey",
+    "beverage_type": "milk",
+    "category": "location"
+  },
+  {
+    "term": "Curd",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Creamline",
+    "beverage_type": "milk",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Homogenization",
+    "beverage_type": "milk",
+    "category": "terroir"
+  },
+  {
+    "term": "Uht",
+    "beverage_type": "milk",
+    "category": "location"
+  },
+  {
+    "term": "Skimming",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Rennet",
+    "beverage_type": "milk",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Coagulation",
+    "beverage_type": "milk",
+    "category": "terroir"
+  },
+  {
+    "term": "Curdling",
+    "beverage_type": "milk",
+    "category": "location"
+  },
+  {
+    "term": "Churning",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Culturing",
+    "beverage_type": "milk",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Probiotic",
+    "beverage_type": "milk",
+    "category": "terroir"
+  },
+  {
+    "term": "Thermization",
+    "beverage_type": "milk",
+    "category": "location"
+  },
+  {
+    "term": "Ultraheat",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Microfiltration",
+    "beverage_type": "milk",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Separation",
+    "beverage_type": "milk",
+    "category": "terroir"
+  },
+  {
+    "term": "Creaming",
+    "beverage_type": "milk",
+    "category": "location"
+  },
+  {
+    "term": "Lipolysis",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Proteolysis",
+    "beverage_type": "milk",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Gelation",
+    "beverage_type": "milk",
+    "category": "terroir"
+  },
+  {
+    "term": "Syneresis",
+    "beverage_type": "milk",
+    "category": "location"
+  },
+  {
+    "term": "Lactation",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Colostrum",
+    "beverage_type": "milk",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Mastitis",
+    "beverage_type": "milk",
+    "category": "terroir"
+  },
+  {
+    "term": "Caseinate",
+    "beverage_type": "milk",
+    "category": "location"
+  },
+  {
+    "term": "Buttermilk",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Kefir",
+    "beverage_type": "milk",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Yogurt",
+    "beverage_type": "milk",
+    "category": "terroir"
+  },
+  {
+    "term": "Laban",
+    "beverage_type": "milk",
+    "category": "location"
+  },
+  {
+    "term": "Holstein",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Jersey",
+    "beverage_type": "milk",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Guernsey",
+    "beverage_type": "milk",
+    "category": "terroir"
+  },
+  {
+    "term": "Buffalo",
+    "beverage_type": "milk",
+    "category": "location"
+  },
+  {
+    "term": "Caprine",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Ovine",
+    "beverage_type": "milk",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Bovine",
+    "beverage_type": "milk",
+    "category": "terroir"
+  },
+  {
+    "term": "Silage",
+    "beverage_type": "milk",
+    "category": "location"
+  },
+  {
+    "term": "Feedlot",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Milkshed",
+    "beverage_type": "milk",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Foaming",
+    "beverage_type": "milk",
+    "category": "terroir"
+  },
+  {
+    "term": "Texturization",
+    "beverage_type": "milk",
+    "category": "location"
+  },
+  {
+    "term": "Pasteurizer",
+    "beverage_type": "milk",
+    "category": "production style"
+  },
+  {
+    "term": "Aquifer",
+    "beverage_type": "water",
+    "category": "production style"
+  },
+  {
+    "term": "Alkalinity",
+    "beverage_type": "water",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Hardness",
+    "beverage_type": "water",
+    "category": "terroir"
+  },
+  {
+    "term": "Softness",
+    "beverage_type": "water",
+    "category": "location"
+  },
+  {
+    "term": "Mineralization",
+    "beverage_type": "water",
+    "category": "production style"
+  },
+  {
+    "term": "Conductivity",
+    "beverage_type": "water",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Bicarbonate",
+    "beverage_type": "water",
+    "category": "terroir"
+  },
+  {
+    "term": "Calcium",
+    "beverage_type": "water",
+    "category": "location"
+  },
+  {
+    "term": "Magnesium",
+    "beverage_type": "water",
+    "category": "production style"
+  },
+  {
+    "term": "Sodium",
+    "beverage_type": "water",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Potassium",
+    "beverage_type": "water",
+    "category": "terroir"
+  },
+  {
+    "term": "Sulfate",
+    "beverage_type": "water",
+    "category": "location"
+  },
+  {
+    "term": "Chloride",
+    "beverage_type": "water",
+    "category": "production style"
+  },
+  {
+    "term": "Silica",
+    "beverage_type": "water",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Fluoride",
+    "beverage_type": "water",
+    "category": "terroir"
+  },
+  {
+    "term": "Nitrate",
+    "beverage_type": "water",
+    "category": "location"
+  },
+  {
+    "term": "Nitrite",
+    "beverage_type": "water",
+    "category": "production style"
+  },
+  {
+    "term": "Arsenic",
+    "beverage_type": "water",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Manganese",
+    "beverage_type": "water",
+    "category": "terroir"
+  },
+  {
+    "term": "Iron",
+    "beverage_type": "water",
+    "category": "location"
+  },
+  {
+    "term": "Potability",
+    "beverage_type": "water",
+    "category": "production style"
+  },
+  {
+    "term": "Disinfection",
+    "beverage_type": "water",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Chlorination",
+    "beverage_type": "water",
+    "category": "terroir"
+  },
+  {
+    "term": "Ozonation",
+    "beverage_type": "water",
+    "category": "location"
+  },
+  {
+    "term": "Ultraviolet",
+    "beverage_type": "water",
+    "category": "production style"
+  },
+  {
+    "term": "Membrane",
+    "beverage_type": "water",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Remineralization",
+    "beverage_type": "water",
+    "category": "terroir"
+  },
+  {
+    "term": "Sparkling",
+    "beverage_type": "water",
+    "category": "location"
+  },
+  {
+    "term": "Stillwater",
+    "beverage_type": "water",
+    "category": "production style"
+  },
+  {
+    "term": "Springwater",
+    "beverage_type": "water",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Glacial",
+    "beverage_type": "water",
+    "category": "terroir"
+  },
+  {
+    "term": "Artesian",
+    "beverage_type": "water",
+    "category": "location"
+  },
+  {
+    "term": "Groundwater",
+    "beverage_type": "water",
+    "category": "production style"
+  },
+  {
+    "term": "Watershed",
+    "beverage_type": "water",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Catchment",
+    "beverage_type": "water",
+    "category": "terroir"
+  },
+  {
+    "term": "Runoff",
+    "beverage_type": "water",
+    "category": "location"
+  },
+  {
+    "term": "Recharge",
+    "beverage_type": "water",
+    "category": "production style"
+  },
+  {
+    "term": "Hydrology",
+    "beverage_type": "water",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Hydrogeology",
+    "beverage_type": "water",
+    "category": "terroir"
+  },
+  {
+    "term": "Desalination",
+    "beverage_type": "water",
+    "category": "location"
+  },
+  {
+    "term": "Brackish",
+    "beverage_type": "water",
+    "category": "production style"
+  },
+  {
+    "term": "Salinity",
+    "beverage_type": "water",
+    "category": "variety of source ingredient"
+  },
+  {
+    "term": "Palatability",
+    "beverage_type": "water",
+    "category": "terroir"
+  },
+  {
+    "term": "Purity",
+    "beverage_type": "water",
+    "category": "location"
+  }
+]
