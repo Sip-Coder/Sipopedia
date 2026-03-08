@@ -1089,6 +1089,7 @@ const REALM_MEDIA: Record<
     sippy: ACADEMY_GUIDES.sippy,
     roma: ACADEMY_GUIDES.roma,
     hummin: ACADEMY_GUIDES.hummin,
+    showGuides: false,
     trailer: "Realm key art",
     cue: "Crystal reflections and confident first pours as the academy gates open."
   },
@@ -1097,6 +1098,7 @@ const REALM_MEDIA: Record<
     sippy: ACADEMY_GUIDES.sippy,
     roma: ACADEMY_GUIDES.roma,
     hummin: ACADEMY_GUIDES.hummin,
+    showGuides: false,
     trailer: "Realm key art",
     cue: "Fast aromatic clue-hunting through the Varietal Wilds."
   },
@@ -1114,6 +1116,7 @@ const REALM_MEDIA: Record<
     sippy: ACADEMY_GUIDES.sippy,
     roma: ACADEMY_GUIDES.roma,
     hummin: ACADEMY_GUIDES.hummin,
+    showGuides: false,
     trailer: "Realm key art",
     cue: "Citadel service pressure with elegant recovery choreography."
   },
@@ -1122,6 +1125,7 @@ const REALM_MEDIA: Record<
     sippy: ACADEMY_GUIDES.sippy,
     roma: ACADEMY_GUIDES.roma,
     hummin: ACADEMY_GUIDES.hummin,
+    showGuides: false,
     trailer: "Realm key art",
     cue: "Grand arena finale where Sippy, Roma, and Hummin co-lead the capstone run."
   }
