@@ -116,13 +116,13 @@ const REALMS: Realm[] = [
   },
   {
     unit: 3,
-    title: "Terroir Peaks",
+    title: "Region Quest",
     lore: "Read climate and soil signals like a deduction specialist.",
     bossLessonId: "wine-58"
   },
   {
     unit: 4,
-    title: "Cellar Citadel",
+    title: "The Aging Vault",
     lore: "Master pairings, vessels, and faults under table-side pressure.",
     bossLessonId: "wine-64"
   },
@@ -518,7 +518,7 @@ const BASE_LESSONS: Lesson[] = ([
   {
     id: "wine-9",
     unit: 3,
-    realm: "Terroir Peaks",
+    realm: "Region Quest",
     title: "Climate Compass",
     tag: "Foundations",
     mission: "Scout",
@@ -560,7 +560,7 @@ const BASE_LESSONS: Lesson[] = ([
   {
     id: "wine-10",
     unit: 3,
-    realm: "Terroir Peaks",
+    realm: "Region Quest",
     title: "Soil Signals",
     tag: "Aromas",
     mission: "Scout",
@@ -602,7 +602,7 @@ const BASE_LESSONS: Lesson[] = ([
   {
     id: "wine-11",
     unit: 3,
-    realm: "Terroir Peaks",
+    realm: "Region Quest",
     title: "Region Snapshot Runs",
     tag: "Structure",
     mission: "Challenge",
@@ -644,7 +644,7 @@ const BASE_LESSONS: Lesson[] = ([
   {
     id: "wine-12",
     unit: 3,
-    realm: "Terroir Peaks",
+    realm: "Region Quest",
     title: "Blind Grid Sprint",
     tag: "Service",
     mission: "Boss",
@@ -686,7 +686,7 @@ const BASE_LESSONS: Lesson[] = ([
   {
     id: "wine-13",
     unit: 4,
-    realm: "Cellar Citadel",
+    realm: "The Aging Vault",
     title: "Oak and Vessel Lab",
     tag: "Foundations",
     mission: "Scout",
@@ -728,7 +728,7 @@ const BASE_LESSONS: Lesson[] = ([
   {
     id: "wine-14",
     unit: 4,
-    realm: "Cellar Citadel",
+    realm: "The Aging Vault",
     title: "Pairing Physics",
     tag: "Aromas",
     mission: "Scout",
@@ -770,7 +770,7 @@ const BASE_LESSONS: Lesson[] = ([
   {
     id: "wine-15",
     unit: 4,
-    realm: "Cellar Citadel",
+    realm: "The Aging Vault",
     title: "Fault Finder",
     tag: "Structure",
     mission: "Challenge",
@@ -812,7 +812,7 @@ const BASE_LESSONS: Lesson[] = ([
   {
     id: "wine-16",
     unit: 4,
-    realm: "Cellar Citadel",
+    realm: "The Aging Vault",
     title: "Citadel Table Boss",
     tag: "Service",
     mission: "Boss",
@@ -1370,7 +1370,7 @@ const REALM_MEDIA: Record<
     cue: "High-altitude terroir scans with structural deduction overlays."
   },
   4: {
-    poster: "/academy/units/unit-04-cellar-craft.png",
+    poster: "/academy/units/unit-04-the-aging-vault.png",
     sippy: ACADEMY_GUIDES.sippy,
     roma: ACADEMY_GUIDES.roma,
     hummin: ACADEMY_GUIDES.hummin,
