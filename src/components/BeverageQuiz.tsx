@@ -181,7 +181,6 @@ export function BeverageQuiz() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [showCorrectAnswers, setShowCorrectAnswers] = useState(false);
   const [shareEmail, setShareEmail] = useState("");
-  const [notice, setNotice] = useState("");
 
   const topicCategories = useMemo(() => buildTopicCategories(), []);
   const topicCategoryMap = useMemo(() => new Map(topicCategories.map((category) => [category.id, category])), [topicCategories]);
@@ -254,9 +253,8 @@ export function BeverageQuiz() {
           ? "limited direct matches for this beverage were backfilled from broader guild exam items"
           : "all questions sourced from beverage-matched exam items";
 
-    setNotice(
-      `Generated ${selected.length} questions from exact extracted language in local guild PDFs (${topicLine}; ${fallbackLine}; source files indexed: ${guildReferenceCatalog.length}).`
-    );
+    void topicLine;
+    void fallbackLine;
   };
 
   const buildExamReportText = () => {
@@ -360,7 +358,7 @@ export function BeverageQuiz() {
         <style>
           :root {
             --cream-main: #f4e8ce;
-            --cream-card: #f8f1df;
+            --cream-card: #ffffff;
             --line: #bda87f;
             --ink: #231d1a;
             --header-ink: #fdf2e1;
@@ -431,6 +429,7 @@ export function BeverageQuiz() {
             padding: 12px;
             margin-bottom: 12px;
             background: var(--cream-card);
+            box-shadow: 0 3px 10px rgba(15, 35, 37, 0.16);
           }
           .question-card h3 { margin: 0 0 8px; font-size: 16px; }
           .question-card ul { margin: 0 0 8px; padding: 0; list-style: none; }
@@ -467,18 +466,17 @@ export function BeverageQuiz() {
       </html>
     `;
 
-    const printWindow = window.open("", "_blank", "noopener,noreferrer");
+    const printWindow = window.open("", "_blank");
     if (!printWindow) {
-      setNotice("Popup blocked by browser. Enable popups to export the quiz as PDF.");
       return;
     }
     try {
       printWindow.document.open();
       printWindow.document.write(html);
       printWindow.document.close();
+      printWindow.opener = null;
       printWindow.focus();
     } catch {
-      setNotice("Could not render printable PDF window. Please try again.");
       try {
         printWindow.close();
       } catch {
@@ -544,10 +542,26 @@ export function BeverageQuiz() {
         </div>
       </div>
 
-      {notice ? <p className="hint">{notice}</p> : null}
-
       {questions.length > 0 ? (
         <>
+          <section className="quiz-share-actions">
+            <p>Share the full exam report with your selected answers and all correct answers.</p>
+            <div className="quiz-share-row">
+              <input
+                type="email"
+                value={shareEmail}
+                onChange={(event) => setShareEmail(event.target.value)}
+                placeholder="Recipient email (optional)"
+              />
+              <button className="btn btn-light" onClick={openEmailDraft}>
+                Send To Email
+              </button>
+              <button className="btn btn-light" onClick={exportExamAsPdf}>
+                Export As PDF
+              </button>
+            </div>
+          </section>
+
           <div className="quiz-meta">
             <p>Exam size: {questions.length} questions</p>
             <p>
@@ -607,23 +621,6 @@ export function BeverageQuiz() {
             })}
           </ol>
 
-          <section className="quiz-share-actions">
-            <p>Share the full exam report with your selected answers and all correct answers.</p>
-            <div className="quiz-share-row">
-              <input
-                type="email"
-                value={shareEmail}
-                onChange={(event) => setShareEmail(event.target.value)}
-                placeholder="Recipient email (optional)"
-              />
-              <button className="btn btn-light" onClick={openEmailDraft}>
-                Send To Email
-              </button>
-              <button className="btn btn-light" onClick={exportExamAsPdf}>
-                Export As PDF
-              </button>
-            </div>
-          </section>
         </>
       ) : null}
     </section>

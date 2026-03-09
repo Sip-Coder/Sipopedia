@@ -19,9 +19,10 @@ type TerminologyCandidate = {
   source_note?: string;
 };
 
-type OpenAiResponse = {
-  output_text?: string;
-  output?: Array<{ content?: Array<{ type?: string; text?: string }> }>;
+type WikipediaSearchResponse = {
+  query?: {
+    search?: Array<{ title?: string; snippet?: string }>;
+  };
 };
 
 type HarvestRun = {
@@ -57,39 +58,72 @@ const BEVERAGE_TYPES = new Set([
 const CATEGORIES = new Set(["location", "terroir", "variety of source ingredient", "production style"]);
 const MAX_TARGET = 500;
 const DEFAULT_TARGET = 500;
-const PER_CALL_TARGET = 75;
-const MAX_ATTEMPTS = 20;
+const PER_CALL_TARGET = 40;
+const MAX_ATTEMPTS = 12;
+const WIKIPEDIA_SEARCH_URL = "https://en.wikipedia.org/w/api.php";
+const WIKIPEDIA_SUMMARY_BASE_URL = "https://en.wikipedia.org/api/rest_v1/page/summary/";
+const SEARCH_TOPICS = [
+  "wine terminology",
+  "wine grape variety",
+  "wine region",
+  "viticulture term",
+  "oenology",
+  "beer terminology",
+  "brewery process",
+  "hop variety",
+  "malt term",
+  "spirits terminology",
+  "whisky production",
+  "rum production",
+  "tequila term",
+  "gin botanical",
+  "coffee terminology",
+  "coffee processing",
+  "coffee variety",
+  "tea terminology",
+  "tea processing",
+  "tea cultivar",
+  "kombucha terminology",
+  "juice production",
+  "water mineral profile",
+  "dairy beverage term",
+  "fermentation term",
+  "beverage sensory term"
+];
+const BEVERAGE_KEYWORDS = [
+  "wine",
+  "beer",
+  "brew",
+  "brewery",
+  "spirit",
+  "whisky",
+  "whiskey",
+  "vodka",
+  "rum",
+  "tequila",
+  "mezcal",
+  "brandy",
+  "liqueur",
+  "coffee",
+  "espresso",
+  "tea",
+  "kombucha",
+  "juice",
+  "milk",
+  "water",
+  "beverage",
+  "ferment",
+  "grape",
+  "vineyard",
+  "hop",
+  "malt"
+];
 
 function json(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" }
   });
-}
-
-function extractOpenAiText(payload: OpenAiResponse): string {
-  if (typeof payload.output_text === "string" && payload.output_text.trim().length > 0) {
-    return payload.output_text.trim();
-  }
-
-  if (!Array.isArray(payload.output)) {
-    return "";
-  }
-
-  return payload.output
-    .flatMap((row) => row.content ?? [])
-    .filter((item) => item?.type === "output_text" && typeof item.text === "string")
-    .map((item) => item.text ?? "")
-    .join("\n")
-    .trim();
-}
-
-function extractJsonBlock(text: string): string {
-  const fenced = /```(?:json)?\s*([\s\S]*?)\s*```/i.exec(text);
-  if (fenced?.[1]) {
-    return fenced[1].trim();
-  }
-  return text.trim();
 }
 
 function normalizeTerm(input: string): string {
@@ -187,6 +221,199 @@ function normalizeCategory(input: unknown): string {
   return aliases[raw] ?? "production style";
 }
 
+function splitSentences(text: string): string[] {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  if (!normalized) {
+    return [];
+  }
+  const pieces = normalized.match(/[^.!?]+[.!?]?/g) ?? [];
+  return pieces.map((part) => part.trim()).filter(Boolean);
+}
+
+function textContainsBeverageContext(text: string): boolean {
+  const lower = text.toLowerCase();
+  return BEVERAGE_KEYWORDS.some((keyword) => lower.includes(keyword));
+}
+
+function inferBeverageType(text: string): string {
+  const lower = text.toLowerCase();
+
+  if (/(whisky|whiskey|vodka|rum|tequila|mezcal|brandy|cognac|gin|liqueur|spirits?)/.test(lower)) {
+    return "spirits";
+  }
+  if (/(beer|ale|lager|stout|porter|pilsner|ipa|hop|malt|brew)/.test(lower)) {
+    return "beer";
+  }
+  if (/(coffee|espresso|arabica|robusta|cappuccino|latte)/.test(lower)) {
+    return "coffee";
+  }
+  if (/(tea|oolong|green tea|black tea|white tea|camellia sinensis)/.test(lower)) {
+    return "tea";
+  }
+  if (/kombucha/.test(lower)) {
+    return "kombucha";
+  }
+  if (/(juice|cider|must|nectar)/.test(lower)) {
+    return "juice";
+  }
+  if (/(milk|dairy|whey)/.test(lower)) {
+    return "milk";
+  }
+  if (/(water|mineral water|spring water|aquifer)/.test(lower)) {
+    return "water";
+  }
+
+  return "wine";
+}
+
+function inferCategory(text: string): string {
+  const lower = text.toLowerCase();
+
+  if (/(country|region|valley|district|appellation|ava|denominaci[oó]n|geographical indication|gi\b)/.test(lower)) {
+    return "location";
+  }
+  if (/(soil|climate|microclimate|elevation|altitude|terroir|maritime|continental)/.test(lower)) {
+    return "terroir";
+  }
+  if (/(grape|varietal|variety|cultivar|hop variety|tea cultivar|arabica|robusta|species)/.test(lower)) {
+    return "variety of source ingredient";
+  }
+
+  return "production style";
+}
+
+function buildHowToApply(term: string, beverageType: string, category: string): string {
+  if (category === "location") {
+    return `Use ${term} when discussing origin and regional identity to set expectations for style, quality, and labeling context in ${beverageType}.`;
+  }
+  if (category === "terroir") {
+    return `Use ${term} to explain how site conditions influence flavor, structure, and consistency in ${beverageType}.`;
+  }
+  if (category === "variety of source ingredient") {
+    return `Use ${term} when comparing ingredient choices and their sensory outcomes so recommendations and training notes stay precise.`;
+  }
+  return `Use ${term} to describe a production approach and its practical impact on aroma, texture, and finish in service or education.`;
+}
+
+function stripParentheticalTitle(title: string): string {
+  return title.replace(/\s*\([^)]*\)\s*$/, "").trim();
+}
+
+function extractWikiUrl(summary: Record<string, unknown>, title: string): string {
+  const contentUrls = summary.content_urls as
+    | {
+        desktop?: { page?: string };
+      }
+    | undefined;
+  const page = contentUrls?.desktop?.page;
+  if (typeof page === "string" && page.startsWith("http")) {
+    return page;
+  }
+  return `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/\s+/g, "_"))}`;
+}
+
+function candidateFromWikipediaSummary(summary: Record<string, unknown>): TerminologyCandidate | null {
+  const rawTitle = typeof summary.title === "string" ? summary.title.trim() : "";
+  const extract = typeof summary.extract === "string" ? summary.extract.trim() : "";
+  const description = typeof summary.description === "string" ? summary.description.trim() : "";
+  const wikiType = typeof summary.type === "string" ? summary.type.trim() : "";
+
+  if (!rawTitle || !extract || wikiType === "disambiguation") {
+    return null;
+  }
+
+  const term = stripParentheticalTitle(rawTitle);
+  if (!term || term.length > 80) {
+    return null;
+  }
+
+  const contextText = `${rawTitle} ${description} ${extract}`;
+  if (!textContainsBeverageContext(contextText)) {
+    return null;
+  }
+
+  const beverageType = inferBeverageType(contextText);
+  const category = inferCategory(contextText);
+  const sentences = splitSentences(extract);
+  const meaning = (sentences[0] ?? extract).trim();
+  const exampleSentence = sentences[1] ?? sentences[0] ?? "";
+  const referenceUrl = extractWikiUrl(summary, rawTitle);
+
+  if (!meaning) {
+    return null;
+  }
+
+  const examples = exampleSentence
+    ? [`Example context: ${exampleSentence}`]
+    : [`Example context: ${term} appears in professional ${beverageType} discussions and training materials.`];
+
+  return {
+    term,
+    beverage_type: beverageType,
+    category,
+    meaning,
+    how_to_apply: buildHowToApply(term, beverageType, category),
+    examples,
+    other_ideas: [
+      `Compare ${term} across producers and regions to evaluate style variation and practical use.`
+    ],
+    related_terms: [],
+    reference_links: [referenceUrl],
+    mla_citations: [fallbackCitation(term, "Wikipedia", referenceUrl)],
+    source_title: "Wikipedia",
+    source_authors: ["Wikipedia contributors"],
+    purchase_links: [referenceUrl],
+    source_note: "Automated non-OpenAI ingest from Wikipedia search and summary endpoints."
+  };
+}
+
+async function searchWikipedia(topic: string, limit: number): Promise<string[]> {
+  const query = new URLSearchParams({
+    action: "query",
+    list: "search",
+    srsearch: topic,
+    srlimit: String(limit),
+    format: "json",
+    utf8: "1",
+    origin: "*"
+  });
+
+  const response = await fetch(`${WIKIPEDIA_SEARCH_URL}?${query.toString()}`);
+  if (!response.ok) {
+    return [];
+  }
+
+  const payload = (await response.json()) as WikipediaSearchResponse;
+  const rows = payload.query?.search ?? [];
+  const out = new Set<string>();
+
+  for (const row of rows) {
+    if (typeof row.title !== "string") {
+      continue;
+    }
+    const title = row.title.trim();
+    if (title) {
+      out.add(title);
+    }
+  }
+
+  return Array.from(out);
+}
+
+async function fetchWikipediaSummary(title: string): Promise<Record<string, unknown> | null> {
+  const response = await fetch(`${WIKIPEDIA_SUMMARY_BASE_URL}${encodeURIComponent(title)}`);
+  if (!response.ok) {
+    return null;
+  }
+
+  try {
+    const payload = (await response.json()) as Record<string, unknown>;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
 function sanitizeCandidate(raw: TerminologyCandidate): Record<string, unknown> | null {
   const term = typeof raw.term === "string" ? raw.term.trim().replace(/\s+/g, " ") : "";
   const meaning = typeof raw.meaning === "string" ? raw.meaning.trim() : "";
@@ -276,96 +503,54 @@ async function fetchExistingTerms(supabaseUrl: string, serviceRoleKey: string): 
 }
 
 async function generateCandidates(
-  openAiApiKey: string,
-  model: string,
   requestedCount: number,
   duplicateGuardSample: string[]
 ): Promise<TerminologyCandidate[]> {
-  const systemPrompt = [
-    "You are a Master Sommelier-level beverage lexicon researcher.",
-    "Research current professional beverage discourse using web search and produce original terminology entries.",
-    "Cover wine, beer, spirits, coffee, tea, kombucha, juice, milk, and water.",
-    "Use only non-verbatim paraphrased writing.",
-    "Return strict JSON with shape: {\"items\":[...]} and no prose."
-  ].join(" ");
+  const sampleSet = new Set(duplicateGuardSample.map((value) => normalizeTerm(value)));
+  const titleSet = new Set<string>();
 
-  const userPayload = {
-    task: "Create novel beverage terminology entries suitable for a professional training database.",
-    count: requestedCount,
-    constraints: {
-      unique_vs_existing_terms: true,
-      avoid_terms_sample: duplicateGuardSample,
-      required_fields: [
-        "term",
-        "beverage_type",
-        "category",
-        "meaning",
-        "how_to_apply",
-        "examples",
-        "other_ideas",
-        "related_terms",
-        "reference_links",
-        "mla_citations",
-        "source_title",
-        "source_authors",
-        "purchase_links",
-        "source_note"
-      ],
-      beverage_type_allowed: Array.from(BEVERAGE_TYPES),
-      category_allowed: Array.from(CATEGORIES),
-      style: {
-        term_length: "1-4 words",
-        meaning: "single sentence, practical and precise",
-        how_to_apply: "single sentence, implementation-oriented",
-        examples_count: 1,
-        other_ideas_count: 1,
-        related_terms_count: 2,
-        references_count: 1,
-        citations_count: 1
+  for (const topic of SEARCH_TOPICS) {
+    if (titleSet.size >= requestedCount * 3) {
+      break;
+    }
+    const titles = await searchWikipedia(topic, 30);
+    for (const title of titles) {
+      const normalized = normalizeTerm(stripParentheticalTitle(title));
+      if (!normalized || sampleSet.has(normalized)) {
+        continue;
       }
-    },
-    freshness: "Prioritize discourse that appears current in the professional field."
-  };
-
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${openAiApiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model,
-      max_output_tokens: 12000,
-      tools: [{ type: "web_search_preview" }],
-      input: [
-        {
-          role: "system",
-          content: [{ type: "input_text", text: systemPrompt }]
-        },
-        {
-          role: "user",
-          content: [{ type: "input_text", text: JSON.stringify(userPayload) }]
-        }
-      ]
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error(`OpenAI request failed (${response.status}).`);
+      titleSet.add(title);
+    }
   }
 
-  const payload = (await response.json()) as OpenAiResponse;
-  const text = extractOpenAiText(payload);
-  if (!text) {
-    return [];
+  const output: TerminologyCandidate[] = [];
+  const titles = Array.from(titleSet);
+
+  for (let i = 0; i < titles.length && output.length < requestedCount; i += 6) {
+    const batch = titles.slice(i, i + 6);
+    const summaries = await Promise.all(batch.map((title) => fetchWikipediaSummary(title)));
+
+    for (const summary of summaries) {
+      if (!summary) {
+        continue;
+      }
+      const candidate = candidateFromWikipediaSummary(summary);
+      if (!candidate) {
+        continue;
+      }
+      const normalized = normalizeTerm(candidate.term ?? "");
+      if (!normalized || sampleSet.has(normalized)) {
+        continue;
+      }
+      sampleSet.add(normalized);
+      output.push(candidate);
+      if (output.length >= requestedCount) {
+        break;
+      }
+    }
   }
 
-  const parsed = JSON.parse(extractJsonBlock(text)) as { items?: TerminologyCandidate[] };
-  if (!Array.isArray(parsed.items)) {
-    return [];
-  }
-
-  return parsed.items;
+  return output;
 }
 
 function pickSample(values: Set<string>, size: number): string[] {
@@ -491,13 +676,10 @@ Deno.serve(async (request) => {
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim() ?? "";
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim() ?? "";
-  const openAiApiKey = Deno.env.get("OPENAI_API_KEY")?.trim() ?? "";
-  const model = Deno.env.get("OPENAI_MODEL")?.trim() || "gpt-4.1-mini";
 
-  if (!supabaseUrl || !serviceRoleKey || !openAiApiKey) {
+  if (!supabaseUrl || !serviceRoleKey) {
     return json(500, {
-      error:
-        "Missing required secrets. Ensure SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and OPENAI_API_KEY are set."
+      error: "Missing required secrets. Ensure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set."
     });
   }
 
@@ -535,7 +717,7 @@ Deno.serve(async (request) => {
       const requestCount = Math.min(PER_CALL_TARGET, remaining + 25);
       const duplicateGuardSample = pickSample(existingTerms, 500);
 
-      const generated = await generateCandidates(openAiApiKey, model, requestCount, duplicateGuardSample);
+      const generated = await generateCandidates(requestCount, duplicateGuardSample);
       run.generated += generated.length;
 
       const validated: Array<Record<string, unknown>> = [];

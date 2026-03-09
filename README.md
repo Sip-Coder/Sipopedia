@@ -76,13 +76,14 @@ This repo now includes:
 
 - `supabase/functions/terminology-harvester/index.ts`
 - `supabase/migrations/202603080001_terminology_harvester_cron.sql`
+- `supabase/migrations/202603080003_enable_terminology_harvester_cron_non_openai.sql`
 
 What it does:
 - Runs daily by `pg_cron`
 - Calls `terminology-harvester`
-- Uses OpenAI web search to research current professional beverage terminology
+- Uses public Wikipedia search + summary endpoints (no paid model API required)
 - Dedupes against existing `public.terminology_entries`
-- Inserts up to `500` new schema-compliant terms each run
+- Inserts up to `250` new schema-compliant terms each run
 - Logs each run to `public.terminology_harvest_runs`
 
 Deploy/update steps:
@@ -93,11 +94,8 @@ supabase db push
 ```
 
 Required secrets:
-
-```bash
-supabase secrets set OPENAI_API_KEY=YOUR_KEY
-supabase secrets set OPENAI_MODEL=gpt-4.1-mini
-```
+- No OpenAI secret is required for terminology harvesting.
+- Supabase platform secrets (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) are already provided by the project runtime.
 
 Optional hardening secret (recommended):
 

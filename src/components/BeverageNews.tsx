@@ -125,6 +125,12 @@ type SourceLoadResult = {
   error?: string;
 };
 
+type NewsCachePayload = {
+  savedAt: string;
+  articles: BeverageArticle[];
+  sourceModes: Record<string, SourceLoadMode>;
+};
+
 type FilterState = {
   preset: FilterPreset;
   selectedGuildIds: string[];
@@ -423,6 +429,9 @@ const MAX_SUMMARY_LENGTH = 220;
 const PAGE_SIZE_OPTIONS = [12, 24, 48, 120] as const;
 type NewsPageSize = (typeof PAGE_SIZE_OPTIONS)[number];
 const MAX_NEWS_PAGE_COUNT = 10;
+const SOURCE_FETCH_TIMEOUT_MS = 8000;
+const NEWS_CACHE_KEY = "sipstudies:beverage-news:v1";
+const NEWS_CACHE_MAX_AGE_MS = 1000 * 60 * 45;
 const GUILD_CATEGORY: SourceCategory = "Institution & Guild";
 const MAGAZINE_CATEGORY: SourceCategory = "Magazine";
 const OWN_CATEGORY: SourceCategory = "Own";
@@ -505,6 +514,63 @@ function toCustomOrAllNews(state: Omit<FilterState, "preset">): FilterState {
 
 function stripHtml(input: string): string {
   return input.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: string): Promise<T> {
+  let timerId: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timerId = setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs);
+  });
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    if (timerId !== undefined) {
+      clearTimeout(timerId);
+    }
+  }
+}
+
+function readNewsCache(): NewsCachePayload | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  try {
+    const raw = window.localStorage.getItem(NEWS_CACHE_KEY);
+    if (!raw) {
+      return null;
+    }
+    const parsed = JSON.parse(raw) as NewsCachePayload;
+    if (!parsed || typeof parsed.savedAt !== "string" || !Array.isArray(parsed.articles) || !parsed.sourceModes) {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeNewsCache(payload: NewsCachePayload): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+  try {
+    window.localStorage.setItem(NEWS_CACHE_KEY, JSON.stringify(payload));
+  } catch {
+    // Ignore localStorage write failures.
+  }
+}
+
+function mergeResults(results: SourceLoadResult[]): BeverageArticle[] {
+  return results
+    .flatMap((result) => result.articles)
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+}
+
+function buildModeMap(results: SourceLoadResult[]): Record<string, SourceLoadMode> {
+  return results.reduce<Record<string, SourceLoadMode>>((acc, result) => {
+    acc[result.sourceId] = result.mode;
+    return acc;
+  }, {});
 }
 
 function extractFirstImageUrl(input: string, baseUrl?: string): string | undefined {
@@ -871,36 +937,83 @@ export function BeverageNews() {
     let canceled = false;
 
     const load = async () => {
-      setIsLoading(true);
       setError(null);
       setWarning(null);
+      const cached = readNewsCache();
+      const cacheFresh =
+        cached && Date.now() - new Date(cached.savedAt).getTime() <= NEWS_CACHE_MAX_AGE_MS && cached.articles.length > 0;
 
-      const results = await Promise.all(FETCHABLE_SOURCES.map((source) => fetchSource(source)));
+      if (cacheFresh) {
+        setArticles(cached.articles);
+        setSourceModes(cached.sourceModes);
+        setLastUpdated(cached.savedAt);
+      }
+
+      setIsLoading(true);
+      const liveResults: SourceLoadResult[] = [];
+      const hadCachedData = Boolean(cacheFresh);
+      const total = FETCHABLE_SOURCES.length;
+      let completed = 0;
+
+      const commitProgress = () => {
+        const merged = mergeResults(liveResults);
+        if (merged.length > 0 || !hadCachedData) {
+          setArticles(merged);
+          setLastUpdated(new Date().toISOString());
+        }
+        setSourceModes(buildModeMap(liveResults));
+      };
+
+      await Promise.all(
+        FETCHABLE_SOURCES.map(async (source) => {
+          let result: SourceLoadResult;
+          try {
+            result = await withTimeout(fetchSource(source), SOURCE_FETCH_TIMEOUT_MS, `${source.name} timed out while loading.`);
+          } catch (sourceError) {
+            const message =
+              sourceError instanceof Error ? sourceError.message : `Could not load ${source.name} right now.`;
+            result = { sourceId: source.id, mode: "failed", articles: [], error: message };
+          }
+
+          if (canceled) {
+            return;
+          }
+
+          liveResults.push(result);
+          completed += 1;
+          if (completed === 1 || completed % 4 === 0 || completed === total) {
+            commitProgress();
+          }
+        })
+      );
+
       if (canceled) {
         return;
       }
 
-      const merged = results
-        .flatMap((result) => result.articles)
-        .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
-      const failed = results.filter((result) => result.mode === "failed");
-      const modeMap = results.reduce<Record<string, SourceLoadMode>>((acc, result) => {
-        acc[result.sourceId] = result.mode;
-        return acc;
-      }, {});
+      const merged = mergeResults(liveResults);
+      const failed = liveResults.filter((result) => result.mode === "failed");
+      const modeMap = buildModeMap(liveResults);
 
-      setArticles(merged);
-      setLastUpdated(new Date().toISOString());
-      setSourceModes(modeMap);
+      if (merged.length > 0) {
+        const savedAt = new Date().toISOString();
+        setArticles(merged);
+        setLastUpdated(savedAt);
+        writeNewsCache({ savedAt, articles: merged, sourceModes: modeMap });
+      }
 
-      if (!merged.length && failed.length) {
+      if (!merged.length && failed.length && !hadCachedData) {
         setError(failed.map((result) => result.error).filter(Boolean).join(" "));
       } else if (merged.length && failed.length) {
         const sourceNames = failed.map(
           (result) => FETCHABLE_SOURCES.find((source) => source.id === result.sourceId)?.name ?? result.sourceId
         );
         setWarning(`Some sources are unavailable right now: ${sourceNames.join(", ")}.`);
+      } else if (!merged.length && hadCachedData) {
+        setWarning("Showing cached headlines while live sources are temporarily unavailable.");
       }
+
+      setSourceModes(modeMap);
       setIsLoading(false);
     };
 

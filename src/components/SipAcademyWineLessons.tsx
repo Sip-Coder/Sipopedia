@@ -106,31 +106,61 @@ const REALMS: Realm[] = [
     unit: 1,
     title: "Crystal Atrium",
     lore: "Build your tasting HUD and unlock your first service protocol.",
-    bossLessonId: "wine-4"
+    bossLessonId: "wine-46"
   },
   {
     unit: 2,
     title: "Varietal Wilds",
     lore: "Track grape clues and map styles across classic families.",
-    bossLessonId: "wine-8"
+    bossLessonId: "wine-52"
   },
   {
     unit: 3,
     title: "Terroir Peaks",
     lore: "Read climate and soil signals like a deduction specialist.",
-    bossLessonId: "wine-12"
+    bossLessonId: "wine-58"
   },
   {
     unit: 4,
     title: "Cellar Citadel",
     lore: "Master pairings, vessels, and faults under table-side pressure.",
-    bossLessonId: "wine-16"
+    bossLessonId: "wine-64"
   },
   {
     unit: 5,
     title: "Grand Sommelier Arena",
     lore: "Final gauntlet with Sippy, Roma, and Hummin guiding every decision chain.",
-    bossLessonId: "wine-20"
+    bossLessonId: "wine-70"
+  },
+  {
+    unit: 6,
+    title: "Sparkling Lab",
+    lore: "Master bubbles, dosage, and bottle-pressure service choices.",
+    bossLessonId: "wine-76"
+  },
+  {
+    unit: 7,
+    title: "Old Cellar Archive",
+    lore: "Train regional memory and vintage logic from benchmark regions.",
+    bossLessonId: "wine-82"
+  },
+  {
+    unit: 8,
+    title: "Pairing Theatre",
+    lore: "Execute pairing calls for salt, fat, heat, sweetness, and umami pressure.",
+    bossLessonId: "wine-88"
+  },
+  {
+    unit: 9,
+    title: "Blind Grid Forge",
+    lore: "Run fast blind-tasting grids with evidence-first deduction discipline.",
+    bossLessonId: "wine-94"
+  },
+  {
+    unit: 10,
+    title: "Mastery Summit",
+    lore: "Capstone synthesis of theory, tasting, and polished guest service.",
+    bossLessonId: "wine-100"
   }
 ];
 
@@ -148,7 +178,7 @@ function order(id: string, prompt: string, options: string[], answer: string[], 
   return { id, kind: "order", prompt, options, answer, explanation };
 }
 
-const LESSONS: Lesson[] = ([
+const BASE_LESSONS: Lesson[] = ([
   {
     id: "wine-1",
     unit: 1,
@@ -989,10 +1019,237 @@ const LESSONS: Lesson[] = ([
       )
     ]
   }
- ] as Lesson[]).map((lesson, index) => ({
-  ...lesson,
-  mentor: MENTOR_ROTATION[index % MENTOR_ROTATION.length]
-}));
+ ] as Lesson[]);
+
+const GENERATED_UNIT_PLAN: Array<{
+  unit: number;
+  realm: string;
+  title: string;
+  lore: string;
+  themes: [string, string, string, string];
+}> = [
+  {
+    unit: 6,
+    realm: "Sparkling Lab",
+    title: "Pressure and Mousse",
+    lore: "Control sparkling production and service with clean precision.",
+    themes: ["Sparkling Methods", "Dosage and Sweetness", "Service Mechanics", "Sparkling Lab Boss"]
+  },
+  {
+    unit: 7,
+    realm: "Old Cellar Archive",
+    title: "Regional Memory",
+    lore: "Apply vintage and appellation logic to recommendation quality.",
+    themes: ["Classic Regions", "Vintage Logic", "Appellation Precision", "Archive Boss"]
+  },
+  {
+    unit: 8,
+    realm: "Pairing Theatre",
+    title: "Course Pairing",
+    lore: "Run full-course pairing decisions under hospitality pressure.",
+    themes: ["Pairing Mechanics I", "Pairing Mechanics II", "Course Sequencing", "Pairing Theatre Boss"]
+  },
+  {
+    unit: 9,
+    realm: "Blind Grid Forge",
+    title: "Deduction Speed",
+    lore: "Strengthen blind analysis with evidence-first elimination.",
+    themes: ["Blind Grid Foundations", "Aroma Mapping", "Structure Elimination", "Blind Grid Boss"]
+  },
+  {
+    unit: 10,
+    realm: "Mastery Summit",
+    title: "Capstone Mastery",
+    lore: "Synthesize tasting, pairing, and service into one repeatable system.",
+    themes: ["Capstone I", "Capstone II", "Capstone III", "Mastery Summit Final Boss"]
+  }
+];
+
+function generatedMissionByIndex(index: number): Lesson["mission"] {
+  if (index <= 1) return "Scout";
+  if (index === 2) return "Challenge";
+  return "Boss";
+}
+
+function generatedTagByIndex(index: number): LessonTag {
+  if (index === 0) return "Foundations";
+  if (index === 1) return "Aromas";
+  if (index === 2) return "Structure";
+  return "Service";
+}
+
+function generatedDifficulty(unit: number, index: number): number {
+  if (unit <= 7) return Math.min(5, 3 + index);
+  return Math.min(5, 4 + (index >= 2 ? 1 : 0));
+}
+
+function generatedXp(unit: number, index: number): number {
+  const base = 28 + unit * 2;
+  if (index <= 1) return base;
+  if (index === 2) return base + 4;
+  return base + 10;
+}
+
+function makeGeneratedLesson(
+  idNumber: number,
+  unit: number,
+  realm: string,
+  theme: string,
+  missionIndex: number
+): Lesson {
+  const id = `wine-${idNumber}`;
+  const mission = generatedMissionByIndex(missionIndex);
+  const tag = generatedTagByIndex(missionIndex);
+  return {
+    id,
+    unit,
+    realm,
+    title: theme,
+    tag,
+    mission,
+    difficulty: generatedDifficulty(unit, missionIndex),
+    mentor: "sippy",
+    subtitle: `${theme}: train fast evidence-based calls with service-ready language.`,
+    xpBonus: generatedXp(unit, missionIndex),
+    exercises: [
+      choice(
+        `${id}-1`,
+        `In ${theme}, the strongest first move is to:`,
+        ["Capture objective cues first", "Guess final answer immediately", "Skip structure checks", "Mirror the previous answer"],
+        0,
+        "Objective cues provide the foundation for reliable decisions."
+      ),
+      choice(
+        `${id}-2`,
+        `When cues conflict during ${theme}, best practice is to:`,
+        ["Reconcile clues before concluding", "Ignore acidity", "Ignore aroma", "Choose fastest option"],
+        0,
+        "High-quality calls integrate all major evidence signals."
+      ),
+      order(
+        `${id}-3`,
+        `Order the recommended ${theme} workflow.`,
+        ["Observe", "Interpret", "Recommend", "Confirm outcome"],
+        ["Observe", "Interpret", "Recommend", "Confirm outcome"],
+        "Consistent sequencing improves both speed and accuracy."
+      ),
+      choice(
+        `${id}-4`,
+        `Successful ${theme} service is best measured by:`,
+        ["Guest outcome plus technical clarity", "Only speed", "Only upsell value", "Only theory terms"],
+        0,
+        "Professional performance balances guest experience with sound technique."
+      )
+    ]
+  };
+}
+
+const GENERATED_LESSONS: Lesson[] = GENERATED_UNIT_PLAN.flatMap((plan, planIndex) =>
+  plan.themes.map((theme, lessonIndex) => makeGeneratedLesson(21 + planIndex * 4 + lessonIndex, plan.unit, plan.realm, theme, lessonIndex))
+);
+
+function supplementalMissionByIndex(index: number): Lesson["mission"] {
+  return index === 5 ? "Boss" : index >= 3 ? "Challenge" : "Scout";
+}
+
+function supplementalTagByIndex(index: number): LessonTag {
+  if (index <= 1) return "Foundations";
+  if (index <= 3) return "Aromas";
+  if (index === 4) return "Structure";
+  return "Service";
+}
+
+function makeSupplementalLesson(idNumber: number, unit: number, realm: string, slot: number): Lesson {
+  const id = `wine-${idNumber}`;
+  const mission = supplementalMissionByIndex(slot);
+  const tag = supplementalTagByIndex(slot);
+  const phase = slot + 1;
+  return {
+    id,
+    unit,
+    realm,
+    title: `${realm} Advanced Mission ${phase}`,
+    tag,
+    mission,
+    difficulty: Math.min(5, 3 + Math.floor((phase + unit) / 3)),
+    mentor: "sippy",
+    subtitle: `Extended drill ${phase}/6 for ${realm}: reinforce high-speed sensory and service decisions.`,
+    xpBonus: 34 + unit * 2 + slot * 2 + (mission === "Boss" ? 8 : 0),
+    exercises: [
+      choice(
+        `${id}-1`,
+        `In ${realm} advanced mission ${phase}, what is the best opening move?`,
+        ["Capture evidence before interpretation", "Jump straight to final conclusion", "Ignore weak signals", "Use previous answer pattern"],
+        0,
+        "A consistent evidence-first opening is the strongest reliability anchor."
+      ),
+      choice(
+        `${id}-2`,
+        "When two clues conflict, what should you do first?",
+        ["Recheck core structure and aroma alignment", "Discard aroma", "Discard palate", "Randomly select the safer option"],
+        0,
+        "Reconciling conflicting clues is key to high-quality calls."
+      ),
+      order(
+        `${id}-3`,
+        "Order the recommended decision sequence.",
+        ["Observe", "Interpret", "Recommend", "Verify guest outcome"],
+        ["Observe", "Interpret", "Recommend", "Verify guest outcome"],
+        "This sequence keeps analysis and hospitality synchronized."
+      ),
+      choice(
+        `${id}-4`,
+        "What best defines a successful mission result?",
+        ["Technically sound call plus guest-aligned delivery", "Fastest completion only", "Highest confidence language only", "Most complex terminology"],
+        0,
+        "Service excellence combines technical rigor and guest impact."
+      )
+    ]
+  };
+}
+
+const SUPPLEMENTAL_LESSONS: Lesson[] = REALMS.flatMap((realm, realmIndex) =>
+  Array.from({ length: 6 }, (_, slot) => makeSupplementalLesson(41 + realmIndex * 6 + slot, realm.unit, realm.title, slot))
+);
+
+function lessonIdNumber(id: string): number {
+  const match = /^wine-(\d+)$/.exec(id);
+  return match ? Number(match[1]) : Number.MAX_SAFE_INTEGER;
+}
+
+function masteryStarStates(level: number): boolean[] {
+  return Array.from({ length: MAX_MASTERY }, (_, index) => index < level);
+}
+
+const lessonsSorted: Lesson[] = [...BASE_LESSONS, ...GENERATED_LESSONS, ...SUPPLEMENTAL_LESSONS]
+  .sort((a, b) => {
+    if (a.unit !== b.unit) return a.unit - b.unit;
+    return lessonIdNumber(a.id) - lessonIdNumber(b.id);
+  });
+
+const lastLessonIdByUnit = lessonsSorted.reduce<Record<number, string>>((acc, lesson) => {
+  acc[lesson.unit] = lesson.id;
+  return acc;
+}, {});
+
+const LESSONS: Lesson[] = lessonsSorted.map((lesson, index) => ({
+    ...lesson,
+    mission:
+      lesson.id === lastLessonIdByUnit[lesson.unit]
+        ? "Boss"
+        : lesson.mission === "Boss"
+          ? "Challenge"
+          : lesson.mission,
+    mentor: MENTOR_ROTATION[index % MENTOR_ROTATION.length]
+  }));
+
+const UNIT_START_LESSON_IDS = new Set(
+  LESSONS.filter((lesson, index) => index === 0 || LESSONS[index - 1].unit !== lesson.unit).map((lesson) => lesson.id)
+);
+
+function isUnitStartLesson(lessonId: string): boolean {
+  return UNIT_START_LESSON_IDS.has(lessonId);
+}
 
 const ACADEMY_GUIDES = {
   sippy: "/academy/guides/sippy-guide.jpg",
@@ -1001,10 +1258,11 @@ const ACADEMY_GUIDES = {
 } as const;
 
 const MENTOR_CARD_IMAGES = {
-  sippy: "/academy/guides/sippy-card-coffee.png",
-  roma: "/academy/guides/roma-card-tea.png",
-  hummin: "/academy/guides/hummin-card-wine.png"
+  sippy: "/academy/guides/sippy-card-wine.png",
+  roma: "/academy/guides/roma-card-tea-01.png",
+  hummin: "/academy/guides/hummin-card-coffee-01.png"
 } as const;
+const ACADEMY_WELCOME_IMAGE = "/academy/welcome/welcome-group-photo.png";
 
 const MENTORS: Record<MentorId, { name: string; title: string }> = {
   sippy: { name: "Sippy", title: "Lead Beverage Educator" },
@@ -1085,7 +1343,7 @@ const REALM_MEDIA: Record<
   }
 > = {
   1: {
-    poster: "/academy/realms/realm-1-crystal-atrium.jpg",
+    poster: "/academy/units/unit-01-crystal-atrium.png",
     sippy: ACADEMY_GUIDES.sippy,
     roma: ACADEMY_GUIDES.roma,
     hummin: ACADEMY_GUIDES.hummin,
@@ -1094,7 +1352,7 @@ const REALM_MEDIA: Record<
     cue: "Crystal reflections and confident first pours as the academy gates open."
   },
   2: {
-    poster: "/academy/realms/realm-2-varietal-wilds.jpg",
+    poster: "/academy/units/unit-02-varietal-wilds.png",
     sippy: ACADEMY_GUIDES.sippy,
     roma: ACADEMY_GUIDES.roma,
     hummin: ACADEMY_GUIDES.hummin,
@@ -1103,7 +1361,7 @@ const REALM_MEDIA: Record<
     cue: "Fast aromatic clue-hunting through the Varietal Wilds."
   },
   3: {
-    poster: "/academy/realms/realm-3-terroir-peaks.png",
+    poster: "/academy/units/unit-03-region-quest.png",
     sippy: ACADEMY_GUIDES.sippy,
     roma: ACADEMY_GUIDES.roma,
     hummin: ACADEMY_GUIDES.hummin,
@@ -1112,7 +1370,7 @@ const REALM_MEDIA: Record<
     cue: "High-altitude terroir scans with structural deduction overlays."
   },
   4: {
-    poster: "/academy/realms/realm-4-cellar-citadel.jpg",
+    poster: "/academy/units/unit-04-cellar-craft.png",
     sippy: ACADEMY_GUIDES.sippy,
     roma: ACADEMY_GUIDES.roma,
     hummin: ACADEMY_GUIDES.hummin,
@@ -1121,13 +1379,58 @@ const REALM_MEDIA: Record<
     cue: "Citadel service pressure with elegant recovery choreography."
   },
   5: {
-    poster: "/academy/realms/realm-5-grand-sommelier-arena.jpg",
+    poster: "/academy/units/unit-05-grand-sommelier-arena.png",
     sippy: ACADEMY_GUIDES.sippy,
     roma: ACADEMY_GUIDES.roma,
     hummin: ACADEMY_GUIDES.hummin,
     showGuides: false,
     trailer: "Realm key art",
     cue: "Grand arena finale where Sippy, Roma, and Hummin co-lead the capstone run."
+  },
+  6: {
+    poster: "/academy/units/unit-06-sparkling-lab.png",
+    sippy: ACADEMY_GUIDES.sippy,
+    roma: ACADEMY_GUIDES.roma,
+    hummin: ACADEMY_GUIDES.hummin,
+    showGuides: false,
+    trailer: "Realm key art",
+    cue: "Sparkling lab diagnostics with pressure, mousse, and dosage checks."
+  },
+  7: {
+    poster: "/academy/units/unit-07-old-cellar-archive.png",
+    sippy: ACADEMY_GUIDES.sippy,
+    roma: ACADEMY_GUIDES.roma,
+    hummin: ACADEMY_GUIDES.hummin,
+    showGuides: false,
+    trailer: "Realm key art",
+    cue: "Archive drills through classic regions, vintages, and style benchmarks."
+  },
+  8: {
+    poster: "/academy/units/unit-08-pairing-theater.png",
+    sippy: ACADEMY_GUIDES.sippy,
+    roma: ACADEMY_GUIDES.roma,
+    hummin: ACADEMY_GUIDES.hummin,
+    showGuides: false,
+    trailer: "Realm key art",
+    cue: "Pairing theatre sequences under live-course service pressure."
+  },
+  9: {
+    poster: "/academy/units/unit-09-blind-grid-forge.png",
+    sippy: ACADEMY_GUIDES.sippy,
+    roma: ACADEMY_GUIDES.roma,
+    hummin: ACADEMY_GUIDES.hummin,
+    showGuides: false,
+    trailer: "Realm key art",
+    cue: "Blind grid forge where evidence chains are tested at speed."
+  },
+  10: {
+    poster: "/academy/units/unit-10-mastery-summit.png",
+    sippy: ACADEMY_GUIDES.sippy,
+    roma: ACADEMY_GUIDES.roma,
+    hummin: ACADEMY_GUIDES.hummin,
+    showGuides: false,
+    trailer: "Realm key art",
+    cue: "Mastery summit capstone with full-spectrum tasting and hospitality calls."
   }
 };
 
@@ -1146,8 +1449,8 @@ function dateStamp(date: Date) {
 
 function defaultProgress(): AcademyProgress {
   const lessons: Record<string, LessonProgress> = {};
-  LESSONS.forEach((lesson, index) => {
-    lessons[lesson.id] = { unlocked: index === 0, mastery: 0, bestAccuracy: 0, attempts: 0, completions: 0 };
+  LESSONS.forEach((lesson) => {
+    lessons[lesson.id] = { unlocked: isUnitStartLesson(lesson.id), mastery: 0, bestAccuracy: 0, attempts: 0, completions: 0 };
   });
   return { totalXp: 0, streak: 0, lastActiveDate: null, lessons };
 }
@@ -1163,15 +1466,15 @@ function parseProgress(raw: string | null): AcademyProgress {
     if (!lessonRecord || typeof lessonRecord !== "object") return fallback;
 
     const lessons: Record<string, LessonProgress> = {};
-    LESSONS.forEach((lesson, index) => {
+    LESSONS.forEach((lesson) => {
       const item = (lessonRecord as Record<string, unknown>)[lesson.id];
       if (!item || typeof item !== "object") {
-        lessons[lesson.id] = { unlocked: index === 0, mastery: 0, bestAccuracy: 0, attempts: 0, completions: 0 };
+        lessons[lesson.id] = { unlocked: isUnitStartLesson(lesson.id), mastery: 0, bestAccuracy: 0, attempts: 0, completions: 0 };
         return;
       }
       const entry = item as Record<string, unknown>;
       lessons[lesson.id] = {
-        unlocked: index === 0 ? true : Boolean(entry.unlocked),
+        unlocked: isUnitStartLesson(lesson.id) ? true : Boolean(entry.unlocked),
         mastery: Math.max(0, Math.min(MAX_MASTERY, Number(entry.mastery) || 0)),
         bestAccuracy: Math.max(0, Math.min(1, Number(entry.bestAccuracy) || 0)),
         attempts: Math.max(0, Math.round(Number(entry.attempts) || 0)),
@@ -1244,6 +1547,30 @@ function nextMentorInCycle(mentor: MentorId): MentorId {
   const index = MENTOR_ROTATION.indexOf(mentor);
   if (index < 0) return MENTOR_ROTATION[0];
   return MENTOR_ROTATION[(index + 1) % MENTOR_ROTATION.length];
+}
+
+const STORY_REALM_HISTORY: Record<number, string> = {
+  1: "From Georgian qvevri to Roman cellars, this chapter starts with the oldest recorded wine craft.",
+  2: "You track the migration of grape families as vines spread from the Mediterranean into modern wine nations.",
+  3: "Monastic Burgundy, steep Mosel slopes, and Atlantic coasts shaped the language of terroir we still use.",
+  4: "In early merchant ports and grand dining rooms, cellar choices became service standards and fault awareness.",
+  5: "Guild style exams were built from classic region signatures, turning service into a disciplined craft.",
+  6: "Champagne houses refined secondary fermentation into a global sparkling blueprint for celebration and service.",
+  7: "Bordeaux classifications, Burgundian climats, and Rioja aging laws became reference points for regional memory.",
+  8: "Historic banquet culture taught pairing as structure and contrast, not guesswork, across every course.",
+  9: "Modern blind tasting culture sharpened evidence-first deduction and transformed comparative wine judging.",
+  10: "The finale blends old-world lineage and modern precision into one complete sommelier decision system."
+};
+
+function realmLoreByVoice(realm: Realm, voiceMode: MentorVoiceMode) {
+  if (voiceMode !== "story") return realm.lore;
+  return STORY_REALM_HISTORY[realm.unit] ?? realm.lore;
+}
+
+function lessonSubtitleByVoice(lesson: Lesson, voiceMode: MentorVoiceMode) {
+  if (voiceMode !== "story") return lesson.subtitle;
+  const arc = STORY_REALM_HISTORY[lesson.unit] ?? lesson.subtitle;
+  return `${missionLabel(lesson.mission)} arc: ${arc}`;
 }
 
 export function SipAcademyWineLessons() {
@@ -1329,6 +1656,19 @@ export function SipAcademyWineLessons() {
   const highlightedRealm = realmProgress.find((realm) => realm.unit === highlightedRealmUnit) ?? realmProgress[0];
   const activeRealmMedia = REALM_MEDIA[highlightedRealm?.unit ?? 1] ?? REALM_MEDIA[1];
   const lowHearts = activeLesson ? hearts <= 2 : false;
+
+  const openUnit = (unit: number) => {
+    const unitLessons = LESSONS.filter((lesson) => lesson.unit === unit);
+    if (!unitLessons.length) return;
+    const targetLesson =
+      unitLessons.find((lesson) => {
+        const lessonProgress = progress.lessons[lesson.id];
+        return (lessonProgress?.unlocked ?? false) && (lessonProgress?.completions ?? 0) === 0;
+      }) ??
+      unitLessons.find((lesson) => progress.lessons[lesson.id]?.unlocked) ??
+      unitLessons[0];
+    startLesson(targetLesson.id);
+  };
 
   const prepareExercise = (lesson: Lesson, index: number) => {
     const exercise = lesson.exercises[index];
@@ -1563,8 +1903,6 @@ export function SipAcademyWineLessons() {
             : "Welcome back. Start a node and we will guide every round with you."
     };
   }, [activeExercise, activeLesson, combo, feedback, lowHearts, summary, voiceMode]);
-  const activeMentor = MENTORS[guideState.speaker];
-  const secondaryMentor = MENTORS[nextMentorInCycle(guideState.speaker)];
   const sippyImage = MENTOR_CARD_IMAGES.sippy;
   const romaImage = MENTOR_CARD_IMAGES.roma;
   const humminImage = MENTOR_CARD_IMAGES.hummin;
@@ -1577,10 +1915,47 @@ export function SipAcademyWineLessons() {
       }`}
     >
       <header className="academy-game-header">
+        <div className="academy-header-hero">
+          <div className="academy-header-photo">
+            <img src={ACADEMY_WELCOME_IMAGE} alt="Sip Academy welcome group photo" loading="lazy" decoding="async" />
+          </div>
+          <div className="academy-header-hero-copy">
+            <p className="academy-kicker">Sip Academy Study Hub</p>
+            <h3>Your Guided Path to Beverage Mastery</h3>
+            <p>
+              Build real tasting confidence with structured lessons, sensory coaching, and service-ready practice built for everyone studying on Sip Studies.
+            </p>
+            <div className="academy-header-highlights" aria-label="Sip Academy study flow">
+              <span>Train fundamentals</span>
+              <span>Practice with mentors</span>
+              <span>Test with quiz rounds</span>
+              <span>Track your progression</span>
+            </div>
+            <div className="academy-header-hero-mentors" aria-label="Sip Academy mentors">
+              <button type="button" className={`academy-header-mentor ${guideState.speaker === "sippy" ? "active" : ""}`} onClick={() => setProfileMentorId("sippy")}>
+                <img src={sippyImage} alt="" loading="lazy" decoding="async" />
+                <span>Sippy</span>
+              </button>
+              <button type="button" className={`academy-header-mentor ${guideState.speaker === "roma" ? "active" : ""}`} onClick={() => setProfileMentorId("roma")}>
+                <img src={romaImage} alt="" loading="lazy" decoding="async" />
+                <span>Roma</span>
+              </button>
+              <button type="button" className={`academy-header-mentor ${guideState.speaker === "hummin" ? "active" : ""}`} onClick={() => setProfileMentorId("hummin")}>
+                <img src={humminImage} alt="" loading="lazy" decoding="async" />
+                <span>Hummin</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div>
           <p className="academy-kicker">Sip Academy Adventure Mode</p>
           <h2>Sippy, Roma, and Hummin: Wine Quest Campaign</h2>
-          <p>Twenty guided missions across five realms. Build tasting skill trees, clear boss rounds, and level your service game.</p>
+          <p>
+            {voiceMode === "story"
+              ? `${LESSONS.length} guided missions across ${REALMS.length} realms, now narrated as a wine-history journey through regions, styles, and service rituals.`
+              : `${LESSONS.length} guided missions across ${REALMS.length} realms. Build tasting skill trees, clear boss rounds, and level your service game.`}
+          </p>
         </div>
         <div className="academy-campaign-spotlight">
           <p className="academy-campaign-kicker">Next Quest</p>
@@ -1627,32 +2002,8 @@ export function SipAcademyWineLessons() {
         </div>
       </header>
 
-      <section className="academy-realms" aria-label="Sip Academy realm map">
-        {realmProgress.map((realm) => (
-          <article
-            key={realm.unit}
-            className={`academy-realm-card ${highlightedRealm?.unit === realm.unit ? "active" : ""}`}
-            aria-label={`Unit ${realm.unit} ${realm.title}`}
-          >
-            <div className="academy-realm-head">
-              <p>Unit {realm.unit}</p>
-              <span>{realm.completed}/{realm.lessons.length} cleared</span>
-            </div>
-            <h3>{realm.title}</h3>
-            <p>{realm.lore}</p>
-            <div className="academy-realm-meter" aria-hidden="true">
-              <div className="academy-realm-meter-value" style={{ width: `${Math.round(realm.ratio * 100)}%` }} />
-            </div>
-            <div className="academy-realm-foot">
-              <small>Unlocked {realm.unlocked}/{realm.lessons.length}</small>
-              <small className={`academy-realm-boss ${realm.bossCleared ? "cleared" : ""}`}>
-                Boss {realm.bossCleared ? "Cleared" : "Pending"}
-              </small>
-            </div>
-          </article>
-        ))}
-      </section>
-
+      {voiceMode === "classic" ? (
+        <>
       <section className="academy-cinematic" aria-label="Active realm cinematic preview">
         <div className="academy-cinematic-stage">
           <img
@@ -1682,61 +2033,39 @@ export function SipAcademyWineLessons() {
         </div>
       </section>
 
-      <section className="academy-mentors" aria-label="Sippy, Roma, and Hummin lesson guidance">
-        <button
-          type="button"
-          className={`academy-mentor-card ${guideState.speaker === "sippy" ? "active" : ""}`}
-          onClick={() => setProfileMentorId("sippy")}
-          aria-haspopup="dialog"
-          aria-expanded={profileMentorId === "sippy"}
-          aria-controls="academy-mentor-profile-modal"
-        >
-          <div className="academy-mentor-portrait-wrap">
-            <img className="academy-mentor-portrait" src={sippyImage} alt="Sippy, beverage educator" loading="lazy" decoding="async" />
-          </div>
-          <div className="academy-mentor-meta">
-            <strong>{MENTORS.sippy.name}</strong>
-            <span>{MENTORS.sippy.title}</span>
-          </div>
-        </button>
-        <button
-          type="button"
-          className={`academy-mentor-card ${guideState.speaker === "roma" ? "active" : ""}`}
-          onClick={() => setProfileMentorId("roma")}
-          aria-haspopup="dialog"
-          aria-expanded={profileMentorId === "roma"}
-          aria-controls="academy-mentor-profile-modal"
-        >
-          <div className="academy-mentor-portrait-wrap">
-            <img className="academy-mentor-portrait" src={romaImage} alt="Roma, beverage educator" loading="lazy" decoding="async" />
-          </div>
-          <div className="academy-mentor-meta">
-            <strong>{MENTORS.roma.name}</strong>
-            <span>{MENTORS.roma.title}</span>
-          </div>
-        </button>
-        <button
-          type="button"
-          className={`academy-mentor-card ${guideState.speaker === "hummin" ? "active" : ""}`}
-          onClick={() => setProfileMentorId("hummin")}
-          aria-haspopup="dialog"
-          aria-expanded={profileMentorId === "hummin"}
-          aria-controls="academy-mentor-profile-modal"
-        >
-          <div className="academy-mentor-portrait-wrap">
-            <img className="academy-mentor-portrait" src={humminImage} alt="Hummin, beverage educator" loading="lazy" decoding="async" />
-          </div>
-          <div className="academy-mentor-meta">
-            <strong>{MENTORS.hummin.name}</strong>
-            <span>{MENTORS.hummin.title}</span>
-          </div>
-        </button>
-        <div className={`academy-mentor-dialog mood-${guideState.mood}`}>
-          <p className="academy-mentor-speaker">
-            {activeMentor.name} guiding now - backup by {secondaryMentor.name}
-          </p>
-          <p>{guideState.line}</p>
-        </div>
+      <section className="academy-realms" aria-label="Sip Academy realm map">
+        {realmProgress.map((realm) => (
+          <article
+            key={realm.unit}
+            className={`academy-realm-card ${highlightedRealm?.unit === realm.unit ? "active" : ""}`}
+            aria-label={`Unit ${realm.unit} ${realm.title}`}
+            role="button"
+            tabIndex={0}
+            onClick={() => openUnit(realm.unit)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openUnit(realm.unit);
+              }
+            }}
+          >
+            <div className="academy-realm-head">
+              <p>Unit {realm.unit}</p>
+              <span>{realm.completed}/{realm.lessons.length} cleared</span>
+            </div>
+            <h3>{realm.title}</h3>
+            <p>{realmLoreByVoice(realm, voiceMode)}</p>
+            <div className="academy-realm-meter" aria-hidden="true">
+              <div className="academy-realm-meter-value" style={{ width: `${Math.round(realm.ratio * 100)}%` }} />
+            </div>
+            <div className="academy-realm-foot">
+              <small>Unlocked {realm.unlocked}/{realm.lessons.length}</small>
+              <small className={`academy-realm-boss ${realm.bossCleared ? "cleared" : ""}`}>
+                Boss {realm.bossCleared ? "Cleared" : "Pending"}
+              </small>
+            </div>
+          </article>
+        ))}
       </section>
 
       <div className="academy-game-layout">
@@ -1784,9 +2113,25 @@ export function SipAcademyWineLessons() {
                     <small>Mentor {MENTORS[lesson.mentor].name}</small>
                   </div>
                   <strong>{lesson.title}</strong>
-                  <small>{lesson.subtitle}</small>
+                  <small>{lessonSubtitleByVoice(lesson, voiceMode)}</small>
                   <div className="academy-node-foot">
-                    <small>Mastery {"#".repeat(mastery).padEnd(MAX_MASTERY, "-")}</small>
+                    <small
+                      className="academy-mastery"
+                      title={`Mastery ${mastery}/${MAX_MASTERY}`}
+                      aria-label={`Mastery ${mastery} out of ${MAX_MASTERY}`}
+                    >
+                      <span>Mastery</span>
+                      <span className="academy-mastery-stars" aria-hidden="true">
+                        {masteryStarStates(mastery).map((filled, starIndex) => (
+                          <span
+                            key={`${lesson.id}-star-${starIndex}`}
+                            className={`academy-mastery-star ${filled ? "filled" : "empty"}`}
+                          >
+                            {filled ? "\u2605" : "\u2606"}
+                          </span>
+                        ))}
+                      </span>
+                    </small>
                     <small>Best {Math.round(bestAccuracy * 100)}%</small>
                   </div>
                   {!unlocked ? <small className="academy-locked-label">Locked</small> : null}
@@ -1804,6 +2149,7 @@ export function SipAcademyWineLessons() {
                   {activeLesson.realm} - {missionLabel(activeLesson.mission)} Mission
                 </p>
                 <h3>{activeLesson.title}</h3>
+                <p>{lessonSubtitleByVoice(activeLesson, voiceMode)}</p>
                 <div className="academy-session-metrics">
                   <span className="academy-session-chip">Question {exerciseIndex + 1}/{activeLesson.exercises.length}</span>
                   <span className="academy-session-chip">Combo {combo}</span>
@@ -1910,7 +2256,7 @@ export function SipAcademyWineLessons() {
               <h3>Launch Your Next Mission</h3>
               <p>Pick an unlocked node from the campaign path. Pass at 70% accuracy before hearts run out.</p>
               <ul>
-                <li>20 lessons across 5 realms with Scout, Challenge, and Boss missions.</li>
+                <li>{LESSONS.length} lessons across {REALMS.length} realms with Scout, Challenge, and Boss missions.</li>
                 <li>Sippy, Roma, and Hummin adapt guidance style in classic, tactical, or story voice.</li>
                 <li>Stack combo bonuses, preserve hearts, and clear bosses to complete each realm.</li>
               </ul>
@@ -1927,6 +2273,8 @@ export function SipAcademyWineLessons() {
           )}
         </article>
       </div>
+      </>
+      ) : null}
       {activeProfile ? (
         <div className="academy-mentor-modal-overlay" role="presentation" onClick={(event) => event.target === event.currentTarget && setProfileMentorId(null)}>
           <div

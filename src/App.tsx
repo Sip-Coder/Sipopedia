@@ -54,7 +54,7 @@ type MenuSource = "brand-house" | "section-nav" | "sub-nav" | "content-nav";
 
 const sipStudiosSections: SipStudiosSectionItem[] = [
   { id: "learn", label: "Learn", defaultPage: "sip-academy" },
-  { id: "taste", label: "Taste", defaultPage: "tasting-journal" },
+  { id: "taste", label: "Taste", defaultPage: "flavor-wheel" },
   { id: "connect", label: "Connect", defaultPage: "tasting-groups" }
 ];
 
@@ -63,9 +63,9 @@ const sipStudiosNavItems: SipStudiosNavItem[] = [
   { id: "sipopedia", label: "Sipopedia", section: "learn" },
   { id: "beverage-quiz", label: "Beverage Quiz", section: "learn" },
   { id: "regions", label: "Regions", section: "learn" },
-  { id: "tasting-journal", label: "Flavor Journal", section: "taste" },
-  { id: "flavors", label: "Flavors", section: "taste" },
   { id: "flavor-wheel", label: "Flavor Wheel", section: "taste" },
+  { id: "flavors", label: "Flavors", section: "taste" },
+  { id: "tasting-journal", label: "Flavor Journal", section: "taste" },
   { id: "tasting-groups", label: "Tasting Groups", section: "connect" },
   { id: "beverage-news", label: "Beverage News", section: "connect" }
 ];

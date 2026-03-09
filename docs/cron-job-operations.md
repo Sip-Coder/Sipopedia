@@ -12,8 +12,8 @@ Because this is running in **Supabase** (`pg_cron` + Edge Function), it runs in 
 
 - Your Supabase project stays active
 - `terminology-harvester` function stays deployed
-- Secrets remain set (`OPENAI_API_KEY`, optionally `TERMINOLOGY_CRON_SECRET`)
-- Project has enough quota/budget for daily OpenAI calls
+- Optional hardening secret remains set (`TERMINOLOGY_CRON_SECRET`)
+- Outbound internet access from Supabase Edge Functions remains available
 
 ## Current Schedule
 
@@ -25,7 +25,7 @@ Because this is running in **Supabase** (`pg_cron` + Edge Function), it runs in 
 
 - Check `public.terminology_harvest_runs` daily/weekly (inserted count, status)
 - Check Supabase Function logs for `terminology-harvester`
-- Rotate/update `OPENAI_API_KEY` before expiry
+- Watch source endpoint health (Wikipedia search/summary availability)
 - Watch for partial runs and adjust target count if needed
 
 ## If You Want A Different Frequency/Time
