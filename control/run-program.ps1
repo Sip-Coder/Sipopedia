@@ -65,9 +65,30 @@ function Get-ChangedFiles {
     }
     $norm = $path.Replace("\", "/")
     if ($norm -match "^logs/") { continue }
+    if ($norm -eq "control/active-program.txt") { continue }
     $files += $path
   }
-  return $files | Sort-Object -Unique
+  return @($files | Sort-Object -Unique)
+}
+
+function Get-BlockingDirtyLines {
+  $status = git status --porcelain
+  if (-not $status) {
+    return @()
+  }
+  $blocking = @()
+  foreach ($line in $status) {
+    if ($line.Length -lt 4) { continue }
+    $path = $line.Substring(3).Trim()
+    if ($path.Contains(" -> ")) {
+      $path = ($path.Split(" -> ")[-1]).Trim()
+    }
+    $norm = $path.Replace("\", "/")
+    if ($norm -match "^logs/") { continue }
+    if ($norm -eq "control/active-program.txt") { continue }
+    $blocking += $line
+  }
+  return @($blocking)
 }
 
 function Write-IterationLog {
@@ -110,9 +131,12 @@ Assert-GitRepo
 if (-not (Test-Path "review/terminology")) {
   New-Item -ItemType Directory -Path "review/terminology" -Force | Out-Null
 }
+if (-not [Environment]::UserInteractive) {
+  $NoPrompt = $true
+}
 
-$initialDirty = git status --porcelain
-if ($initialDirty) {
+$initialDirty = @(Get-BlockingDirtyLines)
+if ($initialDirty.Count -gt 0) {
   throw "Working tree is dirty. Commit or stash changes before running control/run-program.ps1."
 }
 
@@ -146,7 +170,7 @@ for ($i = 1; $i -le $MaxIterations; $i++) {
     Read-Host "Press Enter after finishing the edit"
   }
 
-  $changedFiles = Get-ChangedFiles
+  $changedFiles = @(Get-ChangedFiles)
   if ($changedFiles.Count -eq 0) {
     $logPath = Write-IterationLog -Iteration $i -Timestamp $timestamp -ActiveProgram $activeProgram -Hypothesis $hypothesis `
       -FilesChanged @() -CommandsRun @() -ValidationResult "No change detected." -KeptOrReverted "not-kept" `
