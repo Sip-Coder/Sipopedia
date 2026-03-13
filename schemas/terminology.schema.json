@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sipstudies.local/schemas/terminology.schema.json",
+  "title": "Sip Studies Terminology Entry",
+  "type": "object",
+  "required": [
+    "term",
+    "category",
+    "subcategory",
+    "concise_definition",
+    "expanded_explanation",
+    "why_it_matters",
+    "related_terms",
+    "citations",
+    "quality_score",
+    "status"
+  ],
+  "properties": {
+    "term": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "wine",
+        "beer",
+        "spirits",
+        "coffee",
+        "tea",
+        "water",
+        "sake",
+        "kombucha",
+        "juice",
+        "milk",
+        "energy-drinks",
+        "other"
+      ]
+    },
+    "subcategory": {
+      "type": "string",
+      "minLength": 1
+    },
+    "concise_definition": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expanded_explanation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "why_it_matters": {
+      "type": "string",
+      "minLength": 1
+    },
+    "related_terms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "alias_terms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "citations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["title", "url", "source_type"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1 },
+          "url": { "type": "string", "minLength": 1 },
+          "source_type": { "type": "string", "minLength": 1 },
+          "note": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "quality_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "review", "published", "rejected"]
+    }
+  },
+  "additionalProperties": true
+}
