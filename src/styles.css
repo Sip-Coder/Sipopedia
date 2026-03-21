@@ -4253,21 +4253,36 @@ img {
 }
 
 .academy-realms {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.58rem;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 96, 80, 0.38) rgba(195, 162, 138, 0.14);
+  gap: 0.45rem;
+  padding-bottom: 0.4rem;
 }
 
 .academy-realm-card {
+  flex: 0 0 158px;
+  scroll-snap-align: start;
   border: 1px solid rgba(118, 73, 85, 0.42);
   border-radius: 13px;
-  padding: 0.65rem 0.68rem;
+  padding: 0.52rem 0.58rem;
   background: linear-gradient(160deg, rgba(251, 245, 231, 0.87), rgba(240, 222, 193, 0.92));
   display: grid;
-  gap: 0.32rem;
+  gap: 0.22rem;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.46), 0 9px 14px rgba(58, 32, 32, 0.14);
   transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
   cursor: pointer;
+}
+
+.academy-realm-card p {
+  display: none;
+}
+
+.academy-realm-card h3 {
+  font-size: 0.88rem;
 }
 
 .academy-realm-card.active {
@@ -5766,7 +5781,7 @@ img {
   }
 
   .academy-realms {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-bottom: 0.5rem;
   }
 
   .academy-game-layout {
@@ -5811,8 +5826,8 @@ img {
     grid-template-columns: 1fr;
   }
 
-  .academy-realms {
-    grid-template-columns: 1fr;
+  .academy-realm-card {
+    flex: 0 0 min(195px, 72vw);
   }
 
   .academy-cinematic {
@@ -5936,6 +5951,7 @@ img {
   }
 
   .academy-realm-card {
+    flex: 0 0 min(185px, 78vw);
     padding: 0.5rem 0.55rem;
   }
 
