@@ -65,6 +65,32 @@
         "type": "string"
       }
     },
+    "common_confusions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "other_ideas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "infographic_caption": {
+      "type": "string",
+      "minLength": 1
+    },
+    "infographic_url": {
+      "type": "string",
+      "minLength": 1
+    },
     "citations": {
       "type": "array",
       "minItems": 1,
@@ -87,7 +113,7 @@
     },
     "status": {
       "type": "string",
-      "enum": ["draft", "review", "published", "rejected"]
+      "enum": ["draft", "review", "review_required", "published", "rejected", "merged"]
     }
   },
   "additionalProperties": true

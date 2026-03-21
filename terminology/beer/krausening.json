@@ -1,0 +1,40 @@
+{
+  "term": "Krausening",
+  "category": "beer",
+  "subcategory": "fermentation",
+  "concise_definition": "A process where actively fermenting wort is added to beer to promote natural carbonation and flavor integration.",
+  "expanded_explanation": "Krausening can be used during conditioning to restart fermentation and carbonate beer naturally in tank or package. It is traditionally associated with lager practice and can influence freshness and mouthfeel when executed correctly.",
+  "why_it_matters": "This term helps learners distinguish force carbonation from biologically driven carbonation approaches.",
+  "related_terms": [
+    "secondary fermentation",
+    "lagering",
+    "natural carbonation"
+  ],
+  "examples": [
+    "Brewer adds actively fermenting wort during conditioning to naturally carbonate lager without forced CO2.",
+    "Krausening helps refresh fermentation activity and can tighten perceived foam texture."
+  ],
+  "other_ideas": [
+    "Compare sensory outcomes of forced carbonation vs. krausening in the same base beer.",
+    "Outline hygiene and fermentation-control risks when using krausening."
+  ],
+  "infographic_caption": "Krausening introduces active wort to drive natural carbonation and integrate freshness during conditioning.",
+  "infographic_url": "https://sipstudies.local/infographics/beer/krausening",
+  "alias_terms": [
+    "krausen"
+  ],
+  "citations": [
+    {
+      "title": "Brewers Association - Brewing Process Resources",
+      "url": "https://www.brewersassociation.org/educational-publications/",
+      "source_type": "industry-association"
+    },
+    {
+      "title": "Master Brewers Association of the Americas - Brewing Technical Resources",
+      "url": "https://www.mbaa.com/education/",
+      "source_type": "technical-reference"
+    }
+  ],
+  "quality_score": 74,
+  "status": "review"
+}
