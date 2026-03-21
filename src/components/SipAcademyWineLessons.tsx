@@ -2068,6 +2068,36 @@ export function SipAcademyWineLessons() {
         ))}
       </section>
 
+      <div className="academy-hud" aria-label="Your quest progress">
+        <div className="academy-hud-left">
+          <span className="academy-hud-label">
+            Unit {highlightedRealm?.unit} · {highlightedRealm?.title ?? "Crystal Atrium"}
+          </span>
+          <div
+            className="academy-hud-bar"
+            role="progressbar"
+            aria-valuenow={Math.round(completionRatio * 100)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`${Math.round(completionRatio * 100)}% of path complete`}
+          >
+            <div className="academy-hud-bar-fill" style={{ width: `${Math.round(completionRatio * 100)}%` }} />
+          </div>
+          <span className="academy-hud-sub">{completedCount} of {LESSONS.length} missions cleared</span>
+        </div>
+        <div className="academy-hud-chips">
+          <span className="academy-hud-chip">⚡ {progress.totalXp} XP</span>
+          <span className="academy-hud-chip">🔥 {progress.streak}d streak</span>
+          <span className="academy-hud-chip">★ {masteryTotal} mastery</span>
+          <span className="academy-hud-chip">{Math.round(completionRatio * 100)}% done</span>
+        </div>
+        <div className="academy-hud-next">
+          <span className="academy-hud-next-kicker">Up Next</span>
+          <span className="academy-hud-next-title">{nextLesson.title}</span>
+          <span className="academy-hud-next-meta">Unit {nextLesson.unit} · {nextLesson.realm}</span>
+        </div>
+      </div>
+
       <div className="academy-game-layout">
         <aside className="academy-path">
           <h3>Campaign Path</h3>
