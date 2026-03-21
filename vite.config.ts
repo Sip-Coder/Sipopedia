@@ -39,7 +39,8 @@ export default defineConfig({
     }
   },
   server: {
-    host: true,
-    allowedHosts: isReplit ? true : undefined
+    host: "0.0.0.0",
+    port: 5000,
+    allowedHosts: isReplit ? "all" : undefined
   }
 });
