@@ -53,23 +53,9 @@ type CityPin = {
   lon: number;
   groups: TastingGroup[];
 };
-type MapView = { x: number; y: number; width: number; height: number };
-type GeoFeatureCollection = {
-  type?: string;
-  features?: Array<{ geometry?: { type?: string; coordinates?: unknown } }>;
-};
 
 const MAP_WIDTH = 800;
 const MAP_HEIGHT = 400;
-const MAP_ASPECT = MAP_WIDTH / MAP_HEIGHT;
-const MAP_ZOOM_STEPS = [1, 1.35, 1.8, 2.4, 3.2, 4.5, 6];
-const DETAIL_LAYER_URLS = {
-  adminBoundaries:
-    "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_1_states_provinces.geojson",
-  lakes: "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_lakes.geojson",
-  rivers:
-    "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_rivers_lake_centerlines.geojson"
-};
 
 const focusFilters: Array<"All" | GroupFocus> = ["All", "Wine", "Spirits", "Beer", "Sake", "Zero Proof", "Coffee & Tea"];
 
@@ -281,9 +267,6 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
-}
 
 function normalizeSearchText(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
@@ -386,101 +369,6 @@ function toPath(points: number[][], width: number, height: number): string {
   return `${path}Z`;
 }
 
-function toLinePath(points: number[][], width: number, height: number): string {
-  if (!points.length) return "";
-  const projected = points.map(([lon, lat]) => [((lon + 180) / 360) * width, ((90 - lat) / 180) * height]);
-  let path = `M${projected[0][0].toFixed(2)},${projected[0][1].toFixed(2)}`;
-  for (let index = 1; index < projected.length; index++) {
-    const breakPath = Math.abs(points[index][0] - points[index - 1][0]) > 100;
-    path += breakPath
-      ? `M${projected[index][0].toFixed(2)},${projected[index][1].toFixed(2)}`
-      : `L${projected[index][0].toFixed(2)},${projected[index][1].toFixed(2)}`;
-  }
-  return path;
-}
-
-function isLngLatPoint(value: unknown): value is [number, number] {
-  return (
-    Array.isArray(value) &&
-    value.length >= 2 &&
-    typeof value[0] === "number" &&
-    Number.isFinite(value[0]) &&
-    typeof value[1] === "number" &&
-    Number.isFinite(value[1])
-  );
-}
-
-function isLngLatLine(value: unknown): value is [number, number][] {
-  return Array.isArray(value) && value.every((point) => isLngLatPoint(point));
-}
-
-function geoJsonToPolygonPaths(data: GeoFeatureCollection, width = MAP_WIDTH, height = MAP_HEIGHT): string[] {
-  if (data.type !== "FeatureCollection" || !Array.isArray(data.features)) return [];
-  const out: string[] = [];
-  for (const feature of data.features) {
-    const geometry = feature.geometry;
-    if (!geometry || !geometry.coordinates) continue;
-
-    if (geometry.type === "Polygon" && Array.isArray(geometry.coordinates)) {
-      let path = "";
-      for (const ring of geometry.coordinates) {
-        if (!isLngLatLine(ring)) continue;
-        path += toPath(ring, width, height);
-      }
-      if (path) out.push(path);
-      continue;
-    }
-
-    if (geometry.type === "MultiPolygon" && Array.isArray(geometry.coordinates)) {
-      let path = "";
-      for (const polygon of geometry.coordinates) {
-        if (!Array.isArray(polygon)) continue;
-        for (const ring of polygon) {
-          if (!isLngLatLine(ring)) continue;
-          path += toPath(ring, width, height);
-        }
-      }
-      if (path) out.push(path);
-    }
-  }
-  return out;
-}
-
-function geoJsonToLinePaths(data: GeoFeatureCollection, width = MAP_WIDTH, height = MAP_HEIGHT): string[] {
-  if (data.type !== "FeatureCollection" || !Array.isArray(data.features)) return [];
-  const out: string[] = [];
-  for (const feature of data.features) {
-    const geometry = feature.geometry;
-    if (!geometry || !geometry.coordinates) continue;
-
-    if (geometry.type === "LineString" && isLngLatLine(geometry.coordinates)) {
-      const path = toLinePath(geometry.coordinates, width, height);
-      if (path) out.push(path);
-      continue;
-    }
-
-    if (geometry.type === "MultiLineString" && Array.isArray(geometry.coordinates)) {
-      for (const line of geometry.coordinates) {
-        if (!isLngLatLine(line)) continue;
-        const path = toLinePath(line, width, height);
-        if (path) out.push(path);
-      }
-    }
-  }
-  return out;
-}
-
-async function loadGeoJsonLayer(url: string): Promise<GeoFeatureCollection | null> {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) return null;
-    const data = (await response.json()) as unknown;
-    if (!isObject(data)) return null;
-    return data as GeoFeatureCollection;
-  } catch {
-    return null;
-  }
-}
 
 function topoToPaths(data: Record<string, unknown>, width = MAP_WIDTH, height = MAP_HEIGHT): MapCountryPath[] {
   if (!Array.isArray(data.arcs) || !isObject(data.objects)) return [];
@@ -530,47 +418,6 @@ function topoToPaths(data: Record<string, unknown>, width = MAP_WIDTH, height = 
   return out;
 }
 
-function projectLonLat(lon: number, lat: number, width = MAP_WIDTH, height = MAP_HEIGHT): { x: number; y: number } {
-  return { x: ((lon + 180) / 360) * width, y: ((90 - lat) / 180) * height };
-}
-
-function fitPinsToView(pins: CityPin[]): MapView {
-  if (!pins.length) return { x: 0, y: 0, width: MAP_WIDTH, height: MAP_HEIGHT };
-
-  const projected = pins.map((pin) => projectLonLat(pin.lon, pin.lat));
-  let minX = Math.min(...projected.map((point) => point.x));
-  let maxX = Math.max(...projected.map((point) => point.x));
-  let minY = Math.min(...projected.map((point) => point.y));
-  let maxY = Math.max(...projected.map((point) => point.y));
-
-  const baseSpanX = Math.max(maxX - minX, 70);
-  const baseSpanY = Math.max(maxY - minY, 42);
-  const padX = Math.max(baseSpanX * 0.18, 28);
-  const padY = Math.max(baseSpanY * 0.24, 20);
-
-  minX -= padX;
-  maxX += padX;
-  minY -= padY;
-  maxY += padY;
-
-  let width = clamp(maxX - minX, 140, MAP_WIDTH);
-  let height = clamp(maxY - minY, 100, MAP_HEIGHT);
-
-  if (width / height > MAP_ASPECT) {
-    height = width / MAP_ASPECT;
-  } else {
-    width = height * MAP_ASPECT;
-  }
-
-  width = Math.min(width, MAP_WIDTH);
-  height = Math.min(height, MAP_HEIGHT);
-
-  const centerX = (minX + maxX) / 2;
-  const centerY = (minY + maxY) / 2;
-  const x = clamp(centerX - width / 2, 0, MAP_WIDTH - width);
-  const y = clamp(centerY - height / 2, 0, MAP_HEIGHT - height);
-  return { x, y, width, height };
-}
 
 function formatDateLabel(dateIso: string): string {
   const parsed = new Date(`${dateIso}T12:00:00`);
@@ -634,12 +481,6 @@ export function TastingGroups() {
     () => (selectedMapCity ? cityPins.find((pin) => pin.cityKey === selectedMapCity) ?? null : null),
     [cityPins, selectedMapCity]
   );
-
-  const mappedGroupCount = useMemo(
-    () => cityPins.reduce((sum, pin) => sum + pin.groups.length, 0),
-    [cityPins]
-  );
-  const unmappedGroupCount = groups.length - mappedGroupCount;
 
   const filteredGroups = useMemo(() => {
     const searchTerm = normalizeSearchText(search);
