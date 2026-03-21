@@ -2100,12 +2100,12 @@ export function SipAcademyWineLessons() {
 
       <div className="academy-game-layout">
         <aside className="academy-path">
-          <h3>Campaign Path</h3>
+          <h3>Unit {highlightedRealm?.unit}: {highlightedRealm?.title ?? "Crystal Atrium"}</h3>
           <p>
-            {completedCount}/{LESSONS.length} missions cleared - Active realm: {highlightedRealm?.title ?? "Crystal Atrium"}
+            {highlightedRealm?.completed ?? 0}/{highlightedRealm?.lessons.length ?? 0} missions cleared in this unit &middot; {completedCount}/{LESSONS.length} total
           </p>
           <div className="academy-path-track" aria-hidden="true">
-            <div className="academy-path-track-value" style={{ width: `${Math.round(completionRatio * 100)}%` }} />
+            <div className="academy-path-track-value" style={{ width: `${Math.round((highlightedRealm?.ratio ?? 0) * 100)}%` }} />
           </div>
           <div className="academy-quest-log">
             <p className="academy-quest-kicker">Quest Log</p>
@@ -2114,8 +2114,8 @@ export function SipAcademyWineLessons() {
               {nextLesson.realm} - {missionLabel(nextLesson.mission)} - Mentor {MENTORS[nextLesson.mentor].name}
             </small>
           </div>
-          <div className="academy-path-list">
-            {LESSONS.map((lesson) => {
+          <div className="academy-path-list" aria-label={`Missions for Unit ${highlightedRealm?.unit ?? 1}: ${highlightedRealm?.title ?? "Crystal Atrium"}`}>
+            {LESSONS.filter((lesson) => lesson.unit === (highlightedRealm?.unit ?? 1)).map((lesson) => {
               const lessonProgress = progress.lessons[lesson.id];
               const unlocked = lessonProgress?.unlocked ?? false;
               const mastery = lessonProgress?.mastery ?? 0;
