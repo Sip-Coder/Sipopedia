@@ -5008,6 +5008,45 @@ img {
   padding-right: 0.25rem;
 }
 
+.academy-path .academy-path-list {
+  gap: 0.28rem;
+}
+
+.academy-path .academy-node {
+  padding: 0.38rem 0.52rem;
+  gap: 0.06rem;
+  border-radius: 10px;
+}
+
+.academy-path .academy-node-top + .academy-node-top {
+  display: none;
+}
+
+.academy-path .academy-node-art {
+  display: none;
+}
+
+.academy-path .academy-node > small:not(.academy-locked-label) {
+  display: none;
+}
+
+.academy-path .academy-node strong {
+  font-size: 0.88rem;
+}
+
+.academy-path .academy-node-foot {
+  margin-top: 0.06rem;
+  gap: 0.3rem;
+}
+
+.academy-path .academy-mastery span:first-child {
+  display: none;
+}
+
+.academy-path .academy-mastery-star {
+  font-size: 0.7rem;
+}
+
 .academy-node {
   position: relative;
   overflow: hidden;
