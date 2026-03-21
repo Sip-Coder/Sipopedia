@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { GlobeMap, type GlobePinInput } from "./GlobeMap";
 
 type GroupFocus = "Wine" | "Spirits" | "Beer" | "Sake" | "Zero Proof" | "Coffee & Tea";
 type MeetupFormat = "In Person" | "Hybrid";
@@ -588,14 +589,6 @@ export function TastingGroups() {
   const [mapPaths, setMapPaths] = useState<MapCountryPath[]>([]);
   const [mapLoading, setMapLoading] = useState(true);
   const [selectedMapCity, setSelectedMapCity] = useState<string | null>(null);
-  const [mapHoverCity, setMapHoverCity] = useState<string | null>(null);
-  const [mapZoomStepIndex, setMapZoomStepIndex] = useState(0);
-  const [mapGlobeView, setMapGlobeView] = useState(false);
-  const [adminBoundaryPaths, setAdminBoundaryPaths] = useState<string[]>([]);
-  const [lakePaths, setLakePaths] = useState<string[]>([]);
-  const [riverPaths, setRiverPaths] = useState<string[]>([]);
-  const [detailLayersLoading, setDetailLayersLoading] = useState(false);
-  const [detailLayersAttempted, setDetailLayersAttempted] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -642,91 +635,6 @@ export function TastingGroups() {
     [cityPins, selectedMapCity]
   );
 
-  const hoveredMapPin = useMemo(
-    () => (mapHoverCity ? cityPins.find((pin) => pin.cityKey === mapHoverCity) ?? null : null),
-    [cityPins, mapHoverCity]
-  );
-  const activeMapPins = useMemo(() => (selectedMapPin ? [selectedMapPin] : cityPins), [selectedMapPin, cityPins]);
-  const defaultMapView = useMemo(() => fitPinsToView(activeMapPins), [activeMapPins]);
-  const mapZoomScale = MAP_ZOOM_STEPS[mapZoomStepIndex] ?? MAP_ZOOM_STEPS[0];
-  const mapView = useMemo(() => {
-    if (mapGlobeView) {
-      return { x: 0, y: 0, width: MAP_WIDTH, height: MAP_HEIGHT };
-    }
-    const width = clamp(defaultMapView.width / mapZoomScale, 72, MAP_WIDTH);
-    const height = clamp(defaultMapView.height / mapZoomScale, 36, MAP_HEIGHT);
-    const centerX = defaultMapView.x + defaultMapView.width / 2;
-    const centerY = defaultMapView.y + defaultMapView.height / 2;
-    const x = clamp(centerX - width / 2, 0, MAP_WIDTH - width);
-    const y = clamp(centerY - height / 2, 0, MAP_HEIGHT - height);
-    return { x, y, width, height };
-  }, [defaultMapView, mapZoomScale, mapGlobeView]);
-  const mapVisualScale = clamp(mapView.width / MAP_WIDTH, 0.42, 1);
-  const showAdminBoundaries = mapZoomScale >= 1.35;
-  const showHydroDetails = mapZoomScale >= 1.8;
-  const showCityLabels = mapZoomScale >= 1.8;
-  const hasDetailLayers = adminBoundaryPaths.length > 0 || lakePaths.length > 0 || riverPaths.length > 0;
-
-  const gridSteps = useMemo(() => {
-    if (mapZoomScale >= 2.4) return { major: 5, minor: 2.5 };
-    if (mapZoomScale >= 1.8) return { major: 10, minor: 5 };
-    if (mapZoomScale >= 1.35) return { major: 15, minor: 0 };
-    return { major: 20, minor: 0 };
-  }, [mapZoomScale]);
-
-  const majorLatLines = useMemo(
-    () =>
-      Array.from({ length: Math.floor(180 / gridSteps.major) + 1 }, (_, idx) => -90 + idx * gridSteps.major).filter(
-        (lat) => lat > -90 && lat < 90
-      ),
-    [gridSteps.major]
-  );
-  const majorLonLines = useMemo(
-    () =>
-      Array.from({ length: Math.floor(360 / gridSteps.major) + 1 }, (_, idx) => -180 + idx * gridSteps.major).filter(
-        (lon) => lon > -180 && lon < 180
-      ),
-    [gridSteps.major]
-  );
-  const minorLatLines = useMemo(() => {
-    if (!gridSteps.minor) return [] as number[];
-    return Array.from({ length: Math.floor(180 / gridSteps.minor) + 1 }, (_, idx) => -90 + idx * gridSteps.minor).filter(
-      (lat) => lat > -90 && lat < 90 && !majorLatLines.includes(lat)
-    );
-  }, [gridSteps.minor, majorLatLines]);
-  const minorLonLines = useMemo(() => {
-    if (!gridSteps.minor) return [] as number[];
-    return Array.from({ length: Math.floor(360 / gridSteps.minor) + 1 }, (_, idx) => -180 + idx * gridSteps.minor).filter(
-      (lon) => lon > -180 && lon < 180 && !majorLonLines.includes(lon)
-    );
-  }, [gridSteps.minor, majorLonLines]);
-
-  useEffect(() => {
-    if (mapZoomScale < 1.35 || detailLayersAttempted || detailLayersLoading) return;
-    let cancelled = false;
-    setDetailLayersLoading(true);
-    setDetailLayersAttempted(true);
-
-    Promise.all([
-      loadGeoJsonLayer(DETAIL_LAYER_URLS.adminBoundaries),
-      loadGeoJsonLayer(DETAIL_LAYER_URLS.lakes),
-      loadGeoJsonLayer(DETAIL_LAYER_URLS.rivers)
-    ])
-      .then(([adminLayer, lakesLayer, riversLayer]) => {
-        if (cancelled) return;
-        if (adminLayer) setAdminBoundaryPaths(geoJsonToLinePaths(adminLayer));
-        if (lakesLayer) setLakePaths(geoJsonToPolygonPaths(lakesLayer));
-        if (riversLayer) setRiverPaths(geoJsonToLinePaths(riversLayer));
-      })
-      .finally(() => {
-        if (!cancelled) setDetailLayersLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [mapZoomScale, detailLayersAttempted, detailLayersLoading]);
-
   const mappedGroupCount = useMemo(
     () => cityPins.reduce((sum, pin) => sum + pin.groups.length, 0),
     [cityPins]
@@ -754,11 +662,6 @@ export function TastingGroups() {
       setSelectedMapCity(null);
     }
   }, [selectedMapCity, cityPins]);
-
-  useEffect(() => {
-    setMapZoomStepIndex(0);
-    setMapGlobeView(false);
-  }, [selectedMapCity, cityPins.length]);
 
   useEffect(() => {
     if (!filteredGroups.length) {
@@ -819,9 +722,8 @@ export function TastingGroups() {
     setCreateNotice(`"${createdGroup.name}" is staged in the UI. Auth and member gating can be wired next.`);
   };
 
-  const handleMapPinSelect = (pin: CityPin) => {
+  const handleMapPinSelect = (pin: GlobePinInput) => {
     setSelectedMapCity(pin.cityKey);
-    setMapGlobeView(false);
     setSearch("");
     const next = groups.find((group) => cityLocationKey(group.city) === pin.cityKey);
     if (next) setSelectedGroupId(next.id);
@@ -917,64 +819,13 @@ export function TastingGroups() {
       <article className="tasting-groups-map-card">
         <div className="tasting-groups-map-head">
           <div>
-            <h3>Tasting City Map</h3>
-            <p className="hint">Select a green pin to filter groups by city and jump into local tastings.</p>
+            <h3>Tasting City Globe</h3>
+            <p className="hint">Spin the globe to explore tasting group cities. Click a glowing pin to filter.</p>
           </div>
-          <div className="tasting-groups-map-tools">
-            <div className="tasting-groups-map-controls" role="group" aria-label="Map zoom controls">
-              <button
-                type="button"
-                className="btn btn-light tasting-groups-map-zoom-btn"
-                onClick={() => {
-                  setMapGlobeView(false);
-                  setMapZoomStepIndex((index) => Math.max(0, index - 1));
-                }}
-                disabled={mapZoomStepIndex === 0 && !mapGlobeView}
-                aria-label="Zoom out"
-              >
-                -
-              </button>
-              <button
-                type="button"
-                className="btn btn-light tasting-groups-map-zoom-fit"
-                onClick={() => {
-                  setMapGlobeView(false);
-                  setMapZoomStepIndex(0);
-                }}
-              >
-                Fit
-              </button>
-              <button
-                type="button"
-                className="btn btn-light tasting-groups-map-zoom-fit"
-                onClick={() => {
-                  setMapGlobeView(true);
-                  setMapZoomStepIndex(0);
-                }}
-              >
-                Globe
-              </button>
-              <button
-                type="button"
-                className="btn btn-light tasting-groups-map-zoom-btn"
-                onClick={() => {
-                  if (mapGlobeView) {
-                    setMapGlobeView(false);
-                    setMapZoomStepIndex(0);
-                    return;
-                  }
-                  setMapZoomStepIndex((index) => Math.min(MAP_ZOOM_STEPS.length - 1, index + 1));
-                }}
-                disabled={mapZoomStepIndex >= MAP_ZOOM_STEPS.length - 1}
-                aria-label="Zoom in"
-              >
-                +
-              </button>
-              <span className="tasting-groups-map-zoom-label">{mapGlobeView ? "Globe" : `${Math.round(mapZoomScale * 100)}%`}</span>
-            </div>
-            {selectedMapPin ? (
+          {selectedMapPin ? (
+            <div className="tasting-groups-map-tools">
               <p className="hint">
-                Selected city: <strong>{selectedMapPin.cityLabel}</strong>{" "}
+                City filter: <strong>{selectedMapPin.cityLabel}</strong>{" "}
                 <button
                   type="button"
                   className="btn btn-light tasting-groups-map-clear"
@@ -983,190 +834,24 @@ export function TastingGroups() {
                   Clear
                 </button>
               </p>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </div>
 
         {mapLoading ? (
-          <p className="hint">Loading map...</p>
-        ) : (
-          <div className="tasting-groups-map-wrap">
-            <svg
-              viewBox={`${mapView.x.toFixed(2)} ${mapView.y.toFixed(2)} ${mapView.width.toFixed(2)} ${mapView.height.toFixed(2)}`}
-              className="tasting-groups-map-svg"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              <rect x="0" y="0" width={MAP_WIDTH} height={MAP_HEIGHT} fill="#d8e6da" />
-              {minorLatLines.map((lat) => {
-                const y = ((90 - lat) / 180) * MAP_HEIGHT;
-                return (
-                  <line
-                    key={`minor-lat-${lat}`}
-                    x1="0"
-                    y1={y}
-                    x2={MAP_WIDTH}
-                    y2={y}
-                    stroke="#6e7b86"
-                    strokeWidth={(0.28 * mapVisualScale).toFixed(3)}
-                    strokeOpacity="0.08"
-                    pointerEvents="none"
-                  />
-                );
-              })}
-              {minorLonLines.map((lon) => {
-                const x = ((lon + 180) / 360) * MAP_WIDTH;
-                return (
-                  <line
-                    key={`minor-lon-${lon}`}
-                    x1={x}
-                    y1="0"
-                    x2={x}
-                    y2={MAP_HEIGHT}
-                    stroke="#6e7b86"
-                    strokeWidth={(0.28 * mapVisualScale).toFixed(3)}
-                    strokeOpacity="0.08"
-                    pointerEvents="none"
-                  />
-                );
-              })}
-              {majorLatLines.map((lat) => {
-                const y = ((90 - lat) / 180) * MAP_HEIGHT;
-                return (
-                  <line
-                    key={`major-lat-${lat}`}
-                    x1="0"
-                    y1={y}
-                    x2={MAP_WIDTH}
-                    y2={y}
-                    stroke="#6e7b86"
-                    strokeWidth={(0.44 * mapVisualScale).toFixed(3)}
-                    strokeOpacity="0.12"
-                    pointerEvents="none"
-                  />
-                );
-              })}
-              {majorLonLines.map((lon) => {
-                const x = ((lon + 180) / 360) * MAP_WIDTH;
-                return (
-                  <line
-                    key={`major-lon-${lon}`}
-                    x1={x}
-                    y1="0"
-                    x2={x}
-                    y2={MAP_HEIGHT}
-                    stroke="#6e7b86"
-                    strokeWidth={(0.44 * mapVisualScale).toFixed(3)}
-                    strokeOpacity="0.12"
-                    pointerEvents="none"
-                  />
-                );
-              })}
-              {mapPaths.map((country) => (
-                <path
-                  key={country.id}
-                  d={country.path}
-                  fill="#e8dcbf"
-                  fillOpacity="0.52"
-                  stroke="#7d7681"
-                  strokeWidth={(0.45 * mapVisualScale).toFixed(3)}
-                  pointerEvents="none"
-                />
-              ))}
-              {showHydroDetails
-                ? lakePaths.map((path, index) => (
-                    <path
-                      key={`lake-${index}`}
-                      d={path}
-                      fill="#c6dff2"
-                      fillOpacity="0.75"
-                      stroke="#8fb6d2"
-                      strokeWidth={(0.28 * mapVisualScale).toFixed(3)}
-                      pointerEvents="none"
-                    />
-                  ))
-                : null}
-              {showAdminBoundaries
-                ? adminBoundaryPaths.map((path, index) => (
-                    <path
-                      key={`admin-boundary-${index}`}
-                      d={path}
-                      fill="none"
-                      stroke="#9e9b93"
-                      strokeOpacity="0.58"
-                      strokeWidth={(0.24 * mapVisualScale).toFixed(3)}
-                      pointerEvents="none"
-                    />
-                  ))
-                : null}
-              {showHydroDetails
-                ? riverPaths.map((path, index) => (
-                    <path
-                      key={`river-${index}`}
-                      d={path}
-                      fill="none"
-                      stroke="#8cb5d3"
-                      strokeOpacity="0.72"
-                      strokeWidth={(0.2 * mapVisualScale).toFixed(3)}
-                      pointerEvents="none"
-                    />
-                  ))
-                : null}
-              {cityPins.map((pin) => {
-                const { x, y } = projectLonLat(pin.lon, pin.lat);
-                const isActive = selectedMapCity === pin.cityKey;
-                const pinRadius = 6.6 * mapVisualScale;
-                const pinHeadLift = 7 * mapVisualScale;
-                const pinTipDrop = 5 * mapVisualScale;
-                const pinWing = 4.6 * mapVisualScale;
-                return (
-                  <g
-                    key={pin.cityKey}
-                    className={`tasting-groups-map-pin${isActive ? " active" : ""}`}
-                    onClick={() => handleMapPinSelect(pin)}
-                    onMouseEnter={() => setMapHoverCity(pin.cityKey)}
-                    onMouseLeave={() => setMapHoverCity(null)}
-                  >
-                    <circle cx={x} cy={y - pinHeadLift} r={pinRadius.toFixed(3)} />
-                    <path
-                      d={`M${x.toFixed(2)},${(y + pinTipDrop).toFixed(2)} L${(x - pinWing).toFixed(2)},${(y - 1.2 * mapVisualScale).toFixed(2)} L${(x + pinWing).toFixed(2)},${(y - 1.2 * mapVisualScale).toFixed(2)} Z`}
-                    />
-                    {showCityLabels ? (
-                      <text
-                        x={x}
-                        y={y - pinHeadLift - pinRadius - 1.6 * mapVisualScale}
-                        textAnchor="middle"
-                        className="tasting-groups-map-city-label"
-                        style={{ fontSize: `${(10.5 * mapVisualScale).toFixed(2)}px` }}
-                      >
-                        {pin.cityLabel.split(",")[0]}
-                      </text>
-                    ) : null}
-                  </g>
-                );
-              })}
-            </svg>
-            {hoveredMapPin ? (
-              <div className="tasting-groups-map-tooltip">
-                <strong>{hoveredMapPin.cityLabel}</strong>
-                <span>
-                  {hoveredMapPin.groups.length} {hoveredMapPin.groups.length === 1 ? "group" : "groups"}
-                </span>
-              </div>
-            ) : null}
-            <div className="tasting-groups-map-count-pill">
-              {cityPins.length} mapped {cityPins.length === 1 ? "city" : "cities"}
-              {unmappedGroupCount > 0 ? ` | ${unmappedGroupCount} awaiting city coordinates` : ""}
-            </div>
-            {mapZoomScale >= 1.35 && detailLayersLoading ? (
-              <div className="tasting-groups-map-detail-pill">Loading enhanced map detail...</div>
-            ) : null}
-            {mapZoomScale >= 1.35 && detailLayersAttempted && !detailLayersLoading && !hasDetailLayers ? (
-              <div className="tasting-groups-map-detail-pill">
-                Enhanced boundaries/waterways are unavailable right now. Base map zoom remains active.
-              </div>
-            ) : null}
+          <div className="globe-loading">
+            <div className="globe-loading-orb" />
+            <p>Preparing globe&hellip;</p>
           </div>
+        ) : (
+          <GlobeMap
+            cityPins={cityPins}
+            mapPaths={mapPaths}
+            selectedCityKey={selectedMapCity}
+            onPinSelect={handleMapPinSelect}
+          />
         )}
+
       </article>
 
       <div className="tasting-groups-layout">
