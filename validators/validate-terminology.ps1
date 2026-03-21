@@ -7,6 +7,7 @@ $ErrorActionPreference = "Stop"
 $schemaPath = "schemas/terminology.schema.json"
 $terminologyRoot = "terminology"
 $reviewDir = "review/terminology"
+$indexScript = "scripts/rebuild-terminology-index.js"
 
 if (-not (Test-Path $schemaPath)) {
   throw "Missing schema file: $schemaPath"
@@ -16,6 +17,19 @@ if (-not (Test-Path $terminologyRoot)) {
 }
 if (-not (Test-Path $reviewDir)) {
   New-Item -ItemType Directory -Path $reviewDir -Force | Out-Null
+}
+if (-not (Test-Path $indexScript)) {
+  throw "Missing terminology index script: $indexScript"
+}
+
+Write-Host "==> [index] rebuilding terminology/index.json"
+& node $indexScript --fail-on-dangerous-collisions
+$indexExit = $LASTEXITCODE
+if ($indexExit -ne 0) {
+  Write-Host "Terminology validation summary:"
+  Write-Host "files=0 entries=0 structural_failures=1 borderline=0"
+  Write-Host "review_queue=check terminology/index.json collisions and parse_errors"
+  exit 1
 }
 
 $allowedCategories = @(
@@ -34,7 +48,7 @@ $requiredFields = @(
   "quality_score",
   "status"
 )
-$allowedStatuses = @("draft", "review", "published", "rejected")
+$allowedStatuses = @("draft", "review", "review_required", "published", "rejected", "merged")
 
 function Normalize-Text {
   param([string]$Value)
@@ -47,7 +61,7 @@ function Test-FieldPresent {
   return $null -ne $Obj.PSObject.Properties[$Name]
 }
 
-$jsonFiles = Get-ChildItem -Path $terminologyRoot -Recurse -File -Filter *.json
+$jsonFiles = Get-ChildItem -Path $terminologyRoot -Recurse -File -Filter *.json | Where-Object { $_.Name -ne "index.json" }
 if ($jsonFiles.Count -eq 0) {
   Write-Host "Terminology validation summary:"
   Write-Host "files=0 entries=0 structural_failures=0 borderline=0 review_queue=none"
@@ -64,7 +78,7 @@ $publishedCount = 0
 foreach ($file in $jsonFiles) {
   $raw = Get-Content $file.FullName -Raw
   try {
-    $parsed = $raw | ConvertFrom-Json -Depth 100
+    $parsed = $raw | ConvertFrom-Json
   }
   catch {
     $structuralIssues.Add([pscustomobject]@{
