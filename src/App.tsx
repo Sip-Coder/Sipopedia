@@ -7,6 +7,7 @@ import sipStudiosLogo from "./assets/brand/logo-sip-studios-opt.webp";
 import { trackEvent } from "./lib/analytics";
 
 const loadSipAcademyWineLessons = () => import("./components/SipAcademyWineLessons");
+const loadSipStudiosGame = () => import("./components/SipStudiosGame");
 const loadFlavorWheel = () => import("./components/FlavorWheel");
 const loadBeverageQuiz = () => import("./components/BeverageQuiz");
 const loadBeverageNews = () => import("./components/BeverageNews");
@@ -22,6 +23,7 @@ const loadAiNews = () => import("./components/AiNews");
 const SipAcademyWineLessons = lazy(() =>
   loadSipAcademyWineLessons().then((module) => ({ default: module.SipAcademyWineLessons }))
 );
+const SipStudiosGame = lazy(() => loadSipStudiosGame().then((module) => ({ default: module.SipStudiosGame })));
 const FlavorWheel = lazy(() => loadFlavorWheel().then((module) => ({ default: module.FlavorWheel })));
 const BeverageQuiz = lazy(() => loadBeverageQuiz().then((module) => ({ default: module.BeverageQuiz })));
 const BeverageNews = lazy(() => loadBeverageNews().then((module) => ({ default: module.BeverageNews })));
@@ -37,6 +39,7 @@ const AiNews = lazy(() => loadAiNews().then((module) => ({ default: module.AiNew
 type RegionsPage = "regions" | `regions/${string}`;
 type SipStudiosTab =
   | "sip-academy"
+  | "sip-game"
   | "sipopedia"
   | "flavor-wheel"
   | "tasting-journal"
@@ -60,6 +63,7 @@ const sipStudiosSections: SipStudiosSectionItem[] = [
 
 const sipStudiosNavItems: SipStudiosNavItem[] = [
   { id: "sip-academy", label: "Sip Academy", section: "learn" },
+  { id: "sip-game", label: "Game", section: "learn" },
   { id: "sipopedia", label: "Sipopedia", section: "learn" },
   { id: "beverage-quiz", label: "Beverage Quiz", section: "learn" },
   { id: "regions", label: "Regions", section: "learn" },
@@ -91,6 +95,7 @@ function isKnownHash(hash: string): boolean {
     hash === "" ||
     hash === "home" ||
     hash === "sip-academy" ||
+    hash === "sip-game" ||
     hash === "sipopedia" ||
     hash === "terminology" ||
     hash === "flavor-wheel" ||
@@ -117,6 +122,7 @@ function pageFromHash(hashValue?: string): AppPage {
   }
   const hash = (hashValue ?? window.location.hash.replace(/^#/, "")).trim();
   if (hash === "sip-academy" || hash === "home") return "sip-academy";
+  if (hash === "sip-game") return "sip-game";
   if (hash === "sipopedia" || hash === "terminology") return "sipopedia";
   if (hash === "flavor-wheel") return "flavor-wheel";
   if (hash === "tasting-journal" || hash === "flavor-journal") return "tasting-journal";
@@ -139,6 +145,7 @@ function brandTierFromPage(page: AppPage): BrandTier {
 
 function hashForPage(page: AppPage): string {
   if (page === "sip-academy") return "sip-academy";
+  if (page === "sip-game") return "sip-game";
   if (page === "sipopedia") return "sipopedia";
   if (page === "flavor-wheel") return "flavor-wheel";
   if (page === "tasting-journal") return "flavor-journal";
@@ -159,6 +166,10 @@ function isHomeHash(hash: string): boolean {
 function preloadPage(target: AppPage): void {
   if (target === "sip-academy") {
     void loadSipAcademyWineLessons();
+    return;
+  }
+  if (target === "sip-game") {
+    void loadSipStudiosGame();
     return;
   }
   if (target === "sipopedia") {
@@ -349,6 +360,8 @@ function App() {
   const renderedPage =
     page === "sip-academy" ? (
       <SipAcademyWineLessons />
+    ) : page === "sip-game" ? (
+      <SipStudiosGame />
     ) : page === "flavor-wheel" ? (
       <FlavorWheel />
     ) : page === "beverage-quiz" ? (

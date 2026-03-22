@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "localhost": "start-localhost.cmd",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "terminology:index": "node scripts/rebuild-terminology-index.js",

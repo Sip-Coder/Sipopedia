@@ -1319,12 +1319,12 @@ export function Flavors() {
         <title>Sip Studies Flavor Journal</title>
         <style>
           :root {
-            --cream-main: #f4e8ce;
-            --cream-card: #f8f1df;
-            --line: #bda87f;
-            --ink: #231d1a;
-            --header-ink: #fdf2e1;
-            --teal: #1f5f63;
+            --cream-main: #edd4a8;
+            --cream-card: #edd4a8;
+            --line: #817985;
+            --ink: #8b4513;
+            --header-ink: #edd4a8;
+            --teal: #185552;
           }
           html, body {
             margin: 0;
@@ -1339,15 +1339,15 @@ export function Flavors() {
             margin: 0;
             min-height: 100vh;
             padding: 18mm 14mm;
-            background: linear-gradient(180deg, #f4e8ce 0%, #f1e3c8 100%);
+            background: linear-gradient(180deg, #edd4a8 0%, #d8e6da 100%);
           }
           .report-header {
             margin-bottom: 14px;
             padding: 16px 18px;
             border-radius: 12px;
-            border: 1px solid rgba(253, 242, 225, 0.55);
+            border: 1px solid rgba(237, 212, 168, 0.55);
             color: var(--header-ink);
-            background: #1f5f63;
+            background: #185552;
             position: relative;
             overflow: hidden;
             box-shadow: 0 6px 16px rgba(40, 28, 16, 0.18);
