@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SipAcademyStory } from "./SipAcademyStory";
 
 type LessonTag = "Foundations" | "Aromas" | "Structure" | "Service";
 type MentorId = "sippy" | "roma" | "hummin";
@@ -2111,7 +2112,7 @@ export function SipAcademyWineLessons() {
         </div>
       </header>
 
-      {voiceMode === "classic" ? (
+      {voiceMode !== "story" ? (
         <>
       <section className="academy-cinematic" aria-label="Active realm cinematic preview">
         <div className="academy-cinematic-stage">
@@ -2442,7 +2443,9 @@ export function SipAcademyWineLessons() {
         </article>
       </div>
       </>
-      ) : null}
+      ) : (
+        <SipAcademyStory />
+      )}
       {activeProfile ? (
         <div className="academy-mentor-modal-overlay" role="presentation" onClick={(event) => event.target === event.currentTarget && setProfileMentorId(null)}>
           <div

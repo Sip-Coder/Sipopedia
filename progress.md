@@ -52,3 +52,19 @@ pm.cmd run build after elderflower mapping fix: successful.
   - `/academy/ui/bg-grid.png`
   via layered CSS backgrounds in `src/styles.css`.
 - Validation: `npm.cmd run build` passed after local DUMP IN artwork integration (TypeScript + Vite build successful).
+- Localhost startup troubleshooting resolved: successful launch depends on Vite running cleanly on `127.0.0.1:5173`; stale port-holding processes can block startup.
+- Added a new `Sip Academy` Story-mode experience backed by Regions data:
+  - New globe-driven country selector (same globe interaction style as Tasting Groups/Tasting Map).
+  - Per-country, per-region chapter view with Hummin-perspective narrative sections.
+  - Story audio controls at the top (play/pause/resume/stop using browser speech synthesis).
+  - Story mode now renders dedicated content while Classic/Tactical retain campaign gameplay.
+- Refined Story mode based on UX feedback:
+  - Converted split section cards into one long-form Hummin travel-tale chapter per country (storybook style with factual teaching points).
+  - Audio narration now reads the full long-form country tale.
+  - Added resilient region-image fallbacks: region image -> country image -> Unsplash query -> inline SVG fallback.
+- Story audio + UX controls upgrade:
+  - Preserved the successful preferred voice matching strategy (UK male priority list with stable fallbacks).
+  - Added fixed floating mini audio controls in top-right while scrolling.
+  - Added playback speed controls (`1x`, `1.5x`, `1.8x`, `2x`, `2.5x`) in both primary and floating audio controls.
+  - Speed changes now restart narration from the current tracked listening position rather than from the beginning.
+  - Expanded country-story generator with seeded variation for unique intro/adventure/closing flavor per country while keeping Hummin -> Sippy/Roma perspective.

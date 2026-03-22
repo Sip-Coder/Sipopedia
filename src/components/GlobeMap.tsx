@@ -2,10 +2,15 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import * as THREE from "three";
 
 const GLOBE_R = 1;
+const GLOBE_ROTATION_Y_DEFAULT = 0.4;
+const GLOBE_ROTATION_X_DEFAULT = 0;
 const TEX_W = 2048;
 const TEX_H = 1024;
 const MAP_W = 800;
 const MAP_H = 400;
+const CAMERA_Z_DEFAULT = 2.85;
+const CAMERA_Z_MIN = 2.05;
+const CAMERA_Z_MAX = 4.6;
 
 export type GlobePinInput = {
   cityKey: string;
@@ -130,6 +135,8 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
   const wrapRef = useRef<HTMLDivElement>(null);
   const [hoveredPin, setHoveredPin] = useState<GlobePinInput | null>(null);
   const [webglFailed, setWebglFailed] = useState(false);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const earthRef = useRef<THREE.Mesh | null>(null);
 
   const onPinSelectRef = useRef(onPinSelect);
   onPinSelectRef.current = onPinSelect;
@@ -168,7 +175,8 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(36, w / h, 0.1, 100);
-    camera.position.z = 2.85;
+    camera.position.z = CAMERA_Z_DEFAULT;
+    cameraRef.current = camera;
 
     const starCount = 700;
     const starPos = new Float32Array(starCount * 3);
@@ -201,7 +209,9 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       shininess: 7,
     });
     const earth = new THREE.Mesh(earthGeo, earthMat);
-    earth.rotation.y = 0.4;
+    earth.rotation.y = GLOBE_ROTATION_Y_DEFAULT;
+    earth.rotation.x = GLOBE_ROTATION_X_DEFAULT;
+    earthRef.current = earth;
     scene.add(earth);
 
     const atmoGeo = new THREE.SphereGeometry(GLOBE_R * 1.065, 40, 40);
@@ -279,6 +289,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
     let autoRotate = true;
     let idleTimer: ReturnType<typeof setTimeout> | null = null;
     const activeTouchPointers = new Map<number, { x: number; y: number }>();
+    let lastTouchDistance = 0;
 
     const resetIdle = () => {
       autoRotate = false;
@@ -297,6 +308,18 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       const a = points[0];
       const b = points[1];
       return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    };
+
+    const touchDistance = (): number => {
+      if (activeTouchPointers.size < 2) return 0;
+      const points = Array.from(activeTouchPointers.values());
+      const a = points[0];
+      const b = points[1];
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    };
+
+    const setZoom = (nextZ: number) => {
+      camera.position.z = Math.max(CAMERA_Z_MIN, Math.min(CAMERA_Z_MAX, nextZ));
     };
 
     const toNDC = (clientX: number, clientY: number) => {
@@ -329,6 +352,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
             lastX = downX = mid.x;
             lastY = downY = mid.y;
             velX = velY = 0;
+            lastTouchDistance = touchDistance();
             resetIdle();
           }
         }
@@ -364,6 +388,12 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
           velY = dy * 0.006;
           lastX = mid.x;
           lastY = mid.y;
+          const nextDistance = touchDistance();
+          if (lastTouchDistance > 0 && nextDistance > 0) {
+            const delta = nextDistance - lastTouchDistance;
+            setZoom(camera.position.z - delta * 0.006);
+          }
+          lastTouchDistance = nextDistance;
           resetIdle();
         }
         return;
@@ -407,6 +437,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
           }
         }
         if (activeTouchPointers.size === 0) touchTapCandidate = false;
+        if (activeTouchPointers.size < 2) lastTouchDistance = 0;
         el.style.cursor = "grab";
         return;
       }
@@ -427,7 +458,14 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       isDragging = false;
       activeTouchPointers.clear();
       touchTapCandidate = false;
+      lastTouchDistance = 0;
       setHoveredRef.current(null);
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setZoom(camera.position.z + e.deltaY * 0.0024);
+      resetIdle();
     };
 
     el.style.cursor = "grab";
@@ -436,6 +474,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
     el.addEventListener("pointerup", onPointerUp);
     el.addEventListener("pointerleave", onPointerLeave);
     el.addEventListener("pointercancel", onPointerLeave);
+    el.addEventListener("wheel", onWheel, { passive: false });
 
     const onResize = () => {
       const { w: nw, h: nh } = getSize();
@@ -475,10 +514,13 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       el.removeEventListener("pointerup", onPointerUp);
       el.removeEventListener("pointerleave", onPointerLeave);
       el.removeEventListener("pointercancel", onPointerLeave);
+      el.removeEventListener("wheel", onWheel);
       renderer?.dispose();
       texture.dispose();
       earthMat.dispose();
       earthGeo.dispose();
+      if (earthRef.current === earth) earthRef.current = null;
+      if (cameraRef.current === camera) cameraRef.current = null;
       if (wrap.contains(el)) wrap.removeChild(el);
     };
   }, [mapPaths, cityPins]);
@@ -502,8 +544,43 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
     );
   }
 
+  const zoomIn = () => {
+    const camera = cameraRef.current;
+    if (!camera) return;
+    camera.position.z = Math.max(CAMERA_Z_MIN, camera.position.z - 0.22);
+  };
+
+  const zoomOut = () => {
+    const camera = cameraRef.current;
+    if (!camera) return;
+    camera.position.z = Math.min(CAMERA_Z_MAX, camera.position.z + 0.22);
+  };
+
+  const centerGlobe = () => {
+    const earth = earthRef.current;
+    const camera = cameraRef.current;
+    if (earth) {
+      earth.rotation.x = GLOBE_ROTATION_X_DEFAULT;
+      earth.rotation.y = GLOBE_ROTATION_Y_DEFAULT;
+    }
+    if (camera) {
+      camera.position.z = CAMERA_Z_DEFAULT;
+    }
+  };
+
   return (
     <div className="globe-container">
+      <div className="globe-controls" aria-label="Globe controls">
+        <button type="button" className="globe-control-btn" onClick={zoomIn} aria-label="Zoom in">
+          +
+        </button>
+        <button type="button" className="globe-control-btn" onClick={zoomOut} aria-label="Zoom out">
+          -
+        </button>
+        <button type="button" className="globe-control-btn globe-control-center" onClick={centerGlobe} aria-label="Center globe">
+          Center
+        </button>
+      </div>
       <div ref={wrapRef} className="globe-wrap" />
 
       {hoveredPin ? (
@@ -516,7 +593,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
         </div>
       ) : null}
 
-      <div className="globe-hint">Drag to spin &middot; Two fingers on mobile &middot; Click a pin to explore groups</div>
+      <div className="globe-hint">Drag to spin &middot; Pinch or wheel to zoom &middot; Use + / - / Center controls</div>
 
       <div className="globe-legend">
         {Object.entries(FOCUS_CSS).map(([focus, color]) => (
