@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { GlobeMap, type GlobePinInput } from "./GlobeMap";
 
 type GroupFocus = "Wine" | "Spirits" | "Beer" | "Sake" | "Zero Proof" | "Coffee & Tea";
 type MeetupFormat = "In Person" | "Hybrid";
@@ -52,23 +53,9 @@ type CityPin = {
   lon: number;
   groups: TastingGroup[];
 };
-type MapView = { x: number; y: number; width: number; height: number };
-type GeoFeatureCollection = {
-  type?: string;
-  features?: Array<{ geometry?: { type?: string; coordinates?: unknown } }>;
-};
 
 const MAP_WIDTH = 800;
 const MAP_HEIGHT = 400;
-const MAP_ASPECT = MAP_WIDTH / MAP_HEIGHT;
-const MAP_ZOOM_STEPS = [1, 1.35, 1.8, 2.4, 3.2, 4.5, 6];
-const DETAIL_LAYER_URLS = {
-  adminBoundaries:
-    "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_1_states_provinces.geojson",
-  lakes: "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_lakes.geojson",
-  rivers:
-    "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_rivers_lake_centerlines.geojson"
-};
 
 const focusFilters: Array<"All" | GroupFocus> = ["All", "Wine", "Spirits", "Beer", "Sake", "Zero Proof", "Coffee & Tea"];
 
@@ -280,9 +267,6 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
-}
 
 function normalizeSearchText(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
@@ -385,101 +369,6 @@ function toPath(points: number[][], width: number, height: number): string {
   return `${path}Z`;
 }
 
-function toLinePath(points: number[][], width: number, height: number): string {
-  if (!points.length) return "";
-  const projected = points.map(([lon, lat]) => [((lon + 180) / 360) * width, ((90 - lat) / 180) * height]);
-  let path = `M${projected[0][0].toFixed(2)},${projected[0][1].toFixed(2)}`;
-  for (let index = 1; index < projected.length; index++) {
-    const breakPath = Math.abs(points[index][0] - points[index - 1][0]) > 100;
-    path += breakPath
-      ? `M${projected[index][0].toFixed(2)},${projected[index][1].toFixed(2)}`
-      : `L${projected[index][0].toFixed(2)},${projected[index][1].toFixed(2)}`;
-  }
-  return path;
-}
-
-function isLngLatPoint(value: unknown): value is [number, number] {
-  return (
-    Array.isArray(value) &&
-    value.length >= 2 &&
-    typeof value[0] === "number" &&
-    Number.isFinite(value[0]) &&
-    typeof value[1] === "number" &&
-    Number.isFinite(value[1])
-  );
-}
-
-function isLngLatLine(value: unknown): value is [number, number][] {
-  return Array.isArray(value) && value.every((point) => isLngLatPoint(point));
-}
-
-function geoJsonToPolygonPaths(data: GeoFeatureCollection, width = MAP_WIDTH, height = MAP_HEIGHT): string[] {
-  if (data.type !== "FeatureCollection" || !Array.isArray(data.features)) return [];
-  const out: string[] = [];
-  for (const feature of data.features) {
-    const geometry = feature.geometry;
-    if (!geometry || !geometry.coordinates) continue;
-
-    if (geometry.type === "Polygon" && Array.isArray(geometry.coordinates)) {
-      let path = "";
-      for (const ring of geometry.coordinates) {
-        if (!isLngLatLine(ring)) continue;
-        path += toPath(ring, width, height);
-      }
-      if (path) out.push(path);
-      continue;
-    }
-
-    if (geometry.type === "MultiPolygon" && Array.isArray(geometry.coordinates)) {
-      let path = "";
-      for (const polygon of geometry.coordinates) {
-        if (!Array.isArray(polygon)) continue;
-        for (const ring of polygon) {
-          if (!isLngLatLine(ring)) continue;
-          path += toPath(ring, width, height);
-        }
-      }
-      if (path) out.push(path);
-    }
-  }
-  return out;
-}
-
-function geoJsonToLinePaths(data: GeoFeatureCollection, width = MAP_WIDTH, height = MAP_HEIGHT): string[] {
-  if (data.type !== "FeatureCollection" || !Array.isArray(data.features)) return [];
-  const out: string[] = [];
-  for (const feature of data.features) {
-    const geometry = feature.geometry;
-    if (!geometry || !geometry.coordinates) continue;
-
-    if (geometry.type === "LineString" && isLngLatLine(geometry.coordinates)) {
-      const path = toLinePath(geometry.coordinates, width, height);
-      if (path) out.push(path);
-      continue;
-    }
-
-    if (geometry.type === "MultiLineString" && Array.isArray(geometry.coordinates)) {
-      for (const line of geometry.coordinates) {
-        if (!isLngLatLine(line)) continue;
-        const path = toLinePath(line, width, height);
-        if (path) out.push(path);
-      }
-    }
-  }
-  return out;
-}
-
-async function loadGeoJsonLayer(url: string): Promise<GeoFeatureCollection | null> {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) return null;
-    const data = (await response.json()) as unknown;
-    if (!isObject(data)) return null;
-    return data as GeoFeatureCollection;
-  } catch {
-    return null;
-  }
-}
 
 function topoToPaths(data: Record<string, unknown>, width = MAP_WIDTH, height = MAP_HEIGHT): MapCountryPath[] {
   if (!Array.isArray(data.arcs) || !isObject(data.objects)) return [];
@@ -529,47 +418,6 @@ function topoToPaths(data: Record<string, unknown>, width = MAP_WIDTH, height = 
   return out;
 }
 
-function projectLonLat(lon: number, lat: number, width = MAP_WIDTH, height = MAP_HEIGHT): { x: number; y: number } {
-  return { x: ((lon + 180) / 360) * width, y: ((90 - lat) / 180) * height };
-}
-
-function fitPinsToView(pins: CityPin[]): MapView {
-  if (!pins.length) return { x: 0, y: 0, width: MAP_WIDTH, height: MAP_HEIGHT };
-
-  const projected = pins.map((pin) => projectLonLat(pin.lon, pin.lat));
-  let minX = Math.min(...projected.map((point) => point.x));
-  let maxX = Math.max(...projected.map((point) => point.x));
-  let minY = Math.min(...projected.map((point) => point.y));
-  let maxY = Math.max(...projected.map((point) => point.y));
-
-  const baseSpanX = Math.max(maxX - minX, 70);
-  const baseSpanY = Math.max(maxY - minY, 42);
-  const padX = Math.max(baseSpanX * 0.18, 28);
-  const padY = Math.max(baseSpanY * 0.24, 20);
-
-  minX -= padX;
-  maxX += padX;
-  minY -= padY;
-  maxY += padY;
-
-  let width = clamp(maxX - minX, 140, MAP_WIDTH);
-  let height = clamp(maxY - minY, 100, MAP_HEIGHT);
-
-  if (width / height > MAP_ASPECT) {
-    height = width / MAP_ASPECT;
-  } else {
-    width = height * MAP_ASPECT;
-  }
-
-  width = Math.min(width, MAP_WIDTH);
-  height = Math.min(height, MAP_HEIGHT);
-
-  const centerX = (minX + maxX) / 2;
-  const centerY = (minY + maxY) / 2;
-  const x = clamp(centerX - width / 2, 0, MAP_WIDTH - width);
-  const y = clamp(centerY - height / 2, 0, MAP_HEIGHT - height);
-  return { x, y, width, height };
-}
 
 function formatDateLabel(dateIso: string): string {
   const parsed = new Date(`${dateIso}T12:00:00`);
@@ -588,14 +436,6 @@ export function TastingGroups() {
   const [mapPaths, setMapPaths] = useState<MapCountryPath[]>([]);
   const [mapLoading, setMapLoading] = useState(true);
   const [selectedMapCity, setSelectedMapCity] = useState<string | null>(null);
-  const [mapHoverCity, setMapHoverCity] = useState<string | null>(null);
-  const [mapZoomStepIndex, setMapZoomStepIndex] = useState(0);
-  const [mapGlobeView, setMapGlobeView] = useState(false);
-  const [adminBoundaryPaths, setAdminBoundaryPaths] = useState<string[]>([]);
-  const [lakePaths, setLakePaths] = useState<string[]>([]);
-  const [riverPaths, setRiverPaths] = useState<string[]>([]);
-  const [detailLayersLoading, setDetailLayersLoading] = useState(false);
-  const [detailLayersAttempted, setDetailLayersAttempted] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -642,97 +482,6 @@ export function TastingGroups() {
     [cityPins, selectedMapCity]
   );
 
-  const hoveredMapPin = useMemo(
-    () => (mapHoverCity ? cityPins.find((pin) => pin.cityKey === mapHoverCity) ?? null : null),
-    [cityPins, mapHoverCity]
-  );
-  const activeMapPins = useMemo(() => (selectedMapPin ? [selectedMapPin] : cityPins), [selectedMapPin, cityPins]);
-  const defaultMapView = useMemo(() => fitPinsToView(activeMapPins), [activeMapPins]);
-  const mapZoomScale = MAP_ZOOM_STEPS[mapZoomStepIndex] ?? MAP_ZOOM_STEPS[0];
-  const mapView = useMemo(() => {
-    if (mapGlobeView) {
-      return { x: 0, y: 0, width: MAP_WIDTH, height: MAP_HEIGHT };
-    }
-    const width = clamp(defaultMapView.width / mapZoomScale, 72, MAP_WIDTH);
-    const height = clamp(defaultMapView.height / mapZoomScale, 36, MAP_HEIGHT);
-    const centerX = defaultMapView.x + defaultMapView.width / 2;
-    const centerY = defaultMapView.y + defaultMapView.height / 2;
-    const x = clamp(centerX - width / 2, 0, MAP_WIDTH - width);
-    const y = clamp(centerY - height / 2, 0, MAP_HEIGHT - height);
-    return { x, y, width, height };
-  }, [defaultMapView, mapZoomScale, mapGlobeView]);
-  const mapVisualScale = clamp(mapView.width / MAP_WIDTH, 0.42, 1);
-  const showAdminBoundaries = mapZoomScale >= 1.35;
-  const showHydroDetails = mapZoomScale >= 1.8;
-  const showCityLabels = mapZoomScale >= 1.8;
-  const hasDetailLayers = adminBoundaryPaths.length > 0 || lakePaths.length > 0 || riverPaths.length > 0;
-
-  const gridSteps = useMemo(() => {
-    if (mapZoomScale >= 2.4) return { major: 5, minor: 2.5 };
-    if (mapZoomScale >= 1.8) return { major: 10, minor: 5 };
-    if (mapZoomScale >= 1.35) return { major: 15, minor: 0 };
-    return { major: 20, minor: 0 };
-  }, [mapZoomScale]);
-
-  const majorLatLines = useMemo(
-    () =>
-      Array.from({ length: Math.floor(180 / gridSteps.major) + 1 }, (_, idx) => -90 + idx * gridSteps.major).filter(
-        (lat) => lat > -90 && lat < 90
-      ),
-    [gridSteps.major]
-  );
-  const majorLonLines = useMemo(
-    () =>
-      Array.from({ length: Math.floor(360 / gridSteps.major) + 1 }, (_, idx) => -180 + idx * gridSteps.major).filter(
-        (lon) => lon > -180 && lon < 180
-      ),
-    [gridSteps.major]
-  );
-  const minorLatLines = useMemo(() => {
-    if (!gridSteps.minor) return [] as number[];
-    return Array.from({ length: Math.floor(180 / gridSteps.minor) + 1 }, (_, idx) => -90 + idx * gridSteps.minor).filter(
-      (lat) => lat > -90 && lat < 90 && !majorLatLines.includes(lat)
-    );
-  }, [gridSteps.minor, majorLatLines]);
-  const minorLonLines = useMemo(() => {
-    if (!gridSteps.minor) return [] as number[];
-    return Array.from({ length: Math.floor(360 / gridSteps.minor) + 1 }, (_, idx) => -180 + idx * gridSteps.minor).filter(
-      (lon) => lon > -180 && lon < 180 && !majorLonLines.includes(lon)
-    );
-  }, [gridSteps.minor, majorLonLines]);
-
-  useEffect(() => {
-    if (mapZoomScale < 1.35 || detailLayersAttempted || detailLayersLoading) return;
-    let cancelled = false;
-    setDetailLayersLoading(true);
-    setDetailLayersAttempted(true);
-
-    Promise.all([
-      loadGeoJsonLayer(DETAIL_LAYER_URLS.adminBoundaries),
-      loadGeoJsonLayer(DETAIL_LAYER_URLS.lakes),
-      loadGeoJsonLayer(DETAIL_LAYER_URLS.rivers)
-    ])
-      .then(([adminLayer, lakesLayer, riversLayer]) => {
-        if (cancelled) return;
-        if (adminLayer) setAdminBoundaryPaths(geoJsonToLinePaths(adminLayer));
-        if (lakesLayer) setLakePaths(geoJsonToPolygonPaths(lakesLayer));
-        if (riversLayer) setRiverPaths(geoJsonToLinePaths(riversLayer));
-      })
-      .finally(() => {
-        if (!cancelled) setDetailLayersLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [mapZoomScale, detailLayersAttempted, detailLayersLoading]);
-
-  const mappedGroupCount = useMemo(
-    () => cityPins.reduce((sum, pin) => sum + pin.groups.length, 0),
-    [cityPins]
-  );
-  const unmappedGroupCount = groups.length - mappedGroupCount;
-
   const filteredGroups = useMemo(() => {
     const searchTerm = normalizeSearchText(search);
     return groups.filter((group) => {
@@ -754,11 +503,6 @@ export function TastingGroups() {
       setSelectedMapCity(null);
     }
   }, [selectedMapCity, cityPins]);
-
-  useEffect(() => {
-    setMapZoomStepIndex(0);
-    setMapGlobeView(false);
-  }, [selectedMapCity, cityPins.length]);
 
   useEffect(() => {
     if (!filteredGroups.length) {
@@ -819,9 +563,8 @@ export function TastingGroups() {
     setCreateNotice(`"${createdGroup.name}" is staged in the UI. Auth and member gating can be wired next.`);
   };
 
-  const handleMapPinSelect = (pin: CityPin) => {
+  const handleMapPinSelect = (pin: GlobePinInput) => {
     setSelectedMapCity(pin.cityKey);
-    setMapGlobeView(false);
     setSearch("");
     const next = groups.find((group) => cityLocationKey(group.city) === pin.cityKey);
     if (next) setSelectedGroupId(next.id);
@@ -917,64 +660,13 @@ export function TastingGroups() {
       <article className="tasting-groups-map-card">
         <div className="tasting-groups-map-head">
           <div>
-            <h3>Tasting City Map</h3>
-            <p className="hint">Select a green pin to filter groups by city and jump into local tastings.</p>
+            <h3>Tasting City Globe</h3>
+            <p className="hint">Spin the globe to explore tasting group cities. Click a glowing pin to filter.</p>
           </div>
-          <div className="tasting-groups-map-tools">
-            <div className="tasting-groups-map-controls" role="group" aria-label="Map zoom controls">
-              <button
-                type="button"
-                className="btn btn-light tasting-groups-map-zoom-btn"
-                onClick={() => {
-                  setMapGlobeView(false);
-                  setMapZoomStepIndex((index) => Math.max(0, index - 1));
-                }}
-                disabled={mapZoomStepIndex === 0 && !mapGlobeView}
-                aria-label="Zoom out"
-              >
-                -
-              </button>
-              <button
-                type="button"
-                className="btn btn-light tasting-groups-map-zoom-fit"
-                onClick={() => {
-                  setMapGlobeView(false);
-                  setMapZoomStepIndex(0);
-                }}
-              >
-                Fit
-              </button>
-              <button
-                type="button"
-                className="btn btn-light tasting-groups-map-zoom-fit"
-                onClick={() => {
-                  setMapGlobeView(true);
-                  setMapZoomStepIndex(0);
-                }}
-              >
-                Globe
-              </button>
-              <button
-                type="button"
-                className="btn btn-light tasting-groups-map-zoom-btn"
-                onClick={() => {
-                  if (mapGlobeView) {
-                    setMapGlobeView(false);
-                    setMapZoomStepIndex(0);
-                    return;
-                  }
-                  setMapZoomStepIndex((index) => Math.min(MAP_ZOOM_STEPS.length - 1, index + 1));
-                }}
-                disabled={mapZoomStepIndex >= MAP_ZOOM_STEPS.length - 1}
-                aria-label="Zoom in"
-              >
-                +
-              </button>
-              <span className="tasting-groups-map-zoom-label">{mapGlobeView ? "Globe" : `${Math.round(mapZoomScale * 100)}%`}</span>
-            </div>
-            {selectedMapPin ? (
+          {selectedMapPin ? (
+            <div className="tasting-groups-map-tools">
               <p className="hint">
-                Selected city: <strong>{selectedMapPin.cityLabel}</strong>{" "}
+                City filter: <strong>{selectedMapPin.cityLabel}</strong>{" "}
                 <button
                   type="button"
                   className="btn btn-light tasting-groups-map-clear"
@@ -983,190 +675,24 @@ export function TastingGroups() {
                   Clear
                 </button>
               </p>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </div>
 
         {mapLoading ? (
-          <p className="hint">Loading map...</p>
-        ) : (
-          <div className="tasting-groups-map-wrap">
-            <svg
-              viewBox={`${mapView.x.toFixed(2)} ${mapView.y.toFixed(2)} ${mapView.width.toFixed(2)} ${mapView.height.toFixed(2)}`}
-              className="tasting-groups-map-svg"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              <rect x="0" y="0" width={MAP_WIDTH} height={MAP_HEIGHT} fill="#d8e6da" />
-              {minorLatLines.map((lat) => {
-                const y = ((90 - lat) / 180) * MAP_HEIGHT;
-                return (
-                  <line
-                    key={`minor-lat-${lat}`}
-                    x1="0"
-                    y1={y}
-                    x2={MAP_WIDTH}
-                    y2={y}
-                    stroke="#6e7b86"
-                    strokeWidth={(0.28 * mapVisualScale).toFixed(3)}
-                    strokeOpacity="0.08"
-                    pointerEvents="none"
-                  />
-                );
-              })}
-              {minorLonLines.map((lon) => {
-                const x = ((lon + 180) / 360) * MAP_WIDTH;
-                return (
-                  <line
-                    key={`minor-lon-${lon}`}
-                    x1={x}
-                    y1="0"
-                    x2={x}
-                    y2={MAP_HEIGHT}
-                    stroke="#6e7b86"
-                    strokeWidth={(0.28 * mapVisualScale).toFixed(3)}
-                    strokeOpacity="0.08"
-                    pointerEvents="none"
-                  />
-                );
-              })}
-              {majorLatLines.map((lat) => {
-                const y = ((90 - lat) / 180) * MAP_HEIGHT;
-                return (
-                  <line
-                    key={`major-lat-${lat}`}
-                    x1="0"
-                    y1={y}
-                    x2={MAP_WIDTH}
-                    y2={y}
-                    stroke="#6e7b86"
-                    strokeWidth={(0.44 * mapVisualScale).toFixed(3)}
-                    strokeOpacity="0.12"
-                    pointerEvents="none"
-                  />
-                );
-              })}
-              {majorLonLines.map((lon) => {
-                const x = ((lon + 180) / 360) * MAP_WIDTH;
-                return (
-                  <line
-                    key={`major-lon-${lon}`}
-                    x1={x}
-                    y1="0"
-                    x2={x}
-                    y2={MAP_HEIGHT}
-                    stroke="#6e7b86"
-                    strokeWidth={(0.44 * mapVisualScale).toFixed(3)}
-                    strokeOpacity="0.12"
-                    pointerEvents="none"
-                  />
-                );
-              })}
-              {mapPaths.map((country) => (
-                <path
-                  key={country.id}
-                  d={country.path}
-                  fill="#e8dcbf"
-                  fillOpacity="0.52"
-                  stroke="#7d7681"
-                  strokeWidth={(0.45 * mapVisualScale).toFixed(3)}
-                  pointerEvents="none"
-                />
-              ))}
-              {showHydroDetails
-                ? lakePaths.map((path, index) => (
-                    <path
-                      key={`lake-${index}`}
-                      d={path}
-                      fill="#c6dff2"
-                      fillOpacity="0.75"
-                      stroke="#8fb6d2"
-                      strokeWidth={(0.28 * mapVisualScale).toFixed(3)}
-                      pointerEvents="none"
-                    />
-                  ))
-                : null}
-              {showAdminBoundaries
-                ? adminBoundaryPaths.map((path, index) => (
-                    <path
-                      key={`admin-boundary-${index}`}
-                      d={path}
-                      fill="none"
-                      stroke="#9e9b93"
-                      strokeOpacity="0.58"
-                      strokeWidth={(0.24 * mapVisualScale).toFixed(3)}
-                      pointerEvents="none"
-                    />
-                  ))
-                : null}
-              {showHydroDetails
-                ? riverPaths.map((path, index) => (
-                    <path
-                      key={`river-${index}`}
-                      d={path}
-                      fill="none"
-                      stroke="#8cb5d3"
-                      strokeOpacity="0.72"
-                      strokeWidth={(0.2 * mapVisualScale).toFixed(3)}
-                      pointerEvents="none"
-                    />
-                  ))
-                : null}
-              {cityPins.map((pin) => {
-                const { x, y } = projectLonLat(pin.lon, pin.lat);
-                const isActive = selectedMapCity === pin.cityKey;
-                const pinRadius = 6.6 * mapVisualScale;
-                const pinHeadLift = 7 * mapVisualScale;
-                const pinTipDrop = 5 * mapVisualScale;
-                const pinWing = 4.6 * mapVisualScale;
-                return (
-                  <g
-                    key={pin.cityKey}
-                    className={`tasting-groups-map-pin${isActive ? " active" : ""}`}
-                    onClick={() => handleMapPinSelect(pin)}
-                    onMouseEnter={() => setMapHoverCity(pin.cityKey)}
-                    onMouseLeave={() => setMapHoverCity(null)}
-                  >
-                    <circle cx={x} cy={y - pinHeadLift} r={pinRadius.toFixed(3)} />
-                    <path
-                      d={`M${x.toFixed(2)},${(y + pinTipDrop).toFixed(2)} L${(x - pinWing).toFixed(2)},${(y - 1.2 * mapVisualScale).toFixed(2)} L${(x + pinWing).toFixed(2)},${(y - 1.2 * mapVisualScale).toFixed(2)} Z`}
-                    />
-                    {showCityLabels ? (
-                      <text
-                        x={x}
-                        y={y - pinHeadLift - pinRadius - 1.6 * mapVisualScale}
-                        textAnchor="middle"
-                        className="tasting-groups-map-city-label"
-                        style={{ fontSize: `${(10.5 * mapVisualScale).toFixed(2)}px` }}
-                      >
-                        {pin.cityLabel.split(",")[0]}
-                      </text>
-                    ) : null}
-                  </g>
-                );
-              })}
-            </svg>
-            {hoveredMapPin ? (
-              <div className="tasting-groups-map-tooltip">
-                <strong>{hoveredMapPin.cityLabel}</strong>
-                <span>
-                  {hoveredMapPin.groups.length} {hoveredMapPin.groups.length === 1 ? "group" : "groups"}
-                </span>
-              </div>
-            ) : null}
-            <div className="tasting-groups-map-count-pill">
-              {cityPins.length} mapped {cityPins.length === 1 ? "city" : "cities"}
-              {unmappedGroupCount > 0 ? ` | ${unmappedGroupCount} awaiting city coordinates` : ""}
-            </div>
-            {mapZoomScale >= 1.35 && detailLayersLoading ? (
-              <div className="tasting-groups-map-detail-pill">Loading enhanced map detail...</div>
-            ) : null}
-            {mapZoomScale >= 1.35 && detailLayersAttempted && !detailLayersLoading && !hasDetailLayers ? (
-              <div className="tasting-groups-map-detail-pill">
-                Enhanced boundaries/waterways are unavailable right now. Base map zoom remains active.
-              </div>
-            ) : null}
+          <div className="globe-loading">
+            <div className="globe-loading-orb" />
+            <p>Preparing globe&hellip;</p>
           </div>
+        ) : (
+          <GlobeMap
+            cityPins={cityPins}
+            mapPaths={mapPaths}
+            selectedCityKey={selectedMapCity}
+            onPinSelect={handleMapPinSelect}
+          />
         )}
+
       </article>
 
       <div className="tasting-groups-layout">
