@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { useAuth } from "../context/AuthContext";
 import tartanPattern from "../assets/brand/tartan-pattern.png";
+import { GlobeMap, type GlobePinInput } from "./GlobeMap";
 import {
   createTastingNote,
   deleteTastingNote,
@@ -257,6 +258,39 @@ const COUNTRY_DISPLAY: Record<string, string> = {
   "United States of America": "United States",
   "Russian Federation": "Russia",
   "United Kingdom": "UK"
+};
+
+const COUNTRY_COORDINATES_BY_NAME: Record<string, { lat: number; lon: number }> = {
+  "United States of America": { lat: 39.8283, lon: -98.5795 },
+  Canada: { lat: 56.1304, lon: -106.3468 },
+  Mexico: { lat: 23.6345, lon: -102.5528 },
+  Argentina: { lat: -38.4161, lon: -63.6167 },
+  Chile: { lat: -35.6751, lon: -71.543 },
+  Brazil: { lat: -14.235, lon: -51.9253 },
+  "United Kingdom": { lat: 55.3781, lon: -3.436 },
+  France: { lat: 46.2276, lon: 2.2137 },
+  Spain: { lat: 40.4637, lon: -3.7492 },
+  Portugal: { lat: 39.3999, lon: -8.2245 },
+  Italy: { lat: 41.8719, lon: 12.5674 },
+  Germany: { lat: 51.1657, lon: 10.4515 },
+  Austria: { lat: 47.5162, lon: 14.5501 },
+  Switzerland: { lat: 46.8182, lon: 8.2275 },
+  Greece: { lat: 39.0742, lon: 21.8243 },
+  Georgia: { lat: 42.3154, lon: 43.3569 },
+  Turkey: { lat: 38.9637, lon: 35.2433 },
+  Lebanon: { lat: 33.8547, lon: 35.8623 },
+  Israel: { lat: 31.0461, lon: 34.8516 },
+  "South Africa": { lat: -30.5595, lon: 22.9375 },
+  Australia: { lat: -25.2744, lon: 133.7751 },
+  "New Zealand": { lat: -40.9006, lon: 174.886 },
+  China: { lat: 35.8617, lon: 104.1954 },
+  Japan: { lat: 36.2048, lon: 138.2529 },
+  "Republic of Korea": { lat: 35.9078, lon: 127.7669 },
+  India: { lat: 20.5937, lon: 78.9629 },
+  "Russian Federation": { lat: 61.524, lon: 105.3188 },
+  Morocco: { lat: 31.7917, lon: -7.0926 },
+  Tunisia: { lat: 33.8869, lon: 9.5375 },
+  Algeria: { lat: 28.0339, lon: 1.6596 }
 };
 
 const nowIso = () => new Date().toISOString();
@@ -770,7 +804,6 @@ export function Flavors() {
   const [mapPaths, setMapPaths] = useState<MapCountryPath[]>([]);
   const [mapLoading, setMapLoading] = useState(true);
   const [mapCountry, setMapCountry] = useState<string | null>(null);
-  const [mapHover, setMapHover] = useState<string | null>(null);
   const [mapSearch, setMapSearch] = useState("");
   const [countdownEnabled, setCountdownEnabled] = useState(false);
   const [countdownMinutes, setCountdownMinutes] = useState(0);
@@ -883,6 +916,22 @@ export function Flavors() {
     }
     return map;
   }, [ordered]);
+
+  const countryPins = useMemo<GlobePinInput[]>(() => {
+    const out: GlobePinInput[] = [];
+    for (const [country, count] of countryCounts.entries()) {
+      const coord = COUNTRY_COORDINATES_BY_NAME[country];
+      if (!coord) continue;
+      out.push({
+        cityKey: country.toLowerCase(),
+        cityLabel: displayCountry(country),
+        lat: coord.lat,
+        lon: coord.lon,
+        groups: Array.from({ length: count }, () => ({ focus: "Wine" }))
+      });
+    }
+    return out;
+  }, [countryCounts]);
 
   const analytics = useMemo(() => {
     const byGrape: Record<string, Accuracy> = {};
@@ -1319,12 +1368,12 @@ export function Flavors() {
         <title>Sip Studies Flavor Journal</title>
         <style>
           :root {
-            --cream-main: #f4e8ce;
-            --cream-card: #f8f1df;
-            --line: #bda87f;
-            --ink: #231d1a;
-            --header-ink: #fdf2e1;
-            --teal: #1f5f63;
+            --cream-main: #edd4a8;
+            --cream-card: #edd4a8;
+            --line: #817985;
+            --ink: #8b4513;
+            --header-ink: #edd4a8;
+            --teal: #185552;
           }
           html, body {
             margin: 0;
@@ -1339,15 +1388,15 @@ export function Flavors() {
             margin: 0;
             min-height: 100vh;
             padding: 18mm 14mm;
-            background: linear-gradient(180deg, #f4e8ce 0%, #f1e3c8 100%);
+            background: linear-gradient(180deg, #edd4a8 0%, #d8e6da 100%);
           }
           .report-header {
             margin-bottom: 14px;
             padding: 16px 18px;
             border-radius: 12px;
-            border: 1px solid rgba(253, 242, 225, 0.55);
+            border: 1px solid rgba(237, 212, 168, 0.55);
             color: var(--header-ink);
-            background: #1f5f63;
+            background: #185552;
             position: relative;
             overflow: hidden;
             box-shadow: 0 6px 16px rgba(40, 28, 16, 0.18);
@@ -1823,7 +1872,7 @@ export function Flavors() {
           <article className="journal-card journal-map-card">
             <h3>World Map</h3>
             {mapCountry ? <p className="hint">Selected: {displayCountry(mapCountry)} <button className="btn btn-light" type="button" onClick={() => setMapCountry(null)}>Clear</button></p> : null}
-            {mapLoading ? <p className="hint">Loading map...</p> : <div className="journal-region-map-wrap"><svg viewBox="0 0 800 400" className="journal-region-map-svg" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="800" height="400" fill="#D8E6DA" />{Array.from({ length: 17 }, (_, i) => (i - 8) * 10).filter((lat) => lat > -90 && lat < 90).map((lat) => { const y = ((90 - lat) / 180) * 400; return <line key={`lat-${lat}`} x1="0" y1={y} x2="800" y2={y} stroke="#817985" strokeWidth="0.5" strokeOpacity="0.1" pointerEvents="none" />; })}{mapPaths.map((country) => { const has = countryCounts.has(country.name); const selectedMapCountry = mapCountry === country.name; const hovered = mapHover === country.name; const fill = selectedMapCountry || (has && hovered) ? "#185552" : has ? "#185552" : "#EDD4A8"; const opacity = selectedMapCountry || (has && hovered) ? 0.9 : has ? 0.25 : 0.45; return <path key={country.id} d={country.path} fill={fill} fillOpacity={opacity} stroke="#817985" strokeWidth={selectedMapCountry || hovered ? "1" : "0.5"} className={has ? "journal-country-clickable" : ""} onClick={(e) => { e.stopPropagation(); if (!has) return; setMapCountry((cur) => cur === country.name ? null : country.name); document.getElementById("journal-region-directory")?.scrollIntoView({ behavior: "smooth" }); }} onMouseEnter={() => { if (has) setMapHover(country.name); }} onMouseLeave={() => setMapHover(null)} />; })}</svg>{mapHover && countryCounts.has(mapHover) ? <div className="journal-map-tooltip"><strong>{displayCountry(mapHover)}</strong><span>{countryCounts.get(mapHover)} {countryCounts.get(mapHover) === 1 ? "tasting" : "tastings"}</span></div> : null}<div className="journal-map-count-pill">{countryCounts.size} {countryCounts.size === 1 ? "country" : "countries"} tasted</div></div>}
+            {mapLoading ? <div className="globe-loading"><div className="globe-loading-orb" /><p>Preparing globe&hellip;</p></div> : <GlobeMap cityPins={countryPins} mapPaths={mapPaths} selectedCityKey={mapCountry ? mapCountry.toLowerCase() : null} onPinSelect={(pin) => { setMapCountry(normalizeCountry(pin.cityLabel)); document.getElementById("journal-region-directory")?.scrollIntoView({ behavior: "smooth" }); }} />}
           </article>
           <aside id="journal-region-directory" className="journal-card"><h3>Region Directory</h3><div className="journal-toolbar"><input placeholder="Search regions or wines..." value={mapSearch} onChange={(e) => setMapSearch(e.target.value)} /></div><div className="journal-note-list">{Object.entries(mapDirectory).length > 0 ? Object.entries(mapDirectory).map(([country, regions]) => <div key={country} className="journal-region-country"><h4>{country}</h4>{Object.entries(regions).map(([region, regionNotes]) => <div key={`${country}-${region}`} className="journal-region-group"><p><strong>{region}</strong> ({regionNotes.length})</p><div className="journal-note-list">{regionNotes.map((note) => <article key={note.id} className={`journal-note-row compact ${activeId === note.id ? "active" : ""}`} onClick={() => { setActiveId(note.id); setTab("review"); }}><div className="journal-note-copy"><h3>{note.actualWineName || "Untitled Tasting"}</h3><p>{fmtDate(note.tastingDate)}</p></div></article>)}</div></div>)}</div>) : <p className="hint">No regions found. Try clearing filters or add more tasting notes.</p>}</div></aside>
         </div>

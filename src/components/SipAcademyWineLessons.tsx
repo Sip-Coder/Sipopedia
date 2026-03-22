@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type LessonTag = "Foundations" | "Aromas" | "Structure" | "Service";
 type MentorId = "sippy" | "roma" | "hummin";
@@ -163,6 +163,114 @@ const REALMS: Realm[] = [
     bossLessonId: "wine-100"
   }
 ];
+
+const LIVE_GRAPH_WIDTH = 680;
+const LIVE_GRAPH_HEIGHT = 250;
+const LIVE_GRAPH_POINTS = 56;
+const LIVE_GRAPH_STUDENTS = 30;
+
+type LiveGraphProfile = {
+  start: number;
+  inclineStep: number;
+  jitter: number;
+  floor: number;
+  decayBase: number;
+  ceiling: number;
+  waveAmplitude: number;
+  waveFrequency: number;
+  wavePhase: number;
+  burstChance: number;
+  burstScale: number;
+  dipChance: number;
+  dipScale: number;
+  momentum: number;
+  turbulence: number;
+  rebound: number;
+  strokeWidth: number;
+  opacity: number;
+};
+
+const LIVE_GRAPH_PROFILES: LiveGraphProfile[] = Array.from({ length: LIVE_GRAPH_STUDENTS }, (_, index) => {
+  const lane = index / Math.max(1, LIVE_GRAPH_STUDENTS - 1);
+  const laneSkew = ((index % 4) - 1.5) * 2.2;
+  const start = 8 + lane * 82 + laneSkew;
+  return {
+    start,
+    inclineStep: 0.05 + (1 - lane) * 0.2 + (index % 5) * 0.015,
+    jitter: 0.16 + (index % 7) * 0.05,
+    floor: Math.max(4, start - 26),
+    decayBase: 0.02 + lane * 0.04,
+    ceiling: Math.min(98, start + 28 + lane * 8),
+    waveAmplitude: 0.16 + (index % 6) * 0.08,
+    waveFrequency: 0.21 + (index % 9) * 0.045,
+    wavePhase: index * 0.9,
+    burstChance: 0.06 + (index % 8) * 0.012,
+    burstScale: 0.75 + (index % 5) * 0.33,
+    dipChance: 0.05 + (index % 7) * 0.012,
+    dipScale: 0.66 + (index % 4) * 0.28,
+    momentum: 0.66 + (index % 6) * 0.06,
+    turbulence: 0.24 + (index % 5) * 0.08,
+    rebound: 0.026 + (index % 4) * 0.01,
+    strokeWidth: 0.68 + lane * 1.05,
+    opacity: 0.18 + lane * 0.44
+  };
+});
+
+function clampGraphValue(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+function buildLiveGraphSeries(pointCount: number, profile: LiveGraphProfile): number[] {
+  let cursor = profile.start;
+  let velocity = (Math.random() - 0.5) * 1.6;
+  return Array.from({ length: pointCount }, (_, step) => {
+    const lift = profile.inclineStep + Math.random() * (profile.inclineStep * 0.75);
+    const wobble = (Math.random() - 0.5) * profile.jitter * 3.2;
+    const wave = Math.sin((step + profile.wavePhase) * profile.waveFrequency) * profile.waveAmplitude;
+    const burst = Math.random() < profile.burstChance ? Math.random() * profile.burstScale : 0;
+    const dip = Math.random() < profile.dipChance ? Math.random() * profile.dipScale : 0;
+    const turbulence = (Math.random() - 0.5) * profile.turbulence * 2.6;
+    const rebound = (profile.start - cursor) * profile.rebound;
+    velocity = velocity * profile.momentum + lift + wobble + wave + burst - dip + turbulence + rebound;
+    cursor = clampGraphValue(cursor + velocity, profile.floor, profile.ceiling + 1.8);
+    return cursor;
+  });
+}
+
+function advanceLiveGraphSeries(series: number[], profile: LiveGraphProfile, tick: number): number[] {
+  const tail = series[series.length - 1] ?? profile.start;
+  const lift = profile.inclineStep + Math.random() * (profile.inclineStep * 0.75);
+  const wobble = (Math.random() - 0.5) * profile.jitter * 3.2;
+  const wave = Math.sin((tick + profile.wavePhase) * profile.waveFrequency) * profile.waveAmplitude;
+  const accel = (tail - (series[series.length - 2] ?? tail)) * (0.58 + Math.random() * 0.22);
+  const burst = Math.random() < profile.burstChance ? Math.random() * profile.burstScale : 0;
+  const dip = Math.random() < profile.dipChance ? Math.random() * profile.dipScale : 0;
+  const turbulence = (Math.random() - 0.5) * profile.turbulence * 2.6;
+  const meanPull = (profile.start - tail) * profile.rebound;
+  const next =
+    tail >= profile.ceiling
+      ? clampGraphValue(tail - (0.45 + Math.random() * 0.55), profile.floor, profile.ceiling + 1.8)
+      : clampGraphValue(tail + accel + lift + wobble + wave + burst - dip + turbulence + meanPull, profile.floor, profile.ceiling + 1.8);
+  const shifted = series.slice(1).map((value, index) => {
+    const laneDecay = profile.decayBase + (index / Math.max(1, series.length - 1)) * 0.03;
+    const microNoise = (Math.random() - 0.5) * profile.jitter * 0.7;
+    const anchor = (profile.start - value) * 0.01;
+    return clampGraphValue(value - laneDecay + microNoise + anchor, profile.floor, profile.ceiling + 1.8);
+  });
+  return [...shifted, next];
+}
+
+function toLiveGraphPoints(series: number[], width: number, height: number): string {
+  if (!series.length) return "";
+  const stepX = width / (series.length - 1);
+  return series
+    .map((value, index) => {
+      const x = index * stepX;
+      const y = height - (value / 100) * height;
+      return `${x.toFixed(2)},${y.toFixed(2)}`;
+    })
+    .join(" ");
+}
 
 function choice(
   id: string,
@@ -1593,6 +1701,10 @@ export function SipAcademyWineLessons() {
   const [unlockCeremony, setUnlockCeremony] = useState<UnlockCeremony | null>(null);
   const [flashUnlockedLessonId, setFlashUnlockedLessonId] = useState<string | null>(null);
   const [profileMentorId, setProfileMentorId] = useState<MentorId | null>(null);
+  const liveGraphTickRef = useRef(LIVE_GRAPH_POINTS);
+  const [liveGraphSeries, setLiveGraphSeries] = useState<number[][]>(() =>
+    LIVE_GRAPH_PROFILES.map((profile) => buildLiveGraphSeries(LIVE_GRAPH_POINTS, profile))
+  );
 
   const activeLesson = useMemo(
     () => (activeLessonId ? LESSONS.find((lesson) => lesson.id === activeLessonId) ?? null : null),
@@ -1607,6 +1719,22 @@ export function SipAcademyWineLessons() {
   useEffect(() => {
     window.localStorage.setItem(VOICE_MODE_KEY, voiceMode);
   }, [voiceMode]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      liveGraphTickRef.current += 1;
+      setLiveGraphSeries((current) => [
+        ...LIVE_GRAPH_PROFILES.map((profile, index) =>
+          advanceLiveGraphSeries(
+            current[index] ?? buildLiveGraphSeries(LIVE_GRAPH_POINTS, profile),
+            profile,
+            liveGraphTickRef.current + index
+          )
+        )
+      ]);
+    }, 170);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (!flashUnlockedLessonId) return;
@@ -1656,6 +1784,10 @@ export function SipAcademyWineLessons() {
   const highlightedRealm = realmProgress.find((realm) => realm.unit === highlightedRealmUnit) ?? realmProgress[0];
   const activeRealmMedia = REALM_MEDIA[highlightedRealm?.unit ?? 1] ?? REALM_MEDIA[1];
   const lowHearts = activeLesson ? hearts <= 2 : false;
+  const liveGraphLines = useMemo(
+    () => liveGraphSeries.map((series) => toLiveGraphPoints(series, LIVE_GRAPH_WIDTH, LIVE_GRAPH_HEIGHT)),
+    [liveGraphSeries]
+  );
 
   const openUnit = (unit: number) => {
     const unitLessons = LESSONS.filter((lesson) => lesson.unit === unit);
@@ -2023,6 +2155,35 @@ export function SipAcademyWineLessons() {
         </div>
         <div className="academy-cinematic-meta">
           <p className="academy-campaign-kicker">Realm Cinematic</p>
+          <div className="academy-cinematic-live-graph" aria-hidden="true">
+            <svg viewBox={`0 0 ${LIVE_GRAPH_WIDTH} ${LIVE_GRAPH_HEIGHT}`} preserveAspectRatio="none">
+              <g className="academy-live-graph-grid">
+                <line x1="0" y1="30" x2={LIVE_GRAPH_WIDTH} y2="30" />
+                <line x1="0" y1="75" x2={LIVE_GRAPH_WIDTH} y2="75" />
+                <line x1="0" y1="120" x2={LIVE_GRAPH_WIDTH} y2="120" />
+                <line x1="0" y1="165" x2={LIVE_GRAPH_WIDTH} y2="165" />
+                <line x1="0" y1="210" x2={LIVE_GRAPH_WIDTH} y2="210" />
+                <line x1="90" y1="0" x2="90" y2={LIVE_GRAPH_HEIGHT} />
+                <line x1="220" y1="0" x2="220" y2={LIVE_GRAPH_HEIGHT} />
+                <line x1="350" y1="0" x2="350" y2={LIVE_GRAPH_HEIGHT} />
+                <line x1="480" y1="0" x2="480" y2={LIVE_GRAPH_HEIGHT} />
+                <line x1="610" y1="0" x2="610" y2={LIVE_GRAPH_HEIGHT} />
+              </g>
+              <g className="academy-live-graph-lines">
+                {liveGraphLines.map((line, index) => {
+                  const profile = LIVE_GRAPH_PROFILES[index];
+                  return (
+                    <polyline
+                      key={`student-growth-${index}`}
+                      className="academy-live-line"
+                      points={line}
+                      style={{ opacity: profile.opacity, strokeWidth: profile.strokeWidth }}
+                    />
+                  );
+                })}
+              </g>
+            </svg>
+          </div>
           <h3>{highlightedRealm?.title ?? "Sip Academy Realm"}</h3>
           <p>{activeRealmMedia.cue}</p>
           <div className="academy-cinematic-tags">

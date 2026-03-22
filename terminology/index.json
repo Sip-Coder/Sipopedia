@@ -1,0 +1,280 @@
+{
+  "version": 1,
+  "generated_at": "2026-03-21T09:04:40.945Z",
+  "scan_roots": [
+    "terminology/",
+    "review/terminology/"
+  ],
+  "schema_ref": "schemas/terminology.schema.json",
+  "entries": [
+    {
+      "term": "Krausening",
+      "normalized_term": "krausening",
+      "category": "beer",
+      "subcategory": "fermentation",
+      "status": "review",
+      "quality_score": 74,
+      "aliases": [
+        "krausen"
+      ],
+      "common_confusions": [],
+      "related_terms": [
+        "secondary fermentation",
+        "lagering",
+        "natural carbonation"
+      ],
+      "source_file": "terminology/beer/krausening.json",
+      "reviewed": false,
+      "supabase_synced": false,
+      "supabase_id": null,
+      "last_modified": "2026-03-21T09:04:33.396Z",
+      "last_synced": null
+    },
+    {
+      "term": "First Crack",
+      "normalized_term": "first crack",
+      "category": "coffee",
+      "subcategory": "roasting",
+      "status": "published",
+      "quality_score": 84,
+      "aliases": [
+        "FC"
+      ],
+      "common_confusions": [],
+      "related_terms": [
+        "Maillard reaction",
+        "development time",
+        "roast profile"
+      ],
+      "source_file": "terminology/coffee/first-crack.json",
+      "reviewed": true,
+      "supabase_synced": true,
+      "supabase_id": "157d52a3-49e0-42d2-9a78-fd5ad17931fa",
+      "last_modified": "2026-03-21T09:04:21.927Z",
+      "last_synced": "2026-03-21T09:04:40.733Z"
+    },
+    {
+      "term": "Malolactic Fermentation",
+      "normalized_term": "malolactic fermentation",
+      "category": "wine",
+      "subcategory": "winemaking",
+      "status": "published",
+      "quality_score": 88,
+      "aliases": [
+        "MLF",
+        "malolactic conversion"
+      ],
+      "common_confusions": [],
+      "related_terms": [
+        "diacetyl",
+        "lees aging",
+        "acidity"
+      ],
+      "source_file": "terminology/wine/malolactic-fermentation.json",
+      "reviewed": true,
+      "supabase_synced": true,
+      "supabase_id": "61b08df5-0863-437c-a1b3-65fbd87c9321",
+      "last_modified": "2026-03-21T09:04:27.552Z",
+      "last_synced": "2026-03-21T09:04:40.945Z"
+    }
+  ],
+  "lookups": {
+    "by_normalized_term": {
+      "krausening": [
+        "terminology/beer/krausening.json"
+      ],
+      "first crack": [
+        "terminology/coffee/first-crack.json"
+      ],
+      "malolactic fermentation": [
+        "terminology/wine/malolactic-fermentation.json"
+      ]
+    },
+    "by_alias_normalized": {
+      "krausen": [
+        "terminology/beer/krausening.json"
+      ],
+      "fc": [
+        "terminology/coffee/first-crack.json"
+      ],
+      "mlf": [
+        "terminology/wine/malolactic-fermentation.json"
+      ],
+      "malolactic conversion": [
+        "terminology/wine/malolactic-fermentation.json"
+      ]
+    }
+  },
+  "collisions": {
+    "duplicate_terms": [],
+    "normalized_collisions": [],
+    "alias_collisions": []
+  },
+  "parse_errors": [],
+  "counts": {
+    "total_entries": 3,
+    "by_category": {
+      "wine": 1,
+      "beer": 1,
+      "spirits": 0,
+      "coffee": 1,
+      "tea": 0,
+      "water": 0,
+      "sake": 0,
+      "kombucha": 0,
+      "juice": 0,
+      "milk": 0,
+      "energy-drinks": 0,
+      "other": 0
+    },
+    "by_status": {
+      "review": 1,
+      "published": 2
+    }
+  },
+  "sync_summary": {
+    "published_total": 2,
+    "review_required_total": 1,
+    "draft_total": 0,
+    "rejected_total": 0,
+    "merged_total": 0,
+    "synced_total": 2,
+    "unsynced_total": 0,
+    "last_sync_mode": "live",
+    "last_sync_at": "2026-03-21T09:04:40.945Z"
+  },
+  "gap_targets": {
+    "wine": {
+      "target_entry_count": 100,
+      "current_entry_count": 1,
+      "target_clusters": [
+        "grape-varieties",
+        "vinification-techniques",
+        "faults-and-conditions",
+        "service-and-storage"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    },
+    "beer": {
+      "target_entry_count": 100,
+      "current_entry_count": 1,
+      "target_clusters": [
+        "styles",
+        "fermentation-process",
+        "ingredients",
+        "service-and-faults"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    },
+    "spirits": {
+      "target_entry_count": 100,
+      "current_entry_count": 0,
+      "target_clusters": [
+        "base-materials",
+        "distillation-methods",
+        "aging-and-finishing",
+        "service-and-cocktail-context"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    },
+    "coffee": {
+      "target_entry_count": 100,
+      "current_entry_count": 1,
+      "target_clusters": [
+        "processing",
+        "roasting",
+        "brewing",
+        "sensory-defects"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    },
+    "tea": {
+      "target_entry_count": 100,
+      "current_entry_count": 0,
+      "target_clusters": [
+        "processing",
+        "cultivar-origin",
+        "brewing-parameters",
+        "quality-defects"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    },
+    "water": {
+      "target_entry_count": 100,
+      "current_entry_count": 0,
+      "target_clusters": [
+        "minerality",
+        "treatment",
+        "sensory-profile",
+        "service"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    },
+    "sake": {
+      "target_entry_count": 100,
+      "current_entry_count": 0,
+      "target_clusters": [
+        "rice-polishing",
+        "fermentation",
+        "grade-classifications",
+        "service"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    },
+    "kombucha": {
+      "target_entry_count": 100,
+      "current_entry_count": 0,
+      "target_clusters": [
+        "fermentation-biology",
+        "sugar-acid-balance",
+        "production-risks",
+        "service"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    },
+    "juice": {
+      "target_entry_count": 100,
+      "current_entry_count": 0,
+      "target_clusters": [
+        "processing-methods",
+        "sweetness-acidity-balance",
+        "preservation",
+        "quality-defects"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    },
+    "milk": {
+      "target_entry_count": 100,
+      "current_entry_count": 0,
+      "target_clusters": [
+        "composition",
+        "processing",
+        "sensory-defects",
+        "service"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    },
+    "energy-drinks": {
+      "target_entry_count": 100,
+      "current_entry_count": 0,
+      "target_clusters": [
+        "ingredients",
+        "functional-claims",
+        "regulation",
+        "service"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    },
+    "other": {
+      "target_entry_count": 100,
+      "current_entry_count": 0,
+      "target_clusters": [
+        "category-taxonomy",
+        "processing",
+        "service",
+        "quality-defects"
+      ],
+      "notes": "Adjust targets based on curriculum priorities."
+    }
+  }
+}

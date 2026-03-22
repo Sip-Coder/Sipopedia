@@ -1,0 +1,41 @@
+{
+  "term": "Malolactic Fermentation",
+  "category": "wine",
+  "subcategory": "winemaking",
+  "concise_definition": "A secondary conversion where lactic acid bacteria transform sharper malic acid into softer lactic acid.",
+  "expanded_explanation": "After primary alcoholic fermentation, many wines undergo malolactic fermentation (MLF), which reduces perceived acidity and can increase textural roundness. Depending on style, MLF can also contribute buttery or creamy notes from compounds such as diacetyl.",
+  "why_it_matters": "Understanding MLF helps learners explain why two wines from the same grape can taste very different in acidity and texture.",
+  "related_terms": [
+    "diacetyl",
+    "lees aging",
+    "acidity"
+  ],
+  "examples": [
+    "A Chardonnay put through full MLF tastes rounder and less sharp than a no-MLF version from the same vineyard.",
+    "Winemaker blocks MLF in a Riesling to preserve higher perceived freshness."
+  ],
+  "other_ideas": [
+    "Pair tasting notes that compare MLF-driven texture changes across white wines.",
+    "Explain diacetyl management with and without lees contact."
+  ],
+  "infographic_caption": "Malolactic fermentation softens wine acidity by converting malic acid to lactic acid, often changing texture and aroma.",
+  "infographic_url": "https://sipstudies.local/infographics/wine/malolactic-fermentation",
+  "alias_terms": [
+    "MLF",
+    "malolactic conversion"
+  ],
+  "citations": [
+    {
+      "title": "Wine Folly - Malolactic Fermentation",
+      "url": "https://winefolly.com/tips/malolactic-fermentation/",
+      "source_type": "educational-reference"
+    },
+    {
+      "title": "WSET Global - Understanding Acidity and Winemaking",
+      "url": "https://www.wsetglobal.com/knowledge-centre/blog/2019/october/21/understanding-acidity-in-wine/",
+      "source_type": "accredited-education"
+    }
+  ],
+  "quality_score": 88,
+  "status": "published"
+}

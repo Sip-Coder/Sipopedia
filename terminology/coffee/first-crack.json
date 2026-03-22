@@ -1,0 +1,40 @@
+{
+  "term": "First Crack",
+  "category": "coffee",
+  "subcategory": "roasting",
+  "concise_definition": "A roasting phase where coffee beans audibly crack as internal pressure causes structural rupture.",
+  "expanded_explanation": "First crack marks a major roast milestone and usually indicates transition into lighter-to-medium roast development. Roast operators use it as a repeatable control point for flavor development, balancing acidity, sweetness, and body.",
+  "why_it_matters": "Learners can better connect roast process decisions to flavor outcomes and describe roast level with more precision.",
+  "related_terms": [
+    "Maillard reaction",
+    "development time",
+    "roast profile"
+  ],
+  "examples": [
+    "Roaster logs first crack at 8:40 and extends development by 1:20 for a balanced filter profile.",
+    "Two batches with identical charge temp diverge because one enters first crack 30 seconds earlier."
+  ],
+  "other_ideas": [
+    "Show first crack timing as a percentage of total roast time.",
+    "Contrast underdeveloped vs. well-developed cups around first crack decisions."
+  ],
+  "infographic_caption": "First crack marks a key roast control point where bean structure ruptures and flavor development decisions accelerate.",
+  "infographic_url": "https://sipstudies.local/infographics/coffee/first-crack",
+  "alias_terms": [
+    "FC"
+  ],
+  "citations": [
+    {
+      "title": "Specialty Coffee Association - Roasting Foundations",
+      "url": "https://sca.coffee/research",
+      "source_type": "industry-standards-body"
+    },
+    {
+      "title": "National Coffee Association - Coffee Roasting Overview",
+      "url": "https://www.ncausa.org/About-Coffee/How-Coffee-is-Roasted",
+      "source_type": "industry-reference"
+    }
+  ],
+  "quality_score": 84,
+  "status": "published"
+}

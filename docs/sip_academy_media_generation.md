@@ -1,18 +1,31 @@
 # Sip Academy Media Generation Pack
 
 This project now has a 20-lesson campaign UI with realm cinematic slots.  
-To generate final custom assets with OpenAI Image + Sora, set `OPENAI_API_KEY` and run the commands below.
+To generate final custom assets with OpenAI Image + Sora, load `OPENAI_API_KEY` from an ignored local secrets file and run the commands below.
 
 ## Prerequisites
 
 1. Create an API key: https://platform.openai.com/api-keys
-2. Set it in PowerShell:
+2. Create an ignored local secrets file:
 
 ```powershell
-$env:OPENAI_API_KEY = "YOUR_KEY_HERE"
+@'
+OPENAI_API_KEY=YOUR_KEY_HERE
+'@ | Set-Content -Path "local-secrets\.env.local" -NoNewline
 ```
 
-3. Confirm:
+3. Load it into your current shell (do not hardcode keys in scripts or source files):
+
+```powershell
+Get-Content "local-secrets\.env.local" |
+  Where-Object { $_ -match '=' -and -not $_.Trim().StartsWith('#') } |
+  ForEach-Object {
+    $name, $value = $_.Split('=', 2)
+    [Environment]::SetEnvironmentVariable($name.Trim(), $value.Trim(), "Process")
+  }
+```
+
+4. Confirm:
 
 ```powershell
 if ($env:OPENAI_API_KEY) { "OPENAI_API_KEY set" } else { "missing" }

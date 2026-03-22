@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import * as THREE from "three";
 
 const GLOBE_R = 1;
@@ -283,7 +283,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       if (idleTimer) clearTimeout(idleTimer);
       idleTimer = setTimeout(() => {
         autoRotate = true;
-      }, 3200);
+      }, 15000);
     };
 
     const raycaster = new THREE.Raycaster();
@@ -450,7 +450,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
 
       <div className="globe-legend">
         {Object.entries(FOCUS_CSS).map(([focus, color]) => (
-          <span key={focus} className="globe-legend-dot" style={{ "--dot": color } as React.CSSProperties}>
+          <span key={focus} className="globe-legend-dot" style={{ "--dot": color } as CSSProperties}>
             {focus}
           </span>
         ))}
