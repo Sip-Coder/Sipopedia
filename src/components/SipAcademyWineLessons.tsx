@@ -1417,27 +1417,6 @@ const MENTOR_PROFILES: Record<MentorId, MentorProfile> = {
   }
 };
 
-const MENTOR_VARIANTS: Record<MentorId, Record<MentorMood, string>> = {
-  sippy: {
-    calm: ACADEMY_GUIDES.sippy,
-    coach: ACADEMY_GUIDES.sippy,
-    spark: ACADEMY_GUIDES.sippy,
-    celebrate: ACADEMY_GUIDES.sippy
-  },
-  roma: {
-    calm: ACADEMY_GUIDES.roma,
-    coach: ACADEMY_GUIDES.roma,
-    spark: ACADEMY_GUIDES.roma,
-    celebrate: ACADEMY_GUIDES.roma
-  },
-  hummin: {
-    calm: ACADEMY_GUIDES.hummin,
-    coach: ACADEMY_GUIDES.hummin,
-    spark: ACADEMY_GUIDES.hummin,
-    celebrate: ACADEMY_GUIDES.hummin
-  }
-};
-
 const REALM_MEDIA: Record<
   number,
   {
@@ -1646,9 +1625,7 @@ function summaryRank(accuracy: number, passed: boolean) {
 }
 
 function lessonPortrait(lesson: Lesson) {
-  if (lesson.mission === "Boss") return MENTOR_VARIANTS[lesson.mentor].spark;
-  if (lesson.mission === "Challenge") return MENTOR_VARIANTS[lesson.mentor].coach;
-  return MENTOR_VARIANTS[lesson.mentor].calm;
+  return MENTOR_CARD_IMAGES[lesson.mentor];
 }
 
 function nextMentorInCycle(mentor: MentorId): MentorId {
