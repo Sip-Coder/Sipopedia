@@ -2512,9 +2512,9 @@ export function SipAcademyWineLessons() {
             </h3>
             <p>Your next luxury lesson is ready. Sippy, Roma, and Hummin are waiting at the next node.</p>
             <div className="academy-unlock-mentors" aria-hidden="true">
-              <img src={ACADEMY_GUIDES.sippy} alt="" loading="lazy" decoding="async" />
-              <img src={ACADEMY_GUIDES.roma} alt="" loading="lazy" decoding="async" />
-              <img src={ACADEMY_GUIDES.hummin} alt="" loading="lazy" decoding="async" />
+              <img src={MENTOR_CARD_IMAGES.sippy} alt="" loading="lazy" decoding="async" />
+              <img src={MENTOR_CARD_IMAGES.roma} alt="" loading="lazy" decoding="async" />
+              <img src={MENTOR_CARD_IMAGES.hummin} alt="" loading="lazy" decoding="async" />
             </div>
             <button type="button" className="btn btn-primary" onClick={() => setUnlockCeremony(null)}>
               Continue

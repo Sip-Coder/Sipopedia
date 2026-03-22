@@ -1557,6 +1557,7 @@ img {
   border-radius: 999px;
   overflow: hidden;
   background: #e6e8eb;
+  position: relative;
 }
 
 .progress-bar span {
@@ -1565,6 +1566,107 @@ img {
   border-radius: 999px;
   background: linear-gradient(120deg, var(--orange), #ffb74c);
   transition: width 240ms ease;
+}
+
+/* HUD water treatment for progress fills across the site. */
+.progress-bar span,
+.flavor-wheel-meter-track span,
+.academy-realm-meter-value,
+.academy-hud-bar-fill,
+.academy-path-track-value,
+.academy-progress-value,
+.sip-game-progress div {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(112deg, #67cde2 0%, #83d9e9 46%, #9fe2ec 100%);
+  box-shadow:
+    inset 0 0 10px rgba(255, 255, 255, 0.24),
+    inset 0 -2px 4px rgba(58, 150, 179, 0.24),
+    0 0 10px rgba(90, 194, 220, 0.34);
+  animation: hud-water-pulse 12s ease-in-out infinite;
+}
+
+.progress-bar span::before,
+.flavor-wheel-meter-track span::before,
+.academy-realm-meter-value::before,
+.academy-hud-bar-fill::before,
+.academy-path-track-value::before,
+.academy-progress-value::before,
+.sip-game-progress div::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -50%;
+  width: 200%;
+  border-radius: inherit;
+  background:
+    radial-gradient(58% 110% at 12% 100%, rgba(210, 243, 248, 0.24) 0 45%, transparent 46%),
+    radial-gradient(58% 110% at 37% 100%, rgba(205, 241, 247, 0.22) 0 45%, transparent 46%),
+    radial-gradient(58% 110% at 62% 100%, rgba(200, 239, 246, 0.2) 0 45%, transparent 46%),
+    radial-gradient(58% 110% at 87% 100%, rgba(205, 241, 247, 0.22) 0 45%, transparent 46%);
+  background-size: 190px 100%, 190px 100%, 190px 100%, 190px 100%;
+  background-repeat: repeat-x;
+  animation: hud-wave-crest-drift 12.5s linear infinite, hud-wave-bob 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.progress-bar span::after,
+.flavor-wheel-meter-track span::after,
+.academy-realm-meter-value::after,
+.academy-hud-bar-fill::after,
+.academy-path-track-value::after,
+.academy-progress-value::after,
+.sip-game-progress div::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 220%;
+  border-radius: inherit;
+  background:
+    radial-gradient(54% 95% at 18% 100%, rgba(165, 224, 236, 0.16) 0 42%, transparent 43%),
+    radial-gradient(54% 95% at 52% 100%, rgba(165, 224, 236, 0.14) 0 42%, transparent 43%),
+    radial-gradient(54% 95% at 86% 100%, rgba(165, 224, 236, 0.16) 0 42%, transparent 43%),
+    linear-gradient(180deg, rgba(190, 234, 242, 0.1), rgba(112, 201, 220, 0.12));
+  background-size: 240px 100%, 240px 100%, 240px 100%, 100% 100%;
+  background-repeat: repeat-x;
+  animation: hud-wave-ripple-drift 18s linear infinite;
+  pointer-events: none;
+}
+
+.progress-bar,
+.flavor-wheel-meter-track,
+.academy-realm-meter,
+.academy-hud-bar,
+.academy-path-track,
+.academy-progress-track,
+.sip-game-progress {
+  position: relative;
+}
+
+.progress-bar:has(> span[style*="width: 0%"])::after,
+.flavor-wheel-meter-track:has(> span[style*="width: 0%"])::after,
+.academy-realm-meter:has(> .academy-realm-meter-value[style*="width: 0%"])::after,
+.academy-hud-bar:has(> .academy-hud-bar-fill[style*="width: 0%"])::after,
+.academy-path-track:has(> .academy-path-track-value[style*="width: 0%"])::after,
+.academy-progress-track:has(> .academy-progress-value[style*="width: 0%"])::after,
+.sip-game-progress:has(> div[style*="width: 0%"])::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 4px;
+  top: 50%;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 38% 32%, #ffffff 0 22%, #b4e4ef 42%, rgba(113, 199, 219, 0.85) 100%);
+  transform: translateY(-50%);
+  box-shadow: 0 0 0 0 rgba(144, 220, 236, 0.5);
+  animation: hud-water-droplet-impact 1.7s ease-out infinite;
+  pointer-events: none;
 }
 
 .mission-progress p {
@@ -4348,7 +4450,6 @@ img {
 .academy-realm-meter-value {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #8d5b4a, #d8b36f);
   transition: width 320ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -4529,6 +4630,96 @@ img {
   border-radius: 999px;
   padding: 0.2rem 0.46rem;
   background: rgba(250, 241, 223, 0.8);
+}
+
+.academy-hud {
+  border: 1px solid rgba(126, 168, 179, 0.55);
+  border-radius: 16px;
+  padding: 0.75rem 0.85rem;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(191, 229, 238, 0.36), transparent 42%),
+    linear-gradient(150deg, rgba(237, 247, 249, 0.95), rgba(220, 235, 232, 0.92));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.48), 0 10px 18px rgba(59, 86, 95, 0.18);
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) auto auto;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.academy-hud-left {
+  display: grid;
+  gap: 0.36rem;
+  min-width: 0;
+}
+
+.academy-hud-label {
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #2c4f5b;
+}
+
+.academy-hud-bar {
+  width: 100%;
+  height: 11px;
+  border-radius: 999px;
+  background: rgba(104, 147, 160, 0.24);
+  overflow: hidden;
+}
+
+.academy-hud-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 260ms ease;
+}
+
+.academy-hud-sub {
+  color: #375765;
+  font-size: 0.8rem;
+}
+
+.academy-hud-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-start;
+}
+
+.academy-hud-chip {
+  border: 1px solid rgba(120, 167, 178, 0.46);
+  border-radius: 999px;
+  padding: 0.18rem 0.48rem;
+  background: rgba(232, 246, 248, 0.88);
+  color: #2f5560;
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+.academy-hud-next {
+  display: grid;
+  gap: 0.04rem;
+  justify-items: end;
+  min-width: 150px;
+}
+
+.academy-hud-next-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #456774;
+}
+
+.academy-hud-next-title {
+  color: #294954;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.academy-hud-next-meta {
+  color: #55747e;
+  font-size: 0.72rem;
 }
 
 .academy-level-band {
@@ -4936,7 +5127,6 @@ img {
 .academy-path-track-value {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #916348, #d3ad6d);
   transition: width 420ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -5237,7 +5427,6 @@ img {
 .academy-progress-value {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #7f4a3f, #c69f60);
   transition: width 260ms ease;
 }
 
@@ -5707,7 +5896,127 @@ img {
   }
 }
 
+@keyframes hud-water-flow {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 170px 0, 0 0;
+  }
+}
+
+@keyframes hud-water-pulse {
+  0%,
+  100% {
+    filter: saturate(1) brightness(1);
+  }
+  50% {
+    filter: saturate(1.15) brightness(1.08);
+  }
+}
+
+@keyframes hud-water-sheen {
+  from {
+    background-position: -70% 0, 0 0, 0 0;
+  }
+  to {
+    background-position: 70% 0, 0 0, 0 0;
+  }
+}
+
+@keyframes hud-water-droplet-impact {
+  0% {
+    transform: translateY(-50%) scale(0.68);
+    box-shadow: 0 0 0 0 rgba(144, 220, 236, 0.6);
+    opacity: 0.95;
+  }
+  70% {
+    transform: translateY(-50%) scale(1);
+    box-shadow: 0 0 0 14px rgba(144, 220, 236, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50%) scale(0.9);
+    box-shadow: 0 0 0 0 rgba(144, 220, 236, 0);
+    opacity: 0.9;
+  }
+}
+
+@keyframes hud-ocean-wave-shift {
+  from {
+    transform: translateX(-6%);
+  }
+  to {
+    transform: translateX(4%);
+  }
+}
+
+@keyframes hud-wave-crest-drift {
+  from {
+    background-position: 0 0, 48px 0, 96px 0, 144px 0;
+  }
+  to {
+    background-position: 190px 0, 238px 0, 286px 0, 334px 0;
+  }
+}
+
+@keyframes hud-wave-ripple-drift {
+  from {
+    background-position: 0 0, 60px 0, 120px 0, 0 0;
+  }
+  to {
+    background-position: 240px 0, 300px 0, 360px 0, 0 0;
+  }
+}
+
+@keyframes hud-wave-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar span,
+  .flavor-wheel-meter-track span,
+  .academy-realm-meter-value,
+  .academy-hud-bar-fill,
+  .academy-path-track-value,
+  .academy-progress-value,
+  .sip-game-progress div,
+  .progress-bar span::before,
+  .flavor-wheel-meter-track span::before,
+  .academy-realm-meter-value::before,
+  .academy-hud-bar-fill::before,
+  .academy-path-track-value::before,
+  .academy-progress-value::before,
+  .academy-progress-value::after,
+  .sip-game-progress div::before,
+  .progress-bar:has(> span[style*="width: 0%"])::after,
+  .flavor-wheel-meter-track:has(> span[style*="width: 0%"])::after,
+  .academy-realm-meter:has(> .academy-realm-meter-value[style*="width: 0%"])::after,
+  .academy-hud-bar:has(> .academy-hud-bar-fill[style*="width: 0%"])::after,
+  .academy-path-track:has(> .academy-path-track-value[style*="width: 0%"])::after,
+  .academy-progress-track:has(> .academy-progress-value[style*="width: 0%"])::after,
+  .sip-game-progress:has(> div[style*="width: 0%"])::after {
+    animation: none !important;
+  }
+}
+
 @media (max-width: 980px) {
+  .academy-hud {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .academy-hud-next {
+    justify-items: start;
+    min-width: 0;
+  }
+
   .academy-header-hero {
     grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
   }
@@ -5763,6 +6072,14 @@ img {
 @media (max-width: 680px) {
   .academy-game {
     padding: 0.7rem;
+  }
+
+  .academy-hud {
+    padding: 0.62rem;
+  }
+
+  .academy-hud-chips {
+    gap: 0.3rem;
   }
 
   .academy-game-header {
@@ -5999,7 +6316,6 @@ img {
 .sip-game-progress div {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #185552, #d8e6da);
   transition: width 180ms ease;
 }
 
@@ -6075,10 +6391,13 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 .globe-wrap canvas {
   display: block;
+  touch-action: none;
 }
 
 .globe-tooltip {

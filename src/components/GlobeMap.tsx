@@ -273,10 +273,12 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
     let lastY = 0;
     let downX = 0;
     let downY = 0;
+    let touchTapCandidate = false;
     let velX = 0;
     let velY = 0;
     let autoRotate = true;
     let idleTimer: ReturnType<typeof setTimeout> | null = null;
+    const activeTouchPointers = new Map<number, { x: number; y: number }>();
 
     const resetIdle = () => {
       autoRotate = false;
@@ -288,6 +290,14 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
 
     const raycaster = new THREE.Raycaster();
     const ndc = new THREE.Vector2();
+
+    const touchMidpoint = (): { x: number; y: number } | null => {
+      if (activeTouchPointers.size < 2) return null;
+      const points = Array.from(activeTouchPointers.values());
+      const a = points[0];
+      const b = points[1];
+      return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    };
 
     const toNDC = (clientX: number, clientY: number) => {
       const rect = renderer.domElement.getBoundingClientRect();
@@ -308,6 +318,22 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
 
     const onPointerDown = (e: PointerEvent) => {
       el.setPointerCapture(e.pointerId);
+      if (e.pointerType === "touch") {
+        e.preventDefault();
+        activeTouchPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        touchTapCandidate = activeTouchPointers.size === 1;
+        if (activeTouchPointers.size >= 2) {
+          const mid = touchMidpoint();
+          if (mid) {
+            isDragging = true;
+            lastX = downX = mid.x;
+            lastY = downY = mid.y;
+            velX = velY = 0;
+            resetIdle();
+          }
+        }
+        return;
+      }
       isDragging = true;
       lastX = downX = e.clientX;
       lastY = downY = e.clientY;
@@ -316,6 +342,32 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
     };
 
     const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === "touch") {
+        if (activeTouchPointers.has(e.pointerId)) {
+          activeTouchPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        }
+        if (activeTouchPointers.size >= 2) {
+          e.preventDefault();
+          const mid = touchMidpoint();
+          if (!mid) return;
+          if (!isDragging) {
+            isDragging = true;
+            lastX = downX = mid.x;
+            lastY = downY = mid.y;
+            velX = velY = 0;
+          }
+          const dx = mid.x - lastX;
+          const dy = mid.y - lastY;
+          earth.rotation.y += dx * 0.006;
+          earth.rotation.x = Math.max(-1.1, Math.min(1.1, earth.rotation.x + dy * 0.006));
+          velX = dx * 0.006;
+          velY = dy * 0.006;
+          lastX = mid.x;
+          lastY = mid.y;
+          resetIdle();
+        }
+        return;
+      }
       if (isDragging) {
         const dx = e.clientX - lastX;
         const dy = e.clientY - lastY;
@@ -342,6 +394,22 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
 
     const onPointerUp = (e: PointerEvent) => {
       const wasDrag = Math.abs(e.clientX - downX) > 5 || Math.abs(e.clientY - downY) > 5;
+      if (e.pointerType === "touch") {
+        activeTouchPointers.delete(e.pointerId);
+        if (activeTouchPointers.size < 2) isDragging = false;
+        if (touchTapCandidate && !wasDrag && activeTouchPointers.size === 0) {
+          toNDC(e.clientX, e.clientY);
+          raycaster.setFromCamera(ndc, camera);
+          const hits = raycaster.intersectObjects(allPinMeshes());
+          if (hits.length > 0) {
+            const pin = findPinByMesh(hits[0].object);
+            if (pin) onPinSelectRef.current(pin);
+          }
+        }
+        if (activeTouchPointers.size === 0) touchTapCandidate = false;
+        el.style.cursor = "grab";
+        return;
+      }
       isDragging = false;
       el.style.cursor = "grab";
       if (!wasDrag) {
@@ -357,6 +425,8 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
 
     const onPointerLeave = () => {
       isDragging = false;
+      activeTouchPointers.clear();
+      touchTapCandidate = false;
       setHoveredRef.current(null);
     };
 
@@ -446,7 +516,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
         </div>
       ) : null}
 
-      <div className="globe-hint">Drag to spin &middot; Click a pin to explore groups</div>
+      <div className="globe-hint">Drag to spin &middot; Two fingers on mobile &middot; Click a pin to explore groups</div>
 
       <div className="globe-legend">
         {Object.entries(FOCUS_CSS).map(([focus, color]) => (
