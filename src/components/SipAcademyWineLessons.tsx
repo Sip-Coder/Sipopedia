@@ -1,10 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type WheelEvent } from "react";
 import { SipAcademyStory } from "./SipAcademyStory";
+import {
+  EQUIPMENT_MASTERY_STORAGE_KEY,
+  EQUIPMENT_MASTERY_EVENT,
+  SipStudiosEquipmentMastery,
+  readEquipmentMasterySnapshot
+} from "./SipStudiosEquipmentMastery";
 
 type LessonTag = "Foundations" | "Aromas" | "Structure" | "Service";
 type MentorId = "sippy" | "roma" | "hummin";
 type MentorMood = "calm" | "coach" | "spark" | "celebrate";
 type MentorVoiceMode = "classic" | "tactical" | "story";
+type LessonPhase = "briefing" | "quiz";
 
 type ChoiceExercise = {
   id: string;
@@ -78,6 +85,17 @@ type SummaryState = {
   xp: number;
   bestCombo: number;
   heartsLeft: number;
+};
+
+type LessonBriefing = {
+  objectives: string[];
+  mentorNotes: string[];
+};
+
+type UnitTeachingGuide = {
+  focus: string;
+  serviceGoal: string;
+  watchouts: string[];
 };
 
 type UnlockCeremony = {
@@ -1523,8 +1541,8 @@ const REALM_MEDIA: Record<
 };
 
 const VOICE_MODE_LABELS: Record<MentorVoiceMode, string> = {
-  classic: "Classic",
-  tactical: "Tactical",
+  classic: "Basic Adventure",
+  tactical: "Equipment Mastery",
   story: "Story"
 };
 
@@ -1625,10 +1643,6 @@ function summaryRank(accuracy: number, passed: boolean) {
   return "C";
 }
 
-function lessonPortrait(lesson: Lesson) {
-  return MENTOR_CARD_IMAGES[lesson.mentor];
-}
-
 function nextMentorInCycle(mentor: MentorId): MentorId {
   const index = MENTOR_ROTATION.indexOf(mentor);
   if (index < 0) return MENTOR_ROTATION[0];
@@ -1659,6 +1673,109 @@ function lessonSubtitleByVoice(lesson: Lesson, voiceMode: MentorVoiceMode) {
   return `${missionLabel(lesson.mission)} arc: ${arc}`;
 }
 
+const LESSON_TAG_OBJECTIVES: Record<LessonTag, string> = {
+  Foundations: "Lock the core terms before the harder reads arrive.",
+  Aromas: "Group aroma families and track how they evolve.",
+  Structure: "Read acidity, tannin, body, and finish as one chain.",
+  Service: "Run the service steps in the right order with control."
+};
+
+const LESSON_MISSION_OBJECTIVES: Record<Lesson["mission"], string> = {
+  Scout: "Build confidence from the first clues.",
+  Challenge: "Expect tighter distractors and a cleaner evidence chain.",
+  Boss: "Stay precise under pressure and finish cleanly."
+};
+
+const MENTOR_BRIEFING_LINES: Record<MentorId, string> = {
+  sippy: "Sippy keeps it simple: read the structure, then commit.",
+  roma: "Roma wants you to trust aroma families and clean labels.",
+  hummin: "Hummin checks your sequence and asks for evidence first."
+};
+
+const UNIT_TEACHING_GUIDES: Record<number, UnitTeachingGuide> = {
+  1: {
+    focus: "Build tasting fundamentals and clean opening service habits.",
+    serviceGoal: "Deliver a confident host taste and structured first pour.",
+    watchouts: ["Rushing sequence before observation", "Confusing acidity with sweetness"]
+  },
+  2: {
+    focus: "Recognize varietal signatures and style direction quickly.",
+    serviceGoal: "Translate guest preferences into accurate grape options.",
+    watchouts: ["Over-generalizing a grape from one region", "Ignoring oak and ripeness clues"]
+  },
+  3: {
+    focus: "Map climate and terroir evidence to region conclusions.",
+    serviceGoal: "Explain regional logic in plain guest-friendly language.",
+    watchouts: ["Jumping to region before sensory evidence", "Treating one clue as final proof"]
+  },
+  4: {
+    focus: "Control aging, fault detection, and pairing judgment under pressure.",
+    serviceGoal: "Protect guest experience with fast corrections and clean recommendations.",
+    watchouts: ["Missing early fault indicators", "Pairing only by protein and ignoring sauce"]
+  },
+  5: {
+    focus: "Synthesize structure, aroma, and service into championship execution.",
+    serviceGoal: "Handle high-pressure rounds with precision and calm pace.",
+    watchouts: ["Dropping sequence discipline under time pressure", "Over-talking instead of confirming guest intent"]
+  },
+  6: {
+    focus: "Master sparkling production cues and service pressure control.",
+    serviceGoal: "Open, pour, and position sparkling confidently at table.",
+    watchouts: ["Over-aggressive opening technique", "Ignoring dosage/style cues when pairing"]
+  },
+  7: {
+    focus: "Strengthen benchmark region memory and vintage comparisons.",
+    serviceGoal: "Recommend bottles using region-plus-vintage context.",
+    watchouts: ["Treating all old vintages as fragile", "Forgetting producer style variance"]
+  },
+  8: {
+    focus: "Execute pairing logic for salt, fat, acid, heat, and sweetness.",
+    serviceGoal: "Offer two clear pairing pathways with rationale.",
+    watchouts: ["Matching intensity but missing flavor bridge", "Ignoring sweetness when heat is present"]
+  },
+  9: {
+    focus: "Run blind-grid deduction with evidence-first workflow.",
+    serviceGoal: "State conclusions that are justified and defensible.",
+    watchouts: ["Anchoring too early on grape guess", "Skipping elimination steps"]
+  },
+  10: {
+    focus: "Integrate all course domains into polished final service.",
+    serviceGoal: "Operate as a lead floor guide across mixed guest requests.",
+    watchouts: ["Letting speed reduce accuracy", "Failing to summarize recommendation clearly"]
+  }
+};
+
+function compressLessonText(text: string, maxWords: number) {
+  const cleaned = text.replace(/\s+/g, " ").replace(/[.]+$/, "").trim();
+  const words = cleaned.split(" ").filter(Boolean);
+  if (words.length <= maxWords) return cleaned;
+  return `${words.slice(0, maxWords).join(" ")}...`;
+}
+
+function lessonExerciseCue(exercise: Exercise) {
+  if (exercise.kind === "choice") {
+    return `${compressLessonText(exercise.prompt, 9)} -> ${compressLessonText(exercise.options[exercise.correctIndex], 7)}`;
+  }
+  return `${compressLessonText(exercise.prompt, 9)} -> ${exercise.answer.map((item) => compressLessonText(item, 5)).join(" / ")}`;
+}
+
+function buildLessonBriefing(lesson: Lesson): LessonBriefing {
+  const firstCue = lesson.exercises[0] ? lessonExerciseCue(lesson.exercises[0]) : lesson.subtitle;
+  const secondCue = lesson.exercises[1] ? lessonExerciseCue(lesson.exercises[1]) : `Expect ${lesson.exercises.length} questions total.`;
+
+  return {
+    objectives: [
+      `${lesson.tag}: ${LESSON_TAG_OBJECTIVES[lesson.tag]}`,
+      `${missionLabel(lesson.mission)} mission: ${LESSON_MISSION_OBJECTIVES[lesson.mission]}`,
+      `Practice cue: ${firstCue}`
+    ],
+    mentorNotes: [
+      `${MENTOR_BRIEFING_LINES[lesson.mentor]} ${compressLessonText(lesson.subtitle, 12)}.`,
+      `Second cue: ${secondCue}`
+    ]
+  };
+}
+
 export function SipAcademyWineLessons() {
   const [progress, setProgress] = useState<AcademyProgress>(() => parseProgress(window.localStorage.getItem(STORAGE_KEY)));
   const [voiceMode, setVoiceMode] = useState<MentorVoiceMode>(() => {
@@ -1666,6 +1783,7 @@ export function SipAcademyWineLessons() {
     return stored === "classic" || stored === "tactical" || stored === "story" ? stored : "classic";
   });
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
+  const [lessonPhase, setLessonPhase] = useState<LessonPhase | null>(null);
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [hearts, setHearts] = useState(MAX_HEARTS);
   const [correct, setCorrect] = useState(0);
@@ -1679,6 +1797,9 @@ export function SipAcademyWineLessons() {
   const [unlockCeremony, setUnlockCeremony] = useState<UnlockCeremony | null>(null);
   const [flashUnlockedLessonId, setFlashUnlockedLessonId] = useState<string | null>(null);
   const [profileMentorId, setProfileMentorId] = useState<MentorId | null>(null);
+  const [equipmentSnapshot, setEquipmentSnapshot] = useState(() => readEquipmentMasterySnapshot());
+  const realmsStripRef = useRef<HTMLElement | null>(null);
+  const pathStripRef = useRef<HTMLDivElement | null>(null);
   const liveGraphTickRef = useRef(LIVE_GRAPH_POINTS);
   const [liveGraphSeries, setLiveGraphSeries] = useState<number[][]>(() =>
     LIVE_GRAPH_PROFILES.map((profile) => buildLiveGraphSeries(LIVE_GRAPH_POINTS, profile))
@@ -1688,7 +1809,8 @@ export function SipAcademyWineLessons() {
     () => (activeLessonId ? LESSONS.find((lesson) => lesson.id === activeLessonId) ?? null : null),
     [activeLessonId]
   );
-  const activeExercise = activeLesson ? activeLesson.exercises[exerciseIndex] ?? null : null;
+  const lessonBriefing = useMemo(() => (activeLesson ? buildLessonBriefing(activeLesson) : null), [activeLesson]);
+  const activeExercise = activeLesson && lessonPhase === "quiz" ? activeLesson.exercises[exerciseIndex] ?? null : null;
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
@@ -1697,6 +1819,20 @@ export function SipAcademyWineLessons() {
   useEffect(() => {
     window.localStorage.setItem(VOICE_MODE_KEY, voiceMode);
   }, [voiceMode]);
+
+  useEffect(() => {
+    const refreshEquipmentSnapshot = () => setEquipmentSnapshot(readEquipmentMasterySnapshot());
+    const onStorage = (event: StorageEvent) => {
+      if (event.key && event.key !== EQUIPMENT_MASTERY_STORAGE_KEY) return;
+      refreshEquipmentSnapshot();
+    };
+    window.addEventListener(EQUIPMENT_MASTERY_EVENT, refreshEquipmentSnapshot);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(EQUIPMENT_MASTERY_EVENT, refreshEquipmentSnapshot);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -1737,6 +1873,10 @@ export function SipAcademyWineLessons() {
   const completedCount = LESSONS.filter((lesson) => (progress.lessons[lesson.id]?.completions ?? 0) > 0).length;
   const masteryTotal = LESSONS.reduce((sum, lesson) => sum + (progress.lessons[lesson.id]?.mastery ?? 0), 0);
   const completionRatio = LESSONS.length > 0 ? completedCount / LESSONS.length : 0;
+  const combinedCompletedCount = completedCount + equipmentSnapshot.completedCount;
+  const combinedMasteryTotal = masteryTotal + equipmentSnapshot.masteryPoints;
+  const combinedTotalLessons = LESSONS.length + equipmentSnapshot.totalNodes;
+  const combinedCompletionRatio = combinedTotalLessons > 0 ? combinedCompletedCount / combinedTotalLessons : 0;
   const nextLesson =
     LESSONS.find((lesson) => {
       const lessonProgress = progress.lessons[lesson.id];
@@ -1762,6 +1902,7 @@ export function SipAcademyWineLessons() {
   const highlightedRealm = realmProgress.find((realm) => realm.unit === highlightedRealmUnit) ?? realmProgress[0];
   const activeRealmMedia = REALM_MEDIA[highlightedRealm?.unit ?? 1] ?? REALM_MEDIA[1];
   const lowHearts = activeLesson ? hearts <= 2 : false;
+  const activeUnitGuide = activeLesson ? UNIT_TEACHING_GUIDES[activeLesson.unit] ?? null : null;
   const liveGraphLines = useMemo(
     () => liveGraphSeries.map((series) => toLiveGraphPoints(series, LIVE_GRAPH_WIDTH, LIVE_GRAPH_HEIGHT)),
     [liveGraphSeries]
@@ -1780,13 +1921,37 @@ export function SipAcademyWineLessons() {
     startLesson(targetLesson.id);
   };
 
+  const handleHorizontalWheel = (event: WheelEvent<HTMLElement>) => {
+    const container = event.currentTarget;
+    if (container.scrollWidth <= container.clientWidth) return;
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    event.preventDefault();
+    container.scrollLeft += event.deltaY;
+  };
+
+  const nudgeHorizontalStrip = (target: HTMLElement | null, direction: -1 | 1) => {
+    if (!target) return;
+    const distance = Math.max(220, Math.round(target.clientWidth * 0.72));
+    target.scrollBy({ left: distance * direction, behavior: "smooth" });
+  };
+
   const prepareExercise = (lesson: Lesson, index: number) => {
     const exercise = lesson.exercises[index];
+    if (!exercise) return;
     setExerciseIndex(index);
     setFeedback(null);
     setChoiceSelection(null);
     setOrderSelection([]);
     setOrderPool(exercise.kind === "order" ? shuffle(exercise.options) : []);
+  };
+
+  const endLessonSession = () => {
+    setActiveLessonId(null);
+    setLessonPhase(null);
+    setFeedback(null);
+    setChoiceSelection(null);
+    setOrderSelection([]);
+    setOrderPool([]);
   };
 
   const startLesson = (lessonId: string) => {
@@ -1796,11 +1961,16 @@ export function SipAcademyWineLessons() {
     if (!lesson) return;
     setSummary(null);
     setActiveLessonId(lessonId);
+    setLessonPhase("briefing");
     setHearts(MAX_HEARTS);
     setCorrect(0);
     setCombo(0);
     setBestCombo(0);
-    prepareExercise(lesson, 0);
+    setExerciseIndex(0);
+    setFeedback(null);
+    setChoiceSelection(null);
+    setOrderSelection([]);
+    setOrderPool([]);
     setProgress((current) => {
       const today = dateStamp(new Date());
       if (current.lastActiveDate === today) return current;
@@ -1815,15 +1985,21 @@ export function SipAcademyWineLessons() {
     });
   };
 
+  const beginLessonQuiz = () => {
+    if (!activeLesson || lessonPhase !== "briefing") return;
+    setLessonPhase("quiz");
+    prepareExercise(activeLesson, 0);
+  };
+
   const canCheck =
-    activeExercise && !feedback
+    activeExercise && lessonPhase === "quiz" && !feedback
       ? activeExercise.kind === "choice"
         ? choiceSelection !== null
         : orderSelection.length === activeExercise.answer.length
       : false;
 
   const checkAnswer = () => {
-    if (!activeExercise || feedback) return;
+    if (!activeExercise || lessonPhase !== "quiz" || feedback) return;
     let isCorrect = false;
     let correction = "";
     if (activeExercise.kind === "choice") {
@@ -1889,17 +2065,14 @@ export function SipAcademyWineLessons() {
       const nextLesson = LESSONS.find((item) => item.id === nextId);
       if (nextLesson) {
         setUnlockCeremony({ lessonId: nextLesson.id, title: nextLesson.title, unit: nextLesson.unit });
-        setFlashUnlockedLessonId(nextLesson.id);
+      setFlashUnlockedLessonId(nextLesson.id);
       }
     }
-    setActiveLessonId(null);
-    setFeedback(null);
-    setChoiceSelection(null);
-    setOrderSelection([]);
+    endLessonSession();
   };
 
   const continueExercise = () => {
-    if (!activeLesson || !feedback) return;
+    if (!activeLesson || lessonPhase !== "quiz" || !feedback) return;
     const finalStep = exerciseIndex + 1 >= activeLesson.exercises.length || feedback.heartsAfter <= 0;
     if (finalStep) {
       finishLesson(activeLesson, feedback.heartsAfter);
@@ -1908,13 +2081,13 @@ export function SipAcademyWineLessons() {
     prepareExercise(activeLesson, exerciseIndex + 1);
   };
 
-  const sessionProgress = activeLesson ? (exerciseIndex + (feedback ? 1 : 0)) / activeLesson.exercises.length : 0;
+  const sessionProgress = activeLesson && lessonPhase === "quiz" ? (exerciseIndex + (feedback ? 1 : 0)) / activeLesson.exercises.length : 0;
   const guideState = useMemo(() => {
     const lineByMode = (mood: MentorMood, lessonMentor: MentorId) => {
       if (voiceMode === "tactical") {
-        if (mood === "celebrate") return "Excellent execution. Unlock achieved. Advance to the next node.";
+        if (mood === "celebrate") return "Excellent execution. Equipment node mastered. Advance to the next node.";
         if (mood === "spark") return "Correct. Keep momentum and preserve combo.";
-        if (mood === "coach") return lowHearts ? "Hearts critical. Slow down and verify evidence." : "Re-check cue and select strongest evidence match.";
+        if (mood === "coach") return lowHearts ? "Hearts critical. Slow down and verify operating evidence." : "Re-check the equipment cue and choose the strongest match.";
         if (lessonMentor === "roma") return "Use aroma precision. Select only after signal confirmation.";
         if (lessonMentor === "hummin") return "Run a quick system check: clue quality, sequence, then confident execution.";
         return "Use structure-first logic before choosing.";
@@ -1959,6 +2132,19 @@ export function SipAcademyWineLessons() {
         mood: "coach" as MentorMood,
         expression: "coach" as MentorMood,
         line: lineByMode("coach", lessonMentor)
+      };
+    }
+
+    if (activeLesson && lessonPhase === "briefing") {
+      return {
+        speaker: lessonMentor,
+        mood: "calm" as MentorMood,
+        expression: "calm" as MentorMood,
+        line:
+          lessonBriefing?.mentorNotes[0] ??
+          (voiceMode === "story"
+            ? "Read the preparation notes, then begin the lesson."
+            : "Read the preparation notes, then start the quiz when ready.")
       };
     }
 
@@ -2009,10 +2195,10 @@ export function SipAcademyWineLessons() {
         voiceMode === "story"
           ? "Welcome back. Begin a lesson and we will guide your tasting journey together."
           : voiceMode === "tactical"
-            ? "Welcome back. Select a node to begin focused training."
+            ? "Welcome back. Select equipment mastery to train winery tools and safety calls."
             : "Welcome back. Start a node and we will guide every round with you."
     };
-  }, [activeExercise, activeLesson, combo, feedback, lowHearts, summary, voiceMode]);
+  }, [activeExercise, activeLesson, combo, feedback, lessonBriefing, lessonPhase, lowHearts, summary, voiceMode]);
   const sippyImage = MENTOR_CARD_IMAGES.sippy;
   const romaImage = MENTOR_CARD_IMAGES.roma;
   const humminImage = MENTOR_CARD_IMAGES.hummin;
@@ -2078,15 +2264,15 @@ export function SipAcademyWineLessons() {
         </div>
         <div className="academy-level-band">
           <div>
-            <strong>{Math.round(completionRatio * 100)}%</strong>
+            <strong>{Math.round(combinedCompletionRatio * 100)}%</strong>
             <span>Path Completion</span>
           </div>
           <div>
-            <strong>{completedCount}</strong>
+            <strong>{combinedCompletedCount}</strong>
             <span>Lessons Cleared</span>
           </div>
           <div>
-            <strong>{masteryTotal}</strong>
+            <strong>{combinedMasteryTotal}</strong>
             <span>Mastery Points</span>
           </div>
         </div>
@@ -2112,7 +2298,9 @@ export function SipAcademyWineLessons() {
         </div>
       </header>
 
-      {voiceMode !== "story" ? (
+      {voiceMode === "tactical" ? (
+        <SipStudiosEquipmentMastery />
+      ) : voiceMode !== "story" ? (
         <>
       <section className="academy-cinematic" aria-label="Active realm cinematic preview">
         <div className="academy-cinematic-stage">
@@ -2172,40 +2360,58 @@ export function SipAcademyWineLessons() {
         </div>
       </section>
 
-      <section className="academy-realms" aria-label="Sip Academy realm map">
-        {realmProgress.map((realm) => (
-          <article
-            key={realm.unit}
-            className={`academy-realm-card ${highlightedRealm?.unit === realm.unit ? "active" : ""}`}
-            aria-label={`Unit ${realm.unit} ${realm.title}`}
-            role="button"
-            tabIndex={0}
-            onClick={() => openUnit(realm.unit)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                openUnit(realm.unit);
-              }
-            }}
-          >
-            <div className="academy-realm-head">
-              <p>Unit {realm.unit}</p>
-              <span>{realm.completed}/{realm.lessons.length} cleared</span>
-            </div>
-            <h3>{realm.title}</h3>
-            <p>{realmLoreByVoice(realm, voiceMode)}</p>
-            <div className="academy-realm-meter" aria-hidden="true">
-              <div className="academy-realm-meter-value" style={{ width: `${Math.round(realm.ratio * 100)}%` }} />
-            </div>
-            <div className="academy-realm-foot">
-              <small>Unlocked {realm.unlocked}/{realm.lessons.length}</small>
-              <small className={`academy-realm-boss ${realm.bossCleared ? "cleared" : ""}`}>
-                Boss {realm.bossCleared ? "Cleared" : "Pending"}
-              </small>
-            </div>
-          </article>
-        ))}
-      </section>
+      <div className="academy-scroll-shell">
+        <button
+          type="button"
+          className="academy-scroll-btn"
+          aria-label="Scroll units left"
+          onClick={() => nudgeHorizontalStrip(realmsStripRef.current, -1)}
+        >
+          &#9664;
+        </button>
+        <section className="academy-realms" aria-label="Sip Academy realm map" onWheel={handleHorizontalWheel} ref={realmsStripRef}>
+          {realmProgress.map((realm) => (
+            <article
+              key={realm.unit}
+              className={`academy-realm-card ${highlightedRealm?.unit === realm.unit ? "active" : ""}`}
+              aria-label={`Unit ${realm.unit} ${realm.title}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => openUnit(realm.unit)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  openUnit(realm.unit);
+                }
+              }}
+            >
+              <div className="academy-realm-head">
+                <p>Unit {realm.unit}</p>
+                <span>{realm.completed}/{realm.lessons.length} cleared</span>
+              </div>
+              <h3>{realm.title}</h3>
+              <p>{realmLoreByVoice(realm, voiceMode)}</p>
+              <div className="academy-realm-meter" aria-hidden="true">
+                <div className="academy-realm-meter-value" style={{ width: `${Math.round(realm.ratio * 100)}%` }} />
+              </div>
+              <div className="academy-realm-foot">
+                <small>Unlocked {realm.unlocked}/{realm.lessons.length}</small>
+                <small className={`academy-realm-boss ${realm.bossCleared ? "cleared" : ""}`}>
+                  Boss {realm.bossCleared ? "Cleared" : "Pending"}
+                </small>
+              </div>
+            </article>
+          ))}
+        </section>
+        <button
+          type="button"
+          className="academy-scroll-btn"
+          aria-label="Scroll units right"
+          onClick={() => nudgeHorizontalStrip(realmsStripRef.current, 1)}
+        >
+          &#9654;
+        </button>
+      </div>
 
       <div className="academy-hud" aria-label="Your quest progress">
         <div className="academy-hud-left">
@@ -2253,65 +2459,134 @@ export function SipAcademyWineLessons() {
               {nextLesson.realm} - {missionLabel(nextLesson.mission)} - Mentor {MENTORS[nextLesson.mentor].name}
             </small>
           </div>
-          <div className="academy-path-list" aria-label={`Missions for Unit ${highlightedRealm?.unit ?? 1}: ${highlightedRealm?.title ?? "Crystal Atrium"}`}>
-            {LESSONS.filter((lesson) => lesson.unit === (highlightedRealm?.unit ?? 1)).map((lesson) => {
-              const lessonProgress = progress.lessons[lesson.id];
-              const unlocked = lessonProgress?.unlocked ?? false;
-              const mastery = lessonProgress?.mastery ?? 0;
-              const bestAccuracy = lessonProgress?.bestAccuracy ?? 0;
-              const isActive = activeLessonId === lesson.id;
-              return (
-                <button
-                  key={lesson.id}
-                  type="button"
-                  className={`academy-node ${unlocked ? "unlocked" : "locked"} ${isActive ? "active" : ""}`}
-                  data-unlocked-flash={flashUnlockedLessonId === lesson.id ? "1" : "0"}
-                  onClick={() => startLesson(lesson.id)}
-                  disabled={!unlocked}
-                >
-                  <div className="academy-node-top">
-                    <span className="academy-node-unit">Unit {lesson.unit}</span>
-                    <span className={`academy-mission academy-mission-${missionClass(lesson.mission)}`}>{missionLabel(lesson.mission)}</span>
-                  </div>
-                  <div className="academy-node-top">
-                    <span className={`academy-tag academy-tag-${tagClass(lesson.tag)}`}>{lesson.tag}</span>
-                    <span className="academy-node-difficulty">Difficulty {lesson.difficulty}/5</span>
-                  </div>
-                  <div className="academy-node-art">
-                    <img src={lessonPortrait(lesson)} alt="" loading="lazy" decoding="async" />
-                    <small>Mentor {MENTORS[lesson.mentor].name}</small>
-                  </div>
-                  <strong>{lesson.title}</strong>
-                  <small>{lessonSubtitleByVoice(lesson, voiceMode)}</small>
-                  <div className="academy-node-foot">
-                    <small
-                      className="academy-mastery"
-                      title={`Mastery ${mastery}/${MAX_MASTERY}`}
-                      aria-label={`Mastery ${mastery} out of ${MAX_MASTERY}`}
-                    >
-                      <span>Mastery</span>
-                      <span className="academy-mastery-stars" aria-hidden="true">
-                        {masteryStarStates(mastery).map((filled, starIndex) => (
-                          <span
-                            key={`${lesson.id}-star-${starIndex}`}
-                            className={`academy-mastery-star ${filled ? "filled" : "empty"}`}
-                          >
-                            {filled ? "\u2605" : "\u2606"}
-                          </span>
-                        ))}
-                      </span>
-                    </small>
-                    <small>Best {Math.round(bestAccuracy * 100)}%</small>
-                  </div>
-                  {!unlocked ? <small className="academy-locked-label">Locked</small> : null}
-                </button>
-              );
-            })}
+          <div className="academy-scroll-shell">
+            <button
+              type="button"
+              className="academy-scroll-btn"
+              aria-label="Scroll section list left"
+              onClick={() => nudgeHorizontalStrip(pathStripRef.current, -1)}
+            >
+              &#9664;
+            </button>
+            <div
+              className="academy-path-list"
+              aria-label={`Missions for Unit ${highlightedRealm?.unit ?? 1}: ${highlightedRealm?.title ?? "Crystal Atrium"}`}
+              onWheel={handleHorizontalWheel}
+              ref={pathStripRef}
+            >
+              {LESSONS.filter((lesson) => lesson.unit === (highlightedRealm?.unit ?? 1)).map((lesson) => {
+                const lessonProgress = progress.lessons[lesson.id];
+                const unlocked = lessonProgress?.unlocked ?? false;
+                const mastery = lessonProgress?.mastery ?? 0;
+                const bestAccuracy = lessonProgress?.bestAccuracy ?? 0;
+                const isActive = activeLessonId === lesson.id;
+                return (
+                  <button
+                    key={lesson.id}
+                    type="button"
+                    className={`academy-node ${unlocked ? "unlocked" : "locked"} ${isActive ? "active" : ""}`}
+                    data-unlocked-flash={flashUnlockedLessonId === lesson.id ? "1" : "0"}
+                    onClick={() => startLesson(lesson.id)}
+                    disabled={!unlocked}
+                  >
+                    <div className="academy-node-top">
+                      <span className="academy-node-unit">Unit {lesson.unit}</span>
+                      <span className={`academy-mission academy-mission-${missionClass(lesson.mission)}`}>{missionLabel(lesson.mission)}</span>
+                    </div>
+                    <div className="academy-node-top">
+                      <span className={`academy-tag academy-tag-${tagClass(lesson.tag)}`}>{lesson.tag}</span>
+                      <small
+                        className="academy-mastery"
+                        title={`Mastery ${mastery}/${MAX_MASTERY}`}
+                        aria-label={`Mastery ${mastery} out of ${MAX_MASTERY}`}
+                      >
+                        <span>Mastery</span>
+                        <span className="academy-mastery-stars" aria-hidden="true">
+                          {masteryStarStates(mastery).map((filled, starIndex) => (
+                            <span
+                              key={`${lesson.id}-star-top-${starIndex}`}
+                              className={`academy-mastery-star ${filled ? "filled" : "empty"}`}
+                            >
+                              {filled ? "\u2605" : "\u2606"}
+                            </span>
+                          ))}
+                        </span>
+                      </small>
+                    </div>
+                    <strong>{lesson.title}</strong>
+                    <small>{lessonSubtitleByVoice(lesson, voiceMode)}</small>
+                    <div className="academy-node-foot">
+                      <span className="academy-node-difficulty">Difficulty {lesson.difficulty}/5</span>
+                      <small>Best {Math.round(bestAccuracy * 100)}%</small>
+                    </div>
+                    {!unlocked ? <small className="academy-locked-label">Locked</small> : null}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              className="academy-scroll-btn"
+              aria-label="Scroll section list right"
+              onClick={() => nudgeHorizontalStrip(pathStripRef.current, 1)}
+            >
+              &#9654;
+            </button>
           </div>
         </aside>
 
         <article className="academy-session">
-          {activeLesson && activeExercise ? (
+          {activeLesson && lessonPhase === "briefing" && lessonBriefing ? (
+            <div className="academy-summary academy-pre-quiz academy-pre-quiz-panel">
+              <h3>{activeLesson.title}</h3>
+              <p>{lessonSubtitleByVoice(activeLesson, voiceMode)}</p>
+              <div className="academy-summary-grid">
+                <span>Unit {activeLesson.unit}</span>
+                <span>{activeLesson.realm}</span>
+                <span>{missionLabel(activeLesson.mission)} mission</span>
+                <span>Difficulty {activeLesson.difficulty}/5</span>
+                <span>{activeLesson.exercises.length} questions</span>
+                <span>Mentor {MENTORS[activeLesson.mentor].name}</span>
+              </div>
+              <div className="academy-exercise-card">
+                <h4>Learning Objectives</h4>
+                <ul>
+                  {lessonBriefing.objectives.map((item, index) => (
+                    <li key={`${activeLesson.id}-objective-${index}`}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="academy-exercise-card">
+                <h4>Mentor Notes</h4>
+                <ul>
+                  {lessonBriefing.mentorNotes.map((item, index) => (
+                    <li key={`${activeLesson.id}-mentor-note-${index}`}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              {activeUnitGuide ? (
+                <div className="academy-exercise-card">
+                  <h4>Unit Teaching Guide</h4>
+                  <p><strong>Focus:</strong> {activeUnitGuide.focus}</p>
+                  <p><strong>Service Goal:</strong> {activeUnitGuide.serviceGoal}</p>
+                  <ul>
+                    {activeUnitGuide.watchouts.map((item) => (
+                      <li key={`${activeLesson.id}-watchout-${item}`}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              <p>Read the prep first. The quiz begins only after you press Start Quiz.</p>
+              <div className="academy-actions">
+                <button type="button" className="btn btn-primary" onClick={beginLessonQuiz}>
+                  Start Quiz
+                </button>
+                <button type="button" className="btn btn-light" onClick={endLessonSession}>
+                  Exit
+                </button>
+              </div>
+            </div>
+          ) : activeLesson && activeExercise ? (
             <>
               <div className="academy-session-head">
                 <p className="academy-round-kicker">
@@ -2394,7 +2669,7 @@ export function SipAcademyWineLessons() {
               ) : (
                 <div className="academy-actions">
                   <button type="button" className="btn btn-primary" onClick={checkAnswer} disabled={!canCheck}>Check</button>
-                  <button type="button" className="btn btn-light" onClick={() => setActiveLessonId(null)}>Exit</button>
+                  <button type="button" className="btn btn-light" onClick={endLessonSession}>Exit</button>
                 </div>
               )}
             </>
@@ -2426,7 +2701,7 @@ export function SipAcademyWineLessons() {
               <p>Pick an unlocked node from the campaign path. Pass at 70% accuracy before hearts run out.</p>
               <ul>
                 <li>{LESSONS.length} lessons across {REALMS.length} realms with Scout, Challenge, and Boss missions.</li>
-                <li>Sippy, Roma, and Hummin adapt guidance style in classic, tactical, or story voice.</li>
+                <li>Sippy, Roma, and Hummin adapt guidance style in basic adventure, equipment mastery, or story voice.</li>
                 <li>Stack combo bonuses, preserve hearts, and clear bosses to complete each realm.</li>
               </ul>
               <div className="academy-idle-next">

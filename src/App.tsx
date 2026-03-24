@@ -58,7 +58,7 @@ type MenuSource = "brand-house" | "section-nav" | "sub-nav" | "content-nav";
 const sipStudiosSections: SipStudiosSectionItem[] = [
   { id: "learn", label: "Learn", defaultPage: "sip-academy" },
   { id: "taste", label: "Taste", defaultPage: "flavor-wheel" },
-  { id: "connect", label: "Connect", defaultPage: "tasting-groups" }
+  { id: "connect", label: "Connect", defaultPage: "beverage-news" }
 ];
 
 const sipStudiosNavItems: SipStudiosNavItem[] = [
@@ -68,11 +68,13 @@ const sipStudiosNavItems: SipStudiosNavItem[] = [
   { id: "beverage-quiz", label: "Beverage Quiz", section: "learn" },
   { id: "regions", label: "Regions", section: "learn" },
   { id: "flavor-wheel", label: "Flavor Wheel", section: "taste" },
-  { id: "flavors", label: "Flavors", section: "taste" },
-  { id: "tasting-journal", label: "Flavor Journal", section: "taste" },
+  { id: "flavors", label: "Tasting Journal", section: "taste" },
+  { id: "tasting-journal", label: "Tasting Journal Archived", section: "taste" },
   { id: "tasting-groups", label: "Tasting Groups", section: "connect" },
   { id: "beverage-news", label: "Beverage News", section: "connect" }
 ];
+
+const hiddenSipStudiosTabs = new Set<SipStudiosTab>(["sip-game", "tasting-journal", "tasting-groups"]);
 
 function isRegionsPage(page: AppPage): page is RegionsPage {
   return page === "regions" || page.startsWith("regions/");
@@ -148,7 +150,7 @@ function hashForPage(page: AppPage): string {
   if (page === "sip-game") return "sip-game";
   if (page === "sipopedia") return "sipopedia";
   if (page === "flavor-wheel") return "flavor-wheel";
-  if (page === "tasting-journal") return "flavor-journal";
+  if (page === "tasting-journal") return "tasting-journal";
   if (page === "flavors") return "flavors";
   if (page === "tasting-groups") return "tasting-groups";
   if (page === "beverage-quiz") return "beverage-quiz";
@@ -246,6 +248,9 @@ function App() {
     initialHash === "" || initialHash === "home" || initialHash === "sip-academy"
   );
   const brandTier = brandTierFromPage(page);
+  const shouldCompactSingleRow =
+    !isHomeHeroExpanded &&
+    (brandTier === "sip-studios" || brandTier === "ai-rnd" || brandTier === "somm-support");
 
   useEffect(() => {
     const canonicalHash = hashForPage(page);
@@ -353,7 +358,7 @@ function App() {
   };
 
   const sipStudiosSectionTabs = useMemo(
-    () => sipStudiosNavItems.filter((item) => item.section === sipStudiosSection),
+    () => sipStudiosNavItems.filter((item) => item.section === sipStudiosSection && !hiddenSipStudiosTabs.has(item.id)),
     [sipStudiosSection]
   );
 
@@ -390,7 +395,7 @@ function App() {
 
   return (
     <div className="page">
-      <header className={`hero hero-brand ${isHomeHeroExpanded ? "expanded" : "compact"}`}>
+      <header className={`hero hero-brand ${isHomeHeroExpanded ? "expanded" : "compact"} ${shouldCompactSingleRow ? "single-row" : ""}`}>
         <div className="hero-brand-full" aria-hidden={!isHomeHeroExpanded}>
           <div className="hero-brand-head">
             <img
@@ -456,16 +461,39 @@ function App() {
         </div>
 
         <div className="hero-brand-compact" aria-hidden={isHomeHeroExpanded}>
-          <button
-            type="button"
-            className="hero-brand-home-trigger"
-            onClick={switchToHomeHero}
-            disabled={isHomeHeroExpanded}
-            aria-label="Open full home header"
-          >
-            <img className="hero-brand-seal hero-brand-seal-compact" src={mainLogo} alt="Sip Studies logo" decoding="async" />
-            <img className="hero-wordmark hero-wordmark-compact" src={wordmark} alt="Sip Studies" decoding="async" />
-          </button>
+          {shouldCompactSingleRow ? (
+            <>
+              <button
+                type="button"
+                className="hero-brand-home-mini-tile"
+                onClick={switchToHomeHero}
+                disabled={isHomeHeroExpanded}
+                aria-label="Open full home header"
+              >
+                <img className="hero-brand-seal hero-brand-seal-compact" src={mainLogo} alt="Sip Studies logo" decoding="async" />
+              </button>
+              <button
+                type="button"
+                className="hero-brand-home-mini-tile hero-brand-home-mini-wordmark"
+                onClick={switchToHomeHero}
+                disabled={isHomeHeroExpanded}
+                aria-label="Open full home header"
+              >
+                <img className="hero-wordmark hero-wordmark-compact" src={wordmark} alt="Sip Studies" decoding="async" />
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="hero-brand-home-trigger"
+              onClick={switchToHomeHero}
+              disabled={isHomeHeroExpanded}
+              aria-label="Open full home header"
+            >
+              <img className="hero-brand-seal hero-brand-seal-compact" src={mainLogo} alt="Sip Studies logo" decoding="async" />
+              <img className="hero-wordmark hero-wordmark-compact" src={wordmark} alt="Sip Studies" decoding="async" />
+            </button>
+          )}
           <div className="hero-brand-compact-house">
             <p className="hero-brand-compact-label">Brand House</p>
             <div className="hero-brand-compact-tabs">
