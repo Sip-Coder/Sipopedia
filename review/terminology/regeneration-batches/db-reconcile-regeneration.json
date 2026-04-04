@@ -1,0 +1,133 @@
+{
+  "published_terms": 731,
+  "planned_updates": 496,
+  "patched": 496,
+  "failed_count": 0,
+  "failed_examples": [],
+  "linked_counts_after": {
+    "regeneration": 0,
+    "legacy": 529
+  },
+  "sample_updates": [
+    {
+      "id": "b9dfb0f6-ba23-4365-9225-baabb23cd012",
+      "term": "Wormtub",
+      "from": "/infographics/wormtub.png",
+      "to": "/infographics/regeneration/wormtub.png"
+    },
+    {
+      "id": "01d0c359-9013-48cb-9422-e09e44120d49",
+      "term": "Tempranillo",
+      "from": "/infographics/tempranillo.png",
+      "to": "/infographics/regeneration/tempranillo.png"
+    },
+    {
+      "id": "dac204ef-5741-42f9-a5f7-2c07f0fda1c8",
+      "term": "Priming",
+      "from": "/infographics/priming.png",
+      "to": "/infographics/regeneration/priming.png"
+    },
+    {
+      "id": "c0b26efd-7219-467b-84a3-3d4917e02f5c",
+      "term": "Withering",
+      "from": "/infographics/withering.png",
+      "to": "/infographics/regeneration/withering.png"
+    },
+    {
+      "id": "6bfb7ff4-ebb9-4ceb-a2c1-19dfca6a7a24",
+      "term": "Puerh",
+      "from": "/infographics/puerh.png",
+      "to": "/infographics/regeneration/puerh.png"
+    },
+    {
+      "id": "b1ade4f8-8d76-4459-9933-d54fdd2f7bbb",
+      "term": "Steaming",
+      "from": "/infographics/steaming.png",
+      "to": "/infographics/regeneration/steaming.png"
+    },
+    {
+      "id": "b2e26eeb-58be-46cf-9407-433cbb391a52",
+      "term": "Pulp",
+      "from": "/infographics/pulp.png",
+      "to": "/infographics/regeneration/pulp.png"
+    },
+    {
+      "id": "2b9eb57d-bdc0-4f58-9372-03cb602e8b80",
+      "term": "Sparkling",
+      "from": "/infographics/sparkling.png",
+      "to": "/infographics/regeneration/sparkling.png"
+    },
+    {
+      "id": "a34672dd-6856-43d0-afb9-adced6cb06ec",
+      "term": "Yabukita",
+      "from": "/infographics/yabukita.png",
+      "to": "/infographics/regeneration/yabukita.png"
+    },
+    {
+      "id": "7e84cd75-f8e1-4771-96e1-27dfc03b43d6",
+      "term": "Pumpover",
+      "from": "/infographics/pumpover.png",
+      "to": "/infographics/regeneration/pumpover.png"
+    },
+    {
+      "id": "e7cf7807-53f0-403c-bd9a-ad1bb610d061",
+      "term": "Sourmash",
+      "from": "/infographics/sourmash.png",
+      "to": "/infographics/regeneration/sourmash.png"
+    },
+    {
+      "id": "5a7b3104-e958-4372-8b6e-4c35eb2efa05",
+      "term": "Theanine",
+      "from": "/infographics/theanine.png",
+      "to": "/infographics/regeneration/theanine.png"
+    },
+    {
+      "id": "80c0cc12-fa59-407e-946f-42ae5fb38c91",
+      "term": "Riesling",
+      "from": "/infographics/riesling.png",
+      "to": "/infographics/regeneration/riesling.png"
+    },
+    {
+      "id": "56045461-fb50-45a2-9d4d-1b3010fc775f",
+      "term": "Screening",
+      "from": "/infographics/screening.png",
+      "to": "/infographics/regeneration/screening.png"
+    },
+    {
+      "id": "e0606405-bd2b-4391-9206-729a6c2c4bba",
+      "term": "Rye",
+      "from": "/infographics/rye.png",
+      "to": "/infographics/regeneration/rye.png"
+    },
+    {
+      "id": "ae762ce7-ad25-4fc1-89f8-ce6453a812b4",
+      "term": "Salinity",
+      "from": "/infographics/salinity.png",
+      "to": "/infographics/regeneration/salinity.png"
+    },
+    {
+      "id": "ae0b8d3c-1da9-4db4-9479-2cc9cf655bbb",
+      "term": "Minerality",
+      "from": "/infographics/minerality.png",
+      "to": "/infographics/regeneration/minerality.png"
+    },
+    {
+      "id": "d1b21bee-e688-4375-9af6-11a5efb0df7a",
+      "term": "Monastrell",
+      "from": "/infographics/monastrell.png",
+      "to": "/infographics/regeneration/monastrell.png"
+    },
+    {
+      "id": "14796a05-e8bb-4255-91bd-f46b858004b2",
+      "term": "Tincture",
+      "from": "/infographics/tincture.png",
+      "to": "/infographics/regeneration/tincture.png"
+    },
+    {
+      "id": "12092876-7416-4dbe-901a-cd71c1108c9e",
+      "term": "Muscadet",
+      "from": "/infographics/muscadet.png",
+      "to": "/infographics/regeneration/muscadet.png"
+    }
+  ]
+}

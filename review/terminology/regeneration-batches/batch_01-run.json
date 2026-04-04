@@ -1,0 +1,261 @@
+{
+  "started_at": "2026-04-02T23:48:02.895Z",
+  "batch": "01",
+  "total_terms": 50,
+  "env_mode": "anon_or_fallback",
+  "success": [
+    {
+      "term": "Nitrate",
+      "id": "865a10c1-370b-4a57-8ec0-2039caa9adef",
+      "infographic_url": "/infographics/nitrate.png"
+    },
+    {
+      "term": "Aftertaste",
+      "id": "a4cf7007-5675-4c90-a4df-8df8f40c2ff5",
+      "infographic_url": "/infographics/aftertaste.png"
+    },
+    {
+      "term": "Ampelography",
+      "id": "131245bb-39f4-485d-9bfc-f5af7e73262d",
+      "infographic_url": "/infographics/ampelography.png"
+    },
+    {
+      "term": "Autolysis",
+      "id": "cc990e4c-2086-4d09-8d84-6ba5f6619145",
+      "infographic_url": "/infographics/autolysis.png"
+    },
+    {
+      "term": "Muscadet",
+      "id": "12092876-7416-4dbe-901a-cd71c1108c9e",
+      "infographic_url": "/infographics/muscadet.png"
+    },
+    {
+      "term": "Blanc",
+      "id": "2946027b-6209-4c73-a8d9-71c029ce6f0e",
+      "infographic_url": "/infographics/blanc.png"
+    },
+    {
+      "term": "Cask",
+      "id": "863858b2-53ca-4fde-8378-f04c2913e3f8",
+      "infographic_url": "/infographics/cask.png"
+    },
+    {
+      "term": "Cupper",
+      "id": "eca4fe14-802f-453a-8fcd-b0c6496e608e",
+      "infographic_url": "/infographics/cupper.png"
+    },
+    {
+      "term": "Lungo",
+      "id": "5a8a37ca-471d-4bf8-be54-9ea871ab012d",
+      "infographic_url": "/infographics/lungo.png"
+    },
+    {
+      "term": "Retort",
+      "id": "f318fbfc-393e-414e-b06f-cddf90f20904",
+      "infographic_url": "/infographics/retort.png"
+    },
+    {
+      "term": "Sedimentation",
+      "id": "d901ba93-0ef1-4cac-9bf1-c8c3832cf6ba",
+      "infographic_url": "/infographics/sedimentation.png"
+    },
+    {
+      "term": "Sweetness",
+      "id": "d1dd12a1-3d40-4444-83c7-241451da6b71",
+      "infographic_url": "/infographics/sweetness.png"
+    },
+    {
+      "term": "Tempranillo",
+      "id": "01d0c359-9013-48cb-9422-e09e44120d49",
+      "infographic_url": "/infographics/tempranillo.png"
+    },
+    {
+      "term": "Arak",
+      "id": "1253feb2-5c9b-4273-81d6-56504349ff26",
+      "infographic_url": "/infographics/arak.png"
+    },
+    {
+      "term": "Glycerol",
+      "id": "b884b732-228c-42c0-a255-9656466f12fa",
+      "infographic_url": "/infographics/glycerol.png"
+    },
+    {
+      "term": "Muscat",
+      "id": "dac7c578-91ed-405c-8557-87e36217adc6",
+      "infographic_url": "/infographics/muscat.png"
+    },
+    {
+      "term": "Oenology",
+      "id": "bbc97d07-3cef-4508-8d93-3af4f5da803c",
+      "infographic_url": "/infographics/oenology.png"
+    },
+    {
+      "term": "Portafilter",
+      "id": "07e4acb1-6a72-4fd6-98bd-c7eae350b511",
+      "infographic_url": "/infographics/portafilter.png"
+    },
+    {
+      "term": "Saccharomyces",
+      "id": "91e991b8-e34e-4870-8cd5-8c2c76011f48",
+      "infographic_url": "/infographics/saccharomyces.png"
+    },
+    {
+      "term": "Softness",
+      "id": "9720c348-0970-4043-96b3-0efedd7d1496",
+      "infographic_url": "/infographics/softness.png"
+    },
+    {
+      "term": "Texturization",
+      "id": "b5e391c3-5c86-4ac9-a290-cff204082ea5",
+      "infographic_url": "/infographics/texturization.png"
+    },
+    {
+      "term": "Wetmill",
+      "id": "11df064b-a1a5-44c3-996b-64d3620c9d26",
+      "infographic_url": "/infographics/wetmill.png"
+    },
+    {
+      "term": "Whirlpool",
+      "id": "3ae5ad3b-249a-4d21-b586-36aef8b33cac",
+      "infographic_url": "/infographics/whirlpool.png"
+    },
+    {
+      "term": "Browning",
+      "id": "3783bba3-d1b9-4548-8060-b19ba9693ef6",
+      "infographic_url": "/infographics/browning.png"
+    },
+    {
+      "term": "Conductivity",
+      "id": "54116b9f-c7a2-4325-9f36-f79597d60255",
+      "infographic_url": "/infographics/conductivity.png"
+    },
+    {
+      "term": "Cooling",
+      "id": "ccd722d2-a8d8-41a3-ab0b-dd10acf94d78",
+      "infographic_url": "/infographics/cooling.png"
+    },
+    {
+      "term": "Curd",
+      "id": "10a9c1e4-467b-4a6e-b77e-8453a988eeb7",
+      "infographic_url": "/infographics/curd.png"
+    },
+    {
+      "term": "Fluoride",
+      "id": "449b2243-1e6e-4f45-a721-2b9181c60a14",
+      "infographic_url": "/infographics/fluoride.png"
+    },
+    {
+      "term": "Green Harvest",
+      "id": "1789b968-8596-4e15-a843-e965120a0785",
+      "infographic_url": "/infographics/green-harvest.png"
+    },
+    {
+      "term": "Macchiato",
+      "id": "2d7b77ec-69aa-4f23-9490-96657e4f011b",
+      "infographic_url": "/infographics/macchiato.png"
+    },
+    {
+      "term": "Malic",
+      "id": "20197108-8b19-4d96-9961-e5e7bb0a14f9",
+      "infographic_url": "/infographics/malic.png"
+    },
+    {
+      "term": "Natural",
+      "id": "343d4da9-9308-4668-a1b4-0da704e6efa4",
+      "infographic_url": "/infographics/natural.png"
+    },
+    {
+      "term": "Sparkling",
+      "id": "2b9eb57d-bdc0-4f58-9372-03cb602e8b80",
+      "infographic_url": "/infographics/sparkling.png"
+    },
+    {
+      "term": "Syrah",
+      "id": "a6a3fb24-d324-44e1-b667-b4cc6163934d",
+      "infographic_url": "/infographics/syrah.png"
+    },
+    {
+      "term": "Barolo",
+      "id": "18eea6b7-2534-4c17-91b6-6d591bbebcd7",
+      "infographic_url": "/infographics/barolo.png"
+    },
+    {
+      "term": "Bourgogne",
+      "id": "f8939d5c-3edb-46af-bd67-b427580016f2",
+      "infographic_url": "/infographics/bourgogne.png"
+    },
+    {
+      "term": "Cortado",
+      "id": "1acebe21-83b2-419a-8780-744e1c5030aa",
+      "infographic_url": "/infographics/cortado.png"
+    },
+    {
+      "term": "Cupping",
+      "id": "3a249a64-e9f9-4be2-ac7f-18e0d19aae9e",
+      "infographic_url": "/infographics/cupping.png"
+    },
+    {
+      "term": "Defect",
+      "id": "d94658c5-ca06-422c-a924-c1c7a63929f7",
+      "infographic_url": "/infographics/defect.png"
+    },
+    {
+      "term": "Disinfection",
+      "id": "f0543887-7adf-4ab6-8516-317e71909644",
+      "infographic_url": "/infographics/disinfection.png"
+    },
+    {
+      "term": "Drymill",
+      "id": "c5243046-06a2-44e2-af8b-e14792ea9b44",
+      "infographic_url": "/infographics/drymill.png"
+    },
+    {
+      "term": "Fuggles",
+      "id": "e9d406e0-3e9c-4c5a-b172-21881d6ae9b5",
+      "infographic_url": "/infographics/fuggles.png"
+    },
+    {
+      "term": "Gluconacetobacter",
+      "id": "a0b55233-ba51-45e3-b39e-befd7d33bd1b",
+      "infographic_url": "/infographics/gluconacetobacter.png"
+    },
+    {
+      "term": "Groundwater",
+      "id": "13769f58-5875-4e24-bd32-533e7385ae29",
+      "infographic_url": "/infographics/groundwater.png"
+    },
+    {
+      "term": "Malt",
+      "id": "4020dcda-2bd2-4d57-9b0d-81953bec43bd",
+      "infographic_url": "/infographics/malt.png"
+    },
+    {
+      "term": "Mosaic",
+      "id": "04f4629f-5185-4832-9cc0-e6b22b1119f7",
+      "infographic_url": "/infographics/mosaic.png"
+    },
+    {
+      "term": "Osmanthus",
+      "id": "7f54dc5d-8f60-43d3-b665-84d2ab76f4b8",
+      "infographic_url": "/infographics/osmanthus.png"
+    },
+    {
+      "term": "Oxidation",
+      "id": "6f139fd1-9b28-4940-9364-a81fab288807",
+      "infographic_url": "/infographics/oxidation.png"
+    },
+    {
+      "term": "Polyphenol",
+      "id": "f6205d16-6a55-4c8a-86e4-bcf387d65550",
+      "infographic_url": "/infographics/polyphenol.png"
+    },
+    {
+      "term": "Reconstitution",
+      "id": "3133ee40-d74f-4630-8293-e2ac4f7dac93",
+      "infographic_url": "/infographics/reconstitution.png"
+    }
+  ],
+  "failed": [],
+  "db_patch_failed": [],
+  "finished_at": "2026-04-03T00:16:23.895Z"
+}

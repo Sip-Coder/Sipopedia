@@ -1,0 +1,260 @@
+{
+  "started_at": "2026-04-03T01:14:15.751Z",
+  "batch": "02",
+  "total_terms": 50,
+  "success": [
+    {
+      "term": "Salinity",
+      "id": "ae762ce7-ad25-4fc1-89f8-ce6453a812b4",
+      "infographic_url": "/infographics/regeneration/salinity.png"
+    },
+    {
+      "term": "Tanginess",
+      "id": "85ff0bbc-1c32-4335-8ada-3018fc2a70e2",
+      "infographic_url": "/infographics/regeneration/tanginess.png"
+    },
+    {
+      "term": "Tettnang",
+      "id": "051546a6-1f4e-4918-966f-949f13afb1a4",
+      "infographic_url": "/infographics/regeneration/tettnang.png"
+    },
+    {
+      "term": "Trappist",
+      "id": "60a046a8-8d03-4475-b85d-73f20286a5b1",
+      "infographic_url": "/infographics/regeneration/trappist.png"
+    },
+    {
+      "term": "Ultraviolet",
+      "id": "2707c92f-98f1-44c2-ace4-6c2e773e14d0",
+      "infographic_url": "/infographics/regeneration/ultraviolet.png"
+    },
+    {
+      "term": "Ascorbate",
+      "id": "c0de6393-1bb4-4dc6-aca1-0c0ff1e859a7",
+      "infographic_url": "/infographics/regeneration/ascorbate.png"
+    },
+    {
+      "term": "Barrique",
+      "id": "aa5617a8-0fb0-42e2-98b8-0c59607b0d55",
+      "infographic_url": "/infographics/regeneration/barrique.png"
+    },
+    {
+      "term": "Brunello",
+      "id": "6b8c56d4-8776-4217-8d59-018aaf3e9fa1",
+      "infographic_url": "/infographics/regeneration/brunello.png"
+    },
+    {
+      "term": "Calcium",
+      "id": "7995a58d-f811-4977-9de8-bd3a1424bcc8",
+      "infographic_url": "/infographics/regeneration/calcium.png"
+    },
+    {
+      "term": "Churning",
+      "id": "45dfccb5-d64b-4634-a8ba-d5176f655fb5",
+      "infographic_url": "/infographics/regeneration/churning.png"
+    },
+    {
+      "term": "Cloudiness",
+      "id": "8bb357cd-c771-4dd4-a3b8-f6c487731634",
+      "infographic_url": "/infographics/regeneration/cloudiness.png"
+    },
+    {
+      "term": "Distillation",
+      "id": "b3f82026-27e0-4654-8587-9b66ddb26d45",
+      "infographic_url": "/infographics/regeneration/distillation.png"
+    },
+    {
+      "term": "Dripper",
+      "id": "ff62a1b0-d235-4d28-b018-9b10687e9cd4",
+      "infographic_url": "/infographics/regeneration/dripper.png"
+    },
+    {
+      "term": "Glacial",
+      "id": "461bf7b6-b83a-480d-954a-c1e156aa60e6",
+      "infographic_url": "/infographics/regeneration/glacial.png"
+    },
+    {
+      "term": "Juiciness",
+      "id": "ab0f6894-ab6a-479d-88dc-d749e3e86a73",
+      "infographic_url": "/infographics/regeneration/juiciness.png"
+    },
+    {
+      "term": "Kalita",
+      "id": "88aa3137-d02f-42b5-be85-2641ce36b7e6",
+      "infographic_url": "/infographics/regeneration/kalita.png"
+    },
+    {
+      "term": "Kefir",
+      "id": "d6b09da1-d178-49fe-b344-09b47bec8bd5",
+      "infographic_url": "/infographics/regeneration/kefir.png"
+    },
+    {
+      "term": "Potability",
+      "id": "65d0a129-9ebe-4800-99a7-3dd8f7c3b657",
+      "infographic_url": "/infographics/regeneration/potability.png"
+    },
+    {
+      "term": "Pressing",
+      "id": "1387cda6-d61e-4828-9d4b-d13b52cf7a4d",
+      "infographic_url": "/infographics/regeneration/pressing.png"
+    },
+    {
+      "term": "Ristretto",
+      "id": "f6fa1035-fc0d-4318-b005-6fa2c4a03878",
+      "infographic_url": "/infographics/regeneration/ristretto.png"
+    },
+    {
+      "term": "Sweetener",
+      "id": "91048081-1af4-48e3-bed3-d480e14a65c1",
+      "infographic_url": "/infographics/regeneration/sweetener.png"
+    },
+    {
+      "term": "Typica",
+      "id": "c761b400-d371-44b8-8a73-2b02374139f1",
+      "infographic_url": "/infographics/regeneration/typica.png"
+    },
+    {
+      "term": "Aseptic",
+      "id": "dfa0430f-2c2c-40dd-a845-5392b4b875ff",
+      "infographic_url": "/infographics/regeneration/aseptic.png"
+    },
+    {
+      "term": "Brettanomyces",
+      "id": "5a31ba4c-b869-4e91-98dd-15699f7c8509",
+      "infographic_url": "/infographics/regeneration/brettanomyces.png"
+    },
+    {
+      "term": "Carignan",
+      "id": "c0a9545b-d8b6-4eb8-9451-962e98fd387f",
+      "infographic_url": "/infographics/regeneration/carignan.png"
+    },
+    {
+      "term": "Decoction",
+      "id": "3bf24d94-d02f-4f76-94f8-12a15f078c40",
+      "infographic_url": "/infographics/regeneration/decoction.png"
+    },
+    {
+      "term": "Dry Extract",
+      "id": "557dedf7-555e-4c55-8857-063f025003cf",
+      "infographic_url": "/infographics/regeneration/dry-extract.png"
+    },
+    {
+      "term": "Gross Lees",
+      "id": "6b5391f2-4ebe-40f9-a9e9-4911ef56b61e",
+      "infographic_url": "/infographics/regeneration/gross-lees.png"
+    },
+    {
+      "term": "Gyropalette",
+      "id": "68720376-ec7c-4676-ad22-2bb73c2a4fb0",
+      "infographic_url": "/infographics/regeneration/gyropalette.png"
+    },
+    {
+      "term": "Hardness",
+      "id": "c1d12192-74aa-48ef-9477-06c247da2b6b",
+      "infographic_url": "/infographics/regeneration/hardness.png"
+    },
+    {
+      "term": "Liberica",
+      "id": "d3228e45-8a46-48f2-b3db-16c75d80eb65",
+      "infographic_url": "/infographics/regeneration/liberica.png"
+    },
+    {
+      "term": "Maragogipe",
+      "id": "ea5d62f5-2cfa-488c-9cd7-079adc11aba7",
+      "infographic_url": "/infographics/regeneration/maragogipe.png"
+    },
+    {
+      "term": "Nectar",
+      "id": "9ec3847b-949f-49bd-9dca-1a0103b4b3ff",
+      "infographic_url": "/infographics/regeneration/nectar.png"
+    },
+    {
+      "term": "Reduction",
+      "id": "d93fdf02-b1f9-445a-b9b8-b3f88ab04baa",
+      "infographic_url": "/infographics/regeneration/reduction.png"
+    },
+    {
+      "term": "Refreshment",
+      "id": "06f156bb-8cab-4cca-9ad1-64877d4a06df",
+      "infographic_url": "/infographics/regeneration/refreshment.png"
+    },
+    {
+      "term": "Tannin",
+      "id": "d7881f0a-a603-4a73-8d54-1bdfa2a74993",
+      "infographic_url": "/infographics/regeneration/tannin.png"
+    },
+    {
+      "term": "Viognier",
+      "id": "fe0bd981-e147-4262-b676-595c8d691b0a",
+      "infographic_url": "/infographics/regeneration/viognier.png"
+    },
+    {
+      "term": "Yabukita",
+      "id": "a34672dd-6856-43d0-afb9-adced6cb06ec",
+      "infographic_url": "/infographics/regeneration/yabukita.png"
+    },
+    {
+      "term": "Aguardiente",
+      "id": "3cf29250-6440-441e-959e-68205e553e8c",
+      "infographic_url": "/infographics/regeneration/aguardiente.png"
+    },
+    {
+      "term": "Arabica",
+      "id": "9409f760-8e8c-48b1-bbb8-236dae8c538d",
+      "infographic_url": "/infographics/regeneration/arabica.png"
+    },
+    {
+      "term": "Chiller",
+      "id": "7dcf58b4-3158-4e04-b5e3-488cf902f089",
+      "infographic_url": "/infographics/regeneration/chiller.png"
+    },
+    {
+      "term": "Coldpress",
+      "id": "5721b74d-6f12-4323-a1da-6e5167dfac13",
+      "infographic_url": "/infographics/regeneration/coldpress.png"
+    },
+    {
+      "term": "Degassing",
+      "id": "89b8746a-fa95-4b1e-b056-bab1e954a4dc",
+      "infographic_url": "/infographics/regeneration/degassing.png"
+    },
+    {
+      "term": "Desalination",
+      "id": "d48f9530-b61a-4799-9c1e-62972f6b6fa0",
+      "infographic_url": "/infographics/regeneration/desalination.png"
+    },
+    {
+      "term": "Ibu",
+      "id": "b9dc37d9-f047-49d2-ac7e-280d5597a5ec",
+      "infographic_url": "/infographics/regeneration/ibu.png"
+    },
+    {
+      "term": "Isomerization",
+      "id": "1f605415-df54-4bb8-978c-19f283231208",
+      "infographic_url": "/infographics/regeneration/isomerization.png"
+    },
+    {
+      "term": "Microfiltration",
+      "id": "9881edc5-0269-4de3-bc68-942166bfc88c",
+      "infographic_url": "/infographics/regeneration/microfiltration.png"
+    },
+    {
+      "term": "Remineralization",
+      "id": "a616c076-d532-458d-beb4-73f242b25407",
+      "infographic_url": "/infographics/regeneration/remineralization.png"
+    },
+    {
+      "term": "Teroldego",
+      "id": "279a7708-a1a4-4a50-b7b5-f5575b6ba0be",
+      "infographic_url": "/infographics/regeneration/teroldego.png"
+    },
+    {
+      "term": "Bobal",
+      "id": "7dd59891-e1c9-4f5f-8dae-799c52a29b04",
+      "infographic_url": "/infographics/regeneration/bobal.png"
+    }
+  ],
+  "failed": [],
+  "db_patch_failed": [],
+  "finished_at": "2026-04-03T01:42:04.017Z"
+}

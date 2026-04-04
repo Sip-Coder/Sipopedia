@@ -1,0 +1,79 @@
+[
+  {
+    "batch": 1,
+    "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_01.csv",
+    "count": 50,
+    "start_rank": 1,
+    "end_rank": 50
+  },
+  {
+    "batch": 2,
+    "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_02.csv",
+    "count": 50,
+    "start_rank": 51,
+    "end_rank": 100
+  },
+  {
+    "batch": 3,
+    "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_03.csv",
+    "count": 50,
+    "start_rank": 101,
+    "end_rank": 150
+  },
+  {
+    "batch": 4,
+    "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_04.csv",
+    "count": 50,
+    "start_rank": 151,
+    "end_rank": 200
+  },
+  {
+    "batch": 5,
+    "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_05.csv",
+    "count": 50,
+    "start_rank": 201,
+    "end_rank": 250
+  },
+  {
+    "batch": 6,
+    "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_06.csv",
+    "count": 50,
+    "start_rank": 251,
+    "end_rank": 300
+  },
+  {
+    "batch": 7,
+    "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_07.csv",
+    "count": 50,
+    "start_rank": 301,
+    "end_rank": 350
+  },
+  {
+    "batch": 8,
+    "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_08.csv",
+    "count": 50,
+    "start_rank": 351,
+    "end_rank": 400
+  },
+  {
+    "batch": 9,
+    "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_09.csv",
+    "count": 50,
+    "start_rank": 401,
+    "end_rank": 450
+  },
+  {
+    "batch": 10,
+    "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_10.csv",
+    "count": 50,
+    "start_rank": 451,
+    "end_rank": 500
+  },
+  {
+    "batch": 11,
+    "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_11.csv",
+    "count": 31,
+    "start_rank": 501,
+    "end_rank": 531
+  }
+]

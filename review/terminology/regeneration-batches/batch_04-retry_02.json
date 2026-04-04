@@ -1,0 +1,90 @@
+{
+  "started_at": "2026-04-04T04:49:23.090Z",
+  "source_status": "batch_04-status.json",
+  "target_terms": 16,
+  "success": [
+    {
+      "term": "Stripping",
+      "id": "34ee0bf1-745d-46fa-9565-935430cb98ba",
+      "infographic_url": "/infographics/regeneration/stripping.png"
+    },
+    {
+      "term": "Cabernet",
+      "id": "bd4e6f14-63be-43c0-a2a9-af319f4a512c",
+      "infographic_url": "/infographics/regeneration/cabernet.png"
+    },
+    {
+      "term": "Chemex",
+      "id": "e4021e73-418c-40d0-b2bb-e30b57fd693b",
+      "infographic_url": "/infographics/regeneration/chemex.png"
+    },
+    {
+      "term": "Flavoring",
+      "id": "f871f2a2-b668-4a4f-a051-d01e04e6fbe3",
+      "infographic_url": "/infographics/regeneration/flavoring.png"
+    },
+    {
+      "term": "Headspace",
+      "id": "7461ab2d-edd5-49bf-9ea3-01c8487584a8",
+      "infographic_url": "/infographics/regeneration/headspace.png"
+    },
+    {
+      "term": "Mucilage",
+      "id": "07211012-0461-4632-8d38-d0101a350f2f",
+      "infographic_url": "/infographics/regeneration/mucilage.png"
+    },
+    {
+      "term": "Muscatel",
+      "id": "843aa60f-fa9a-42c2-86f1-6df1781acb4b",
+      "infographic_url": "/infographics/regeneration/muscatel.png"
+    },
+    {
+      "term": "Sodium",
+      "id": "569dc1a3-9a7f-4608-b6af-fb79dec75e30",
+      "infographic_url": "/infographics/regeneration/sodium.png"
+    },
+    {
+      "term": "Steaming",
+      "id": "b1ade4f8-8d76-4459-9933-d54fdd2f7bbb",
+      "infographic_url": "/infographics/regeneration/steaming.png"
+    },
+    {
+      "term": "Alkalinity",
+      "id": "9e606387-4196-431e-b18e-0bfe8d3ab45f",
+      "infographic_url": "/infographics/regeneration/alkalinity.png"
+    },
+    {
+      "term": "Assemblage",
+      "id": "0185bb56-a058-499d-bda7-c4bf825f9de7",
+      "infographic_url": "/infographics/regeneration/assemblage.png"
+    },
+    {
+      "term": "Catechin",
+      "id": "13cd6006-e518-4d6f-9e0c-b08debb60c6a",
+      "infographic_url": "/infographics/regeneration/catechin.png"
+    },
+    {
+      "term": "Dunder",
+      "id": "19a65831-e511-455a-975a-49797569ab47",
+      "infographic_url": "/infographics/regeneration/dunder.png"
+    },
+    {
+      "term": "Lovibond",
+      "id": "b9108b7c-a4e9-4985-a215-df3251fd8411",
+      "infographic_url": "/infographics/regeneration/lovibond.png"
+    },
+    {
+      "term": "Oxidative",
+      "id": "072e113b-6ea1-430d-8383-7c5a88f9c077",
+      "infographic_url": "/infographics/regeneration/oxidative.png"
+    },
+    {
+      "term": "Congeners",
+      "id": "d69eecfb-819b-4512-8d16-f7d82e129db4",
+      "infographic_url": "/infographics/regeneration/congeners.png"
+    }
+  ],
+  "failed": [],
+  "db_patch_failed": [],
+  "finished_at": "2026-04-04T04:58:43.755Z"
+}

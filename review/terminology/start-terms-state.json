@@ -1,0 +1,33 @@
+{
+  "run_index": 47,
+  "updated_at": "2026-04-04T08:38:48.900Z",
+  "last_letters": "EFGHIJKL",
+  "last_beverage_types": [
+    "energy-drinks",
+    "other",
+    "wine",
+    "beer",
+    "spirits",
+    "coffee",
+    "tea",
+    "water",
+    "sake",
+    "kombucha",
+    "juice",
+    "milk"
+  ],
+  "last_source_mix": {
+    "energy-drinks": 2,
+    "other": 2,
+    "wine": 2,
+    "beer": 2,
+    "spirits": 2,
+    "coffee": 2,
+    "tea": 2,
+    "water": 2,
+    "sake": 2,
+    "kombucha": 2,
+    "juice": 2,
+    "milk": 2
+  }
+}

@@ -1,6 +1,13 @@
-# Cron Job Operations Guide
+# Legacy Cron Job Operations Guide
 
-You do **not** need your computer on.
+## Status
+- This document describes the retired legacy cron pipeline.
+- Active terminology generation now uses the Start Terms workflow:
+  - `npm run terms:audit`
+  - `npm run terms:start`
+  - `npm run terms:loop`
+
+You do **not** need your computer on for the legacy cron path.
 
 Because this is running in **Supabase** (`pg_cron` + Edge Function), it runs in the cloud:
 

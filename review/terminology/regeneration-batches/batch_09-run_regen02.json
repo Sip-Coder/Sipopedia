@@ -1,0 +1,359 @@
+{
+  "started_at": "2026-04-04T15:48:06.637Z",
+  "batch": "09",
+  "total_terms": 50,
+  "success": [
+    {
+      "ok": true,
+      "term": "Roastery",
+      "id": "59f98260-692f-48f0-909c-5bd9a518639e",
+      "infographic_url": "/infographics/regeneration%2002/roastery.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\roastery.png"
+    },
+    {
+      "ok": true,
+      "term": "Biodynamic",
+      "id": "bbbb5e9a-4390-47a1-9f6e-120992cb85b7",
+      "infographic_url": "/infographics/regeneration%2002/biodynamic.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\biodynamic.png"
+    },
+    {
+      "ok": true,
+      "term": "Iron",
+      "id": "180f86a2-56b5-4756-b6f2-1333b55e865c",
+      "infographic_url": "/infographics/regeneration%2002/iron.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\iron.png"
+    },
+    {
+      "ok": true,
+      "term": "Lactobacillus",
+      "id": "9c284462-be43-48ee-b472-a0e1e3b14e42",
+      "infographic_url": "/infographics/regeneration%2002/lactobacillus.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\lactobacillus.png"
+    },
+    {
+      "ok": true,
+      "term": "Dextrin",
+      "id": "982813e5-b92b-4db7-a70f-dd67df660504",
+      "infographic_url": "/infographics/regeneration%2002/dextrin.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\dextrin.png"
+    },
+    {
+      "ok": true,
+      "term": "Wort",
+      "id": "bc611816-ee30-48ee-b543-1324789b4c4e",
+      "infographic_url": "/infographics/regeneration%2002/wort.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\wort.png"
+    },
+    {
+      "ok": true,
+      "term": "Lipolysis",
+      "id": "89a36887-a81a-4dd9-bff9-efb7bb278371",
+      "infographic_url": "/infographics/regeneration%2002/lipolysis.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\lipolysis.png"
+    },
+    {
+      "ok": true,
+      "term": "Mouthfeel",
+      "id": "ae8c3c00-f675-49a2-88ae-c51f04bd5a0c",
+      "infographic_url": "/infographics/regeneration%2002/mouthfeel.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\mouthfeel.png"
+    },
+    {
+      "ok": true,
+      "term": "Membrane",
+      "id": "34225270-8ec4-42b4-81d1-25e9f37506e3",
+      "infographic_url": "/infographics/regeneration%2002/membrane.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\membrane.png"
+    },
+    {
+      "ok": true,
+      "term": "Rondinella",
+      "id": "d5592395-012f-4c2a-8d7d-f7acf4700bca",
+      "infographic_url": "/infographics/regeneration%2002/rondinella.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\rondinella.png"
+    },
+    {
+      "ok": true,
+      "term": "Ethanol",
+      "id": "575c08ab-878c-4dec-8545-779691648109",
+      "infographic_url": "/infographics/regeneration%2002/ethanol.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\ethanol.png"
+    },
+    {
+      "ok": true,
+      "term": "Caseinate",
+      "id": "41adcdca-6065-494b-9ba8-0449081242c0",
+      "infographic_url": "/infographics/regeneration%2002/caseinate.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\caseinate.png"
+    },
+    {
+      "ok": true,
+      "term": "Lactic",
+      "id": "d50dfbca-1ed1-4d52-8695-781f3d396c6d",
+      "infographic_url": "/infographics/regeneration%2002/lactic.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\lactic.png"
+    },
+    {
+      "ok": true,
+      "term": "Runoff",
+      "id": "8027ff43-ba27-42ac-bc41-63d6356ebf39",
+      "infographic_url": "/infographics/regeneration%2002/runoff.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\runoff.png"
+    },
+    {
+      "ok": true,
+      "term": "Assam",
+      "id": "9420e6e9-6cbf-4da1-81bb-ed10b68fcf08",
+      "infographic_url": "/infographics/regeneration%2002/assam.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\assam.png"
+    },
+    {
+      "ok": true,
+      "term": "Grappa",
+      "id": "22d03cf0-362d-4f5c-b5a0-2387d11be422",
+      "infographic_url": "/infographics/regeneration%2002/grappa.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\grappa.png"
+    },
+    {
+      "ok": true,
+      "term": "Liquor",
+      "id": "f5b604d4-8167-4a4b-ab0a-38ceb7704a51",
+      "infographic_url": "/infographics/regeneration%2002/liquor.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\liquor.png"
+    },
+    {
+      "ok": true,
+      "term": "Viscosity",
+      "id": "478e76e7-94cc-41d1-8a4b-0ebba4e61864",
+      "infographic_url": "/infographics/regeneration%2002/viscosity.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\viscosity.png"
+    },
+    {
+      "ok": true,
+      "term": "Yield",
+      "id": "bfcb5c26-3583-4bab-860b-adb06797d720",
+      "infographic_url": "/infographics/regeneration%2002/yield.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\yield.png"
+    },
+    {
+      "ok": true,
+      "term": "Bovine",
+      "id": "3910ecc1-65d9-437d-953b-c0989612f1fd",
+      "infographic_url": "/infographics/regeneration%2002/bovine.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\bovine.png"
+    },
+    {
+      "ok": true,
+      "term": "Flush",
+      "id": "b8225c3b-eab3-443c-80bc-55201b434f87",
+      "infographic_url": "/infographics/regeneration%2002/flush.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\flush.png"
+    },
+    {
+      "ok": true,
+      "term": "Mastitis",
+      "id": "5f1585bd-6091-451f-a21f-359df1196d76",
+      "infographic_url": "/infographics/regeneration%2002/mastitis.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\mastitis.png"
+    },
+    {
+      "ok": true,
+      "term": "Roast",
+      "id": "409e3920-507e-45b4-badd-7299477e1388",
+      "infographic_url": "/infographics/regeneration%2002/roast.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\roast.png"
+    },
+    {
+      "ok": true,
+      "term": "Proteolysis",
+      "id": "796ee1bd-a048-44e8-8f72-7815dfdab94c",
+      "infographic_url": "/infographics/regeneration%2002/proteolysis.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\proteolysis.png"
+    },
+    {
+      "ok": true,
+      "term": "Amylase",
+      "id": "903484c5-3f42-4804-9ca0-b903f00acb1d",
+      "infographic_url": "/infographics/regeneration%2002/amylase.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\amylase.png"
+    },
+    {
+      "ok": true,
+      "term": "Aquavit",
+      "id": "50e67368-6e2c-4656-85d3-77cd39e32a11",
+      "infographic_url": "/infographics/regeneration%2002/aquavit.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\aquavit.png"
+    },
+    {
+      "ok": true,
+      "term": "Silica",
+      "id": "2f03d590-0111-4c0b-9bfa-fc6471f6006a",
+      "infographic_url": "/infographics/regeneration%2002/silica.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\silica.png"
+    },
+    {
+      "ok": true,
+      "term": "Ctc",
+      "id": "bbd25ba1-644d-4d2d-aaba-8c26c4b55110",
+      "infographic_url": "/infographics/regeneration%2002/ctc.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\ctc.png"
+    },
+    {
+      "ok": true,
+      "term": "Recharge",
+      "id": "c5ca7806-f489-4b43-8bca-562a173010be",
+      "infographic_url": "/infographics/regeneration%2002/recharge.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\recharge.png"
+    },
+    {
+      "ok": true,
+      "term": "Barbera",
+      "id": "3710fd57-99ac-4257-bc62-6e2df0548d90",
+      "infographic_url": "/infographics/regeneration%2002/barbera.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\barbera.png"
+    },
+    {
+      "ok": true,
+      "term": "Simcoe",
+      "id": "60c6058b-5c42-4ed5-9497-1ae4bf713063",
+      "infographic_url": "/infographics/regeneration%2002/simcoe.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\simcoe.png"
+    },
+    {
+      "ok": true,
+      "term": "Uht",
+      "id": "aa9f3982-83af-4c31-9ff4-a5e0810273c0",
+      "infographic_url": "/infographics/regeneration%2002/uht.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\uht.png"
+    },
+    {
+      "ok": true,
+      "term": "Pilsner",
+      "id": "f891a66c-e9b4-44d0-9ab4-11d03117015b",
+      "infographic_url": "/infographics/regeneration%2002/pilsner.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\pilsner.png"
+    },
+    {
+      "ok": true,
+      "term": "Potstill",
+      "id": "beb68cfe-f692-4db1-9e3a-85565622e5f0",
+      "infographic_url": "/infographics/regeneration%2002/potstill.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\potstill.png"
+    },
+    {
+      "ok": true,
+      "term": "Manganese",
+      "id": "45f391df-f1af-4fa3-89a1-c69feadb3679",
+      "infographic_url": "/infographics/regeneration%2002/manganese.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\manganese.png"
+    },
+    {
+      "ok": true,
+      "term": "Mourvedre",
+      "id": "a13fa4f6-5f91-4c4e-8c71-80adbd3283d1",
+      "infographic_url": "/infographics/regeneration%2002/mourvedre.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\mourvedre.png"
+    },
+    {
+      "ok": true,
+      "term": "Plucking",
+      "id": "ccc3c703-f68b-4efc-9321-3e8b99989ee2",
+      "infographic_url": "/infographics/regeneration%2002/plucking.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\plucking.png"
+    },
+    {
+      "ok": true,
+      "term": "Porter",
+      "id": "0d966cf9-c33e-4710-b8a6-ed72d83930a4",
+      "infographic_url": "/infographics/regeneration%2002/porter.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\porter.png"
+    },
+    {
+      "ok": true,
+      "term": "Gyokuro",
+      "id": "81d74eb3-7a26-45d8-8943-d934b9d9228f",
+      "infographic_url": "/infographics/regeneration%2002/gyokuro.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\gyokuro.png"
+    },
+    {
+      "ok": true,
+      "term": "Hefeweizen",
+      "id": "3b6439c3-aec1-4a57-97e1-efdc6a8096a8",
+      "infographic_url": "/infographics/regeneration%2002/hefeweizen.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\hefeweizen.png"
+    },
+    {
+      "ok": true,
+      "term": "Ovine",
+      "id": "60d67a97-f7b5-4847-953b-a1b875fcba11",
+      "infographic_url": "/infographics/regeneration%2002/ovine.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\ovine.png"
+    },
+    {
+      "ok": true,
+      "term": "Washback",
+      "id": "71f52511-8520-4e47-8e55-482b77db085b",
+      "infographic_url": "/infographics/regeneration%2002/washback.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\washback.png"
+    },
+    {
+      "ok": true,
+      "term": "Puerh",
+      "id": "6bfb7ff4-ebb9-4ceb-a2c1-19dfca6a7a24",
+      "infographic_url": "/infographics/regeneration%2002/puerh.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\puerh.png"
+    },
+    {
+      "ok": true,
+      "term": "Americano",
+      "id": "fcca364b-1fbc-43de-9f98-2e5b3927f55f",
+      "infographic_url": "/infographics/regeneration%2002/americano.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\americano.png"
+    },
+    {
+      "ok": true,
+      "term": "Chinook",
+      "id": "df8ed2c0-1d75-4da0-8a1a-0a07b1983ac8",
+      "infographic_url": "/infographics/regeneration%2002/chinook.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\chinook.png"
+    },
+    {
+      "ok": true,
+      "term": "Hue",
+      "id": "adca711b-365e-4d3c-b965-eff999707766",
+      "infographic_url": "/infographics/regeneration%2002/hue.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\hue.png"
+    },
+    {
+      "ok": true,
+      "term": "Lauter",
+      "id": "e3af873c-b28d-4957-8502-9a57d16fbd52",
+      "infographic_url": "/infographics/regeneration%2002/lauter.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\lauter.png"
+    },
+    {
+      "ok": true,
+      "term": "Veraison",
+      "id": "c5af2a44-ddfd-45fe-849f-34e06167dd8d",
+      "infographic_url": "/infographics/regeneration%2002/veraison.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\veraison.png"
+    },
+    {
+      "ok": true,
+      "term": "Conditioning",
+      "id": "1a3e1323-061c-446f-9c98-9acc1349a3d6",
+      "infographic_url": "/infographics/regeneration%2002/conditioning.png",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\conditioning.png"
+    }
+  ],
+  "failed": [
+    {
+      "ok": false,
+      "term": "Espresso",
+      "stage": "fetch_candidate",
+      "error": "[]"
+    }
+  ],
+  "finished_at": "2026-04-04T16:02:04.989Z"
+}

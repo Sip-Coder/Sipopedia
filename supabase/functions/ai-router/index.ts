@@ -1,3 +1,19 @@
+import {
+  buildDefaultOperationsInput,
+  runOperationsOrchestrator
+} from "../../../server/hyperagents/operations/operationsOrchestrator.ts";
+import type {
+  OperationsEvaluationInput,
+  OperationsEvaluationOutput
+} from "../../../server/hyperagents/operations/types.ts";
+import { TerminologyMemoryStore } from "../../../server/hyperagents/terminology/terminologyMemoryStore.ts";
+import { TerminologyOrchestrator } from "../../../server/hyperagents/terminology/terminologyOrchestrator.ts";
+import type {
+  BeverageType,
+  TerminologyEntry,
+  TerminologyRunBatchInput
+} from "../../../server/hyperagents/terminology/types.ts";
+
 type Provider = "openai" | "anthropic" | "google";
 
 type RouterRequest = {
@@ -13,13 +29,17 @@ type RouterResponse = {
   text: string;
 };
 
+type OperationsRunRequest = Partial<OperationsEvaluationInput>;
+type TerminologyRunRequest = Partial<TerminologyRunBatchInput>;
+
 const MAX_PROMPT_LENGTH = 4_000;
 const MAX_SYSTEM_LENGTH = 1_200;
+const FETCH_TIMEOUT_MS = 15_000;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS"
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
 };
 
 function json(status: number, body: Record<string, unknown>) {
@@ -27,6 +47,10 @@ function json(status: number, body: Record<string, unknown>) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" }
   });
+}
+
+async function fetchWithTimeout(input: string, init: RequestInit): Promise<Response> {
+  return await fetch(input, { ...init, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
 }
 
 function extractOpenAiText(data: any): string {
@@ -65,53 +89,219 @@ function extractGoogleText(data: any): string {
   return parts.map((part: any) => part?.text).filter(Boolean).join("\n");
 }
 
-function decodeBase64Url(value: string): string | null {
-  try {
-    const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
-    return atob(padded);
-  } catch {
-    return null;
-  }
-}
-
-function getJwtClaims(request: Request): Record<string, unknown> | null {
+function getBearerToken(request: Request): string | null {
   const auth = request.headers.get("authorization");
   if (!auth?.toLowerCase().startsWith("bearer ")) {
     return null;
   }
   const token = auth.slice(7).trim();
-  const parts = token.split(".");
-  if (parts.length !== 3) {
-    return null;
+  return token.length > 0 ? token : null;
+}
+
+async function verifyAuthenticatedUser(request: Request): Promise<boolean> {
+  const token = getBearerToken(request);
+  if (!token) {
+    return false;
   }
-  const payload = decodeBase64Url(parts[1]);
-  if (!payload) {
-    return null;
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim() ?? "";
+  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")?.trim() ?? "";
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("ai-router auth verification is not configured.");
+    return false;
   }
 
   try {
-    const parsed = JSON.parse(payload) as unknown;
-    if (!parsed || typeof parsed !== "object") {
-      return null;
+    const response = await fetchWithTimeout(`${supabaseUrl}/auth/v1/user`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        apikey: supabaseAnonKey
+      }
+    });
+    if (!response.ok) {
+      return false;
     }
-    return parsed as Record<string, unknown>;
+    const data = (await response.json()) as { id?: string };
+    return typeof data.id === "string" && data.id.length > 0;
   } catch {
-    return null;
+    return false;
   }
 }
 
-function getAuthenticatedUserId(request: Request): string | null {
-  const claims = getJwtClaims(request);
-  if (!claims) {
+function getSupabaseServiceConfig(): { supabaseUrl: string; serviceRoleKey: string } {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim() ?? "";
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim() ?? "";
+  return { supabaseUrl, serviceRoleKey };
+}
+
+function isOperationsRunPath(pathname: string): boolean {
+  return pathname.endsWith("/api/hyper/operations/runEvaluation");
+}
+
+function isOperationsDashboardPath(pathname: string): boolean {
+  return pathname.endsWith("/api/hyper/operations/dashboard");
+}
+
+function isTerminologyRunBatchPath(pathname: string): boolean {
+  return pathname.endsWith("/api/hyper/terminology/runBatch");
+}
+
+function isTerminologyStatusPath(pathname: string): boolean {
+  return pathname.endsWith("/api/hyper/terminology/status");
+}
+
+function isBeverageType(value: unknown): value is BeverageType {
+  return (
+    value === "wine" ||
+    value === "beer" ||
+    value === "spirits" ||
+    value === "coffee" ||
+    value === "tea" ||
+    value === "water" ||
+    value === "fermented_beverages"
+  );
+}
+
+function parseLetter(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return null;
+  return trimmed.charAt(0).toUpperCase();
+}
+
+function parseBatchSize(value: unknown): number | null {
+  if (typeof value !== "number" || Number.isNaN(value)) return null;
+  const rounded = Math.floor(value);
+  if (rounded < 1 || rounded > 100) return null;
+  return rounded;
+}
+
+function parseExternalEntries(value: unknown): TerminologyEntry[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const parsed: TerminologyEntry[] = [];
+
+  for (const item of value) {
+    if (!item || typeof item !== "object") continue;
+    const entry = item as Record<string, unknown>;
+    if (typeof entry.term !== "string" || entry.term.trim().length === 0) continue;
+    if (typeof entry.definition !== "string" || entry.definition.trim().length === 0) continue;
+    if (typeof entry.category !== "string" || entry.category.trim().length === 0) continue;
+    if (typeof entry.exam_relevance !== "string" || entry.exam_relevance.trim().length === 0) continue;
+    if (typeof entry.sensory_context !== "string" || entry.sensory_context.trim().length === 0) continue;
+    if (typeof entry.production_context !== "string" || entry.production_context.trim().length === 0) continue;
+    if (!Array.isArray(entry.related_terms) || !Array.isArray(entry.mla_citations)) continue;
+
+    parsed.push({
+      term: entry.term,
+      definition: entry.definition,
+      category: entry.category,
+      related_terms: entry.related_terms.filter((v): v is string => typeof v === "string"),
+      exam_relevance: entry.exam_relevance,
+      sensory_context: entry.sensory_context,
+      production_context: entry.production_context,
+      mla_citations: entry.mla_citations.filter((v): v is string => typeof v === "string")
+    });
+  }
+
+  return parsed;
+}
+
+function buildTerminologyInput(body: TerminologyRunRequest | null | undefined): TerminologyRunBatchInput | null {
+  const letter = parseLetter(body?.letter);
+  const batchSize = parseBatchSize(body?.batchSize);
+  if (!letter || !batchSize || !isBeverageType(body?.beverageType)) {
     return null;
   }
-  const role = typeof claims.role === "string" ? claims.role : "";
-  const sub = typeof claims.sub === "string" ? claims.sub : "";
-  if (role !== "authenticated" || sub.length === 0) {
+
+  return {
+    letter,
+    beverageType: body.beverageType,
+    batchSize,
+    scoreThreshold: typeof body.scoreThreshold === "number" ? body.scoreThreshold : undefined,
+    externalEntries: parseExternalEntries(body?.externalEntries)
+  };
+}
+
+function createTerminologyOrchestrator(): TerminologyOrchestrator {
+  const { supabaseUrl, serviceRoleKey } = getSupabaseServiceConfig();
+  const memoryStore = new TerminologyMemoryStore({ supabaseUrl, serviceRoleKey, fetchImpl: fetch });
+  return new TerminologyOrchestrator(memoryStore);
+}
+
+function buildOperationsInput(body: OperationsRunRequest | null | undefined): OperationsEvaluationInput {
+  const defaults = buildDefaultOperationsInput();
+
+  return {
+    articleMetrics: Array.isArray(body?.articleMetrics) ? body.articleMetrics : defaults.articleMetrics,
+    terminologyMetrics: Array.isArray(body?.terminologyMetrics)
+      ? body.terminologyMetrics
+      : defaults.terminologyMetrics,
+    pricingMetrics: Array.isArray(body?.pricingMetrics) ? body.pricingMetrics : defaults.pricingMetrics,
+    funnelMetrics: Array.isArray(body?.funnelMetrics) ? body.funnelMetrics : defaults.funnelMetrics,
+    sponsorMetrics: Array.isArray(body?.sponsorMetrics) ? body.sponsorMetrics : defaults.sponsorMetrics
+  };
+}
+
+async function persistOperationsLearningMemory(payload: {
+  input: OperationsEvaluationInput;
+  output: OperationsEvaluationOutput;
+}): Promise<void> {
+  const { supabaseUrl, serviceRoleKey } = getSupabaseServiceConfig();
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error("Missing Supabase service-role config for operations persistence.");
+  }
+
+  const response = await fetch(`${supabaseUrl}/rest/v1/operations_learning_memory`, {
+    method: "POST",
+    headers: {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify([
+      {
+        evaluation_payload: payload.input,
+        pricing_recommendations: payload.output.pricingRecommendations,
+        content_roi_rankings: payload.output.contentRoiRankings,
+        funnel_bottleneck_detection: payload.output.funnelBottleneckDetection,
+        dashboard_payload: payload.output.dashboard
+      }
+    ])
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to persist operations memory (${response.status}).`);
+  }
+}
+
+async function fetchLatestDashboardFromMemory(): Promise<Record<string, unknown> | null> {
+  const { supabaseUrl, serviceRoleKey } = getSupabaseServiceConfig();
+  if (!supabaseUrl || !serviceRoleKey) {
     return null;
   }
-  return sub;
+
+  const response = await fetch(
+    `${supabaseUrl}/rest/v1/operations_learning_memory?select=dashboard_payload,created_at&order=created_at.desc&limit=1`,
+    {
+      method: "GET",
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`
+      }
+    }
+  );
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const rows = (await response.json()) as Array<{ dashboard_payload?: Record<string, unknown> }>;
+  const first = rows[0];
+  if (!first?.dashboard_payload || typeof first.dashboard_payload !== "object") {
+    return null;
+  }
+  return first.dashboard_payload;
 }
 
 async function callOpenAi(prompt: string, system: string, maxTokens: number): Promise<RouterResponse> {
@@ -121,7 +311,7 @@ async function callOpenAi(prompt: string, system: string, maxTokens: number): Pr
   }
 
   const model = Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
-  const response = await fetch("https://api.openai.com/v1/responses", {
+  const response = await fetchWithTimeout("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -158,7 +348,7 @@ async function callAnthropic(prompt: string, system: string, maxTokens: number):
   }
 
   const model = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-3-5-sonnet-latest";
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const response = await fetchWithTimeout("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
       "x-api-key": apiKey,
@@ -188,17 +378,17 @@ async function callGoogle(prompt: string, system: string): Promise<RouterRespons
   }
 
   const model = Deno.env.get("GOOGLE_MODEL") ?? "gemini-2.0-flash";
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
-        contents: [{ parts: [{ text: prompt }] }]
-      })
-    }
-  );
+  const response = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": apiKey
+    },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ parts: [{ text: prompt }] }]
+    })
+  });
 
   if (!response.ok) {
     throw new Error(`Google request failed (${response.status}).`);
@@ -209,17 +399,106 @@ async function callGoogle(prompt: string, system: string): Promise<RouterRespons
 }
 
 Deno.serve(async (request) => {
+  const pathname = new URL(request.url).pathname;
+
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  if (request.method !== "POST") {
-    return json(405, { error: "Use POST only." });
-  }
-
   try {
-    if (!getAuthenticatedUserId(request)) {
+    if (!(await verifyAuthenticatedUser(request))) {
       return json(401, { error: "Sign in is required to use ai-router." });
+    }
+
+    if (isOperationsRunPath(pathname)) {
+      if (request.method !== "POST") {
+        return json(405, { error: "Use POST only." });
+      }
+      const body = (await request.json().catch(() => ({}))) as OperationsRunRequest;
+      const input = buildOperationsInput(body);
+      const output = await runOperationsOrchestrator(input, persistOperationsLearningMemory);
+
+      return json(200, {
+        pricingRecommendations: output.pricingRecommendations,
+        contentRoiRankings: output.contentRoiRankings,
+        funnelBottleneckDetection: output.funnelBottleneckDetection,
+        sponsorFitScores: output.sponsorFitScores,
+        dashboard: output.dashboard,
+        generatedAt: output.generatedAt
+      });
+    }
+
+    if (isOperationsDashboardPath(pathname)) {
+      if (request.method !== "GET") {
+        return json(405, { error: "Use GET only." });
+      }
+
+      const latestDashboard = await fetchLatestDashboardFromMemory();
+      if (!latestDashboard) {
+        const bootstrapOutput = await runOperationsOrchestrator(
+          buildDefaultOperationsInput(),
+          persistOperationsLearningMemory
+        );
+        return json(200, {
+          membershipConversionTrends: bootstrapOutput.dashboard.membershipConversionTrends,
+          topPerformingContentCategories: bootstrapOutput.dashboard.topPerformingContentCategories,
+          engagementScoreIndex: bootstrapOutput.dashboard.engagementScoreIndex,
+          generatedAt: bootstrapOutput.dashboard.generatedAt
+        });
+      }
+
+      return json(200, {
+        membershipConversionTrends:
+          (latestDashboard.membershipConversionTrends as unknown[]) ?? [],
+        topPerformingContentCategories:
+          (latestDashboard.topPerformingContentCategories as unknown[]) ?? [],
+        engagementScoreIndex: latestDashboard.engagementScoreIndex ?? 0,
+        generatedAt: latestDashboard.generatedAt ?? new Date().toISOString()
+      });
+    }
+
+    if (isTerminologyRunBatchPath(pathname)) {
+      if (request.method !== "POST") {
+        return json(405, { error: "Use POST only." });
+      }
+
+      const body = (await request.json().catch(() => ({}))) as TerminologyRunRequest;
+      const input = buildTerminologyInput(body);
+      if (!input) {
+        return json(400, {
+          error:
+            "Invalid payload. Expected letter, beverageType, and batchSize with valid values."
+        });
+      }
+
+      const orchestrator = createTerminologyOrchestrator();
+      const output = await orchestrator.runBatch(input);
+      return json(200, {
+        batchId: output.batchId,
+        generatedAt: output.generatedAt,
+        generatedTerms: output.generatedTerms,
+        evaluationMetrics: output.evaluationMetrics,
+        improvementDeltas: output.improvementDeltas
+      });
+    }
+
+    if (isTerminologyStatusPath(pathname)) {
+      if (request.method !== "GET") {
+        return json(405, { error: "Use GET only." });
+      }
+
+      const orchestrator = createTerminologyOrchestrator();
+      const status = await orchestrator.getStatus(50);
+      return json(200, {
+        batchHistory: status.batchHistory,
+        averageScoreTrend: status.averageScoreTrend,
+        duplicateReductionTrend: status.duplicateReductionTrend,
+        citationSuccessTrend: status.citationSuccessTrend
+      });
+    }
+
+    if (request.method !== "POST") {
+      return json(405, { error: "Use POST only." });
     }
 
     const body = (await request.json()) as RouterRequest;
@@ -251,8 +530,8 @@ Deno.serve(async (request) => {
 
     return json(200, result);
   } catch (error: unknown) {
-    console.error("ai-router error", error);
-    const message = error instanceof Error ? error.message : "AI router request failed.";
-    return json(500, { error: message });
+    const requestId = crypto.randomUUID();
+    console.error("ai-router error", { requestId, error });
+    return json(500, { error: "Internal server error.", requestId });
   }
 });

@@ -1,0 +1,100 @@
+public/flavor-thumbs/by-descriptor/allspice.png
+public/flavor-thumbs/by-descriptor/almond.png
+public/flavor-thumbs/by-descriptor/andean-gooseberry.png
+public/flavor-thumbs/by-descriptor/angelica.png
+public/flavor-thumbs/by-descriptor/anise.png
+public/flavor-thumbs/by-descriptor/apple.png
+public/flavor-thumbs/by-descriptor/apricot.png
+public/flavor-thumbs/by-descriptor/aronia-berry.png
+public/flavor-thumbs/by-descriptor/ash.png
+public/flavor-thumbs/by-descriptor/asian-pear.png
+public/flavor-thumbs/by-descriptor/asparagus.png
+public/flavor-thumbs/by-descriptor/banana.png
+public/flavor-thumbs/by-descriptor/bay.png
+public/flavor-thumbs/by-descriptor/bay-leaf.png
+public/flavor-thumbs/by-descriptor/bergamot.png
+public/flavor-thumbs/by-descriptor/bilberry.png
+public/flavor-thumbs/by-descriptor/biscuit.png
+public/flavor-thumbs/by-descriptor/blackberry.png
+public/flavor-thumbs/by-descriptor/black-cherry.png
+public/flavor-thumbs/by-descriptor/black-currant.png
+public/flavor-thumbs/by-descriptor/black-pepper.png
+public/flavor-thumbs/by-descriptor/black-tea.png
+public/flavor-thumbs/by-descriptor/blueberry.png
+public/flavor-thumbs/by-descriptor/bourbon.png
+public/flavor-thumbs/by-descriptor/bread-crust.png
+public/flavor-thumbs/by-descriptor/brioche.png
+public/flavor-thumbs/by-descriptor/broth.png
+public/flavor-thumbs/by-descriptor/brownie.png
+public/flavor-thumbs/by-descriptor/brown-sugar.png
+public/flavor-thumbs/by-descriptor/bubblegum.png
+public/flavor-thumbs/by-descriptor/burnt-amber.png
+public/flavor-thumbs/by-descriptor/burnt-sugar.png
+public/flavor-thumbs/by-descriptor/burnt-toast.png
+public/flavor-thumbs/by-descriptor/butterscotch.png
+public/flavor-thumbs/by-descriptor/cacao.png
+public/flavor-thumbs/by-descriptor/cacao-nib.png
+public/flavor-thumbs/by-descriptor/campfire.png
+public/flavor-thumbs/by-descriptor/candied-orange.png
+public/flavor-thumbs/by-descriptor/cannabis.png
+public/flavor-thumbs/by-descriptor/caramel.png
+public/flavor-thumbs/by-descriptor/cardamom.png
+public/flavor-thumbs/by-descriptor/cassis.png
+public/flavor-thumbs/by-descriptor/cedar.png
+public/flavor-thumbs/by-descriptor/cereal.png
+public/flavor-thumbs/by-descriptor/chalk.png
+public/flavor-thumbs/by-descriptor/chamomile.png
+public/flavor-thumbs/by-descriptor/char.png
+public/flavor-thumbs/by-descriptor/cherry.png
+public/flavor-thumbs/by-descriptor/chestnut.png
+public/flavor-thumbs/by-descriptor/chile.png
+public/flavor-thumbs/by-descriptor/chokeberry.png
+public/flavor-thumbs/by-descriptor/cider-like.png
+public/flavor-thumbs/by-descriptor/cinnamon.png
+public/flavor-thumbs/by-descriptor/citron.png
+public/flavor-thumbs/by-descriptor/citrus-blossom.png
+public/flavor-thumbs/by-descriptor/citrus-peel.png
+public/flavor-thumbs/by-descriptor/cloudberry.png
+public/flavor-thumbs/by-descriptor/clove.png
+public/flavor-thumbs/by-descriptor/cocoa-nib.png
+public/flavor-thumbs/by-descriptor/coconut.png
+public/flavor-thumbs/by-descriptor/coffee.png
+public/flavor-thumbs/by-descriptor/coriander.png
+public/flavor-thumbs/by-descriptor/cornbread.png
+public/flavor-thumbs/by-descriptor/cornelian-cherry.png
+public/flavor-thumbs/by-descriptor/cracker.png
+public/flavor-thumbs/by-descriptor/cranberry.png
+public/flavor-thumbs/by-descriptor/currant.png
+public/flavor-thumbs/by-descriptor/cut-grass.png
+public/flavor-thumbs/by-descriptor/dark-chocolate.png
+public/flavor-thumbs/by-descriptor/date.png
+public/flavor-thumbs/by-descriptor/dill.png
+public/flavor-thumbs/by-descriptor/dried-apricot.png
+public/flavor-thumbs/by-descriptor/dried-date.png
+public/flavor-thumbs/by-descriptor/dried-fig.png
+public/flavor-thumbs/by-descriptor/edamame.png
+public/flavor-thumbs/by-descriptor/elderberry.png
+public/flavor-thumbs/by-descriptor/elderflower.png
+public/flavor-thumbs/by-descriptor/espresso.png
+public/flavor-thumbs/by-descriptor/eucalyptus.png
+public/flavor-thumbs/by-descriptor/feijoa.png
+public/flavor-thumbs/by-descriptor/fennel.png
+public/flavor-thumbs/by-descriptor/fig.png
+public/flavor-thumbs/by-descriptor/fig-jam.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 01.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 02.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 03.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 04.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 05.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 06.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 07.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 08.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 09.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 10.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 11.png
+public/flavor-thumbs/by-descriptor/Flavor Pic 12.png
+public/flavor-thumbs/by-descriptor/flint.png
+public/flavor-thumbs/by-descriptor/forest-floor.png
+public/flavor-thumbs/by-descriptor/fudge.png
+public/flavor-thumbs/by-descriptor/gardenia.png
+public/flavor-thumbs/by-descriptor/gentian.png

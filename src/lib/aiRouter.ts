@@ -18,31 +18,34 @@ type AskAiOutput = {
   text: string;
 };
 
+function clientSafeErrorFromStatus(status: number): string {
+  if (status === 400) {
+    return "Request was invalid. Please review your prompt and retry.";
+  }
+  if (status === 401) {
+    return "Sign in is required.";
+  }
+  if (status === 429) {
+    return "Rate limit reached. Please retry shortly.";
+  }
+  return "AI request failed. Please try again.";
+}
+
 async function normalizeFunctionError(error: unknown): Promise<string> {
   if (error instanceof FunctionsHttpError) {
     const response = error.context;
     try {
       const payload = await response.clone().json();
-      if (typeof payload?.error === "string" && payload.error.trim().length > 0) {
-        return payload.error.trim();
-      }
-      if (typeof payload?.message === "string" && payload.message.trim().length > 0) {
-        return payload.message.trim();
-      }
-    } catch {
-      // Fall through to text parse.
-    }
-
-    try {
-      const raw = (await response.clone().text()).trim();
-      if (raw.length > 0) {
-        return raw;
+      const payloadError = typeof payload?.error === "string" ? payload.error.trim() : "";
+      const payloadMessage = typeof payload?.message === "string" ? payload.message.trim() : "";
+      const combined = `${payloadError} ${payloadMessage}`.toLowerCase();
+      if (combined.includes("insufficient_quota")) {
+        return "insufficient_quota";
       }
     } catch {
-      // Ignore parse errors and return default below.
+      // Fall through to status-based message.
     }
-
-    return `Edge Function failed (${response.status}).`;
+    return clientSafeErrorFromStatus(response.status);
   }
 
   if (error instanceof FunctionsRelayError) {
@@ -53,11 +56,7 @@ async function normalizeFunctionError(error: unknown): Promise<string> {
     return "Network error calling ai-router. Check internet connection and retry.";
   }
 
-  if (error instanceof Error && error.message.trim().length > 0) {
-    return error.message;
-  }
-
-  return "Could not reach ai-router.";
+  return "Could not reach ai-router. Please try again.";
 }
 
 export async function askAi(input: AskAiInput): Promise<AskAiOutput> {

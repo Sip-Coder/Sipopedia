@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getTerminologyById,
   listTerminologyPage,
@@ -7,6 +7,7 @@ import {
   type TerminologySummary
 } from "../lib/terminology";
 import { supabase } from "../lib/supabase";
+import { safeHttpUrl } from "../lib/urlSafety";
 
 const buckets: TermBucket[] = ["ALL", "#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
 const pageSizeOptions = [
@@ -33,6 +34,69 @@ function shortMeaning(value: string) {
   return `${value.slice(0, 147)}...`;
 }
 
+function extractMlaTitle(citation: string): string | null {
+  const raw = citation.trim();
+  if (!raw) return null;
+
+  const quotedMatch = raw.match(/"([^"]+)"/);
+  if (quotedMatch?.[1]) {
+    return quotedMatch[1].trim();
+  }
+
+  const firstPeriod = raw.indexOf(".");
+  if (firstPeriod === -1) return null;
+  const afterAuthor = raw.slice(firstPeriod + 1).trim();
+  if (!afterAuthor) return null;
+
+  const secondPeriod = afterAuthor.indexOf(".");
+  const candidate = secondPeriod === -1 ? afterAuthor : afterAuthor.slice(0, secondPeriod);
+  const cleaned = candidate.trim().replace(/\s+/g, " ");
+  return cleaned.length > 0 ? cleaned : null;
+}
+
+function referenceLabel(sourceTitle: string, citation: string | undefined, index: number, total: number) {
+  const citationTitle = citation ? extractMlaTitle(citation) : null;
+  const title = citationTitle || sourceTitle.trim() || "Reference source";
+  return total > 1 ? `${title} (${index + 1})` : title;
+}
+
+function toTitleCaseTerm(value: string) {
+  return value
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) =>
+      word
+        .split("-")
+        .map((part) => {
+          if (!part) return part;
+          if (/^[A-Z]{2,4}$/.test(part)) return part;
+          return `${part.charAt(0).toUpperCase()}${part.slice(1).toLowerCase()}`;
+        })
+        .join("-")
+    )
+    .join(" ");
+}
+
+function buildInfographicSources(url: string | null) {
+  const original = String(url || "").trim();
+  if (!original) {
+    return { preferred: "", fallback: "" };
+  }
+  if (original.startsWith("/infographics/regeneration/")) {
+    return { preferred: original, fallback: original };
+  }
+  if (original.startsWith("/infographics/")) {
+    const filename = original.split("/").pop() || "";
+    if (filename) {
+      return {
+        preferred: `/infographics/regeneration/${filename}`,
+        fallback: original
+      };
+    }
+  }
+  return { preferred: original, fallback: original };
+}
+
 export function Terminology() {
   const [bucket, setBucket] = useState<TermBucket>("ALL");
   const [query, setQuery] = useState("");
@@ -48,6 +112,17 @@ export function Terminology() {
   const [detailError, setDetailError] = useState("");
   const [refreshTick, setRefreshTick] = useState(0);
   const [editorialProcessOpen, setEditorialProcessOpen] = useState(false);
+
+  const navigateSelectedTerm = useCallback(
+    (direction: 1 | -1) => {
+      if (!selectedTermId || rows.length === 0) return;
+      const currentIndex = rows.findIndex((row) => row.id === selectedTermId);
+      if (currentIndex === -1) return;
+      const nextIndex = (currentIndex + direction + rows.length) % rows.length;
+      setSelectedTermId(rows[nextIndex].id);
+    },
+    [rows, selectedTermId]
+  );
 
   useEffect(() => {
     let active = true;
@@ -83,12 +158,26 @@ export function Terminology() {
       if (event.key === "Escape") {
         setSelectedTermId(null);
         setEditorialProcessOpen(false);
+        return;
+      }
+
+      if (!selectedTermId) return;
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        navigateSelectedTerm(-1);
+        return;
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        navigateSelectedTerm(1);
       }
     };
 
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, []);
+  }, [navigateSelectedTerm, selectedTermId]);
 
   useEffect(() => {
     if (!selectedTermId) {
@@ -141,6 +230,7 @@ export function Terminology() {
   const topAllByLetter = topImportant && bucket === "ALL";
   const effectivePageSize = topAllByLetter ? 104 : topImportant ? 100 : Number(pageSizeMode);
   const pageCount = useMemo(() => Math.max(1, Math.ceil(total / effectivePageSize)), [effectivePageSize, total]);
+  const infographicSources = useMemo(() => buildInfographicSources(selectedTerm?.infographic_url ?? null), [selectedTerm?.infographic_url]);
 
   const handlePrevious = () => {
     setPage((value) => Math.max(0, value - 1));
@@ -181,7 +271,7 @@ export function Terminology() {
         <div className="section-header-copy">
           <h2>Terminology</h2>
           <p>
-            Book-sourced beverage definitions with full attribution, purchase links, practical guidance, references, examples, and related ideas.
+            Book-sourced beverage definitions with full attribution, practical guidance, references, examples, and citations.
             All Sipopedia entries are original editorial rewrites (no verbatim source excerpts).
             Sorted as # first, then A-Z.
           </p>
@@ -266,7 +356,7 @@ export function Terminology() {
         <div className="terminology-main">
           {renderPagination("terminology-pagination-top")}
 
-          <div className="terminology-list">
+                <div className="terminology-list">
             {loading ? <p>Loading terms...</p> : null}
             {error ? <p className="error">{error}</p> : null}
             {!loading && !error && rows.length === 0 ? <p>No terms found for this bucket and query.</p> : null}
@@ -274,7 +364,7 @@ export function Terminology() {
               ? rows.map((row) => (
                   <button key={row.id} className="term-row" onClick={() => setSelectedTermId(row.id)}>
                     <div>
-                      <h3>{row.term}</h3>
+                      <h3>{toTitleCaseTerm(row.term)}</h3>
                       <p>{shortMeaning(row.meaning)}</p>
                     </div>
                     <span className="term-row-tag">{row.sort_group}</span>
@@ -297,7 +387,7 @@ export function Terminology() {
                 <header className="term-modal-header">
                   <div>
                     <p className="lesson-chip">Term {selectedTerm.sort_group}</p>
-                    <h3>{selectedTerm.term}</h3>
+                    <h3>{toTitleCaseTerm(selectedTerm.term)}</h3>
                     <p>Updated: {formatDate(selectedTerm.updated_at)}</p>
                   </div>
                   <button className="btn btn-light" onClick={() => setSelectedTermId(null)}>
@@ -309,63 +399,51 @@ export function Terminology() {
                   <section>
                     <h4>Meaning</h4>
                     <p>{selectedTerm.meaning}</p>
-                    <h4>How to apply it</h4>
+                    <h4>How to apply in Beverage Study</h4>
                     <p>{selectedTerm.how_to_apply}</p>
-                    <h4>Examples</h4>
+                    <h4>Real-world Example</h4>
                     <ul>
                       {selectedTerm.examples.map((item) => (
                         <li key={`example-${item}`}>{item}</li>
                       ))}
                     </ul>
-                    <h4>Other ideas</h4>
-                    <ul>
-                      {selectedTerm.other_ideas.map((item) => (
-                        <li key={`idea-${item}`}>{item}</li>
-                      ))}
-                    </ul>
                   </section>
 
                   <aside>
-                    <h4>Book source</h4>
-                    <p>
-                      <strong>Title:</strong> {selectedTerm.source_title}
-                    </p>
+                    <h4>Authors</h4>
                     {selectedTerm.source_authors.length > 0 ? (
-                      <>
-                        <p>
-                          <strong>Authors:</strong>
-                        </p>
-                        <ul>
-                          {selectedTerm.source_authors.map((author) => (
-                            <li key={author}>{author}</li>
-                          ))}
-                        </ul>
-                      </>
+                      <ul>
+                        {selectedTerm.source_authors.map((author) => (
+                          <li key={author}>{author}</li>
+                        ))}
+                      </ul>
                     ) : (
                       <p className="hint">No source authors attached yet.</p>
                     )}
 
-                    <h4>Purchase links</h4>
-                    {selectedTerm.purchase_links.length > 0 ? (
-                      <>
-                        <ul>
-                          {selectedTerm.purchase_links.map((link) => (
-                            <li key={link}>
-                              <a href={link} target="_blank" rel="noreferrer">
-                                {link}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                        <p className="hint">As an Amazon Associate I earn from qualifying purchases.</p>
-                      </>
-                    ) : (
-                      <p className="hint">No purchase links attached yet.</p>
-                    )}
-
                     <h4>Infographic</h4>
                     {selectedTerm.infographic_url ? (
-                      <img className="term-infographic" src={selectedTerm.infographic_url} alt={selectedTerm.term} />
+                      <div className="term-infographic-wrap">
+                        <img
+                          className="term-infographic"
+                          src={infographicSources.preferred}
+                          alt={selectedTerm.term}
+                          onError={(event) => {
+                            const target = event.currentTarget;
+                            if (target.src.endsWith(infographicSources.fallback)) return;
+                            target.src = infographicSources.fallback;
+                          }}
+                        />
+                        <a
+                          className="btn btn-light term-infographic-download"
+                          href={infographicSources.preferred}
+                          download={`${selectedTerm.term.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-infographic.png`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Download Infographic
+                        </a>
+                      </div>
                     ) : (
                       <p className="hint">No infographic URL added yet.</p>
                     )}
@@ -374,13 +452,25 @@ export function Terminology() {
                     <h4>References</h4>
                     {selectedTerm.reference_links.length > 0 ? (
                       <ul>
-                        {selectedTerm.reference_links.map((link) => (
-                          <li key={link}>
-                            <a href={link} target="_blank" rel="noreferrer">
-                              {link}
-                            </a>
-                          </li>
-                        ))}
+                        {selectedTerm.reference_links.map((link, index) => {
+                          const safeLink = safeHttpUrl(link);
+                          return (
+                            <li key={link}>
+                              {safeLink ? (
+                                <a href={safeLink} target="_blank" rel="noreferrer">
+                                  {referenceLabel(
+                                    selectedTerm.source_title,
+                                    selectedTerm.mla_citations[index],
+                                    index,
+                                    selectedTerm.reference_links.length
+                                  )}
+                                </a>
+                              ) : (
+                                <span className="hint">{link}</span>
+                              )}
+                            </li>
+                          );
+                        })}
                       </ul>
                     ) : (
                       <p className="hint">No verified references attached yet.</p>

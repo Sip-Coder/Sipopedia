@@ -107,28 +107,65 @@ function slugify(value: string): string {
     .toLowerCase();
 }
 
-function parsePathPoints(path: string): Array<{ x: number; y: number }> {
-  const points: Array<{ x: number; y: number }> = [];
-  const re = /[ML](-?[\d.]+),(-?[\d.]+)/g;
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(path)) !== null) {
-    points.push({ x: Number.parseFloat(match[1]), y: Number.parseFloat(match[2]) });
+function parsePathPolygons(path: string): Array<Array<{ x: number; y: number }>> {
+  const polygons: Array<Array<{ x: number; y: number }>> = [];
+  for (const fragment of path.split("Z")) {
+    const points: Array<{ x: number; y: number }> = [];
+    const re = /[ML](-?[\d.]+),(-?[\d.]+)/g;
+    let match: RegExpExecArray | null;
+    while ((match = re.exec(fragment)) !== null) {
+      points.push({ x: Number.parseFloat(match[1]), y: Number.parseFloat(match[2]) });
+    }
+    if (points.length >= 3) polygons.push(points);
   }
-  return points;
+  return polygons;
+}
+
+function polygonSignedArea(points: Array<{ x: number; y: number }>): number {
+  let area2 = 0;
+  for (let index = 0; index < points.length; index++) {
+    const current = points[index];
+    const next = points[(index + 1) % points.length];
+    area2 += current.x * next.y - next.x * current.y;
+  }
+  return area2 / 2;
+}
+
+function polygonCentroid(points: Array<{ x: number; y: number }>): { x: number; y: number } | null {
+  const signedArea = polygonSignedArea(points);
+  if (Math.abs(signedArea) < 1e-6) return null;
+  let cx = 0;
+  let cy = 0;
+  for (let index = 0; index < points.length; index++) {
+    const current = points[index];
+    const next = points[(index + 1) % points.length];
+    const cross = current.x * next.y - next.x * current.y;
+    cx += (current.x + next.x) * cross;
+    cy += (current.y + next.y) * cross;
+  }
+  const factor = 1 / (6 * signedArea);
+  return { x: cx * factor, y: cy * factor };
 }
 
 function pathCentroid(path: string): { lat: number; lon: number } | null {
-  const points = parsePathPoints(path);
-  if (!points.length) return null;
-  const sum = points.reduce(
-    (acc, point) => ({ x: acc.x + point.x, y: acc.y + point.y }),
-    { x: 0, y: 0 }
+  const polygons = parsePathPolygons(path);
+  if (!polygons.length) return null;
+
+  const mainPolygon = polygons.reduce((best, next) =>
+    Math.abs(polygonSignedArea(next)) > Math.abs(polygonSignedArea(best)) ? next : best
   );
-  const x = sum.x / points.length;
-  const y = sum.y / points.length;
+
+  const centroid = polygonCentroid(mainPolygon) ?? (() => {
+    const sum = mainPolygon.reduce(
+      (acc, point) => ({ x: acc.x + point.x, y: acc.y + point.y }),
+      { x: 0, y: 0 }
+    );
+    return { x: sum.x / mainPolygon.length, y: sum.y / mainPolygon.length };
+  })();
+
   return {
-    lon: (x / MAP_WIDTH) * 360 - 180,
-    lat: 90 - (y / MAP_HEIGHT) * 180
+    lon: (centroid.x / MAP_WIDTH) * 360 - 180,
+    lat: 90 - (centroid.y / MAP_HEIGHT) * 180
   };
 }
 

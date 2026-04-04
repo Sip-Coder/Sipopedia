@@ -1,0 +1,9 @@
+{
+  "target_terms": 100,
+  "found_rows": 100,
+  "patched": 100,
+  "failed": [],
+  "copied_into_regeneration": 0,
+  "verify_regen_count": 0,
+  "verify_total": 100
+}

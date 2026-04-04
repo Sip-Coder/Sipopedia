@@ -1,0 +1,260 @@
+{
+  "started_at": "2026-04-03T04:23:27.797Z",
+  "batch": "03",
+  "total_terms": 50,
+  "success": [
+    {
+      "term": "Channeling",
+      "id": "ffaf362e-881b-49bd-9d44-8e16af2d807c",
+      "infographic_url": "/infographics/regeneration/channeling.png"
+    },
+    {
+      "term": "Clarifier",
+      "id": "67b42bca-79ff-42f5-9663-293b139602ce",
+      "infographic_url": "/infographics/regeneration/clarifier.png"
+    },
+    {
+      "term": "Diacetyl",
+      "id": "0e30b779-46e2-4e90-ab18-000496236f3b",
+      "infographic_url": "/infographics/regeneration/diacetyl.png"
+    },
+    {
+      "term": "Hydrology",
+      "id": "90376a4c-e041-420f-8c73-5da5757ffc16",
+      "infographic_url": "/infographics/regeneration/hydrology.png"
+    },
+    {
+      "term": "Minerality",
+      "id": "ae0b8d3c-1da9-4db4-9479-2cc9cf655bbb",
+      "infographic_url": "/infographics/regeneration/minerality.png"
+    },
+    {
+      "term": "MundoNovo",
+      "id": "c3383246-a250-4cff-be38-f019b480fde7",
+      "infographic_url": "/infographics/regeneration/mundonovo.png"
+    },
+    {
+      "term": "Thermization",
+      "id": "19d45160-2223-4cdb-a13c-41993d005160",
+      "infographic_url": "/infographics/regeneration/thermization.png"
+    },
+    {
+      "term": "Zinfandel",
+      "id": "749746ca-dbb8-4174-b365-c0e7b2cc67b6",
+      "infographic_url": "/infographics/regeneration/zinfandel.png"
+    },
+    {
+      "term": "Carmenere",
+      "id": "a017f6ba-7b2f-4ae2-be45-424f4a6d388a",
+      "infographic_url": "/infographics/regeneration/carmenere.png"
+    },
+    {
+      "term": "Darjeeling",
+      "id": "fb449ec3-fbd9-4c80-8ed8-b6661cf8df37",
+      "infographic_url": "/infographics/regeneration/darjeeling.png"
+    },
+    {
+      "term": "Labeling",
+      "id": "7e75b0e4-be99-4f7c-ad1c-b0fd5bf65cb2",
+      "infographic_url": "/infographics/regeneration/labeling.png"
+    },
+    {
+      "term": "Ozonation",
+      "id": "5377a2a7-7d2d-4a35-b0b0-44a754eaf8d7",
+      "infographic_url": "/infographics/regeneration/ozonation.png"
+    },
+    {
+      "term": "Pumpover",
+      "id": "7e84cd75-f8e1-4771-96e1-27dfc03b43d6",
+      "infographic_url": "/infographics/regeneration/pumpover.png"
+    },
+    {
+      "term": "Scoby",
+      "id": "b29ec327-11fa-42c4-877c-6f4c725094e5",
+      "infographic_url": "/infographics/regeneration/scoby.png"
+    },
+    {
+      "term": "Horizontal Press",
+      "id": "6ba0706e-f167-47f4-b54b-3eaf8072dc0f",
+      "infographic_url": "/infographics/regeneration/horizontal-press.png"
+    },
+    {
+      "term": "Jura",
+      "id": "b231cb63-15f5-4474-aa2c-3118836831be",
+      "infographic_url": "/infographics/regeneration/jura.png"
+    },
+    {
+      "term": "Monastrell",
+      "id": "d1b21bee-e688-4375-9af6-11a5efb0df7a",
+      "infographic_url": "/infographics/regeneration/monastrell.png"
+    },
+    {
+      "term": "Trebbiano",
+      "id": "2e7fece6-c6a9-46cd-9917-98b9fc2fa09e",
+      "infographic_url": "/infographics/regeneration/trebbiano.png"
+    },
+    {
+      "term": "Ceylon",
+      "id": "b2a812dd-a685-4389-80b7-94962a3c701f",
+      "infographic_url": "/infographics/regeneration/ceylon.png"
+    },
+    {
+      "term": "Drain-and-Return",
+      "id": "b9b62e8b-c335-4168-9acf-0947e0b047fb",
+      "infographic_url": "/infographics/regeneration/drain-and-return.png"
+    },
+    {
+      "term": "Gueuze",
+      "id": "b1716cd9-889d-40d8-9fcb-467a3e59c200",
+      "infographic_url": "/infographics/regeneration/gueuze.png"
+    },
+    {
+      "term": "Hydrogen Sulfide",
+      "id": "5cb0ffa0-7f3c-4b42-a64b-d54a8661ae12",
+      "infographic_url": "/infographics/regeneration/hydrogen-sulfide.png"
+    },
+    {
+      "term": "Longjing",
+      "id": "e238753a-9842-4f90-bdd8-32294f63c425",
+      "infographic_url": "/infographics/regeneration/longjing.png"
+    },
+    {
+      "term": "Purity",
+      "id": "d82adc99-f792-4e1c-aa88-6e7ab1712120",
+      "infographic_url": "/infographics/regeneration/purity.png"
+    },
+    {
+      "term": "Elevage",
+      "id": "877fcf55-cd1e-4cb6-b992-8d0c47673ead",
+      "infographic_url": "/infographics/regeneration/elevage.png"
+    },
+    {
+      "term": "Tippy",
+      "id": "4177dc35-f46a-455a-bbd8-27fb9504dd0f",
+      "infographic_url": "/infographics/regeneration/tippy.png"
+    },
+    {
+      "term": "Adjunct",
+      "id": "c60cbb79-fc48-46c0-93e1-88441418fb00",
+      "infographic_url": "/infographics/regeneration/adjunct.png"
+    },
+    {
+      "term": "Biluochun",
+      "id": "7ff446e3-a1ec-473b-b2a2-0622a0397344",
+      "infographic_url": "/infographics/regeneration/biluochun.png"
+    },
+    {
+      "term": "Orthodox",
+      "id": "02883796-0cfa-4d5a-a8a9-aa0e3ab5ed50",
+      "infographic_url": "/infographics/regeneration/orthodox.png"
+    },
+    {
+      "term": "Brut",
+      "id": "425348da-922b-497e-8df5-6d26fd06c64e",
+      "infographic_url": "/infographics/regeneration/brut.png"
+    },
+    {
+      "term": "Moonshine",
+      "id": "3557b12f-4de5-4701-a047-29ead1c06108",
+      "infographic_url": "/infographics/regeneration/moonshine.png"
+    },
+    {
+      "term": "Bock",
+      "id": "42a7a111-266c-4a06-810d-8342f8f706a7",
+      "infographic_url": "/infographics/regeneration/bock.png"
+    },
+    {
+      "term": "Sangiovese",
+      "id": "04bda132-2342-4fc1-9278-a664e4af081c",
+      "infographic_url": "/infographics/regeneration/sangiovese.png"
+    },
+    {
+      "term": "Bancha",
+      "id": "b02e93d8-4222-4b44-b0cf-f97eef9219f9",
+      "infographic_url": "/infographics/regeneration/bancha.png"
+    },
+    {
+      "term": "Yogurt",
+      "id": "64c2811d-5543-4276-9f08-0bba3b2e04f7",
+      "infographic_url": "/infographics/regeneration/yogurt.png"
+    },
+    {
+      "term": "Cultivar",
+      "id": "cc6d750d-ed54-412a-a262-d156e3c2f060",
+      "infographic_url": "/infographics/regeneration/cultivar.png"
+    },
+    {
+      "term": "Hojicha",
+      "id": "cb588471-27a8-4595-a53a-7a285b56f285",
+      "infographic_url": "/infographics/regeneration/hojicha.png"
+    },
+    {
+      "term": "Kukicha",
+      "id": "4113e389-876c-4efd-84c6-e9e0a5d8e4c8",
+      "infographic_url": "/infographics/regeneration/kukicha.png"
+    },
+    {
+      "term": "Vinegar",
+      "id": "f8171fc2-ab9e-49c7-9a54-9e50958519af",
+      "infographic_url": "/infographics/regeneration/vinegar.png"
+    },
+    {
+      "term": "Monsoonal",
+      "id": "4d6737c7-f98b-4ab6-95db-63b705fcf367",
+      "infographic_url": "/infographics/regeneration/monsoonal.png"
+    },
+    {
+      "term": "Fruit Set",
+      "id": "f6ecf4b9-e1db-4f93-bd41-bc1361700036",
+      "infographic_url": "/infographics/regeneration/fruit-set.png"
+    },
+    {
+      "term": "Anaerobic",
+      "id": "02c6e897-1768-4d7a-b838-20335b8d85cb",
+      "infographic_url": "/infographics/regeneration/anaerobic.png"
+    },
+    {
+      "term": "Nebbiolo",
+      "id": "b0bcfa4a-4164-4d31-9b86-8a86d71c3df0",
+      "infographic_url": "/infographics/regeneration/nebbiolo.png"
+    },
+    {
+      "term": "Roasting",
+      "id": "1a61d766-fb97-4626-9430-6d62af3a56db",
+      "infographic_url": "/infographics/regeneration/roasting.png"
+    },
+    {
+      "term": "Barleywine",
+      "id": "38cd88f8-e009-4e22-8f81-355121c9098d",
+      "infographic_url": "/infographics/regeneration/barleywine.png"
+    },
+    {
+      "term": "Enzyme",
+      "id": "90a88845-0343-445c-ba5d-93486019b165",
+      "infographic_url": "/infographics/regeneration/enzyme.png"
+    },
+    {
+      "term": "Eutypa Dieback",
+      "id": "a3ed1000-484e-461b-a175-4aea53bed095",
+      "infographic_url": "/infographics/regeneration/eutypa-dieback.png"
+    },
+    {
+      "term": "Caturra",
+      "id": "be6f2f3d-8b52-4b09-a7d7-f3bebddd44dc",
+      "infographic_url": "/infographics/regeneration/caturra.png"
+    },
+    {
+      "term": "Fermentor",
+      "id": "3f59a0ee-9360-47d2-bf7d-8f3606516ee7",
+      "infographic_url": "/infographics/regeneration/fermentor.png"
+    },
+    {
+      "term": "Genmaicha",
+      "id": "c09fe796-4a28-412d-a693-abf65ea037f9",
+      "infographic_url": "/infographics/regeneration/genmaicha.png"
+    }
+  ],
+  "failed": [],
+  "db_patch_failed": [],
+  "finished_at": "2026-04-03T04:51:04.755Z"
+}

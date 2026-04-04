@@ -9,6 +9,7 @@ import tartanPattern from "../assets/brand/tartan-pattern.png";
 type BeverageType = "wine" | "beer" | "spirits" | "coffee" | "tea" | "fruit";
 type GuildStandard = "Foundations" | "Production" | "Sensory" | "Service" | "Pairing" | "Quality";
 type TopicCategoryGroup = "core" | "reference" | "standard";
+type QuizLength = 20 | 30 | 40;
 
 type RankedQuestion = {
   row: ExtractedGuildQuestion;
@@ -31,6 +32,19 @@ type QuizReportRow = {
 };
 
 const standardOrder: GuildStandard[] = ["Foundations", "Production", "Sensory", "Service", "Pairing", "Quality"];
+const quizLengthOptions: QuizLength[] = [20, 30, 40];
+const TARGET_EXAM_QUESTIONS = 30;
+const DIVERSITY_SIMILARITY_STRICT = 0.72;
+const DIVERSITY_SIMILARITY_RELAXED = 0.84;
+
+function shuffle<T>(input: T[]) {
+  const next = [...input];
+  for (let i = next.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [next[i], next[j]] = [next[j], next[i]];
+  }
+  return next;
+}
 
 function sanitizeTopic(topic: string) {
   return topic.trim().replace(/\s+/g, " ");
@@ -74,7 +88,31 @@ function rankRows(rows: ExtractedGuildQuestion[], topicTokens: string[]) {
   return ranked;
 }
 
-function selectExamQuestions(beverage: BeverageType, topicQuery: string, preferredSourceCategory?: string) {
+function withShuffledOptions(row: ExtractedGuildQuestion): ExtractedGuildQuestion {
+  if (row.options.length <= 1 || row.correctOptionIndex === null || row.correctOptionIndex < 0 || row.correctOptionIndex >= row.options.length) {
+    return row;
+  }
+
+  const indexed = row.options.map((option, index) => ({ option, index }));
+  const shuffled = shuffle(indexed);
+  const correctIndex = shuffled.findIndex((entry) => entry.index === row.correctOptionIndex);
+  if (correctIndex < 0) {
+    return row;
+  }
+
+  return {
+    ...row,
+    options: shuffled.map((entry) => entry.option),
+    correctOptionIndex: correctIndex
+  };
+}
+
+function selectExamQuestions(
+  beverage: BeverageType,
+  topicQuery: string,
+  preferredSourceCategory?: string,
+  maxQuestions = TARGET_EXAM_QUESTIONS
+) {
   const topicTokens = tokenize(sanitizeTopic(topicQuery));
   const beverageMatches = extractedGuildQuestions.filter((row) => row.beverages.includes(beverage));
   const beveragePool = beverageMatches.length > 0 ? beverageMatches : extractedGuildQuestions;
@@ -95,41 +133,67 @@ function selectExamQuestions(beverage: BeverageType, topicQuery: string, preferr
   const usedIds = new Set<string>();
   const usedQuestionText: string[] = [];
 
-  const canAdd = (row: ExtractedGuildQuestion) => {
+  const canAdd = (row: ExtractedGuildQuestion, maxSimilarity: number) => {
     if (usedIds.has(row.id)) return false;
-    if (usedQuestionText.some((text) => similarity(text, row.question) > 0.72)) return false;
+    if (usedQuestionText.some((text) => similarity(text, row.question) > maxSimilarity)) return false;
     return true;
   };
 
-  const addIfAllowed = (row: ExtractedGuildQuestion) => {
-    if (!canAdd(row)) return false;
+  const addIfAllowed = (row: ExtractedGuildQuestion, maxSimilarity: number) => {
+    if (!canAdd(row, maxSimilarity)) return false;
     selected.push(row);
     usedIds.add(row.id);
     usedQuestionText.push(row.question);
     return true;
   };
 
+  const focusByStandard = new Map<GuildStandard, ExtractedGuildQuestion[]>();
   standardOrder.forEach((standard) => {
-    const standardMatch = focusedPrimary.find((item) => item.row.standard === standard && canAdd(item.row));
-    if (standardMatch) addIfAllowed(standardMatch.row);
+    focusByStandard.set(
+      standard,
+      shuffle(focusedPrimary.filter((item) => item.row.standard === standard).map((item) => item.row))
+    );
   });
 
-  focusedPrimary.forEach((item) => {
-    if (selected.length >= 20) return;
-    addIfAllowed(item.row);
+  const roundRobinMinimum = Math.min(maxQuestions, Math.max(12, standardOrder.length * 2));
+  while (selected.length < roundRobinMinimum) {
+    let addedAny = false;
+    for (const standard of standardOrder) {
+      if (selected.length >= roundRobinMinimum) break;
+      const bucket = focusByStandard.get(standard) ?? [];
+      while (bucket.length > 0) {
+        const candidate = bucket.shift();
+        if (!candidate) break;
+        if (addIfAllowed(candidate, DIVERSITY_SIMILARITY_STRICT)) {
+          addedAny = true;
+          break;
+        }
+      }
+    }
+    if (!addedAny) break;
+  }
+
+  const fillPools = [shuffle(focusedPrimary), shuffle(rankedPrimary), shuffle(rankedSecondary)];
+
+  fillPools.forEach((pool) => {
+    if (selected.length >= maxQuestions) return;
+    pool.forEach((item) => {
+      if (selected.length >= maxQuestions) return;
+      addIfAllowed(item.row, DIVERSITY_SIMILARITY_STRICT);
+    });
   });
 
-  rankedPrimary.forEach((item) => {
-    if (selected.length >= 20) return;
-    addIfAllowed(item.row);
-  });
+  if (selected.length < maxQuestions) {
+    fillPools.forEach((pool) => {
+      if (selected.length >= maxQuestions) return;
+      pool.forEach((item) => {
+        if (selected.length >= maxQuestions) return;
+        addIfAllowed(item.row, DIVERSITY_SIMILARITY_RELAXED);
+      });
+    });
+  }
 
-  rankedSecondary.forEach((item) => {
-    if (selected.length >= 20) return;
-    addIfAllowed(item.row);
-  });
-
-  return selected.slice(0, 20);
+  return selected.slice(0, maxQuestions).map(withShuffledOptions);
 }
 
 function questionLabel(index: number) {
@@ -177,6 +241,7 @@ function escapeHtml(value: string) {
 export function BeverageQuiz() {
   const [beverage, setBeverage] = useState<BeverageType>("wine");
   const [topicCategoryId, setTopicCategoryId] = useState("all");
+  const [examLength, setExamLength] = useState<QuizLength>(30);
   const [questions, setQuestions] = useState<ExtractedGuildQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [showCorrectAnswers, setShowCorrectAnswers] = useState(false);
@@ -229,7 +294,7 @@ export function BeverageQuiz() {
   const generateExam = () => {
     const preferredSourceCategory = selectedTopicCategory.group === "reference" ? selectedTopicCategory.query : undefined;
     const topicQuery = selectedTopicCategory.group === "standard" ? selectedTopicCategory.query : "";
-    const selected = selectExamQuestions(beverage, topicQuery, preferredSourceCategory);
+    const selected = selectExamQuestions(beverage, topicQuery, preferredSourceCategory, examLength);
     setQuestions(selected);
     setAnswers({});
     setShowCorrectAnswers(false);
@@ -527,6 +592,21 @@ export function BeverageQuiz() {
                 ))}
               </optgroup>
             ) : null}
+          </select>
+        </div>
+
+        <div className="quiz-control-row">
+          <label htmlFor="quiz-length">Exam Length</label>
+          <select
+            id="quiz-length"
+            value={String(examLength)}
+            onChange={(event) => setExamLength(Number(event.target.value) as QuizLength)}
+          >
+            {quizLengthOptions.map((length) => (
+              <option key={length} value={String(length)}>
+                {length} questions
+              </option>
+            ))}
           </select>
         </div>
 

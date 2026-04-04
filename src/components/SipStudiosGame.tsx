@@ -178,13 +178,15 @@ export function SipStudiosGame() {
 
   return (
     <section className="sip-game-page" aria-label="Sip Studios adventure game">
-      <header className="sip-game-head">
-        <p className="academy-kicker">Sip Studios Adventure</p>
-        <h2>Wine Quest Walkaround</h2>
-        <p>
-          Click the world to move. Click an NPC to interact. If you are far away, your avatar will walk over and
-          automatically begin the conversation.
-        </p>
+      <header className="section-header sip-game-head">
+        <div className="section-header-copy">
+          <p className="sip-game-kicker">Sip Studios Adventure</p>
+          <h2>Wine Quest Walkaround</h2>
+          <p>
+            Click the world to move. Click an NPC to interact. If you are far away, your avatar will walk over and
+            automatically begin the conversation.
+          </p>
+        </div>
       </header>
 
       <div className="sip-game-layout">

@@ -1,0 +1,53 @@
+# Repository Guidelines
+
+## Project Structure & Module Organization
+- `src/`: React + TypeScript frontend (`App.tsx`, `components/`, `lib/`, `data/`, `context/`, `assets/`).
+- `public/`: static assets (icons, maps, flavor thumbnails, academy media).
+- `server/hyperagents/`: server-side agent orchestration modules (`coach/`, `operations/`, `structure/`, `terminology/`).
+- `supabase/`: SQL schema, migrations, and Edge Functions (`functions/ai-router`, `functions/news-router`, `functions/terminology-harvester`).
+- `scripts/`: operational Node scripts (secret scanning and terminology sync/indexing).
+- `validators/`: PowerShell validation entrypoints for website and terminology workflows.
+- `docs/`: runbooks and workflow notes. `archive/` and `DUMP IN/` are reference/history, not primary implementation targets.
+
+## Build, Test, and Development Commands
+- `npm run dev`: start local Vite dev server.
+- `npm run localhost`: run `start-localhost.cmd` for host/port-local startup.
+- `npm run build`: type-check (`tsc -b`) and produce production build in `dist/`.
+- `npm run preview`: preview the production bundle.
+- `npm run security:secrets`: scan staged files for secret leakage.
+- `npm run terms:audit -- --limit 535`: audit current terms for source/citation/policy compliance.
+- `npm run terms:start -- --dry-run` / `npm run terms:start`: generate new candidate terms via the 7-agent start pipeline.
+- `npm run terms:loop -- -Iterations 3 -Letters ABC`: run iterative Ralph-style terminology loops.
+- `powershell -File .\validators\validate-website.ps1`: full website validation pipeline.
+- `powershell -File .\validators\validate-terminology.ps1`: terminology schema/collision validation.
+
+## Coding Style & Naming Conventions
+- TypeScript + React with 2-space indentation, semicolons, and double quotes (match existing files).
+- Components and React contexts: `PascalCase` (`SipAcademyWineLessons.tsx`).
+- Utilities/hooks/data modules: `camelCase` exports and descriptive file names (`urlSafety.ts`, `tracks.ts`).
+- Keep changes focused; avoid formatting-only churn in unrelated files.
+
+## Testing Guidelines
+- No dedicated unit test framework is configured in `package.json` currently.
+- Required baseline before PR: `npm run build` and `validators/validate-website.ps1`.
+- For terminology changes, always run `validators/validate-terminology.ps1` and inspect generated review queue files under `review/terminology/`.
+
+## Commit & Pull Request Guidelines
+- Follow concise, imperative commit subjects (examples in history: `Add 3D globe map...`, `Refine progress wave UI...`).
+- For bounded loop work, use policy format from `CHANGE_POLICY.md`: `agent-loop: iter <N> - <short hypothesis>`.
+- PRs should include: scope summary, affected paths, validation commands/results, linked issue/task, and screenshots for UI changes.
+
+## Security & Configuration Tips
+- Never commit secrets. Run `npm run hooks:install` once to enable `.githooks/pre-commit` secret checks.
+- Use `.env.example` as template; keep provider keys in Supabase secrets, not frontend env files.
+
+## Sipopedia Terminology Memory
+- Conversation trigger phrase: `start terms`.
+- Default sequence:
+1. `npm run terms:audit -- --limit 535`
+2. `npm run terms:start -- --dry-run`
+3. review generated markdown under `review/terminology/`
+4. `npm run terms:start`
+- Source restrictions: do not use encyclopedia or dictionary domains.
+- Duplicate rule: never insert repeated terms; enrich existing terms only with additive, non-redundant updates.
+- Detailed policy/runbook: `docs/TERMS_AUTOMATION_PLAYBOOK.md`.

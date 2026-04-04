@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import sipStudiosLogo from "../assets/brand/logo-sip-studios-opt.webp";
 import aiRnDLogo from "../assets/brand/logo-ai-rnd-opt.webp";
 import sommSupportLogo from "../assets/brand/logo-somm-support-opt.webp";
+import { normalizeExternalUrl } from "../lib/urlSafety";
 
 type ThemeId = "sage-sunset" | "ocean-glow" | "citrus-night" | "wine-forest";
 type SocialPlatformKey = "facebook" | "instagram" | "youtube" | "tiktok" | "x" | "linkedin" | "substack";
@@ -205,10 +206,7 @@ function newId() {
 }
 
 function normalizeUrl(value: string) {
-  const trimmed = value.trim();
-  if (!trimmed) return "";
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  return `https://${trimmed}`;
+  return normalizeExternalUrl(value) ?? "";
 }
 
 function defaultState(): StoredState {
@@ -298,7 +296,11 @@ export function SommEvents() {
 
   useEffect(() => {
     const payload: StoredState = { themeId, autoCycle, profile, socials, blocks };
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+      // Ignore localStorage write failures.
+    }
   }, [themeId, autoCycle, profile, socials, blocks]);
 
   useEffect(() => {
@@ -398,11 +400,17 @@ export function SommEvents() {
 
               <div className="somm-events-social-row">
                 {connectedSocials.length ? (
-                  connectedSocials.map((item) => (
-                    <a key={item.platform} href={normalizeUrl(item.url)} target="_blank" rel="noreferrer">
-                      {item.label}
-                    </a>
-                  ))
+                  connectedSocials.map((item) => {
+                    const safeUrl = normalizeUrl(item.url);
+                    if (!safeUrl) {
+                      return null;
+                    }
+                    return (
+                      <a key={item.platform} href={safeUrl} target="_blank" rel="noreferrer">
+                        {item.label}
+                      </a>
+                    );
+                  })
                 ) : (
                   <span className="somm-events-empty-pill">Connect socials to display channel pills.</span>
                 )}
@@ -412,11 +420,15 @@ export function SommEvents() {
                 {activeBlocks.length ? (
                   activeBlocks.map((block) => {
                     const src = block.image !== "none" ? BLOCK_IMAGE_MAP[block.image] : null;
+                    const safeUrl = normalizeUrl(block.url);
+                    if (!safeUrl) {
+                      return null;
+                    }
                     return (
                       <a
                         key={block.id}
                         className={`somm-events-link-block ${block.tone === "glass" ? "glass" : "solid"}`}
-                        href={normalizeUrl(block.url)}
+                        href={safeUrl}
                         target="_blank"
                         rel="noreferrer"
                       >

@@ -825,7 +825,7 @@ export function TastingJournal() {
       <html>
       <head>
         <meta charset="utf-8" />
-        <title>Sip Studies Flavor Journal</title>
+        <title>Sip Studies Tasting Journal</title>
         <style>
           :root {
             --cream-main: #f4e8ce;
@@ -946,7 +946,7 @@ export function TastingJournal() {
           <header class="report-header">
             <img class="report-header-pattern" src="${tartanHeader}" alt="" />
             <div class="report-header-content">
-              <h1>Sip Studies Flavor Journal</h1>
+              <h1>Sip Studies Tasting Journal</h1>
               <section class="meta">
                 <p><strong>Generated:</strong> ${esc(generatedAt)}</p>
                 <p><strong>Total Notes:</strong> ${target.length}</p>
@@ -983,13 +983,34 @@ export function TastingJournal() {
 
   const renderFieldInput = (field: Field, value: string, disabled: boolean) => {
     if (field.type === "textarea") return <textarea id={`field-${field.id}`} rows={3} value={value} placeholder={field.placeholder} onChange={(e) => updateDetail(field.id, e.target.value)} disabled={disabled} />;
-    if (field.type === "select") return <select id={`field-${field.id}`} value={value} onChange={(e) => updateDetail(field.id, e.target.value)} disabled={disabled}><option value="">Select...</option>{(field.options ?? []).map((option) => <option key={option} value={option}>{option}</option>)}</select>;
+    if (field.type === "select") {
+      return (
+        <div className="journal-choice-row" role="radiogroup" aria-label={field.label}>
+          {(field.options ?? []).map((option) => {
+            const selected = value === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                className={`journal-choice-btn ${selected ? "selected" : ""}`}
+                onClick={() => updateDetail(field.id, option)}
+                disabled={disabled}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
+      );
+    }
     return <input id={`field-${field.id}`} value={value} placeholder={field.placeholder} onChange={(e) => updateDetail(field.id, e.target.value)} disabled={disabled} />;
   };
 
   return (
     <section className="tasting-journal">
-      <div className="section-header"><h2>Flavor Journal</h2><p>Structured notes, blind scoring analytics, PDF export, and an interactive country map of your tastings.</p></div>
+      <div className="section-header"><h2>Tasting Journal</h2><p>Structured notes, blind scoring analytics, PDF export, and an interactive country map of your tastings.</p></div>
       <div className="journal-tabs">
         <button className={`btn ${tab === "make" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("make")}>New Notes</button>
         <button className={`btn ${tab === "review" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("review")}>Review</button>

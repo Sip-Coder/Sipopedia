@@ -8,25 +8,25 @@
     "localhost": "start-localhost.cmd",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "terminology:index": "node scripts/rebuild-terminology-index.js",
-    "terminology:sync": "node scripts/sync-terminology-to-supabase.js",
-    "terminology:sync:dry": "node scripts/sync-terminology-to-supabase.js --dry-run",
+    "terms:start": "node scripts/start-terms.js",
+    "terms:audit": "node scripts/audit-terms.js",
+    "terms:loop": "powershell -ExecutionPolicy Bypass -File .\\scripts\\ralph-loop-start.ps1",
     "security:secrets": "node scripts/guard-secrets.js",
     "hooks:install": "git config core.hooksPath .githooks"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.58.0",
-    "@types/three": "^0.183.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "tesseract.js": "^7.0.0",
     "three": "^0.183.2"
   },
   "devDependencies": {
     "@types/react": "^18.3.17",
     "@types/react-dom": "^18.3.5",
     "@types/three": "^0.183.1",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^6.0.1",
     "typescript": "^5.7.2",
-    "vite": "^5.4.11"
+    "vite": "^8.0.1"
   }
 }

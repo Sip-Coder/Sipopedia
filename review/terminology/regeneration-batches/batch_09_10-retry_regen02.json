@@ -1,0 +1,33 @@
+{
+  "started_at": "2026-04-04T16:18:22.615Z",
+  "target_terms": [
+    "Espresso",
+    "Development",
+    "Whiskey",
+    "Flavor"
+  ],
+  "success": [],
+  "failed": [
+    {
+      "term": "Espresso",
+      "stage": "fetch_candidate",
+      "error": "[]"
+    },
+    {
+      "term": "Development",
+      "stage": "fetch_candidate",
+      "error": "[]"
+    },
+    {
+      "term": "Whiskey",
+      "stage": "fetch_candidate",
+      "error": "[]"
+    },
+    {
+      "term": "Flavor",
+      "stage": "fetch_candidate",
+      "error": "[]"
+    }
+  ],
+  "finished_at": "2026-04-04T16:18:23.268Z"
+}

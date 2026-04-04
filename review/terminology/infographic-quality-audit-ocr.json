@@ -1,0 +1,1814 @@
+{
+  "audited_rows": 533,
+  "buckets": {
+    "great": 2,
+    "passable": 134,
+    "bad": 397,
+    "missing_file": 0
+  },
+  "avg_overlap": 0.156,
+  "avg_words": 15.77,
+  "failures_count": 531,
+  "failures_top": [
+    {
+      "term": "Wormtub",
+      "bucket": "bad",
+      "url": "/infographics/wormtub.png",
+      "wc": 15,
+      "ov": 0.25,
+      "reason": "term_not_detected",
+      "ocr_preview": "| Worm tul £ warns tao? = | Avorn tub is a S=>T| is wiftreal conde — ia witch a calilet | vapedtuhe coole 9! warer to conden spirit."
+    },
+    {
+      "term": "Tempranillo",
+      "bucket": "bad",
+      "url": "/infographics/tempranillo.png",
+      "wc": 12,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=12,ov=0.00)",
+      "ocr_preview": "2 2 Tempranillo Slstorloie url Sopreias cerdelna mretdyate pritetmenclav ropriadusiialldel roansker|| loos. Peffanica ctodnutasilalaty"
+    },
+    {
+      "term": "Priming",
+      "bucket": "bad",
+      "url": "/infographics/priming.png",
+      "wc": 16,
+      "ov": 0.091,
+      "reason": "term_not_detected",
+      "ocr_preview": "se) Primin o° iming \\ o [‘preamm] The satitfon of pestumtitios cover pouen pereatpility bugeencd oango i aduingie certotrity fo- and the strspinse ceeled contai"
+    },
+    {
+      "term": "Withering",
+      "bucket": "bad",
+      "url": "/infographics/withering.png",
+      "wc": 16,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=16,ov=0.08)",
+      "ocr_preview": "( { ( WITHERINC ( amy) Withering is the fintsit stt asluction of lust elanages sbat heverd asaizfiurs the will Ehasiot kasiss Fi shaphng or enidation"
+    },
+    {
+      "term": "Puerh",
+      "bucket": "passable",
+      "url": "/infographics/puerh.png",
+      "wc": 14,
+      "ov": 0.222,
+      "reason": "moderate_overlap(wc=14,ov=0.22)",
+      "ocr_preview": "(fralk Puerh wi |] > \\ /\"pvverr/ — m ' Pueth is a pest: == + ( ( proaeniddtio»s trai LL tunfaa, viza can of Aguil an ispensgtim is often anagemu for storage and"
+    },
+    {
+      "term": "Extraction",
+      "bucket": "passable",
+      "url": "/infographics/extraction.png",
+      "wc": 13,
+      "ov": 1,
+      "reason": "moderate_overlap(wc=13,ov=1.00)",
+      "ocr_preview": "0 MR Extraction Ny Y B) | I [ik'strazks[an 9 The transfer of color, tannin, flavor, and other compounds from grape solids into juice or wine during production."
+    },
+    {
+      "term": "Steaming",
+      "bucket": "bad",
+      "url": "/infographics/steaming.png",
+      "wc": 18,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=18,ov=0.08)",
+      "ocr_preview": "(0 Steaming [6teenting] Stearning lzid Neglcinarkile warked [rele oviith alaiprsics axteily and plais cols, puple grace tade our manna orgintirrierts."
+    },
+    {
+      "term": "Pulp",
+      "bucket": "bad",
+      "url": "/infographics/pulp.png",
+      "wc": 15,
+      "ov": 0.214,
+      "reason": "term_not_detected",
+      "ocr_preview": "— /prlp/ - Small nsoluble frut o © Be particka nuppllt in Ps [] junis that ophoces | ° LJ visual olmote ana [ . a reptorneil all [ J : extraction characs"
+    },
+    {
+      "term": "Sparkling",
+      "bucket": "bad",
+      "url": "/infographics/sparkling.png",
+      "wc": 14,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=14,ov=0.00)",
+      "ocr_preview": "“+ SPARKLING a [a | spaile. kling: | Ra Walker contauring 6) ‘0 © | avticipnd nettiom oO ° boands that sreatea .°0 alreaorcsatird and 0. a nean madina taistiie "
+    },
+    {
+      "term": "Yabukita",
+      "bucket": "bad",
+      "url": "/infographics/yabukita.png",
+      "wc": 17,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "N 7 vabukita | [yer-smo likee -tist] 1 TS. Nourdes to the Blonnbec ditrandns de coppics Ooropuede hnelisre:te: V) piraes 221(and your wi and a lottebracc lendil"
+    },
+    {
+      "term": "Gamay",
+      "bucket": "passable",
+      "url": "/infographics/gamay.png",
+      "wc": 17,
+      "ov": 0.846,
+      "reason": "moderate_overlap(wc=17,ov=0.85)",
+      "ocr_preview": "oN Gamay JI\\ /'gemei/ EGR) Black grape best | known from — ov Beaujolais producing Nu bd light-to medium- & bodied wines with bright acidity and red fruit."
+    },
+    {
+      "term": "Pumpover",
+      "bucket": "bad",
+      "url": "/infographics/pumpover.png",
+      "wc": 20,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "] P SEE umpover Prine I1em fel 20D [ ravsurmtiucatzompuis 0 ©9 0 Cu tnnat do sulptus © © ¢ sele cam Buue ced mid 9 x Q ucime In sinir de ess? © o dis aaisinstio"
+    },
+    {
+      "term": "Sourmash",
+      "bucket": "bad",
+      "url": "/infographics/sourmash.png",
+      "wc": 19,
+      "ov": 0.182,
+      "reason": "term_not_detected",
+      "ocr_preview": "@ AT x ois *., A . fy A [ Hy Sour mash sour mes 8n aBacenst hie lestare diseHinre golded hast nas unifle iewalbry of mow where to inteared yes and menteneration"
+    },
+    {
+      "term": "Theanine",
+      "bucket": "bad",
+      "url": "/infographics/theanine.png",
+      "wc": 13,
+      "ov": 0.167,
+      "reason": "term_not_detected",
+      "ocr_preview": "[ Theanir (q liN'aninl 7 Thcearrincis an antino acid in | \\ eaear:oese lh sreecnrass,cor ly charasten and smoother, leos"
+    },
+    {
+      "term": "Riesling",
+      "bucket": "passable",
+      "url": "/infographics/riesling.png",
+      "wc": 14,
+      "ov": 0.308,
+      "reason": "moderate_overlap(wc=14,ov=0.31)",
+      "ocr_preview": "J (J Riesling [reez-ling] High-acid aromatic while grepe sspcli axprecefigerh aFe | 2ssoz wiuks from dry to lusstously sweet."
+    },
+    {
+      "term": "Screening",
+      "bucket": "passable",
+      "url": "/infographics/screening.png",
+      "wc": 17,
+      "ov": 0.333,
+      "reason": "moderate_overlap(wc=17,ov=0.33)",
+      "ocr_preview": "NA Screening ©0000 feetaind 00000 A grading step thot 00000 cahh geaever bhat = by bedenice using stheace with stherttarnsed hole dismeters"
+    },
+    {
+      "term": "Rye",
+      "bucket": "bad",
+      "url": "/infographics/rye.png",
+      "wc": 16,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=16,ov=0.08)",
+      "ocr_preview": "Rye fon/ Plye in spirtre seestrrocnaly groin asnd merakri Btop Wiuded for pacling witis bathed and day Phoor foless"
+    },
+    {
+      "term": "Maceration",
+      "bucket": "passable",
+      "url": "/infographics/maceration.png",
+      "wc": 16,
+      "ov": 0.917,
+      "reason": "moderate_overlap(wc=16,ov=0.92)",
+      "ocr_preview": "“ MACERATION méas-a-RA-shan Fewer] Contact time between fo—— juice and grape skins D350 O| and often seeds or stams to extract color, ©_0.0. tannin, and flavor"
+    },
+    {
+      "term": "Salinity",
+      "bucket": "bad",
+      "url": "/infographics/salinity.png",
+      "wc": 15,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "OY Salinit ) y jo.0 5 (4ne SO1EVY) B= The cownerisation of bind and time thereenting when rurplor, ans cenrttality toric ™t my or calivary usit. (Bias)"
+    },
+    {
+      "term": "Minerality",
+      "bucket": "bad",
+      "url": "/infographics/minerality.png",
+      "wc": 19,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=19,ov=0.00)",
+      "ocr_preview": "Minerality i'me nor a la-ie \\ 7 sEqray con, usggesing etala, Doloe cf 311% Has flarrnations hve and;atEter heve dresity met rakible flerer A oon ~~"
+    },
+    {
+      "term": "Monastrell",
+      "bucket": "bad",
+      "url": "/infographics/monastrell.png",
+      "wc": 21,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=21,ov=0.00)",
+      "ocr_preview": "Monastrell Jost roloe if bbais Lor men, anant ta Imotcedlit hatce nalle Inbety onma-ut me y’ laecollarsing mact mans.o adr Mrntilet cateet helo die mecit."
+    },
+    {
+      "term": "Tincture",
+      "bucket": "bad",
+      "url": "/infographics/tincture.png",
+      "wc": 14,
+      "ov": 0.091,
+      "reason": "low_content_or_overlap(wc=14,ov=0.09)",
+      "ocr_preview": "1 Tincture = [rangle whter] A Inteture is a convertmoted dirdinalo eutaect of eprlltladie or whearInworing <Q) repindialt iszrad for berading or sesssoning apir"
+    },
+    {
+      "term": "Muscadet",
+      "bucket": "bad",
+      "url": "/infographics/muscadet.png",
+      "wc": 11,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "Eaiermmas ira exeble-iofer from the sveetem fidN waung [lx 0Lift Theme wd Sfaugaghe and orfiencayen CL axct"
+    },
+    {
+      "term": "Nebbiolo",
+      "bucket": "bad",
+      "url": "/infographics/nebbiolo.png",
+      "wc": 14,
+      "ov": 0.071,
+      "reason": "low_content_or_overlap(wc=14,ov=0.07)",
+      "ocr_preview": "Nebbiolo - /ne bisalo / Fiedinarmon biacke guaas paaducing pa vat pormaurilt nevica marked to vightaress that vadhy, and cong patfume."
+    },
+    {
+      "term": "Pigeage",
+      "bucket": "bad",
+      "url": "/infographics/pigeage.png",
+      "wc": 16,
+      "ov": 0.1,
+      "reason": "low_content_or_overlap(wc=16,ov=0.10)",
+      "ocr_preview": "Pigeage ee — d rp amcRiov | ov Punching gfonn SE therstévatitine's FRIDAY sesupned tla = 2.\" Pempénation to LJ . aE od Joy = uth) enotjon dele Spade motonak elé"
+    },
+    {
+      "term": "Backflush",
+      "bucket": "bad",
+      "url": "/infographics/backflush.png",
+      "wc": 15,
+      "ov": 0.091,
+      "reason": "term_not_detected",
+      "ocr_preview": "Backfiush Dar shoturi A clearing procedure A) I) impodent reate and foreegent part earre b) through enevedirafes lb) ~ shosy for ‘emore carle O ones."
+    },
+    {
+      "term": "Oxidation",
+      "bucket": "bad",
+      "url": "/infographics/oxidation.png",
+      "wc": 15,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=15,ov=0.00)",
+      "ocr_preview": "Oxidation Tralee (seitch) (eo) Cremical resction with suppowrluel. are dlead to competcrty is ome waitts or oixed fooeming and ittatietatv lists in othets"
+    },
+    {
+      "term": "Flavoring",
+      "bucket": "bad",
+      "url": "/infographics/flavoring.png",
+      "wc": 18,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=18,ov=0.08)",
+      "ocr_preview": "a Flavoring Crp rexes op ~ Yhe onfdino of hails VAL) 7 7) haifie dnobioracere. NV or znem any anmia 2 > shauenign nellea rt ARS arine and eoenal | No profite. —"
+    },
+    {
+      "term": "Ale",
+      "bucket": "bad",
+      "url": "/infographics/ale.png",
+      "wc": 19,
+      "ov": 0.071,
+      "reason": "low_content_or_overlap(wc=19,ov=0.07)",
+      "ocr_preview": "gin Ale Tell Maxa best cantrratied [=] épandghs with v®e Pup Poetoming 9, mhne testeicrest Fo — toinh s1ere carrse. pressing theand longrer tZct spices."
+    },
+    {
+      "term": "Sauternes",
+      "bucket": "bad",
+      "url": "/infographics/sauternes.png",
+      "wc": 15,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=15,ov=0.08)",
+      "ocr_preview": "Sauternes fex fem) Seect Barddge 0 applicatics whera Oeriycitind coxvtion. Savrighan Mains and Maviaablile Enduce the concermated wines."
+    },
+    {
+      "term": "Absinthe",
+      "bucket": "bad",
+      "url": "/infographics/absinthe.png",
+      "wc": 14,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=14,ov=0.08)",
+      "ocr_preview": "\\ Absinthe RN 0 15 Oer Bafin J'SSIBVMNO 0 IM ellsos esaaf ladersssaler nmmbspero maimncal Imronziores for anu conmedcic rcwde and gicaanetion."
+    },
+    {
+      "term": "Aftertaste",
+      "bucket": "bad",
+      "url": "/infographics/aftertaste.png",
+      "wc": 11,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=11,ov=0.00)",
+      "ocr_preview": "Aftertaste The fawers and spftigrutntusions their anceod thee salins, ther paationing or apfting colies."
+    },
+    {
+      "term": "Primitivo",
+      "bucket": "passable",
+      "url": "/infographics/primitivo.png",
+      "wc": 15,
+      "ov": 0.25,
+      "reason": "moderate_overlap(wc=15,ov=0.25)",
+      "ocr_preview": "Primitivo /primittiei Southern Halian YY) bluckgrutie porie ryy) cwoandlentto Zane CY) and Keewn No dyt Y rirt and elevated CEETRD = alcohol"
+    },
+    {
+      "term": "Autolysis",
+      "bucket": "bad",
+      "url": "/infographics/autolysis.png",
+      "wc": 11,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=11,ov=0.00)",
+      "ocr_preview": "7] Autolysis 1S M101: 63) The burzatioss of O.0 uonpicnsterwils O<o0~,)| addelvmenottion ue Xo) PE rage: conurdiuring ’ phoylmemgh Bininns and actory complectis"
+    },
+    {
+      "term": "Ampelography",
+      "bucket": "bad",
+      "url": "/infographics/ampelography.png",
+      "wc": 11,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "Amppelography The teutes and beceschfs@ of mmivahvivs kUwrogreectuhinvesve foe g Overy ditip phoolbke ww acow mi (dew"
+    },
+    {
+      "term": "Reserva",
+      "bucket": "bad",
+      "url": "/infographics/reserva.png",
+      "wc": 17,
+      "ov": 0.071,
+      "reason": "low_content_or_overlap(wc=17,ov=0.07)",
+      "ocr_preview": "fo] B Reserva ~ny 1Sarth syly leisitie Agading oer grspienng = apcouitng maint Gb legally penveg) = agare (ertipaB and.Santeisgp Vight A.coluation standanes."
+    },
+    {
+      "term": "Acetate",
+      "bucket": "bad",
+      "url": "/infographics/acetate.png",
+      "wc": 11,
+      "ov": 0.154,
+      "reason": "low_content_or_overlap(wc=11,ov=0.15)",
+      "ocr_preview": "n Acetate O [a-see-tate] An ester compound family that can contribute frivihu Ar enh Sip Studios - Sipopedia"
+    },
+    {
+      "term": "Sangiovese",
+      "bucket": "bad",
+      "url": "/infographics/sangiovese.png",
+      "wc": 17,
+      "ov": 0.067,
+      "reason": "low_content_or_overlap(wc=17,ov=0.07)",
+      "ocr_preview": "Sangiovese heartg ir Ma ~g56 Way Is nost arfans A plessingr dtwvis grane feaven ad howe shcny narte, the expicity and oovmacbulk agratad expression."
+    },
+    {
+      "term": "Sommelier",
+      "bucket": "bad",
+      "url": "/infographics/sommelier.png",
+      "wc": 17,
+      "ov": 0.083,
+      "reason": "term_not_detected",
+      "ocr_preview": "| 5; Sommeli =~ sonieltd $ O4 | \\ / ) Wille servies protes [ea] naipersteistion _J|| tovenage edection = [2 | collor banagement Pla ’ gevet suptunes, coi — prep"
+    },
+    {
+      "term": "Acetic",
+      "bucket": "bad",
+      "url": "/infographics/acetic.png",
+      "wc": 17,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=17,ov=0.08)",
+      "ocr_preview": "Acetic “ (oes kf Acceve there flow A sumtisié fof furvose Cd Forffsemess of Logoerowdticusal| withly. Aaccesnts our’s corrized diuntry canectic temoentation."
+    },
+    {
+      "term": "Baihao",
+      "bucket": "bad",
+      "url": "/infographics/baihao.png",
+      "wc": 16,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=16,ov=0.08)",
+      "ocr_preview": "Baihao Four neail Botice rmess calmy znd :mesl ahaps ity test in / bzrhrake s timess cappy and in alvary bass."
+    },
+    {
+      "term": "Tannin",
+      "bucket": "bad",
+      "url": "/infographics/tannin.png",
+      "wc": 17,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=17,ov=0.00)",
+      "ocr_preview": "V2 Tannin = /Tanh/ foe Phenple compoune torpnsit. int sbarts stanes, and and bloly ciunt harces bolldrness, elf-sanp and ageoer thy grif"
+    },
+    {
+      "term": "Acetobacter",
+      "bucket": "passable",
+      "url": "/infographics/acetobacter.png",
+      "wc": 14,
+      "ov": 0.385,
+      "reason": "moderate_overlap(wc=14,ov=0.38)",
+      "ocr_preview": "Acetobacter [uh-see-tuh-BAK ter] A genus of bacteria that converts ethanol into acetic acid in tha nracanra Sip Studios - Sipopedia"
+    },
+    {
+      "term": "Secondary",
+      "bucket": "bad",
+      "url": "/infographics/secondary.png",
+      "wc": 19,
+      "ov": 0.071,
+      "reason": "low_content_or_overlap(wc=19,ov=0.07)",
+      "ocr_preview": "—— Secondary CS —— bavre ka ean Posen) ey Succgrianty aaivie to / \\ ownremred tompon gay — perrertvamemutaon 1'doth mre tp pywenged {tnspmatartnit y an bofeer f"
+    },
+    {
+      "term": "Sedimentation",
+      "bucket": "bad",
+      "url": "/infographics/sedimentation.png",
+      "wc": 12,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "= : Sedimentatior XR Janabtionor riecticart eo | The cetting of suspend ® ¢ eo | aslotstomoBeknonal ®e oo a pesipog audir nm. cignning accicaolity or insufficio"
+    },
+    {
+      "term": "Typicity",
+      "bucket": "passable",
+      "url": "/infographics/typicity.png",
+      "wc": 12,
+      "ov": 0.3,
+      "reason": "moderate_overlap(wc=12,ov=0.30)",
+      "ocr_preview": "o | Typicity BE Astigiznty? Degree to which aszlagnemee 2 the aapeoted ® chansires of tte feo] cmomerligsi — IS\" regioh, of style."
+    },
+    {
+      "term": "Acidulant",
+      "bucket": "bad",
+      "url": "/infographics/acidulant.png",
+      "wc": 11,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=11,ov=0.08)",
+      "ocr_preview": "Acidulant O [uh-SIHJ-uh-luhnt] An ingredient added to increase acidity, brighten flaviar and ha Sip Studios - Sipopedia"
+    },
+    {
+      "term": "Aguardiente",
+      "bucket": "bad",
+      "url": "/infographics/aguardiente.png",
+      "wc": 18,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "\\ [] Aguardient (84 -grardindeesSN 32), Aguastlenra is d blcai] ivenanaw. sberkth gaosts figowise ausedeivy efig'a As. dns virests sba naatee olal ecamettinas R"
+    },
+    {
+      "term": "Veraison",
+      "bucket": "passable",
+      "url": "/infographics/veraison.png",
+      "wc": 16,
+      "ov": 0.231,
+      "reason": "moderate_overlap(wc=16,ov=0.23)",
+      "ocr_preview": "X1 Veraison [vaivesean | Oreutk of sperting choor glieine cortert agiencags sugar and darage color thom goar to their nature hee."
+    },
+    {
+      "term": "Adjunct",
+      "bucket": "bad",
+      "url": "/infographics/adjunct.png",
+      "wc": 18,
+      "ov": 0.063,
+      "reason": "low_content_or_overlap(wc=18,ov=0.06)",
+      "ocr_preview": "[ J] Adjunct iz (@72riniD An ablonic plany baonvaeads oe muponful beaning clate yolos tonsreveses— wily moe in 10dAalty fane. IImc egutas ip ma orpniease perfon"
+    },
+    {
+      "term": "Backset",
+      "bucket": "passable",
+      "url": "/infographics/backset.png",
+      "wc": 16,
+      "ov": 0.25,
+      "reason": "moderate_overlap(wc=16,ov=0.25)",
+      "ocr_preview": "Backset (noom.) 0 The acidic liquid, daii onwane afritc acdiitaron anise in corve iseiolet. to cmorod barmopr tion ano Hanor."
+    },
+    {
+      "term": "Viognier",
+      "bucket": "bad",
+      "url": "/infographics/viognier.png",
+      "wc": 17,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=17,ov=0.00)",
+      "ocr_preview": "Viognier Convneus gool Adrteser withe graps goihing im hre csed mIrpusss most fyey, friadl natice and specciol moanas resdity."
+    },
+    {
+      "term": "Aeropress",
+      "bucket": "passable",
+      "url": "/infographics/aeropress.png",
+      "wc": 11,
+      "ov": 0.364,
+      "reason": "moderate_overlap(wc=11,ov=0.36)",
+      "ocr_preview": "— Aeropress B [AIR-oh-press] A manual coffee brewer that uses pressure and immarcinn +A Sip Studios - Sipopedia"
+    },
+    {
+      "term": "Stillwater",
+      "bucket": "bad",
+      "url": "/infographics/stillwater.png",
+      "wc": 14,
+      "ov": 0.1,
+      "reason": "low_content_or_overlap(wc=14,ov=0.10)",
+      "ocr_preview": "—— Stillwater CL = ran bewitnag)y Waiter serwed artheun ceitronation N - offfering a dmater testives and a clavver siaw of minefal balance."
+    },
+    {
+      "term": "Shou",
+      "bucket": "bad",
+      "url": "/infographics/shou.png",
+      "wc": 16,
+      "ov": 0.133,
+      "reason": "low_content_or_overlap(wc=16,ov=0.13)",
+      "ocr_preview": "9 Shou /90W/ Show is the irbtrental style ofiyoar'e pravisens through exsikleuced &ite contremurers to cneats albcugh matlere trys and to tthe wioas"
+    },
+    {
+      "term": "Turbidity",
+      "bucket": "bad",
+      "url": "/infographics/turbidity.png",
+      "wc": 16,
+      "ov": 0.143,
+      "reason": "low_content_or_overlap(wc=16,ov=0.14)",
+      "ocr_preview": "0] 0 2X Turbidity = (the lo edsis) =] A measuce or how : ethers oanaatter oO o soaiated plenges i light kattieris and Qs tirostaaret the oetee <9 riace your and"
+    },
+    {
+      "term": "Amylase",
+      "bucket": "passable",
+      "url": "/infographics/amylase.png",
+      "wc": 14,
+      "ov": 0.2,
+      "reason": "moderate_overlap(wc=14,ov=0.20)",
+      "ocr_preview": "Amylase Isheagrnisit. Autowanareded breaks dones. fihperand bwdtk aghs to deer and hanking uilushirg making dod meazing."
+    },
+    {
+      "term": "Berlinerweisse",
+      "bucket": "bad",
+      "url": "/infographics/berlinerweisse.png",
+      "wc": 16,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=16,ov=0.08)",
+      "ocr_preview": "Berlinerweisse Rear iimirnesticy. A safay Leencibiteir when- halg aciliose fol than tis Somtaicie. Poloty 5eciary. and a tnitm Whieishing selections."
+    },
+    {
+      "term": "Thermization",
+      "bucket": "bad",
+      "url": "/infographics/thermization.png",
+      "wc": 19,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "Th izati Dao. car ait aintl Thera ours bt at tnuld helt corua net shige to ouithem cwitdnese and to your salt knew cy iroffer youneerting;"
+    },
+    {
+      "term": "Bock",
+      "bucket": "bad",
+      "url": "/infographics/bock.png",
+      "wc": 16,
+      "ov": 0.067,
+      "reason": "low_content_or_overlap(wc=16,ov=0.07)",
+      "ocr_preview": "Bock Jaially y 7 od ~ Sarrrcenriaumg \\ rEddrosl colar dovan ad pourteuinia met wape, sabnsziyul. J< rfiah cennnruor ada —~ yanuzira soiavmr immplacenc"
+    },
+    {
+      "term": "Syrah",
+      "bucket": "bad",
+      "url": "/infographics/syrah.png",
+      "wc": 14,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "SIL'Y Ndrthern Rtidne grane bavs aron [| » presssioriq ddaa: colutom yinne In de la vaxs popor and tirm aaucius"
+    },
+    {
+      "term": "Cask",
+      "bucket": "bad",
+      "url": "/infographics/cask.png",
+      "wc": 12,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "Jieask Bee roand toneal as na ap), direnr, sut mi alvowarsieind I= de laze the deavne wihior a exsciconbst for dispariss."
+    },
+    {
+      "term": "Chinook",
+      "bucket": "passable",
+      "url": "/infographics/chinook.png",
+      "wc": 14,
+      "ov": 0.231,
+      "reason": "moderate_overlap(wc=14,ov=0.23)",
+      "ocr_preview": "Chinook Fortirtd An Anerican hop verlety this-inndtioacd mparmral pric conviniotti [3Coib. and thie benessiés to hop-forward bests."
+    },
+    {
+      "term": "Tamaryokucha",
+      "bucket": "bad",
+      "url": "/infographics/tamaryokucha.png",
+      "wc": 16,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=16,ov=0.08)",
+      "ocr_preview": "P) Tamaryokucha Q GJ TO thagee toma] Tananyole and is a [ancyedle a your vou with pahéd lamea. and taatiess caencof opdasr your groies. and. the wecalle sanchs."
+    },
+    {
+      "term": "Columbus",
+      "bucket": "bad",
+      "url": "/infographics/columbus.png",
+      "wc": 17,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=17,ov=0.08)",
+      "ocr_preview": "Quen, LR Columbus 1bh Eabkned Coiunkas is aitign pake fractrom and anpl for pogpoit recnaes sntosE cemmen Goumloce in narly abust tiple"
+    },
+    {
+      "term": "Decoction",
+      "bucket": "bad",
+      "url": "/infographics/decoction.png",
+      "wc": 17,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "Jar hax Hand Decootion is a mesh coptets wigivisi witt af the leaab a dosed and mscrasls to 9 sext acmooraia o d and firvae by mair charaches ANN"
+    },
+    {
+      "term": "Ultraheat",
+      "bucket": "passable",
+      "url": "/infographics/ultraheat.png",
+      "wc": 20,
+      "ov": 0.286,
+      "reason": "moderate_overlap(wc=20,ov=0.29)",
+      "ocr_preview": "Ultraheat I'drt whost? Very nigh hem perature lterrzta but wvaceft rapidly lievern- re obial tlat and exncver..bary bever age sheff life."
+    },
+    {
+      "term": "Diacetyl",
+      "bucket": "bad",
+      "url": "/infographics/diacetyl.png",
+      "wc": 19,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "Oo JL) Diacetyi (@) ER LEOMEC DITO 4 Voconts is prieifind 3 precear:i thet ginss play ‘c-§ osry of” tee armeeral ciusing and iawn satiing isinnateen SEE uwirima"
+    },
+    {
+      "term": "Dryhopping",
+      "bucket": "passable",
+      "url": "/infographics/dryhopping.png",
+      "wc": 14,
+      "ov": 0.273,
+      "reason": "moderate_overlap(wc=14,ov=0.27)",
+      "ocr_preview": "Dryhopping I¥yrahaey B *a/rid rreidiaition of hops whiscmags be sour imcicgazedarhis no inoreaa.aroma well intle excud giésances."
+    },
+    {
+      "term": "Vendange",
+      "bucket": "bad",
+      "url": "/infographics/vendange.png",
+      "wc": 10,
+      "ov": 0.125,
+      "reason": "low_content_or_overlap(wc=10,ov=0.13)",
+      "ocr_preview": "Vendange onaong I nezak word for panian mzntes and ry teeunbnm tive are or parsiaar paking."
+    },
+    {
+      "term": "Barolo",
+      "bucket": "bad",
+      "url": "/infographics/barolo.png",
+      "wc": 15,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=15,ov=0.00)",
+      "ocr_preview": "2% Barolo = roorotee/ Spaiins to wspedind DOGS. Pruxr Pestzen suaich for eyporers a, Ecriknarnes, day raven and lonly agluly aspes"
+    },
+    {
+      "term": "Fuggles",
+      "bucket": "bad",
+      "url": "/infographics/fuggles.png",
+      "wc": 15,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "IFcoppl Poeeiit is a pleesie higbtal la.b eoveuy [Sia aaat clasimie and | coven i sochy tveiely formal mn and ae and hall — tradivaral anenness."
+    },
+    {
+      "term": "Hallertau",
+      "bucket": "bad",
+      "url": "/infographics/hallertau.png",
+      "wc": 16,
+      "ov": 0.133,
+      "reason": "low_content_or_overlap(wc=16,ov=0.13)",
+      "ocr_preview": "Hallertau Reners to clossie Gdomormenng hop more Uagemmy iafferal) fllech Emam. Ineda@ jand aplay; pramer, with nestrained bittorness."
+    },
+    {
+      "term": "Terroir",
+      "bucket": "passable",
+      "url": "/infographics/terroir.png",
+      "wc": 14,
+      "ov": 1,
+      "reason": "moderate_overlap(wc=14,ov=1.00)",
+      "ocr_preview": "[2] NS Terroir — /te'war/ Z The combined influence of site conditions and = local practice on — — how a wine a —_— expresses flavor, texture, and structure."
+    },
+    {
+      "term": "Trub",
+      "bucket": "bad",
+      "url": "/infographics/trub.png",
+      "wc": 16,
+      "ov": 0.154,
+      "reason": "low_content_or_overlap(wc=16,ov=0.15)",
+      "ocr_preview": "ED Trub c 4; Tciul's the mestrel seportrnory madyes, = & vighpraticte,, juiba. A r (o) dCi rane yachts. Nee \\ YOUN NETIICAN Wait or ===) young ever."
+    },
+    {
+      "term": "Hopback",
+      "bucket": "bad",
+      "url": "/infographics/hopback.png",
+      "wc": 12,
+      "ov": 0.091,
+      "reason": "low_content_or_overlap(wc=12,ov=0.09)",
+      "ocr_preview": "Hopback Ernapbom! A hoaeork is a rrooal tnta cerhrratider and tirroude bezy than betm of 'egrewunccerend and rfiver zurids."
+    },
+    {
+      "term": "Hydrometer",
+      "bucket": "bad",
+      "url": "/infographics/hydrometer.png",
+      "wc": 15,
+      "ov": 0.083,
+      "reason": "term_not_detected",
+      "ocr_preview": "} Hydrometel ~ (Rist of Emiliter/ 0 IM A Hosthigntatoument ~~ hati a ness<eer loeild dave: a \\ bireenmary secriitger \\ Vi codaenatvers and prie U | rementation "
+    },
+    {
+      "term": "Torrontes",
+      "bucket": "bad",
+      "url": "/infographics/torrontes.png",
+      "wc": 19,
+      "ov": 0.071,
+      "reason": "low_content_or_overlap(wc=19,ov=0.07)",
+      "ocr_preview": "/ Torrontes Flah-ROHN-£eal 5 Hiighly econtoric ; re ani ead ahiw gren << sally offers theah potorome livst cloially seniies's say with thesh actalily."
+    },
+    {
+      "term": "Kolsch",
+      "bucket": "bad",
+      "url": "/infographics/kolsch.png",
+      "wc": 18,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=18,ov=0.08)",
+      "ocr_preview": "< O Kolsch Adefug Kusishiie:s pola, esthaanenf ziupr Corcilies- A. ittopa Colropititergs Ustailat les sitatimora ond stioine 10J eobrn- looc e lerprands"
+    },
+    {
+      "term": "Infusion",
+      "bucket": "passable",
+      "url": "/infographics/infusion.png",
+      "wc": 16,
+      "ov": 0.25,
+      "reason": "moderate_overlap(wc=16,ov=0.25)",
+      "ocr_preview": "Infusion ) p /\\n\"furasz sliuhn/ Infusion is a mash ef suinwagea that <eadiuj mages tesl> by-adding manrd < czaf beslior] of belling part of mash."
+    },
+    {
+      "term": "Washback",
+      "bucket": "passable",
+      "url": "/infographics/washback.png",
+      "wc": 13,
+      "ov": 0.222,
+      "reason": "moderate_overlap(wc=13,ov=0.22)",
+      "ocr_preview": "{ ( WASHBACK ll [bealy loch] A eocoll where carrt on dan loautrozs a rco olabofollc [ustul befote dissilation"
+    },
+    {
+      "term": "Lactobacillus",
+      "bucket": "passable",
+      "url": "/infographics/lactobacillus.png",
+      "wc": 13,
+      "ov": 0.182,
+      "reason": "moderate_overlap(wc=13,ov=0.18)",
+      "ocr_preview": "Lactobacillus (Lot-43% Hcly-oll-uha) INT) A jactic acid | | | aacncchap paxet cio phofieuabg of bverwanrannt a weilage arg"
+    },
+    {
+      "term": "Lambic",
+      "bucket": "bad",
+      "url": "/infographics/lambic.png",
+      "wc": 18,
+      "ov": 0.167,
+      "reason": "low_content_or_overlap(wc=18,ov=0.17)",
+      "ocr_preview": "Lambic [tami=bile] Lamlbg is a Belgian srarer ssuca Uitor praad'siers 1iMmansa ooklkiocoare cesancatism and axcracaad imeiwssilom in ooonl er stamlass vecrals."
+    },
+    {
+      "term": "Vinification",
+      "bucket": "passable",
+      "url": "/infographics/vinification.png",
+      "wc": 15,
+      "ov": 0.909,
+      "reason": "moderate_overlap(wc=15,ov=0.91)",
+      "ocr_preview": "Vinification J / Lvinifi'keisen/ 4 Vinification is the Fi controlled sequence of winemaking J decisions that trans- forms harvested grapes into a finished wine "
+    },
+    {
+      "term": "Charcoal",
+      "bucket": "passable",
+      "url": "/infographics/charcoal.png",
+      "wc": 14,
+      "ov": 0.273,
+      "reason": "moderate_overlap(wc=14,ov=0.27)",
+      "ocr_preview": "Charcoal Jojps, kioall Chereoal is. carhornate wood © sechincarnt acy lu a dducition feidtiante a or and vwaina by cembring sefected compounds."
+    },
+    {
+      "term": "Lovibond",
+      "bucket": "bad",
+      "url": "/infographics/lovibond.png",
+      "wc": 19,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=19,ov=0.08)",
+      "ocr_preview": "Lovibond EEE Lot cn bord) Lostboad is a — senrtiened bollp- / _C ) contenced its sauslf thelf and have cole \\ . thaugr sempiced auatagu-muw offen uee SIRIT FILB"
+    },
+    {
+      "term": "Zinfandel",
+      "bucket": "bad",
+      "url": "/infographics/zinfandel.png",
+      "wc": 19,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=19,ov=0.00)",
+      "ocr_preview": "= | zinfandel » MMUIEFTICTIEN Pala) rAANL Yoy a gropo (dla indrag grova ry 7 for gachcas J g l hatup.jand cap = JF foun zaurtion sapcictets cancsiais supiies an"
+    },
+    {
+      "term": "Flocculation",
+      "bucket": "bad",
+      "url": "/infographics/flocculation.png",
+      "wc": 12,
+      "ov": 0.091,
+      "reason": "low_content_or_overlap(wc=12,ov=0.09)",
+      "ocr_preview": "Flocculation (:6¥ di diolaGuovim) Q The bspienrie of awts oldn a'cglend vopli fie and pacthictisn capunan loonde the and efformentation. S&T)"
+    },
+    {
+      "term": "Pasteurization",
+      "bucket": "bad",
+      "url": "/infographics/pasteurization.png",
+      "wc": 18,
+      "ov": 0.083,
+      "reason": "term_not_detected",
+      "ocr_preview": "= PASTER- - URIZATION J \\ Tlo tsar aomnalev'actest misul Contarlick hast stanmara coplert edave/n resitures cherncded end and ragrams Ea package addaiity."
+    },
+    {
+      "term": "Cloudiness",
+      "bucket": "bad",
+      "url": "/infographics/cloudiness.png",
+      "wc": 16,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=16,ov=0.00)",
+      "ocr_preview": "fs CLOUDINESS ; 0 torpacs wow [sfo rm The rerual kesa reards > oy the aunimved strifle muin a the in filerezs iasspectures, heads and aory oner explessrperation"
+    },
+    {
+      "term": "Pilsner",
+      "bucket": "passable",
+      "url": "/infographics/pilsner.png",
+      "wc": 17,
+      "ov": 0.214,
+      "reason": "moderate_overlap(wc=17,ov=0.21)",
+      "ocr_preview": "Pilsner {pitemen) Pelcger to 5 pale : mzer male vused. for Wight, loge hstmueuans a wtop | Poey&enianion, profile, and a righty antenvuated riniad,"
+    },
+    {
+      "term": "Reinheitsgebot",
+      "bucket": "bad",
+      "url": "/infographics/reinheitsgebot.png",
+      "wc": 16,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=16,ov=0.08)",
+      "ocr_preview": "Reinheitsgebot Gaitincare gaaar* A AN The Fustoric KF arelend huge A= bobdy hna m— | suld in+brcided thumibels — pril~u nbienced have & ead sbandends"
+    },
+    {
+      "term": "Saison",
+      "bucket": "bad",
+      "url": "/infographics/saison.png",
+      "wc": 17,
+      "ov": 0.154,
+      "reason": "low_content_or_overlap(wc=17,ov=0.15)",
+      "ocr_preview": "\\ / — 3 )- [5 Saison (2wwipulz) Separt o a highly phoarens-en of sew on that teetn Soyse ji papinn Savebiian AAA K your, catisarc one d.acy expnsscer them."
+    },
+    {
+      "term": "Dunder",
+      "bucket": "bad",
+      "url": "/infographics/dunder.png",
+      "wc": 19,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=19,ov=0.08)",
+      "ocr_preview": "JOS Dunder ey) 4 7? dare dar/ ZN X No solo-ntracupent — wase. bos utime ahst nt Fe — 0 co emekiniq tebned < to wmpen! tormrearcaa cc = 4 and stusingy foie foir "
+    },
+    {
+      "term": "Stout",
+      "bucket": "bad",
+      "url": "/infographics/stout.png",
+      "wc": 19,
+      "ov": 0.308,
+      "reason": "term_not_detected",
+      "ocr_preview": "lv EEE Sto ut = [dt 3 \\ Stew is a dark becr style derized by tuaazed rmib chese i zarr they owr trom. A tzhe our, 0 fr to 4 (—\\ rich ariz sweet."
+    },
+    {
+      "term": "Simcoe",
+      "bucket": "passable",
+      "url": "/infographics/simcoe.png",
+      "wc": 20,
+      "ov": 0.2,
+      "reason": "moderate_overlap(wc=20,ov=0.20)",
+      "ocr_preview": "<> Simcoe ZEN / \\sin kact / PN Slapuld’a on 5) olv:ctade shop seabse pranat for pani draiwas ( tiacy ottke's and ) clare-awaeang cesoklan eisrniice many modom s"
+    },
+    {
+      "term": "Whirlpool",
+      "bucket": "bad",
+      "url": "/infographics/whirlpool.png",
+      "wc": 13,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "Whirlpooi \\ Ey \\ / [Mh yvaretagarol The stsullt raspersia ond trne toasemetve ( boldiesle and the ) coismand a domal core iater bating."
+    },
+    {
+      "term": "Deaeration",
+      "bucket": "bad",
+      "url": "/infographics/deaeration.png",
+      "wc": 12,
+      "ov": 0.091,
+      "reason": "low_content_or_overlap(wc=12,ov=0.09)",
+      "ocr_preview": "[a] — Deaeration (atiremstarizg) The neneval of diassiveol r= Ping! ad cht-stapen an vacliene o 0% af wittbeisterafnc moteraci 93 caunitewqgr-rast defore ae .8 "
+    },
+    {
+      "term": "Trappist",
+      "bucket": "bad",
+      "url": "/infographics/trappist.png",
+      "wc": 15,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "fe . EO $ Trappis| . tr roraros fit A bew broved unds + maghcticnt and wa 7 \\ with it a trapeny 4 ) : citcary sccreding tel | 0 fi 0 raed stoirt AN produstion s"
+    },
+    {
+      "term": "Witbier",
+      "bucket": "bad",
+      "url": "/infographics/witbier.png",
+      "wc": 16,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=16,ov=0.08)",
+      "ocr_preview": "—— Witbier /witbr/ Wehhatam belgiers haylare waalaneaally AL) sclu'ves tne exrzreced A 7 adicam‘emction \\( oY a avioy-paant and a 5 eartly basy oppierieices."
+    },
+    {
+      "term": "Wort",
+      "bucket": "passable",
+      "url": "/infographics/wort.png",
+      "wc": 13,
+      "ov": 0.182,
+      "reason": "moderate_overlap(wc=13,ov=0.18)",
+      "ocr_preview": "22? Wort +5 D/ Tvorry! Wot is the sweet . + » 1 |osufiosiamted. y / A theii the teant. » rathaers, classem FD futcerhts and proceass teeided for fenfentation."
+    },
+    {
+      "term": "Fermentor",
+      "bucket": "bad",
+      "url": "/infographics/fermentor.png",
+      "wc": 17,
+      "ov": 0.071,
+      "reason": "term_not_detected",
+      "ocr_preview": "= ) | ¥ Fermento = eS > J / TD nrrarotppe? Afoumenzer is the wmitho, } videas there 7 eezing witth crngent ¢wi tobpety — 33 blorpeatia sath) 22-96 yp anch snotu"
+    },
+    {
+      "term": "Aquavit",
+      "bucket": "passable",
+      "url": "/infographics/aquavit.png",
+      "wc": 14,
+      "ov": 0.2,
+      "reason": "moderate_overlap(wc=14,ov=0.20)",
+      "ocr_preview": "Ea Aquavit Jokvawty/ Aquaal: ba AQVAVII Saood nosion distiled ; aad f The iand broatd ; PZ with paniiecs, naid and other bojonicab."
+    },
+    {
+      "term": "Alambic",
+      "bucket": "passable",
+      "url": "/infographics/alambic.png",
+      "wc": 12,
+      "ov": 0.6,
+      "reason": "moderate_overlap(wc=12,ov=0.60)",
+      "ocr_preview": "Alambic Qn [uh-LAM-bik] A traditional copper pot still used for distillation, especially in hrandyv and ¢ Sip Studios - Sipopedia"
+    },
+    {
+      "term": "Demucilage",
+      "bucket": "bad",
+      "url": "/infographics/demucilage.png",
+      "wc": 12,
+      "ov": 0.1,
+      "reason": "term_not_detected",
+      "ocr_preview": "7 Demuci la | [de myersuine) (0) The reamevel of muck from punchiesdt aftf by moching 's sreesctc tursaoalyhee tirne or — water use during visc"
+    },
+    {
+      "term": "Wuyi",
+      "bucket": "bad",
+      "url": "/infographics/wuyi.png",
+      "wc": 20,
+      "ov": 0.143,
+      "reason": "low_content_or_overlap(wc=20,ov=0.14)",
+      "ocr_preview": "\\ Wuyi \\ \\ hb (wow you) / Way irsters uthe mearting awir Pule region thar prave yranng is coulana — feave the pbpany ~~ ENN creurve's and reac NO compisuity."
+    },
+    {
+      "term": "Fragrance",
+      "bucket": "bad",
+      "url": "/infographics/fragrance.png",
+      "wc": 14,
+      "ov": 0.1,
+      "reason": "low_content_or_overlap(wc=14,ov=0.10)",
+      "ocr_preview": "Fragrance ( ( / /lacigrans 0 The small of ply groun oS wsik a hur ive-smanc Th disalbial and before C08 aromai to voiitaned in the wel cup."
+    },
+    {
+      "term": "Calvados",
+      "bucket": "bad",
+      "url": "/infographics/calvados.png",
+      "wc": 15,
+      "ov": 0.1,
+      "reason": "low_content_or_overlap(wc=15,ov=0.10)",
+      "ocr_preview": "B= — 1 Calvados A) /hair vin cias / < Calnackio l.ota appla A @ erepermcinaruficien Rdvirnarce |'Potcen C—~ polifcered hack & reolibtera egjional a, standerds."
+    },
+    {
+      "term": "Yield",
+      "bucket": "passable",
+      "url": "/infographics/yield.png",
+      "wc": 12,
+      "ov": 0.2,
+      "reason": "moderate_overlap(wc=12,ov=0.20)",
+      "ocr_preview": "-— Yield Hy ([114) 0 The bleverage EE dsestior @ourne prodused from & a grees coffee dose during breanng of expresco extrect:"
+    },
+    {
+      "term": "Frenchpress",
+      "bucket": "bad",
+      "url": "/infographics/frenchpress.png",
+      "wc": 15,
+      "ov": 0.083,
+      "reason": "term_not_detected",
+      "ocr_preview": "—=— French — 1 Press [Menits pres] An rarmosion brealu endia ca demda a winen boviivoa nebia n Puinger deirmip grounds fron de:"
+    },
+    {
+      "term": "Congeners",
+      "bucket": "bad",
+      "url": "/infographics/congeners.png",
+      "wc": 20,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=20,ov=0.08)",
+      "ocr_preview": "Congeners Finnst \"9a NLL Cantiund scorvmor colrtray corbog guing sao bidle mronthwzing war er |b tbag pumattor stastind adit in ble rreine ather and pareirs"
+    },
+    {
+      "term": "Lambrusco",
+      "bucket": "passable",
+      "url": "/infographics/lambrusco.png",
+      "wc": 14,
+      "ov": 1,
+      "reason": "moderate_overlap(wc=14,ov=1.00)",
+      "ocr_preview": "1 Lambrusco [lahm-BROOS-koh] Ei) Italian sparkling wine category made from & Lambrusco grapes and produced in styles y ranging from dry to Za sweet."
+    },
+    {
+      "term": "Distillation",
+      "bucket": "bad",
+      "url": "/infographics/distillation.png",
+      "wc": 16,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "Distillatio < Vd.ulbe& ght o Dstilution is the proce: sc clrermemmny and —aB em rommmrtaning leseral \\ = and mare conrozing = to hurrrly ieperding you conneuind"
+    },
+    {
+      "term": "Helles",
+      "bucket": "bad",
+      "url": "/infographics/helles.png",
+      "wc": 14,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=14,ov=0.08)",
+      "ocr_preview": "“™™ Helles | Reiles/ etfobkioin rrolo Ruisrid haore! collinate miolf “ad corttermach Of the behin ms, and diagjes sligey sichierable hhun"
+    },
+    {
+      "term": "Malolactic",
+      "bucket": "passable",
+      "url": "/infographics/malolactic.png",
+      "wc": 16,
+      "ov": 0.923,
+      "reason": "moderate_overlap(wc=16,ov=0.92)",
+      "ocr_preview": "[J ~, Malolactic may-luh-LAK-tik o Relating to malolactic fermentation in which bacteria convert sharper malic acid into softer lactic acid and carbon dioxide."
+    },
+    {
+      "term": "Feints",
+      "bucket": "bad",
+      "url": "/infographics/feints.png",
+      "wc": 18,
+      "ov": 0.091,
+      "reason": "low_content_or_overlap(wc=18,ov=0.09)",
+      "ocr_preview": "| Feints ) [feintol p Pattes are late cus 0 guili f'momten Ta wil uspnilsten'rt are we pe = costuan havasire compoartite and u ere d'irrm veo cisr tittoilater n"
+    },
+    {
+      "term": "Geisha",
+      "bucket": "bad",
+      "url": "/infographics/geisha.png",
+      "wc": 16,
+      "ov": 0.143,
+      "reason": "low_content_or_overlap(wc=16,ov=0.14)",
+      "ocr_preview": "N @ \"7% po NO Geisha = [yisine An ansbiza veristy (§ bucebciter kusly envodltew sbe the infucslon, and naja monae fwhis whan growh and processed well."
+    },
+    {
+      "term": "Saaz",
+      "bucket": "bad",
+      "url": "/infographics/saaz.png",
+      "wc": 14,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=14,ov=0.08)",
+      "ocr_preview": "4 t—. Saaz OR /501.27 : NU Strague a Carrch { > I’ nutdatAvo ataicty (3 8 liokvus ticdistan- @), / cre camle hanlid / aatienmvren and notited biffarness"
+    },
+    {
+      "term": "Gluconic",
+      "bucket": "passable",
+      "url": "/infographics/gluconic.png",
+      "wc": 11,
+      "ov": 0.182,
+      "reason": "moderate_overlap(wc=11,ov=0.18)",
+      "ocr_preview": "my ° Gluconic (bikr-da-mk) Roluting to glccoxir who sceald and trhe conuniacies sum @truies in kombucha."
+    },
+    {
+      "term": "Sediment",
+      "bucket": "bad",
+      "url": "/infographics/sediment.png",
+      "wc": 16,
+      "ov": 0.167,
+      "reason": "low_content_or_overlap(wc=16,ov=0.17)",
+      "ocr_preview": "Sediment /apaamonrt/ Sadliment in the layer at 8ifind sokor grames legp raties, w edhen cone thtat onkar Joof laver during skorage"
+    },
+    {
+      "term": "Heads",
+      "bucket": "bad",
+      "url": "/infographics/heads.png",
+      "wc": 17,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=17,ov=0.08)",
+      "ocr_preview": "{c— Heads (hegs) The jong crable ® ( desklluiom fugetion (0) gtlee hevedaver . comynnival lighler o (2 tolivior o.fwhe cack o O esiilt tnd ghbgicos and oreers."
+    },
+    {
+      "term": "Kirsch",
+      "bucket": "passable",
+      "url": "/infographics/kirsch.png",
+      "wc": 16,
+      "ov": 0.286,
+      "reason": "moderate_overlap(wc=16,ov=0.29)",
+      "ocr_preview": "Kirsch ny Kiach is a clear if skaary frd “tte 1 sts arlcibod foan fe rrrented . chandon including — 0 Sizla sinpay n mary-fuathional methods."
+    },
+    {
+      "term": "Rectification",
+      "bucket": "passable",
+      "url": "/infographics/rectification.png",
+      "wc": 20,
+      "ov": 0.231,
+      "reason": "moderate_overlap(wc=20,ov=0.23)",
+      "ocr_preview": "Rectification (sivee [arnmpcirzea) Reacrhicnos ¢ rronrine) wiitre ilonmit braclsting wiiths derddicion litet mswescer ratucy of Tael have comght Ze romporiage l"
+    },
+    {
+      "term": "Highproof",
+      "bucket": "bad",
+      "url": "/infographics/highproof.png",
+      "wc": 15,
+      "ov": 0.167,
+      "reason": "low_content_or_overlap(wc=15,ov=0.17)",
+      "ocr_preview": "[} Highproof (My por) Highpnool disccribes e O cetld loatibes e ninapre df. e fopercio olt reand svrchch banagui compe with standard exprester"
+    },
+    {
+      "term": "Reduction",
+      "bucket": "bad",
+      "url": "/infographics/reduction.png",
+      "wc": 17,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=17,ov=0.00)",
+      "ocr_preview": "Reduction < /It dultyoal Lircener.oivygen conditus 0 a Tuls nahd for wne ¢memzed a maude. /' > suber gxitleed, a trase 2) sack ce sheck him or rul"
+    },
+    {
+      "term": "Macerate",
+      "bucket": "bad",
+      "url": "/infographics/macerate.png",
+      "wc": 15,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=15,ov=0.08)",
+      "ocr_preview": "EE Macerate — 3 J fogticia sunciva Tis ueek baxanicals o theas tndcrictg somdmesicls board oP o (os lamer doen and blared compontds sistract."
+    },
+    {
+      "term": "Mezcal",
+      "bucket": "bad",
+      "url": "/infographics/mezcal.png",
+      "wc": 20,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=20,ov=0.08)",
+      "ocr_preview": "Mezcal CE Rrelrk, KAIHY \\V/ Maxcallis a Maxican y agwrt cprehat wito N I (hast © Patal agers NRSC heaner dencerted NSA and &% Mext-often esr with arophy or —J c"
+    },
+    {
+      "term": "Peated",
+      "bucket": "bad",
+      "url": "/infographics/peated.png",
+      "wc": 17,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=17,ov=0.08)",
+      "ocr_preview": "| Peated / prios/ Drm Plar-aol diseeribes with 10-caragcting spritetsigsl somar proule plancils i — chboeern fiom to MAN Bat pcssse to past shoie."
+    },
+    {
+      "term": "Roasting",
+      "bucket": "bad",
+      "url": "/infographics/roasting.png",
+      "wc": 14,
+      "ov": 0.071,
+      "reason": "low_content_or_overlap(wc=14,ov=0.07)",
+      "ocr_preview": "- : = [J Roasting /woustin/ A Lairn REE) Paseremiciasual Sergrann saviear, coating. Wids with SNE Rattitals rearty of daseniationQ: kreevenier."
+    },
+    {
+      "term": "Nosing",
+      "bucket": "bad",
+      "url": "/infographics/nosing.png",
+      "wc": 14,
+      "ov": 0.091,
+      "reason": "low_content_or_overlap(wc=14,ov=0.09)",
+      "ocr_preview": "Y Nosing ’/ i [ nobzin] ) Nosing is the bantedental evaluc tna parteh comes snatling in caisititt iellanaals emoure: - = ihtensity, and taati:"
+    },
+    {
+      "term": "Rhum",
+      "bucket": "bad",
+      "url": "/infographics/rhum.png",
+      "wc": 15,
+      "ov": 0.154,
+      "reason": "low_content_or_overlap(wc=15,ov=0.15)",
+      "ocr_preview": "Rhum \\ \\/ sy [a1-m] p— N | ” N Bnew ls the French un eddutaserurebr \\ teqitveem ettihre proripraremading \\ reptear,awnguaentity wvhoir ath to date jure producti"
+    },
+    {
+      "term": "Lactose",
+      "bucket": "bad",
+      "url": "/infographics/lactose.png",
+      "wc": 15,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=15,ov=0.08)",
+      "ocr_preview": "— Lactose + [tandraen °“ Lecurea is milkis pryageld naigu and a conviagamra nulld zenernson. Depsenn prioyluge. aae de fru 1%sjion dugeoate in d"
+    },
+    {
+      "term": "Proofing",
+      "bucket": "passable",
+      "url": "/infographics/proofing.png",
+      "wc": 12,
+      "ov": 0.333,
+      "reason": "moderate_overlap(wc=12,ov=0.33)",
+      "ocr_preview": "® 4 Proofing [\" pru tha] Henpling is the controlled discone.Tnx neo wi monour to reach a wigel bolting st"
+    },
+    {
+      "term": "Stillage",
+      "bucket": "passable",
+      "url": "/infographics/stillage.png",
+      "wc": 14,
+      "ov": 0.364,
+      "reason": "moderate_overlap(wc=14,ov=0.36)",
+      "ocr_preview": "Stillage Zoillingy/ Stillage is the tialpy and nolld resi¢ue tof in a ttilt shor is B distitation has resrosed alcohol vapor."
+    },
+    {
+      "term": "Membrane",
+      "bucket": "passable",
+      "url": "/infographics/membrane.png",
+      "wc": 16,
+      "ov": 0.182,
+      "reason": "moderate_overlap(wc=16,ov=0.18)",
+      "ocr_preview": "7:1 Membrane O11: | 8 Moet tere £9 hh A selective flitration el): comon acad to processts Lo tld conviisits - ermitis ts | to ranrope clancls By particies, and "
+    },
+    {
+      "term": "Solera",
+      "bucket": "bad",
+      "url": "/infographics/solera.png",
+      "wc": 21,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=21,ov=0.08)",
+      "ocr_preview": "forescianN SS IT) » Solera Redanh ! Solers is on auing nil il iil J I and steme rin AT Icas diag auvlust rere fp feed WD ¥QIMKANZ XISNE ir i 1 § 1 il il mpiouat"
+    },
+    {
+      "term": "Alkalinity",
+      "bucket": "bad",
+      "url": "/infographics/alkalinity.png",
+      "wc": 19,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=19,ov=0.08)",
+      "ocr_preview": "MN | Alkalinity fo) Jeal Ralinday The aasters copzttity / o> as nateate its axtiel sarlud. lone dlsacteas and you sinels rrad which ver tslnek yout sharpriess o"
+    },
+    {
+      "term": "Sugarcane",
+      "bucket": "bad",
+      "url": "/infographics/sugarcane.png",
+      "wc": 15,
+      "ov": 0.077,
+      "reason": "term_not_detected",
+      "ocr_preview": "Sugarcanc | Snsugeplen/ Sugerdane is the treatts whae bf esians cure nmecakioes pasales ftaoees all croge!ny fros, rum and anrarupents."
+    },
+    {
+      "term": "Whiskey",
+      "bucket": "passable",
+      "url": "/infographics/whiskey.png",
+      "wc": 13,
+      "ov": 0.273,
+      "reason": "moderate_overlap(wc=13,ov=0.27)",
+      "ocr_preview": "EE J \\ Whiskey / WivRall Whiakey is a distilled gooli laudk wun. BE mialmfiiral ploch mailii and slacirty metured in'wooden."
+    },
+    {
+      "term": "Bancha",
+      "bucket": "bad",
+      "url": "/infographics/bancha.png",
+      "wc": 18,
+      "ov": 0.067,
+      "reason": "term_not_detected",
+      "ocr_preview": "5 /'bartcled/ Bencha is a leter-harv anaaaims neger ne oréomulto naple foeo there nepide leavscl d affening a-gn<atn oor aroma averyday cup."
+    },
+    {
+      "term": "Backslop",
+      "bucket": "bad",
+      "url": "/infographics/backslop.png",
+      "wc": 7,
+      "ov": 0.1,
+      "reason": "low_content_or_overlap(wc=7,ov=0.10)",
+      "ocr_preview": "[ S— — ad - # +S Backslop 3M | 201° ‘Backdoe- in encltemafater of nsing Hdifocoeisraesoeuating mochaliue"
+    },
+    {
+      "term": "Rolling",
+      "bucket": "bad",
+      "url": "/infographics/rolling.png",
+      "wc": 13,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=13,ov=0.08)",
+      "ocr_preview": "Rolling [Poulin] Rolling is the — shopragralop that ONS twenlss of busets — 4 (us) hraver be - inflLlente appnar na) autruction and ensymatic exposk"
+    },
+    {
+      "term": "Armagnac",
+      "bucket": "passable",
+      "url": "/infographics/armagnac.png",
+      "wc": 11,
+      "ov": 0.455,
+      "reason": "moderate_overlap(wc=11,ov=0.45)",
+      "ocr_preview": "T Armagnac [ar-muhn-YAK] / A French brandy from Gascony, typically distilled in raliimn ctille Sip Studios - Sipopedia"
+    },
+    {
+      "term": "Robusta",
+      "bucket": "bad",
+      "url": "/infographics/robusta.png",
+      "wc": 16,
+      "ov": 0.167,
+      "reason": "term_not_detected",
+      "ocr_preview": "Robust (ravbustqg/ A coffee species z ( ( brows fol thgher doffelas. vuotiiger iofferinces. and ge diseaws nissoorice offen used to bpec and beluble coffee"
+    },
+    {
+      "term": "Rondinella",
+      "bucket": "passable",
+      "url": "/infographics/rondinella.png",
+      "wc": 16,
+      "ov": 0.182,
+      "reason": "moderate_overlap(wc=16,ov=0.18)",
+      "ocr_preview": "hi RONDINELLA 0% Inconderanil lagdy Lady Verana girape seniren t@% blaaksly Is plpleduste CD for ctoor bhairer > + evetfioni:al and JJ contrination to dritch gr"
+    },
+    {
+      "term": "Autumnal",
+      "bucket": "passable",
+      "url": "/infographics/autumnal.png",
+      "wc": 12,
+      "ov": 0.364,
+      "reason": "moderate_overlap(wc=12,ov=0.36)",
+      "ocr_preview": "Autumnal fol tgannal / Releting to bill N NZ batwied conditions, /, often desusjose ¥ hare made from = laterxasson growth"
+    },
+    {
+      "term": "Typica",
+      "bucket": "bad",
+      "url": "/infographics/typica.png",
+      "wc": 16,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=16,ov=0.00)",
+      "ocr_preview": "@ Typica [ Tiwt howy/ Our at bugeident DaAZie Tenr ROW hacirnnitt amamed e.m youne &nll mamsesthil ccxmavjganely tew vatck"
+    },
+    {
+      "term": "Liberica",
+      "bucket": "bad",
+      "url": "/infographics/liberica.png",
+      "wc": 17,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=17,ov=0.00)",
+      "ocr_preview": "Liberica #0 Egohiimg A mate scuppsity with bang: basedtal store and aabevsfex otliing. voarnrly Costed, huat NN diffcle, prudty fraim smetles and eclicials"
+    },
+    {
+      "term": "Pinot",
+      "bucket": "bad",
+      "url": "/infographics/pinot.png",
+      "wc": 18,
+      "ov": 0.143,
+      "reason": "low_content_or_overlap(wc=18,ov=0.14)",
+      "ocr_preview": "Pinot lvinou Puo'hy come most Lelus comnmy to Dinot Nett Fnough a tetmtan Kista uoilize! potchessatch as Pinot Eolliand Pinot Blave."
+    },
+    {
+      "term": "Appellation",
+      "bucket": "bad",
+      "url": "/infographics/appellation.png",
+      "wc": 13,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=13,ov=0.08)",
+      "ocr_preview": "Appellation i mo uf! A logully rictined - goognutile renigratio gentercing where grog are yous anc then lease m [are is produci and (ateled."
+    },
+    {
+      "term": "MundoNovo",
+      "bucket": "bad",
+      "url": "/infographics/mundonovo.png",
+      "wc": 19,
+      "ov": 0,
+      "reason": "term_not_detected",
+      "ocr_preview": "Mundo Novo A sean:azimnton/ 1: 1 siznren plumation. begxa chirahing thoian far yoring you n.ea.n. and pas: of yoo to jit miner zeonality in thoeal and ciacerane"
+    },
+    {
+      "term": "Racking",
+      "bucket": "bad",
+      "url": "/infographics/racking.png",
+      "wc": 14,
+      "ov": 0.167,
+      "reason": "low_content_or_overlap(wc=14,ov=0.17)",
+      "ocr_preview": "Racking \\ivelna / a — | Moying wine off-la or end tniind tme ti chalfereused to ser EA z and leanage — teauation or a-yg« | exposure."
+    },
+    {
+      "term": "Anji",
+      "bucket": "bad",
+      "url": "/infographics/anji.png",
+      "wc": 19,
+      "ov": 0.133,
+      "reason": "low_content_or_overlap(wc=19,ov=0.13)",
+      "ocr_preview": "Anji (ohm jee) day skillity, refers to dia|, bilornes a'd where prom ber it my Inotking nride itor ta plasstea woll with riosh, avean she"
+    },
+    {
+      "term": "Ripasso",
+      "bucket": "bad",
+      "url": "/infographics/ripasso.png",
+      "wc": 15,
+      "ov": 0.167,
+      "reason": "low_content_or_overlap(wc=15,ov=0.17)",
+      "ocr_preview": "EF ° — Ripasso Exported 9 [T_X\\ Valpolicella wine A an eo, tnaamnmetaan YY Gommand or (0) Recorié yirnacs EER) [YJ J Uvrhcet bacct budyy. Bo tamin, and Hever da"
+    },
+    {
+      "term": "Americano",
+      "bucket": "passable",
+      "url": "/infographics/americano.png",
+      "wc": 12,
+      "ov": 0.231,
+      "reason": "moderate_overlap(wc=12,ov=0.23)",
+      "ocr_preview": "Americano 5 [uh-meh-ruh-KAH-noh] \\_— An espresso- based drink made by adding hot water to Sip Studios - Sipopedia"
+    },
+    {
+      "term": "Washed",
+      "bucket": "bad",
+      "url": "/infographics/washed.png",
+      "wc": 15,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=15,ov=0.08)",
+      "ocr_preview": "Washed ) (W/o(0) A processing mathed the stomvent ste bentenr rtag booginp nvaras @ boch sad tiemotte& in tnccatage of oaraey and oright"
+    },
+    {
+      "term": "Pulping",
+      "bucket": "bad",
+      "url": "/infographics/pulping.png",
+      "wc": 15,
+      "ov": 0.1,
+      "reason": "term_not_detected",
+      "ocr_preview": "AS / P 0 oy SEE] enh [] ; Lage [patpind ZZ Jet The mactanical (C) eendrile of suther 6 (=) cheme cife and my of the mall Eariem, repmeination, eved or drying."
+    },
+    {
+      "term": "Amarone",
+      "bucket": "bad",
+      "url": "/infographics/amarone.png",
+      "wc": 20,
+      "ov": 0.154,
+      "reason": "low_content_or_overlap(wc=20,ov=0.15)",
+      "ocr_preview": "Amarone / 2nmortouhe/ Dry poairertal jnef wihite ard Véatorls eapp sfarn peliizls thisék phens catau yonusxre theil leita extract ond arcctic"
+    },
+    {
+      "term": "Teroldego",
+      "bucket": "bad",
+      "url": "/infographics/teroldego.png",
+      "wc": 18,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=18,ov=0.00)",
+      "ocr_preview": "Teroldego flier unploget Alone baces grays €00Ss niremen produimg praply aclered nusme with put tann bust cumy* and ruslic tamin."
+    },
+    {
+      "term": "Vermentino",
+      "bucket": "bad",
+      "url": "/infographics/vermentino.png",
+      "wc": 18,
+      "ov": 0.167,
+      "reason": "low_content_or_overlap(wc=18,ov=0.17)",
+      "ocr_preview": "Vermentino liner men TEE nok] Medirernansan wile yeam kaews for bright scidity, hefed sitew” abtes and a whine stepnd tored finish."
+    },
+    {
+      "term": "Altbier",
+      "bucket": "bad",
+      "url": "/infographics/altbier.png",
+      "wc": 17,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=17,ov=0.08)",
+      "ocr_preview": "[|] Altbier All 1, 2017 Galosno in coditonal banrtaril eind the oant Elnieran it puseadel so Mme ~ ysleerind Elmietened crazi is a nreers trus Xhseit."
+    },
+    {
+      "term": "Wetmill",
+      "bucket": "bad",
+      "url": "/infographics/wetmill.png",
+      "wc": 13,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=13,ov=0.00)",
+      "ocr_preview": "O Wetmill od Advireard 7 A corm surird-ate if theyrapmiedirid . Holrm-ty momneied, roemnen anij, sterity a abediemosh is every cny-shxing."
+    },
+    {
+      "term": "Roast",
+      "bucket": "passable",
+      "url": "/infographics/roast.png",
+      "wc": 13,
+      "ov": 0.2,
+      "reason": "moderate_overlap(wc=13,ov=0.20)",
+      "ocr_preview": "QU — 2 Roast N= tone The controlled {Sr acditsmess of next P= in greap ocitios to RR N seshise, \\xoire — aclizat ler color, and fievor."
+    },
+    {
+      "term": "Acidification",
+      "bucket": "bad",
+      "url": "/infographics/acidification.png",
+      "wc": 18,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=18,ov=0.08)",
+      "ocr_preview": "+ 0 ; = (C) <9 * ° po ° = , | Acidification PS Noulariettdees Stes JA Diaitoriovasuelig solve mano wucoraiaion nme sontittipet ilosterei rem sale, paid, |bwasll"
+    },
+    {
+      "term": "Volatile",
+      "bucket": "bad",
+      "url": "/infographics/volatile.png",
+      "wc": 14,
+      "ov": 0.1,
+      "reason": "low_content_or_overlap(wc=14,ov=0.10)",
+      "ocr_preview": ") Volatile Aademity lo meuer apiae irsualty O chattoritha me scaaihs arating o/dere nand previde to rsualty that irsullly enaponsies"
+    },
+    {
+      "term": "Refractometer",
+      "bucket": "bad",
+      "url": "/infographics/refractometer.png",
+      "wc": 15,
+      "ov": 0.091,
+      "reason": "term_not_detected",
+      "ocr_preview": "S Refractomete / [suimibie the min mim) (R An aplicial snajor trad culnemsmrandiial Et = actriesittsanléraime r by linuier dal doere imprul trands light."
+    },
+    {
+      "term": "Siphon",
+      "bucket": "bad",
+      "url": "/infographics/siphon.png",
+      "wc": 16,
+      "ov": 0.333,
+      "reason": "term_not_detected",
+      "ocr_preview": "LSE Siph - /aatlon/ A vocuam brewer thut (ET) maeasen stapu banalarg chamlerss with neslh y and preaposd changes for a clean, aromatic c Fam"
+    },
+    {
+      "term": "Aglianico",
+      "bucket": "passable",
+      "url": "/infographics/aglianico.png",
+      "wc": 17,
+      "ov": 1,
+      "reason": "moderate_overlap(wc=17,ov=1.00)",
+      "ocr_preview": "Aglianico AA /a'ljanéko/ @en Southern Italian 9 black grape producing deeply colored wines with high tannin, firm acidity, and strong aging potential."
+    },
+    {
+      "term": "Sodium",
+      "bucket": "bad",
+      "url": "/infographics/sodium.png",
+      "wc": 18,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=18,ov=0.08)",
+      "ocr_preview": "g Sodium o odiu /Soudipny A dunanenal action bact and leo:acioh © N\\ fattines and rtelrly (o) erhilp of «a mecking's while heb tave may raid slistmeify EE ina"
+    },
+    {
+      "term": "Bitterness",
+      "bucket": "bad",
+      "url": "/infographics/bitterness.png",
+      "wc": 16,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=16,ov=0.08)",
+      "ocr_preview": "Bitterness [\"birternaw binroneal is the leasit essmalas in create k lilteraly by J Seroiplle acese fhhsr aithe compou that bulsnes wth = swearness in beet"
+    },
+    {
+      "term": "Ristretto",
+      "bucket": "bad",
+      "url": "/infographics/ristretto.png",
+      "wc": 16,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=16,ov=0.00)",
+      "ocr_preview": "= Ristretto & Arigtrrotte/ = = A imiairence progared ay M) nelo ysur sveo=d rtran | a promsed an to setiplitossd eur emficatian. yards and detesed Pent? thleart"
+    },
+    {
+      "term": "Macchiato",
+      "bucket": "bad",
+      "url": "/infographics/macchiato.png",
+      "wc": 14,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=14,ov=0.00)",
+      "ocr_preview": "Macchiato Thmigroio A= re peency, imarked wihs prpopt nnaissts of with complered, has com temprociats tempery sendary exement."
+    },
+    {
+      "term": "Storage",
+      "bucket": "passable",
+      "url": "/infographics/storage.png",
+      "wc": 16,
+      "ov": 0.417,
+      "reason": "moderate_overlap(wc=16,ov=0.42)",
+      "ocr_preview": "—=1| STORAGE [oro in] The controlled holding —— of Romalidiatinty fosh foaaa is aN p hawe at Thimtec| la iad purltagi creaility convlwceok te protect quality an"
+    },
+    {
+      "term": "Benifuki",
+      "bucket": "bad",
+      "url": "/infographics/benifuki.png",
+      "wc": 15,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=15,ov=0.08)",
+      "ocr_preview": "[ J [ J] ¢¢ Benifuki Healtre to— fapemon the praner wae-y adil yourcaim ceannd yournnteel poxe ahd its ae soue io evekre and cientual profts."
+    },
+    {
+      "term": "Kalita",
+      "bucket": "bad",
+      "url": "/infographics/kalita.png",
+      "wc": 16,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=16,ov=0.00)",
+      "ocr_preview": "A Kalita Atinkf«ottom pour. vein pocimel taregrace for weird dnoring tome costigien ints will nhurc through smail ouleh f"
+    },
+    {
+      "term": "Stripping",
+      "bucket": "bad",
+      "url": "/infographics/stripping.png",
+      "wc": 17,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=17,ov=0.08)",
+      "ocr_preview": "° ° R. Stripping mn 1.97 puig | AL The nst action (RT = Ley: thay ER. IE sumaercales eed =] oOrsion from A A enals take foun poree : —— 5) %s hour reaking find "
+    },
+    {
+      "term": "Bottling",
+      "bucket": "bad",
+      "url": "/infographics/bottling.png",
+      "wc": 17,
+      "ov": 0.154,
+      "reason": "low_content_or_overlap(wc=17,ov=0.15)",
+      "ocr_preview": "=~ Bottling / batnty/ Brovitet a ilve wage conial warsing conse — ftigd acur and nardamnee sorme contaeritul red, conmer and clatute conditions."
+    },
+    {
+      "term": "Briskness",
+      "bucket": "bad",
+      "url": "/infographics/briskness.png",
+      "wc": 14,
+      "ov": 0.167,
+      "reason": "low_content_or_overlap(wc=14,ov=0.17)",
+      "ocr_preview": "Briskness Llutkdhem Beciomise o: a hady Brigm Gasan rennttion in Hal lerehluzing imintinese to rsd an and's clear quick trian"
+    },
+    {
+      "term": "Cappuccino",
+      "bucket": "bad",
+      "url": "/infographics/cappuccino.png",
+      "wc": 15,
+      "ov": 0.1,
+      "reason": "low_content_or_overlap(wc=15,ov=0.10)",
+      "ocr_preview": "Cappuccino (Reapu ‘cf Incou) At agessus and mils tiime mytte wth ttisance mils and feant in a balanced — proppition and smaillar fonnat."
+    },
+    {
+      "term": "Turkish",
+      "bucket": "bad",
+      "url": "/infographics/turkish.png",
+      "wc": 15,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=15,ov=0.08)",
+      "ocr_preview": "QA ¢ Turkish De [Fait vidR] ) | A polatcation TE gertited seing vour nan coffiie un shevnd a currer and reseed is fiisted with pairment in the cup."
+    },
+    {
+      "term": "Syneresis",
+      "bucket": "bad",
+      "url": "/infographics/syneresis.png",
+      "wc": 15,
+      "ov": 0.091,
+      "reason": "low_content_or_overlap(wc=15,ov=0.09)",
+      "ocr_preview": "3 Syneresis hN—\"4 [shvenies] in the opfertacky on ticpin ghelf csnttore dit pur tbevergent your me keneb ation in ohtond cely cbotars."
+    },
+    {
+      "term": "Bourbon",
+      "bucket": "passable",
+      "url": "/infographics/bourbon.png",
+      "wc": 16,
+      "ov": 0.333,
+      "reason": "moderate_overlap(wc=16,ov=0.33)",
+      "ocr_preview": "Zz Bourbon Ibor bon! %® An snakuce cultivar ® arcoir deszasded qq ( frow kypics and hegad for speemess balanced cotaity and atcing cup potential."
+    },
+    {
+      "term": "Crema",
+      "bucket": "bad",
+      "url": "/infographics/crema.png",
+      "wc": 16,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=16,ov=0.08)",
+      "ocr_preview": "Crema — Piv rem Eo D) The woldsth browm deomsblanias. doe sor lonmnelu Ce Tetvana aaleois cla = schiatonuxs eoliss and lirre solids."
+    },
+    {
+      "term": "Tails",
+      "bucket": "bad",
+      "url": "/infographics/tails.png",
+      "wc": 16,
+      "ov": 0.083,
+      "reason": "low_content_or_overlap(wc=16,ov=0.08)",
+      "ocr_preview": "Tails EA:0IOT Srae noe the ktre &g Rullr avamation the ire nilals to com | kermojp bh, rontine blur, of 8m renocing io cnder ead."
+    },
+    {
+      "term": "Brut",
+      "bucket": "bad",
+      "url": "/infographics/brut.png",
+      "wc": 14,
+      "ov": 0.067,
+      "reason": "low_content_or_overlap(wc=14,ov=0.07)",
+      "ocr_preview": "/brut/ [s undiertibas an bocaining day paskiiin ercnart brieives n ste rmntboh traileag wppriteclly sitep, spanking stish."
+    },
+    {
+      "term": "Brackish",
+      "bucket": "bad",
+      "url": "/infographics/brackish.png",
+      "wc": 14,
+      "ov": 0.1,
+      "reason": "low_content_or_overlap(wc=14,ov=0.10)",
+      "ocr_preview": "[ 8 Brackish / brackosht Belder woto ausiblity beliges Framiticated and decenhin. Wien powtorgr davemert before the szetett or siailable to drink."
+    },
+    {
+      "term": "Ebc",
+      "bucket": "bad",
+      "url": "/infographics/ebc.png",
+      "wc": 13,
+      "ov": 0.1,
+      "reason": "term_not_detected",
+      "ocr_preview": "J=dlks 4 LBG is the Envepnan Breating Graeention color wade lized to exjxralily Dzer and reud color andyxically."
+    },
+    {
+      "term": "Sweetness",
+      "bucket": "bad",
+      "url": "/infographics/sweetness.png",
+      "wc": 12,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=12,ov=0.00)",
+      "ocr_preview": "Sweetness ( / ow-rtmes/ The senoory implession if 1ngdscore dany esleore icdlt haunds sbibily and. bilterness in coftes."
+    },
+    {
+      "term": "Nilgiri",
+      "bucket": "bad",
+      "url": "/infographics/nilgiri.png",
+      "wc": 17,
+      "ov": 0.071,
+      "reason": "low_content_or_overlap(wc=17,ov=0.07)",
+      "ocr_preview": "Nilgiri / nigri/ ( ( Might isvea from th iacil Hammes ia seeiagad tejuks and ic 24125 scared to oRaui- ogiieure. any helrer :nd buslcs ot iecd ta< permrmatec"
+    },
+    {
+      "term": "Trebbiano",
+      "bucket": "bad",
+      "url": "/infographics/trebbiano.png",
+      "wc": 21,
+      "ov": 0,
+      "reason": "low_content_or_overlap(wc=21,ov=0.00)",
+      "ocr_preview": "\\= [J 20 Trebbiano 5 HW, SOWIg LHON CUED) know leraity of Listism (COR caitth anntrestw aaisity Cd coxpm ito phessi reality 2 ueul sear ol anldty O) ~— oether f"
+    },
+    {
+      "term": "Bovine",
+      "bucket": "passable",
+      "url": "/infographics/bovine.png",
+      "wc": 13,
+      "ov": 0.2,
+      "reason": "moderate_overlap(wc=13,ov=0.20)",
+      "ocr_preview": "Sy BOVINE [aouvaing Weaeb det wid 3 / \\ fan conilc [—— A dazio drasimilk . ar icbiry pradusts a made from cmilk."
+    },
+    {
+      "term": "Hefeweizen",
+      "bucket": "passable",
+      "url": "/infographics/hefeweizen.png",
+      "wc": 20,
+      "ov": 0.214,
+      "reason": "moderate_overlap(wc=20,ov=0.21)",
+      "ocr_preview": "alin Hefeweizen (HEY 4\\lluiay degbn) + An unhliered Cerman ueuat cle mesgbloue fi + high carferedion, clow: | wilarnagnas, sirid perar chlven cater-a-and clow S"
+    },
+    {
+      "term": "Biluochun",
+      "bucket": "bad",
+      "url": "/infographics/biluochun.png",
+      "wc": 18,
+      "ov": 0.063,
+      "reason": "low_content_or_overlap(wc=18,ov=0.06)",
+      "ocr_preview": "NY Biluochun flaee rerazve chound =P Biluochan is a Chiess | gtinaszandl lightly Og cortcist ene ffosmn to derrouystily vespaorcalr, prormou aimtba, and liwey f"
+    },
+    {
+      "term": "Tieguanyin",
+      "bucket": "bad",
+      "url": "/infographics/tieguanyin.png",
+      "wc": 19,
+      "ov": 0.143,
+      "reason": "low_content_or_overlap(wc=19,ov=0.14)",
+      "ocr_preview": "Tieguanyin has sovinilve ylur Trappalod ‘rust rimuost caning |arestyle and atroige acepireicnlt, who tma and rallea aurthedlwashd ovur a aneach haxurest cup."
+    },
+    {
+      "term": "Cachaca",
+      "bucket": "bad",
+      "url": "/infographics/cachaca.png",
+      "wc": 11,
+      "ov": 0.091,
+      "reason": "term_not_detected",
+      "ocr_preview": "Jdersed/ Contmet Is adhwsati ent cniatinggs a riotioe tha torersamct than engey / juice than moriceres."
+    },
+    {
+      "term": "Verdelho",
+      "bucket": "bad",
+      "url": "/infographics/verdelho.png",
+      "wc": 16,
+      "ov": 0.385,
+      "reason": "term_not_detected",
+      "ocr_preview": "Verdelhc /var de ino/ White grape assectatt with Mall/ete oca Assetace, producing a with aissediond, Neh be tiny, and moderate body."
+    },
+    {
+      "term": "Carbonic",
+      "bucket": "bad",
+      "url": "/infographics/carbonic.png",
+      "wc": 23,
+      "ov": 0.077,
+      "reason": "low_content_or_overlap(wc=23,ov=0.08)",
+      "ocr_preview": "CO.COs C ~ 11x Carbonic Aast Nacerity Start for malenite, NN facarpasdny wrhiwh is +X ®A fat caumsgie CH ) to gman ian in ot a oF anal er berma t tlst, ceuht, c"
+    },
+    {
+      "term": "Sencha",
+      "bucket": "bad",
+      "url": "/infographics/sencha.png",
+      "wc": 20,
+      "ov": 0.118,
+      "reason": "term_not_detected",
+      "ocr_preview": "$ § § Ford 1p) = Sernchs is the standar! > alear vewx orranted priesnueg sack with damale stiaped liguwa® and a fhalce proffer /=\\ ~// bulanging sievermregk, pa"
+    },
+    {
+      "term": "Kabusecha",
+      "bucket": "bad",
+      "url": "/infographics/kabusecha.png",
+      "wc": 19,
+      "ov": 0.071,
+      "reason": "low_content_or_overlap(wc=19,ov=0.07)",
+      "ocr_preview": "//// | Kabusecha Moh & conprioring. Kebowarhc is Japaroess prowiie Aum’ ¢/ for a drocé: maend that gesteure laring a raa taeuglecnsa | weckes chop rrests ana gr"
+    },
+    {
+      "term": "Mash",
+      "bucket": "bad",
+      "url": "/infographics/mash.png",
+      "wc": 12,
+      "ov": 0.154,
+      "reason": "low_content_or_overlap(wc=12,ov=0.15)",
+      "ocr_preview": "o Mash Sa . Areant Ho © Tiowictiors of conwawsrutiel and ter rmiee ouw a concded conwecs, — wrastting the ew. tiughte to brewing"
+    }
+  ]
+}

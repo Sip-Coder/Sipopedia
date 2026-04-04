@@ -114,3 +114,151 @@
 5. Store sessions/messages in Supabase tables for resume capability.
 6. Add guardrails: output checks, error handling, and rate-limit-safe retry messaging.
 
+## TODO: Sip Studios Game V2 (Duolingo-Style Equipment Learning)
+- Priority: High
+- Status: Planned
+- Reference PRD: `docs/sip-studios-game-v2-prd.md`
+- Goal: Deliver a smooth, node-based educational game that teaches winery, brewery, and distillery equipment with mastery progression.
+
+### Epic A: Foundations and Architecture
+1. `GAME-001` - Scaffold game domain modules
+   - Priority: High
+   - Estimate: 1 day
+   - Files:
+     - `src/game/stateMachine.ts`
+     - `src/game/challengeEngine.ts`
+     - `src/game/spacedRepetition.ts`
+     - `src/game/content/equipmentCatalog.ts`
+     - `src/game/content/facilityNodes.ts`
+   - Definition of done:
+     - Modules compile and export stable interfaces.
+     - `SipStudiosGame` reads from domain modules, not inline constants.
+
+2. `GAME-002` - Normalize UI state model for nodes, sessions, rewards
+   - Priority: High
+   - Estimate: 0.5 day
+   - Files:
+     - `src/components/SipStudiosGame.tsx`
+     - `src/game/types.ts`
+   - Definition of done:
+     - Game state transitions are explicit (`idle`, `lesson`, `challenge`, `result`, `unlock`).
+
+### Epic B: Vertical Slice (Winery)
+1. `GAME-101` - Node path UI and lock/unlock flow
+   - Priority: High
+   - Estimate: 1 day
+   - Existing assets to reuse now:
+     - `public/academy/units/unit-04-the-aging-vault.png`
+     - `public/academy/realms/realm-4-cellar-citadel.jpg`
+   - Definition of done:
+     - Path nodes render with statuses (`locked`, `available`, `completed`).
+     - First 3 winery nodes playable in sequence.
+
+2. `GAME-102` - Equipment hotspot scene (winery)
+   - Priority: High
+   - Estimate: 1 to 1.5 days
+   - Existing assets to reuse now:
+     - `public/academy/realms/realm-1-crystal-atrium.jpg`
+     - `public/academy/realms/realm-4-cellar-citadel.jpg`
+   - Definition of done:
+     - 8 to 12 clickable hotspots with feedback and explanation cards.
+
+3. `GAME-103` - Challenge templates (identify + sequence + function match)
+   - Priority: High
+   - Estimate: 1.5 to 2 days
+   - Definition of done:
+     - At least 3 challenge types run from shared challenge engine.
+     - Correctness, explanation, and scoring are wired.
+
+4. `GAME-104` - Results panel, XP, and "practice mistakes" queue
+   - Priority: High
+   - Estimate: 1 day
+   - Definition of done:
+     - Per-node XP and mistake review list displayed and persisted in memory.
+
+### Epic C: Brewery and Distillery Expansion
+1. `GAME-201` - Brewery content pack and hotspots
+   - Priority: High
+   - Estimate: 2 to 3 days
+   - Definition of done:
+     - Brewery module has 10+ equipment items and 12+ challenges.
+
+2. `GAME-202` - Distillery content pack and hotspots
+   - Priority: High
+   - Estimate: 2 to 3 days
+   - Definition of done:
+     - Distillery module has 10+ equipment items and 12+ challenges.
+
+### Epic D: Persistence and Admin
+1. `GAME-301` - Supabase schema for progress and attempts
+   - Priority: High
+   - Estimate: 1 day
+   - Files:
+     - `supabase/migrations/<timestamp>_game_progress_schema.sql`
+   - Tables:
+     - `game_facility_progress`
+     - `game_node_attempts`
+     - `game_equipment_mastery`
+     - `game_event_log`
+   - Definition of done:
+     - RLS and auth-safe writes/reads in place for signed-in users.
+
+2. `GAME-302` - Save/resume integration
+   - Priority: High
+   - Estimate: 1 day
+   - Files:
+     - `src/lib/gameProgress.ts`
+     - `src/components/SipStudiosGame.tsx`
+   - Definition of done:
+     - Resume returns player to correct node and mastery state.
+
+3. `GAME-303` - Admin content toggles (node/challenge enablement)
+   - Priority: Medium
+   - Estimate: 1 to 2 days
+   - Files:
+     - `src/components/TerminologyAdmin.tsx` (or new `GameAdmin.tsx`)
+   - Definition of done:
+     - Admin can enable/disable nodes and challenge groups without code change.
+
+### Epic E: Polish, Accessibility, Performance
+1. `GAME-401` - Motion/audio feedback polish
+   - Priority: Medium
+   - Estimate: 1 to 2 days
+2. `GAME-402` - Keyboard navigation + reduced-motion
+   - Priority: Medium
+   - Estimate: 1 day
+3. `GAME-403` - Performance pass (lazy load assets by facility)
+   - Priority: Medium
+   - Estimate: 1 day
+
+## Immediate Execution Plan (Can Start Now With Existing Resources)
+- Priority: High
+- Status: Ready now
+- Constraint: use existing assets/code only, no new character art required.
+
+### Sprint 0 (3-5 days) - Ship a V2 Alpha Using Current Assets
+1. `NOW-001` - Replace current walkaround with node-path shell
+   - Reuse existing `public/academy/units/*.png` for node art.
+   - Outcome: Duolingo-like progression skeleton in `SipStudiosGame`.
+
+2. `NOW-002` - Add winery equipment lesson cards (text-first)
+   - Build data-driven cards in `src/game/content/equipmentCatalog.ts`.
+   - Outcome: educational depth without waiting on new art.
+
+3. `NOW-003` - Add 3 challenge types with existing UI components
+   - Identify, sequence, and function-match.
+   - Outcome: repeatable challenge loop with scoring.
+
+4. `NOW-004` - Add in-session mastery + XP + results recap
+   - Local state first, Supabase later.
+   - Outcome: rewarding loop and reduced redundancy.
+
+5. `NOW-005` - Instrument basic analytics events
+   - Track `node_started`, `challenge_answered`, `node_completed`.
+   - Outcome: data to tune difficulty before full art production.
+
+### Why this is executable immediately
+- Current game tab already has movement, interaction, dialogue, and progress affordances in `src/components/SipStudiosGame.tsx`.
+- Existing realm/unit/guide assets already exist under `public/academy/*`.
+- Quiz and challenge patterns already exist in repo (`BeverageQuiz`, `SipAcademy` content flow) and can be reused.
+

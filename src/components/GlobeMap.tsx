@@ -4,13 +4,17 @@ import * as THREE from "three";
 const GLOBE_R = 1;
 const GLOBE_ROTATION_Y_DEFAULT = 0.4;
 const GLOBE_ROTATION_X_DEFAULT = 0;
-const TEX_W = 2048;
-const TEX_H = 1024;
+const TEX_W = 4096;
+const TEX_H = 2048;
 const MAP_W = 800;
 const MAP_H = 400;
+const EARTH_BASE_TEXTURE_URL = "/earth-topo-bathy-5400.jpg";
 const CAMERA_Z_DEFAULT = 2.85;
-const CAMERA_Z_MIN = 2.05;
+const CAMERA_Z_MIN = 1.45;
 const CAMERA_Z_MAX = 4.6;
+const CAMERA_Z_STEP = 0.2;
+const PIN_R = 0.014;
+const PIN_SELECTED_SCALE = 1.25;
 
 export type GlobePinInput = {
   cityKey: string;
@@ -29,41 +33,149 @@ type GlobeMapProps = {
   onPinSelect: (pin: GlobePinInput) => void;
 };
 
+type LonLat = [lon: number, lat: number];
+
+type Admin1LineRecord = {
+  country: string;
+  segments: LonLat[][];
+};
+
 const FOCUS_HEX: Record<string, number> = {
   Wine: 0xd4435b,
-  Spirits: 0xf4a623,
   Beer: 0xe8882a,
+  Spirits: 0x38a169,
+  Coffee: 0x8b5e3c,
+  Tea: 0xe6c85c,
   Sake: 0xa57ecf,
   "Zero Proof": 0x4caf80,
-  "Coffee & Tea": 0x9c6e56,
+  "Coffee & Tea": 0x8b5e3c,
 };
 
-const FOCUS_CSS: Record<string, string> = {
-  Wine: "#d4435b",
-  Spirits: "#f4a623",
-  Beer: "#e8882a",
-  Sake: "#a57ecf",
-  "Zero Proof": "#4caf80",
-  "Coffee & Tea": "#9c6e56",
+const LEGEND_ITEMS: Array<{ label: string; color: string }> = [
+  { label: "Wine", color: "#d4435b" },
+  { label: "Beer", color: "#e8882a" },
+  { label: "Spirits", color: "#38a169" },
+  { label: "Coffee", color: "#8b5e3c" },
+  { label: "Tea", color: "#e6c85c" },
+];
+
+const COUNTRY_NAME_ALIAS: Record<string, string> = {
+  "united states": "united states of america",
+  usa: "united states of america",
+  us: "united states of america",
+  "u.s.a.": "united states of america",
+  "u.s.": "united states of america",
+  "united kingdom": "united kingdom",
+  uk: "united kingdom",
+  "great britain": "united kingdom",
+  england: "united kingdom",
+  "czech republic": "czechia",
+  "ivory coast": "cote d'ivoire",
+  "south korea": "korea republic of",
+  "north korea": "korea democratic people's republic of",
+  russia: "russian federation",
 };
 
-function buildEarthTexture(mapPaths: MapCountryPath[]): HTMLCanvasElement {
-  const canvas = document.createElement("canvas");
-  canvas.width = TEX_W;
-  canvas.height = TEX_H;
+let admin1LineCachePromise: Promise<Admin1LineRecord[]> | null = null;
+
+function normalizeCountryName(value: string): string {
+  const base = value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, " ")
+    .trim()
+    .toLowerCase();
+  return COUNTRY_NAME_ALIAS[base] ?? base;
+}
+
+async function loadAdmin1Lines(): Promise<Admin1LineRecord[]> {
+  if (!admin1LineCachePromise) {
+    admin1LineCachePromise = fetch("/admin1-lines.geojson")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((json: unknown) => {
+        if (!json || typeof json !== "object") return [];
+        const root = json as { features?: Array<{ properties?: Record<string, unknown>; geometry?: { type?: string; coordinates?: unknown } }> };
+        if (!Array.isArray(root.features)) return [];
+        const out: Admin1LineRecord[] = [];
+        for (const feature of root.features) {
+          const countryRaw = typeof feature.properties?.ADM0_NAME === "string" ? feature.properties.ADM0_NAME : "";
+          if (!countryRaw || !feature.geometry?.type) continue;
+          const country = normalizeCountryName(countryRaw);
+          if (feature.geometry.type === "LineString" && Array.isArray(feature.geometry.coordinates)) {
+            const segment = (feature.geometry.coordinates as unknown[])
+              .filter((pair): pair is [number, number] => Array.isArray(pair) && typeof pair[0] === "number" && typeof pair[1] === "number")
+              .map((pair) => [pair[0], pair[1]] as LonLat);
+            if (segment.length > 1) out.push({ country, segments: [segment] });
+          } else if (feature.geometry.type === "MultiLineString" && Array.isArray(feature.geometry.coordinates)) {
+            const segments = (feature.geometry.coordinates as unknown[])
+              .map((line) =>
+                Array.isArray(line)
+                  ? (line as unknown[])
+                      .filter((pair): pair is [number, number] => Array.isArray(pair) && typeof pair[0] === "number" && typeof pair[1] === "number")
+                      .map((pair) => [pair[0], pair[1]] as LonLat)
+                  : []
+              )
+              .filter((line) => line.length > 1);
+            if (segments.length > 0) out.push({ country, segments });
+          }
+        }
+        return out;
+      })
+      .catch(() => []);
+  }
+  return admin1LineCachePromise;
+}
+
+function drawCountryShapes(
+  ctx: CanvasRenderingContext2D,
+  mapPaths: MapCountryPath[],
+  sx: number,
+  sy: number,
+  withFill: boolean,
+  withStroke: boolean
+): void {
+  const re = /([ML])(-?[\d.]+),(-?[\d.]+)|(Z)/g;
+  for (const country of mapPaths) {
+    re.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    ctx.beginPath();
+    while ((m = re.exec(country.path)) !== null) {
+      if (m[4] === "Z") {
+        ctx.closePath();
+      } else if (m[1] === "M") {
+        ctx.moveTo(Number.parseFloat(m[2]) * sx, Number.parseFloat(m[3]) * sy);
+      } else {
+        ctx.lineTo(Number.parseFloat(m[2]) * sx, Number.parseFloat(m[3]) * sy);
+      }
+    }
+    if (withFill) ctx.fill();
+    if (withStroke) ctx.stroke();
+  }
+}
+
+function paintEarthTexture(
+  canvas: HTMLCanvasElement,
+  mapPaths: MapCountryPath[],
+  selectableCountries: Set<string>,
+  admin1Lines: Admin1LineRecord[],
+  baseImage?: HTMLImageElement
+): void {
   const ctx = canvas.getContext("2d");
-  if (!ctx) return canvas;
+  if (!ctx) return;
 
-  const oceanGrad = ctx.createLinearGradient(0, 0, 0, TEX_H);
-  oceanGrad.addColorStop(0, "#030912");
-  oceanGrad.addColorStop(0.28, "#050f20");
-  oceanGrad.addColorStop(0.5, "#071528");
-  oceanGrad.addColorStop(0.72, "#050f20");
-  oceanGrad.addColorStop(1, "#030912");
-  ctx.fillStyle = oceanGrad;
-  ctx.fillRect(0, 0, TEX_W, TEX_H);
+  if (baseImage && baseImage.complete && baseImage.naturalWidth > 0) {
+    ctx.drawImage(baseImage, 0, 0, TEX_W, TEX_H);
+  } else {
+    const oceanGrad = ctx.createLinearGradient(0, 0, 0, TEX_H);
+    oceanGrad.addColorStop(0, "#0a2442");
+    oceanGrad.addColorStop(0.45, "#0b335e");
+    oceanGrad.addColorStop(1, "#071f3a");
+    ctx.fillStyle = oceanGrad;
+    ctx.fillRect(0, 0, TEX_W, TEX_H);
+  }
 
-  ctx.strokeStyle = "rgba(70,120,200,0.055)";
+  // Subtle global graticules preserve spatial readability without overpowering terrain.
+  ctx.strokeStyle = "rgba(130,170,210,0.08)";
   ctx.lineWidth = 1;
   for (let lat = -80; lat <= 80; lat += 20) {
     const y = ((90 - lat) / 180) * TEX_H;
@@ -80,44 +192,55 @@ function buildEarthTexture(mapPaths: MapCountryPath[]): HTMLCanvasElement {
     ctx.stroke();
   }
 
-  ctx.strokeStyle = "rgba(100,200,255,0.16)";
-  ctx.lineWidth = 1.4;
-  ctx.beginPath();
-  ctx.moveTo(0, TEX_H / 2);
-  ctx.lineTo(TEX_W, TEX_H / 2);
-  ctx.stroke();
-
   const sx = TEX_W / MAP_W;
   const sy = TEX_H / MAP_H;
+  ctx.strokeStyle = "rgba(232,242,231,0.52)";
+  ctx.lineWidth = 1.2;
+  drawCountryShapes(ctx, mapPaths, sx, sy, false, true);
 
-  const landGrad = ctx.createLinearGradient(0, 0, 0, TEX_H);
-  landGrad.addColorStop(0, "#1a3018");
-  landGrad.addColorStop(0.38, "#203820");
-  landGrad.addColorStop(0.5, "#274a26");
-  landGrad.addColorStop(0.62, "#203820");
-  landGrad.addColorStop(1, "#1a3018");
-  ctx.fillStyle = landGrad;
-  ctx.strokeStyle = "#2e5530";
-  ctx.lineWidth = 0.6;
+  // Crisp pass for max zoom edge definition.
+  ctx.strokeStyle = "rgba(255,255,255,0.2)";
+  ctx.lineWidth = 0.7;
+  drawCountryShapes(ctx, mapPaths, sx, sy, false, true);
 
-  const re = /([ML])(-?[\d.]+),(-?[\d.]+)|(Z)/g;
-  for (const country of mapPaths) {
-    re.lastIndex = 0;
-    let m: RegExpExecArray | null;
-    ctx.beginPath();
-    while ((m = re.exec(country.path)) !== null) {
-      if (m[4] === "Z") {
-        ctx.closePath();
-      } else if (m[1] === "M") {
-        ctx.moveTo(parseFloat(m[2]) * sx, parseFloat(m[3]) * sy);
-      } else {
-        ctx.lineTo(parseFloat(m[2]) * sx, parseFloat(m[3]) * sy);
+  if (selectableCountries.size > 0 && admin1Lines.length > 0) {
+    ctx.save();
+    ctx.strokeStyle = "rgba(237, 247, 255, 0.34)";
+    ctx.lineWidth = 0.58;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    for (const lineRecord of admin1Lines) {
+      if (!selectableCountries.has(lineRecord.country)) continue;
+      for (const segment of lineRecord.segments) {
+        if (segment.length < 2) continue;
+        const [firstLon, firstLat] = segment[0];
+        let prevLon = firstLon;
+        ctx.beginPath();
+        ctx.moveTo(((firstLon + 180) / 360) * TEX_W, ((90 - firstLat) / 180) * TEX_H);
+        for (let index = 1; index < segment.length; index++) {
+          const [lon, lat] = segment[index];
+          const dx = Math.abs(lon - prevLon);
+          const x = ((lon + 180) / 360) * TEX_W;
+          const y = ((90 - lat) / 180) * TEX_H;
+          if (dx > 120) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+          prevLon = lon;
+        }
+        ctx.stroke();
       }
     }
-    ctx.fill();
-    ctx.stroke();
+    ctx.restore();
   }
+}
 
+function buildEarthTexture(mapPaths: MapCountryPath[], selectableCountries: Set<string>, admin1Lines: Admin1LineRecord[]): HTMLCanvasElement {
+  const canvas = document.createElement("canvas");
+  canvas.width = TEX_W;
+  canvas.height = TEX_H;
+  paintEarthTexture(canvas, mapPaths, selectableCountries, admin1Lines);
   return canvas;
 }
 
@@ -168,13 +291,16 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       renderer?.dispose();
       return;
     }
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(w, h);
     renderer.setClearColor(0x000000, 0);
     wrap.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(36, w / h, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(36, w / h, 0.01, 100);
     camera.position.z = CAMERA_Z_DEFAULT;
     cameraRef.current = camera;
 
@@ -199,20 +325,46 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
     });
     scene.add(new THREE.Points(starGeo, starMat));
 
-    const texCanvas = buildEarthTexture(mapPaths);
+    const selectableCountries = new Set(cityPins.map((pin) => normalizeCountryName(pin.cityLabel)));
+    let admin1Lines: Admin1LineRecord[] = [];
+    const texCanvas = buildEarthTexture(mapPaths, selectableCountries, admin1Lines);
     const texture = new THREE.CanvasTexture(texCanvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    texture.needsUpdate = true;
 
-    const earthGeo = new THREE.SphereGeometry(GLOBE_R, 72, 72);
+    const earthGeo = new THREE.SphereGeometry(GLOBE_R, 96, 96);
     const earthMat = new THREE.MeshPhongMaterial({
       map: texture,
       specular: new THREE.Color(0x040b18),
-      shininess: 7,
+      shininess: 9,
     });
     const earth = new THREE.Mesh(earthGeo, earthMat);
     earth.rotation.y = GLOBE_ROTATION_Y_DEFAULT;
     earth.rotation.x = GLOBE_ROTATION_X_DEFAULT;
     earthRef.current = earth;
     scene.add(earth);
+
+    let disposed = false;
+    const earthImage = new Image();
+    const repaintTexture = () => {
+      if (disposed) return;
+      const hasImage = earthImage.complete && earthImage.naturalWidth > 0;
+      paintEarthTexture(texCanvas, mapPaths, selectableCountries, admin1Lines, hasImage ? earthImage : undefined);
+      texture.needsUpdate = true;
+    };
+
+    earthImage.decoding = "async";
+    earthImage.onload = () => {
+      repaintTexture();
+    };
+    earthImage.src = EARTH_BASE_TEXTURE_URL;
+
+    void loadAdmin1Lines().then((loaded) => {
+      if (disposed) return;
+      admin1Lines = loaded;
+      repaintTexture();
+    });
 
     const atmoGeo = new THREE.SphereGeometry(GLOBE_R * 1.065, 40, 40);
     const atmoMat = new THREE.MeshBasicMaterial({
@@ -242,7 +394,6 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
     fill.position.set(-3, -1, -2);
     scene.add(fill);
 
-    const PIN_R = 0.026;
     const localPinMap = new Map<string, { mesh: THREE.Mesh; color: number }>();
 
     for (const pin of cityPins) {
@@ -251,27 +402,11 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       const isSelected = pin.cityKey === selectedCityKey;
       const pos = latLonToVec3(pin.lat, pin.lon, GLOBE_R + PIN_R * 0.6);
 
-      const geo = new THREE.SphereGeometry(isSelected ? PIN_R * 1.55 : PIN_R, 12, 12);
+      const geo = new THREE.SphereGeometry(PIN_R, 12, 12);
       const mat = new THREE.MeshBasicMaterial({ color: isSelected ? 0xffffff : color });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.copy(pos);
       earth.add(mesh);
-
-      if (isSelected) {
-        const ringGeo = new THREE.RingGeometry(PIN_R * 2.2, PIN_R * 3, 24);
-        const ringMat = new THREE.MeshBasicMaterial({
-          color,
-          transparent: true,
-          opacity: 0.55,
-          side: THREE.DoubleSide,
-          depthWrite: false,
-        });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.position.copy(pos);
-        const outward = pos.clone().normalize();
-        ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), outward);
-        earth.add(ring);
-      }
 
       localPinMap.set(pin.cityKey, { mesh, color });
     }
@@ -284,6 +419,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
     let downX = 0;
     let downY = 0;
     let touchTapCandidate = false;
+    let touchMoved = false;
     let velX = 0;
     let velY = 0;
     let autoRotate = true;
@@ -345,9 +481,19 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
         e.preventDefault();
         activeTouchPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
         touchTapCandidate = activeTouchPointers.size === 1;
+        if (activeTouchPointers.size === 1) {
+          touchMoved = false;
+          isDragging = true;
+          lastX = downX = e.clientX;
+          lastY = downY = e.clientY;
+          velX = velY = 0;
+          resetIdle();
+        }
         if (activeTouchPointers.size >= 2) {
           const mid = touchMidpoint();
           if (mid) {
+            touchTapCandidate = false;
+            touchMoved = true;
             isDragging = true;
             lastX = downX = mid.x;
             lastY = downY = mid.y;
@@ -370,8 +516,27 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
         if (activeTouchPointers.has(e.pointerId)) {
           activeTouchPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
         }
+        if (activeTouchPointers.size === 1 && isDragging) {
+          e.preventDefault();
+          const dx = e.clientX - lastX;
+          const dy = e.clientY - lastY;
+          earth.rotation.y += dx * 0.006;
+          earth.rotation.x = Math.max(-1.1, Math.min(1.1, earth.rotation.x + dy * 0.006));
+          velX = dx * 0.006;
+          velY = dy * 0.006;
+          lastX = e.clientX;
+          lastY = e.clientY;
+          if (Math.abs(e.clientX - downX) > 5 || Math.abs(e.clientY - downY) > 5) {
+            touchMoved = true;
+            touchTapCandidate = false;
+          }
+          resetIdle();
+          return;
+        }
         if (activeTouchPointers.size >= 2) {
           e.preventDefault();
+          touchMoved = true;
+          touchTapCandidate = false;
           const mid = touchMidpoint();
           if (!mid) return;
           if (!isDragging) {
@@ -427,7 +592,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       if (e.pointerType === "touch") {
         activeTouchPointers.delete(e.pointerId);
         if (activeTouchPointers.size < 2) isDragging = false;
-        if (touchTapCandidate && !wasDrag && activeTouchPointers.size === 0) {
+        if (touchTapCandidate && !touchMoved && !wasDrag && activeTouchPointers.size === 0) {
           toNDC(e.clientX, e.clientY);
           raycaster.setFromCamera(ndc, camera);
           const hits = raycaster.intersectObjects(allPinMeshes());
@@ -436,7 +601,10 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
             if (pin) onPinSelectRef.current(pin);
           }
         }
-        if (activeTouchPointers.size === 0) touchTapCandidate = false;
+        if (activeTouchPointers.size === 0) {
+          touchTapCandidate = false;
+          touchMoved = false;
+        }
         if (activeTouchPointers.size < 2) lastTouchDistance = 0;
         el.style.cursor = "grab";
         return;
@@ -458,6 +626,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       isDragging = false;
       activeTouchPointers.clear();
       touchTapCandidate = false;
+      touchMoved = false;
       lastTouchDistance = 0;
       setHoveredRef.current(null);
     };
@@ -489,7 +658,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       animId = requestAnimationFrame(animate);
       if (!isDragging) {
         if (autoRotate) {
-          earth.rotation.y += 0.0017;
+          earth.rotation.y -= 0.0017;
         } else {
           if (Math.abs(velX) > 0.0001) {
             earth.rotation.y += velX;
@@ -506,6 +675,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
     animate();
 
     return () => {
+      disposed = true;
       cancelAnimationFrame(animId);
       if (idleTimer) clearTimeout(idleTimer);
       window.removeEventListener("resize", onResize);
@@ -529,7 +699,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
     pinDataRef.current.forEach((data, cityKey) => {
       const isSelected = cityKey === selectedCityKey;
       (data.mesh.material as THREE.MeshBasicMaterial).color.setHex(isSelected ? 0xffffff : data.color);
-      data.mesh.scale.setScalar(isSelected ? 1.6 : 1.0);
+      data.mesh.scale.setScalar(isSelected ? PIN_SELECTED_SCALE : 1.0);
     });
   }, [selectedCityKey]);
 
@@ -547,13 +717,13 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
   const zoomIn = () => {
     const camera = cameraRef.current;
     if (!camera) return;
-    camera.position.z = Math.max(CAMERA_Z_MIN, camera.position.z - 0.22);
+    camera.position.z = Math.max(CAMERA_Z_MIN, camera.position.z - CAMERA_Z_STEP);
   };
 
   const zoomOut = () => {
     const camera = cameraRef.current;
     if (!camera) return;
-    camera.position.z = Math.min(CAMERA_Z_MAX, camera.position.z + 0.22);
+    camera.position.z = Math.min(CAMERA_Z_MAX, camera.position.z + CAMERA_Z_STEP);
   };
 
   const centerGlobe = () => {
@@ -596,9 +766,9 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       <div className="globe-hint">Drag to spin &middot; Pinch or wheel to zoom &middot; Use + / - / Center controls</div>
 
       <div className="globe-legend">
-        {Object.entries(FOCUS_CSS).map(([focus, color]) => (
-          <span key={focus} className="globe-legend-dot" style={{ "--dot": color } as CSSProperties}>
-            {focus}
+        {LEGEND_ITEMS.map((item) => (
+          <span key={item.label} className="globe-legend-dot" style={{ "--dot": item.color } as CSSProperties}>
+            {item.label}
           </span>
         ))}
       </div>

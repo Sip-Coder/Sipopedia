@@ -1,0 +1,90 @@
+{
+  "started_at": "2026-04-04T04:34:47.706Z",
+  "source_run": "batch_04-run.json",
+  "target_terms": 16,
+  "success": [],
+  "failed": [
+    {
+      "term": "Stripping",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Cabernet",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Chemex",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Flavoring",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Headspace",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Mucilage",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Muscatel",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Sodium",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Steaming",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Alkalinity",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Assemblage",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Catechin",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Dunder",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Lovibond",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Oxidative",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Congeners",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    }
+  ],
+  "db_patch_failed": [],
+  "finished_at": "2026-04-04T04:41:57.516Z"
+}

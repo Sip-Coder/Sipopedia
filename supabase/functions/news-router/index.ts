@@ -72,6 +72,10 @@ const corsHeaders = {
 
 const MAX_ITEMS = 8;
 const MAX_SUMMARY_LENGTH = 220;
+const FETCH_TIMEOUT_MS = 15_000;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 40;
+const requestLogByUser = new Map<string, number[]>();
 
 const WSET_NEWS_URL = "https://www.wsetglobal.com/news-events/news/";
 const ROBERT_PARKER_API_URL = "https://api.robertparker.com/v2/v2/articles/highlighted?offset=0&limit=8";
@@ -114,6 +118,72 @@ function json(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" }
+  });
+}
+
+async function fetchWithTimeout(input: string, init: RequestInit = {}): Promise<Response> {
+  return await fetch(input, { ...init, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+}
+
+function getBearerToken(request: Request): string | null {
+  const auth = request.headers.get("authorization");
+  if (!auth?.toLowerCase().startsWith("bearer ")) {
+    return null;
+  }
+  const token = auth.slice(7).trim();
+  return token.length > 0 ? token : null;
+}
+
+async function verifyAuthenticatedUser(request: Request): Promise<string | null> {
+  const token = getBearerToken(request);
+  if (!token) {
+    return null;
+  }
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim() ?? "";
+  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")?.trim() ?? "";
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("news-router auth verification is not configured.");
+    return null;
+  }
+
+  try {
+    const response = await fetchWithTimeout(`${supabaseUrl}/auth/v1/user`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        apikey: supabaseAnonKey
+      }
+    });
+    if (!response.ok) {
+      return null;
+    }
+    const data = (await response.json()) as { id?: string };
+    return typeof data.id === "string" && data.id.length > 0 ? data.id : null;
+  } catch {
+    return null;
+  }
+}
+
+function takeUserRateLimitSlot(userId: string): boolean {
+  const now = Date.now();
+  const windowStart = now - RATE_LIMIT_WINDOW_MS;
+  const current = requestLogByUser.get(userId) ?? [];
+  const recent = current.filter((ts) => ts >= windowStart);
+  if (recent.length >= RATE_LIMIT_MAX_REQUESTS) {
+    requestLogByUser.set(userId, recent);
+    return false;
+  }
+  recent.push(now);
+  requestLogByUser.set(userId, recent);
+  return true;
+}
+
+function isAllowedHost(hostname: string, allowedHosts: string[]): boolean {
+  const normalized = hostname.toLowerCase();
+  return allowedHosts.some((allowed) => {
+    const host = allowed.toLowerCase();
+    return normalized === host || normalized.endsWith(`.${host}`);
   });
 }
 
@@ -311,7 +381,7 @@ async function translateItemsToEnglish(items: GuildNewsItem[]): Promise<GuildNew
     };
 
     try {
-      const response = await fetch("https://api.openai.com/v1/responses", {
+      const response = await fetchWithTimeout("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -376,7 +446,7 @@ async function translateItemsToEnglish(items: GuildNewsItem[]): Promise<GuildNew
       const endpoint =
         "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=" +
         encodeURIComponent(combined);
-      const response = await fetch(endpoint, {
+      const response = await fetchWithTimeout(endpoint, {
         headers: {
           "User-Agent": "SipStudies-NewsRouter/1.0",
           Accept: "application/json,text/plain,*/*"
@@ -529,7 +599,7 @@ function extractRssItems(xml: string, sourceName: string): GuildNewsItem[] {
 }
 
 async function fetchText(url: string, accept: string): Promise<string> {
-  const response = await fetch(url, {
+  const response = await fetchWithTimeout(url, {
     headers: {
       "User-Agent": "SipStudies-NewsRouter/1.0",
       Accept: accept
@@ -561,7 +631,11 @@ async function fetchRssNews(feedUrl: string, sourceName: string): Promise<GuildN
   return items;
 }
 
-async function fetchRssLinkedFromPage(pageUrl: string, sourceName: string): Promise<GuildNewsItem[]> {
+async function fetchRssLinkedFromPage(
+  pageUrl: string,
+  sourceName: string,
+  allowedHosts: string[]
+): Promise<GuildNewsItem[]> {
   const html = await fetchText(pageUrl, "text/html,application/xhtml+xml");
   const patterns = [
     /<a[^>]+href=(["'])(?<href>[^"']+)\1[^>]*>\s*RSS\s*<\/a>/i,
@@ -583,12 +657,15 @@ async function fetchRssLinkedFromPage(pageUrl: string, sourceName: string): Prom
     throw new Error(`${sourceName} page did not expose an RSS link.`);
   }
 
-  const rssUrl = new URL(href, pageUrl).toString();
-  return await fetchRssNews(rssUrl, sourceName);
+  const rssUrl = new URL(href, pageUrl);
+  if (rssUrl.protocol !== "https:" || !isAllowedHost(rssUrl.hostname, allowedHosts)) {
+    throw new Error(`${sourceName} page exposed an untrusted RSS endpoint.`);
+  }
+  return await fetchRssNews(rssUrl.toString(), sourceName);
 }
 
 async function fetchWpNews(endpoint: string, sourceName: string): Promise<GuildNewsItem[]> {
-  const response = await fetch(endpoint, {
+  const response = await fetchWithTimeout(endpoint, {
     headers: {
       "User-Agent": "SipStudies-NewsRouter/1.0",
       Accept: "application/json,text/plain,*/*"
@@ -630,7 +707,7 @@ async function fetchWpNews(endpoint: string, sourceName: string): Promise<GuildN
 }
 
 async function fetchSquarespaceJsonNews(jsonUrl: string, baseUrl: string, sourceName: string): Promise<GuildNewsItem[]> {
-  const response = await fetch(jsonUrl, {
+  const response = await fetchWithTimeout(jsonUrl, {
     headers: {
       "User-Agent": "SipStudies-NewsRouter/1.0",
       Accept: "application/json,text/plain,*/*"
@@ -692,7 +769,7 @@ async function fetchRobertParkerNews(): Promise<GuildNewsItem[]> {
     throw new Error("Missing ROBERT_PARKER_API_KEY secret.");
   }
 
-  const response = await fetch(ROBERT_PARKER_API_URL, {
+  const response = await fetchWithTimeout(ROBERT_PARKER_API_URL, {
     headers: {
       "User-Agent": "SipStudies-NewsRouter/1.0",
       Accept: "application/json",
@@ -1076,7 +1153,7 @@ async function fetchBySource(source: NewsRouterSource): Promise<GuildNewsItem[]>
       );
     case "eu-agri-news":
       try {
-        return await fetchRssLinkedFromPage(EU_AGRI_FILTERED_NEWS_URL, "EU Agriculture News");
+        return await fetchRssLinkedFromPage(EU_AGRI_FILTERED_NEWS_URL, "EU Agriculture News", ["europa.eu"]);
       } catch {
         return await fetchHtmlLinkNews(
           {
@@ -1128,7 +1205,7 @@ async function fetchBySource(source: NewsRouterSource): Promise<GuildNewsItem[]>
       );
     case "openai-news":
       try {
-        return await fetchRssLinkedFromPage(OPENAI_NEWS_URL, "OpenAI");
+        return await fetchRssLinkedFromPage(OPENAI_NEWS_URL, "OpenAI", ["openai.com"]);
       } catch {
         return await fetchHtmlLinkNews(
           {
@@ -1144,7 +1221,7 @@ async function fetchBySource(source: NewsRouterSource): Promise<GuildNewsItem[]>
       }
     case "deepmind-news":
       try {
-        return await fetchRssLinkedFromPage(DEEPMIND_BLOG_URL, "Google DeepMind");
+        return await fetchRssLinkedFromPage(DEEPMIND_BLOG_URL, "Google DeepMind", ["deepmind.google"]);
       } catch {
         return await fetchHtmlLinkNews(
           {
@@ -1160,7 +1237,7 @@ async function fetchBySource(source: NewsRouterSource): Promise<GuildNewsItem[]>
       }
     case "anthropic-news":
       try {
-        return await fetchRssLinkedFromPage(ANTHROPIC_NEWS_URL, "Anthropic");
+        return await fetchRssLinkedFromPage(ANTHROPIC_NEWS_URL, "Anthropic", ["anthropic.com"]);
       } catch {
         return await fetchHtmlLinkNews(
           {
@@ -1204,7 +1281,7 @@ async function fetchBySource(source: NewsRouterSource): Promise<GuildNewsItem[]>
       );
     case "nvidia-news":
       try {
-        return await fetchRssLinkedFromPage(NVIDIA_NEWS_URL, "NVIDIA Newsroom");
+        return await fetchRssLinkedFromPage(NVIDIA_NEWS_URL, "NVIDIA Newsroom", ["nvidianews.nvidia.com"]);
       } catch {
         return await fetchHtmlLinkNews(
           {
@@ -1323,6 +1400,14 @@ Deno.serve(async (request) => {
   }
 
   try {
+    const userId = await verifyAuthenticatedUser(request);
+    if (!userId) {
+      return json(401, { error: "Authentication required." });
+    }
+    if (!takeUserRateLimitSlot(userId)) {
+      return json(429, { error: "Rate limit exceeded. Please try again shortly." });
+    }
+
     const body = (await request.json()) as NewsRouterRequest;
     const source = body.source ?? "wset";
     const items = await fetchBySource(source);
@@ -1334,7 +1419,8 @@ Deno.serve(async (request) => {
       items: translatedItems
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown function error.";
-    return json(500, { error: message });
+    const requestId = crypto.randomUUID();
+    console.error("news-router error", { requestId, error });
+    return json(500, { error: "Internal server error.", requestId });
   }
 });

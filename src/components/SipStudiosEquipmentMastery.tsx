@@ -18,6 +18,7 @@ type EquipmentLesson = {
   purpose: string;
   safety: string;
   operatorTip: string;
+  reviewImage: string;
 };
 
 type LearningContent = {
@@ -27,6 +28,7 @@ type LearningContent = {
 };
 
 type Challenge = {
+  mode: 0 | 1 | 2;
   prompt: string;
   options: string[];
   correctAnswer: string;
@@ -43,8 +45,8 @@ type LessonNode = EquipmentLesson & {
 
 const FACILITIES: Facility[] = [
   { id: "winery", label: "Winery", subtitle: "Live now", enabled: true },
-  { id: "brewery", label: "Brewery", subtitle: "Phase 2", enabled: false },
-  { id: "distillery", label: "Distillery", subtitle: "Phase 3", enabled: false }
+  { id: "brewery", label: "Brewery", subtitle: "Live now", enabled: true },
+  { id: "distillery", label: "Distillery", subtitle: "Live now", enabled: true }
 ];
 
 const WINERY_ART = [
@@ -67,7 +69,8 @@ const WINERY_EQUIPMENT: EquipmentLesson[] = [
     stage: "Fruit Intake",
     purpose: "Separates grapes from stems and lightly breaks berries before fermentation.",
     safety: "Never reach into the hopper while power is on; lock out before cleaning.",
-    operatorTip: "Adjust roller gap to avoid over-crushing skins and seeds."
+    operatorTip: "Adjust roller gap to avoid over-crushing skins and seeds.",
+    reviewImage: "/academy/equipment/crusher-destemmer-reference-v2.png"
   },
   {
     id: "sorting-table",
@@ -75,7 +78,8 @@ const WINERY_EQUIPMENT: EquipmentLesson[] = [
     stage: "Fruit Intake",
     purpose: "Lets the cellar team remove leaves, damaged berries, and MOG before processing.",
     safety: "Use cut-resistant gloves and keep fingers clear of moving belts.",
-    operatorTip: "Sort by ripeness and berry integrity to improve tank consistency."
+    operatorTip: "Sort by ripeness and berry integrity to improve tank consistency.",
+    reviewImage: "/academy/equipment/sorting-table-reference.png"
   },
   {
     id: "fermenter",
@@ -83,7 +87,8 @@ const WINERY_EQUIPMENT: EquipmentLesson[] = [
     stage: "Fermentation",
     purpose: "Controls temperature and holds must while yeast converts sugar to alcohol.",
     safety: "Watch CO2 accumulation in enclosed spaces and ventilate thoroughly.",
-    operatorTip: "Track Brix and temperature twice daily to catch stalled fermentations."
+    operatorTip: "Track Brix and temperature twice daily to catch stalled fermentations.",
+    reviewImage: "/academy/equipment/fermentation-tank-reference.png"
   },
   {
     id: "pump-over-system",
@@ -91,7 +96,8 @@ const WINERY_EQUIPMENT: EquipmentLesson[] = [
     stage: "Fermentation",
     purpose: "Circulates fermenting juice over the cap to extract color, flavor, and tannin.",
     safety: "Verify hose clamps and valve positions before pressure starts.",
-    operatorTip: "Use shorter, gentler cycles early to avoid over-extraction."
+    operatorTip: "Use shorter, gentler cycles early to avoid over-extraction.",
+    reviewImage: "/academy/equipment/pump-over-system-reference.png"
   },
   {
     id: "wine-press",
@@ -99,7 +105,8 @@ const WINERY_EQUIPMENT: EquipmentLesson[] = [
     stage: "Pressing",
     purpose: "Separates free-run and pressed wine from skins and solids after maceration.",
     safety: "Confirm pressure release before opening doors or cages.",
-    operatorTip: "Taste press fractions separately and blend with intent, not habit."
+    operatorTip: "Taste press fractions separately and blend with intent, not habit.",
+    reviewImage: "/academy/equipment/wine-press-reference.png"
   },
   {
     id: "crossflow-filter",
@@ -107,7 +114,8 @@ const WINERY_EQUIPMENT: EquipmentLesson[] = [
     stage: "Clarification",
     purpose: "Removes suspended solids and microbes using membrane filtration.",
     safety: "Sanitize lines and monitor pressure to prevent membrane rupture.",
-    operatorTip: "Pre-rack wine first so membranes stay efficient longer."
+    operatorTip: "Pre-rack wine first so membranes stay efficient longer.",
+    reviewImage: "/academy/equipment/crossflow-filter-reference-v2.png"
   },
   {
     id: "barrel-rack",
@@ -115,7 +123,8 @@ const WINERY_EQUIPMENT: EquipmentLesson[] = [
     stage: "Aging",
     purpose: "Stores and stabilizes barrels during maturation and topping cycles.",
     safety: "Secure racks and use proper barrel handling tools for movement.",
-    operatorTip: "Rotate topping schedule by lot so oxygen management stays uniform."
+    operatorTip: "Rotate topping schedule by lot so oxygen management stays uniform.",
+    reviewImage: "/academy/equipment/barrel-rack-reference.png"
   },
   {
     id: "lab-bench",
@@ -123,7 +132,8 @@ const WINERY_EQUIPMENT: EquipmentLesson[] = [
     stage: "Quality Control",
     purpose: "Supports routine measurements like pH, TA, SO2, and dissolved oxygen.",
     safety: "Use PPE and label reagents clearly to avoid chemical mix-ups.",
-    operatorTip: "Record every test with tank ID and timestamp for trend tracking."
+    operatorTip: "Record every test with tank ID and timestamp for trend tracking.",
+    reviewImage: "/academy/equipment/cellar-lab-bench-reference.png"
   },
   {
     id: "bottling-line",
@@ -131,7 +141,8 @@ const WINERY_EQUIPMENT: EquipmentLesson[] = [
     stage: "Packaging",
     purpose: "Fills, corks or caps, labels, and cases finished wine for release.",
     safety: "Keep guards in place and isolate power before clearing jams.",
-    operatorTip: "Run line checks every pallet to catch fill-height drift early."
+    operatorTip: "Run line checks every pallet to catch fill-height drift early.",
+    reviewImage: "/academy/equipment/bottling-line-reference.png"
   },
   {
     id: "steam-washer",
@@ -139,7 +150,8 @@ const WINERY_EQUIPMENT: EquipmentLesson[] = [
     stage: "Sanitation",
     purpose: "Uses heat and pressure to clean and sanitize barrels between fills.",
     safety: "Treat fittings as high-temperature hazards and vent before disconnecting.",
-    operatorTip: "Follow steam cycles with odor checks so taints are not carried forward."
+    operatorTip: "Follow steam cycles with odor checks so taints are not carried forward.",
+    reviewImage: "/academy/equipment/barrel-steam-washer-reference.png"
   }
 ];
 
@@ -236,12 +248,431 @@ const WINERY_LEARNING_CONTENT: Record<string, LearningContent> = {
   }
 };
 
+const BREWERY_ART = [
+  "/academy/units/unit-01-crystal-atrium.png",
+  "/academy/units/unit-02-varietal-wilds.png",
+  "/academy/units/unit-03-region-quest.png",
+  "/academy/units/unit-04-cellar-craft.png",
+  "/academy/units/unit-05-grand-sommelier-arena.png",
+  "/academy/units/unit-06-sparkling-lab.png",
+  "/academy/units/unit-07-old-cellar-archive.png",
+  "/academy/units/unit-08-pairing-theater.png",
+  "/academy/units/unit-09-blind-grid-forge.png",
+  "/academy/units/unit-10-mastery-summit.png"
+];
+
+const DISTILLERY_ART = [
+  "/academy/units/unit-01-crystal-atrium.png",
+  "/academy/units/unit-02-varietal-wilds.png",
+  "/academy/units/unit-03-region-quest.png",
+  "/academy/units/unit-04-cellar-craft.png",
+  "/academy/units/unit-05-grand-sommelier-arena.png",
+  "/academy/units/unit-06-sparkling-lab.png",
+  "/academy/units/unit-07-old-cellar-archive.png",
+  "/academy/units/unit-08-pairing-theater.png",
+  "/academy/units/unit-09-blind-grid-forge.png",
+  "/academy/units/unit-10-mastery-summit.png"
+];
+
+const BREWERY_EQUIPMENT: EquipmentLesson[] = [
+  {
+    id: "brewery-grist-mill",
+    name: "Grist Mill",
+    stage: "Milling",
+    purpose: "Crushes malt kernels to the target grist size before mashing.",
+    safety: "Lock out before clearing jams and keep hands clear of feed rollers.",
+    operatorTip: "Adjust gap to improve extract while protecting husk integrity.",
+    reviewImage: "/academy/equipment/brewery-grist-mill-reference.png"
+  },
+  {
+    id: "brewery-mash-tun",
+    name: "Mash Tun",
+    stage: "Mashing",
+    purpose: "Mixes grist and hot liquor so enzymes convert starch into fermentable sugars.",
+    safety: "Treat hot liquor and steam as burn hazards during mash-in.",
+    operatorTip: "Stabilize strike temperature before grain-in for predictable conversion.",
+    reviewImage: "/academy/equipment/brewery-mash-tun-reference.png"
+  },
+  {
+    id: "brewery-lauter-tun",
+    name: "Lauter Tun",
+    stage: "Lautering",
+    purpose: "Separates sweet wort from spent grain through a grain-bed filtration step.",
+    safety: "Avoid over-raking and keep clear of moving rake assemblies.",
+    operatorTip: "Recirculate until bright, then collect wort at steady flow rates.",
+    reviewImage: "/academy/equipment/brewery-lauter-tun-reference.png"
+  },
+  {
+    id: "brewery-brew-kettle",
+    name: "Brew Kettle",
+    stage: "Boiling",
+    purpose: "Boils wort for sterilization, protein coagulation, and hop utilization.",
+    safety: "Open ports cautiously to prevent scalding from steam and hot wort.",
+    operatorTip: "Track evaporation rate and hop timing to keep bitterness on target.",
+    reviewImage: "/academy/equipment/brewery-brew-kettle-reference.png"
+  },
+  {
+    id: "brewery-whirlpool",
+    name: "Whirlpool Vessel",
+    stage: "Whirlpool",
+    purpose: "Creates circular flow so trub and hop solids settle before cooling.",
+    safety: "Confirm pump direction and valves before starting vortex circulation.",
+    operatorTip: "Allow proper rest time so solids cone tightly at vessel center.",
+    reviewImage: "/academy/equipment/brewery-whirlpool-vessel-reference.png"
+  },
+  {
+    id: "brewery-heat-exchanger",
+    name: "Plate Heat Exchanger",
+    stage: "Wort Cooling",
+    purpose: "Rapidly chills hot wort to yeast-pitch temperature.",
+    safety: "Sanitize all cold-side paths before transfer to avoid contamination.",
+    operatorTip: "Balance flow rates on both sides to hit target outlet temperature.",
+    reviewImage: "/academy/equipment/brewery-plate-heat-exchanger-reference.png"
+  },
+  {
+    id: "brewery-fermenter",
+    name: "Conical Fermenter",
+    stage: "Fermentation",
+    purpose: "Ferments wort under controlled temperature and pressure conditions.",
+    safety: "Vent CO2 safely and verify PRV function before sealed fermentation.",
+    operatorTip: "Use daily gravity and temperature checks to track attenuation.",
+    reviewImage: "/academy/equipment/brewery-conical-fermenter-reference.png"
+  },
+  {
+    id: "brewery-bbt",
+    name: "Bright Beer Tank",
+    stage: "Conditioning",
+    purpose: "Conditions and carbonates finished beer before packaging.",
+    safety: "Depressurize fully before opening manways or fittings.",
+    operatorTip: "Hold stable temperature and pressure for repeatable carbonation.",
+    reviewImage: "/academy/equipment/brewery-bright-beer-tank-reference.png"
+  },
+  {
+    id: "brewery-filter",
+    name: "Beer Filter",
+    stage: "Clarification",
+    purpose: "Removes haze-forming solids to improve beer clarity and stability.",
+    safety: "Monitor differential pressure to avoid filter media collapse.",
+    operatorTip: "Pre-clarify where possible so filter runs remain efficient.",
+    reviewImage: "/academy/equipment/brewery-beer-filter-reference.png"
+  },
+  {
+    id: "brewery-canning-line",
+    name: "Canning Line",
+    stage: "Packaging",
+    purpose: "Fills, seams, and packs beer cans for distribution.",
+    safety: "Keep guards in place and isolate power before clearing seam faults.",
+    operatorTip: "Audit seam checks and DO readings at regular line intervals.",
+    reviewImage: "/academy/equipment/brewery-canning-line-reference.png"
+  }
+];
+
+const DISTILLERY_EQUIPMENT: EquipmentLesson[] = [
+  {
+    id: "distillery-grain-mill",
+    name: "Grain Mill",
+    stage: "Milling",
+    purpose: "Cracks grains to optimize starch access before mashing.",
+    safety: "Use dust control and lock out before servicing rollers.",
+    operatorTip: "Tune grind profile by grain bill to improve mash consistency.",
+    reviewImage: "/academy/equipment/distillery-grain-mill-reference.png"
+  },
+  {
+    id: "distillery-mash-cooker",
+    name: "Mash Cooker",
+    stage: "Mashing",
+    purpose: "Heats and hydrates grain slurry to drive starch conversion.",
+    safety: "Treat hot mash and steam jacket surfaces as burn hazards.",
+    operatorTip: "Follow temperature rests carefully for complete conversion.",
+    reviewImage: "/academy/equipment/distillery-mash-cooker-reference.png"
+  },
+  {
+    id: "distillery-washback",
+    name: "Washback Fermenter",
+    stage: "Fermentation",
+    purpose: "Ferments mash sugars into low-alcohol wash for distillation.",
+    safety: "Monitor CO2 buildup and verify fermentation venting.",
+    operatorTip: "Track gravity drop and pH to confirm healthy yeast activity.",
+    reviewImage: "/academy/equipment/distillery-washback-reference.png"
+  },
+  {
+    id: "distillery-pot-still",
+    name: "Pot Still",
+    stage: "Distillation",
+    purpose: "Performs batch distillation to concentrate alcohol and flavor compounds.",
+    safety: "Never open charged stills before cooldown and pressure release.",
+    operatorTip: "Control heat input to stabilize vapor rate and cut quality.",
+    reviewImage: "/academy/equipment/distillery-pot-still-reference.png"
+  },
+  {
+    id: "distillery-column-still",
+    name: "Column Still",
+    stage: "Distillation",
+    purpose: "Runs continuous distillation using plates to refine spirit strength.",
+    safety: "Validate reflux and pressure controls before startup.",
+    operatorTip: "Tune plate loading and reflux for target proof and profile.",
+    reviewImage: "/academy/equipment/distillery-column-still-reference.png"
+  },
+  {
+    id: "distillery-condenser",
+    name: "Condenser",
+    stage: "Condensing",
+    purpose: "Cools alcohol vapor back into liquid distillate.",
+    safety: "Maintain cooling water flow to prevent vapor breakthrough.",
+    operatorTip: "Monitor inlet/outlet temperatures for steady condensation.",
+    reviewImage: "/academy/equipment/distillery-condenser-reference.png"
+  },
+  {
+    id: "distillery-spirit-safe",
+    name: "Spirit Safe",
+    stage: "Cut Control",
+    purpose: "Directs and monitors spirit flow for heads, hearts, and tails cuts.",
+    safety: "Use grounded equipment and avoid ignition sources near spirit vapor.",
+    operatorTip: "Record cut transitions consistently for repeatable style.",
+    reviewImage: "/academy/equipment/distillery-spirit-safe-reference.png"
+  },
+  {
+    id: "distillery-blending-tank",
+    name: "Blending Tank",
+    stage: "Blending",
+    purpose: "Combines distillate lots and reduction water before maturation or packaging.",
+    safety: "Confirm transfer line identity before blending operations.",
+    operatorTip: "Blend in measured increments and bench taste each adjustment.",
+    reviewImage: "/academy/equipment/distillery-blending-tank-reference.png"
+  },
+  {
+    id: "distillery-char-filter",
+    name: "Charcoal Filter",
+    stage: "Filtration",
+    purpose: "Polishes spirit through carbon to adjust smoothness and aroma.",
+    safety: "Handle carbon media with dust protection and sealed transfer points.",
+    operatorTip: "Control contact time to avoid stripping desired character.",
+    reviewImage: "/academy/equipment/distillery-charcoal-filter-reference.png"
+  },
+  {
+    id: "distillery-bottling-line",
+    name: "Bottling Line",
+    stage: "Packaging",
+    purpose: "Fills, caps, labels, and cases finished spirits.",
+    safety: "Lock out before jam clearing and verify guard interlocks.",
+    operatorTip: "Perform fill-volume and closure torque checks every run segment.",
+    reviewImage: "/academy/equipment/distillery-bottling-line-reference.png"
+  }
+];
+
+const BREWERY_LEARNING_CONTENT: Record<string, LearningContent> = {
+  "brewery-grist-mill": {
+    overview: "The grist mill sets brewhouse efficiency by preparing malt to the right crush profile.",
+    keyPoints: [
+      "Mill fine enough for extract but coarse enough to protect husk structure.",
+      "Check crush consistency across the full production run.",
+      "Keep feed rate steady to avoid heat and dust spikes."
+    ],
+    stageFit: "It starts the brewing workflow before mash conversion begins."
+  },
+  "brewery-mash-tun": {
+    overview: "The mash tun activates enzymes that convert starches into fermentable sugars.",
+    keyPoints: [
+      "Hit strike temperature before mash-in.",
+      "Stir thoroughly to avoid dough balls and dry pockets.",
+      "Track pH and temperature during rests for conversion control."
+    ],
+    stageFit: "It belongs in the core mashing stage just after milling."
+  },
+  "brewery-lauter-tun": {
+    overview: "The lauter tun separates clear wort from spent grain after conversion.",
+    keyPoints: [
+      "Recirculate until runoff clarity improves.",
+      "Maintain even bed flow to prevent channeling.",
+      "Coordinate sparge volume with target pre-boil gravity."
+    ],
+    stageFit: "It follows mashing and prepares wort for the kettle."
+  },
+  "brewery-brew-kettle": {
+    overview: "The brew kettle drives sterilization and hop extraction in the boil.",
+    keyPoints: [
+      "Maintain a rolling boil for predictable evaporation.",
+      "Time hop additions against bitterness and aroma goals.",
+      "Confirm final volume and gravity before knockout."
+    ],
+    stageFit: "It anchors the boiling stage before whirlpool and cooling."
+  },
+  "brewery-whirlpool": {
+    overview: "The whirlpool removes trub and hop solids before wort cooling.",
+    keyPoints: [
+      "Create a stable vortex without introducing excess oxygen.",
+      "Allow cone settling time before draw-off.",
+      "Keep transfer pickup away from sediment center."
+    ],
+    stageFit: "It bridges kettle boil and heat-exchanger cooling."
+  },
+  "brewery-heat-exchanger": {
+    overview: "The heat exchanger quickly chills wort to safe yeast-pitch temperatures.",
+    keyPoints: [
+      "Sanitize cold-side paths before transfer.",
+      "Balance coolant and wort flow to hold target temperature.",
+      "Verify outlet temperature before entering fermenter."
+    ],
+    stageFit: "It sits between hot-side process and fermentation."
+  },
+  "brewery-fermenter": {
+    overview: "Conical fermentation converts sugars to alcohol while developing flavor profile.",
+    keyPoints: [
+      "Pitch healthy yeast at the right rate and temperature.",
+      "Track gravity and temperature each day.",
+      "Use controlled pressure and venting to maintain safety."
+    ],
+    stageFit: "It is the primary fermentation stage of beer production."
+  },
+  "brewery-bbt": {
+    overview: "The bright beer tank conditions, clarifies, and carbonates beer before packaging.",
+    keyPoints: [
+      "Stabilize temperature before carbonation.",
+      "Set pressure based on target CO2 volumes.",
+      "Avoid oxygen pickup during all transfers."
+    ],
+    stageFit: "It follows fermentation and precedes final packaging."
+  },
+  "brewery-filter": {
+    overview: "Filtration polishes beer appearance and supports shelf stability.",
+    keyPoints: [
+      "Monitor pressure drop to protect filter integrity.",
+      "Feed clarified beer to extend run length.",
+      "Sanitize filter housings before and after operation."
+    ],
+    stageFit: "It supports clarification before bright tank or packaging."
+  },
+  "brewery-canning-line": {
+    overview: "The canning line is the final packaging step where beer is sealed for distribution.",
+    keyPoints: [
+      "Verify seam quality and fill heights at intervals.",
+      "Track dissolved oxygen to protect freshness.",
+      "Respond quickly to jams to minimize product loss."
+    ],
+    stageFit: "It closes the brewery process at final packaging."
+  }
+};
+
+const DISTILLERY_LEARNING_CONTENT: Record<string, LearningContent> = {
+  "distillery-grain-mill": {
+    overview: "The grain mill prepares raw grain for consistent hydration and conversion.",
+    keyPoints: [
+      "Use the right crush for your mash process and grain bill.",
+      "Control dust and maintain even feed.",
+      "Inspect particle distribution to prevent conversion loss."
+    ],
+    stageFit: "It starts the distilling workflow before mash cooking."
+  },
+  "distillery-mash-cooker": {
+    overview: "The mash cooker gelatinizes starch and enables enzymatic conversion.",
+    keyPoints: [
+      "Follow staged heating for complete conversion.",
+      "Maintain agitation for uniform temperature.",
+      "Track pH and rest timing for repeatable sugar extraction."
+    ],
+    stageFit: "It drives the mashing stage ahead of wash fermentation."
+  },
+  "distillery-washback": {
+    overview: "The washback ferments mash into low-wine suitable for distillation.",
+    keyPoints: [
+      "Pitch yeast at healthy temperature windows.",
+      "Watch gravity and fermentation vigor daily.",
+      "Vent CO2 safely in confined production spaces."
+    ],
+    stageFit: "It is the fermentation phase before still charging."
+  },
+  "distillery-pot-still": {
+    overview: "The pot still concentrates wash into spirit through batch distillation.",
+    keyPoints: [
+      "Control heat ramp to stabilize vapor behavior.",
+      "Monitor output proof through run progression.",
+      "Use cut points to separate heads, hearts, and tails."
+    ],
+    stageFit: "It is a core distillation step for batch spirits."
+  },
+  "distillery-column-still": {
+    overview: "The column still enables continuous separation and higher proof output.",
+    keyPoints: [
+      "Balance feed, steam, and reflux rates.",
+      "Track plate performance for stable rectification.",
+      "Tune operation to target proof and flavor profile."
+    ],
+    stageFit: "It supports continuous distillation and refinement."
+  },
+  "distillery-condenser": {
+    overview: "The condenser converts spirit vapor into liquid distillate.",
+    keyPoints: [
+      "Maintain coolant flow and outlet temperature.",
+      "Inspect for leaks and vapor escape risks.",
+      "Confirm distillate flow remains stable throughout the run."
+    ],
+    stageFit: "It follows vapor generation in the still and enables collection."
+  },
+  "distillery-spirit-safe": {
+    overview: "The spirit safe allows controlled observation and routing of distillate cuts.",
+    keyPoints: [
+      "Track sensory and proof data at cut transitions.",
+      "Use repeatable cut logs for house consistency.",
+      "Ensure grounding and ignition-safe operation."
+    ],
+    stageFit: "It manages cut control during active distillation."
+  },
+  "distillery-blending-tank": {
+    overview: "The blending tank combines lots and proofs spirit to specification.",
+    keyPoints: [
+      "Blend incrementally and verify after each addition.",
+      "Use calibrated proof measurements during reduction.",
+      "Document lot composition for traceability."
+    ],
+    stageFit: "It supports post-distillation standardization."
+  },
+  "distillery-char-filter": {
+    overview: "Charcoal filtration refines spirit texture and aroma presentation.",
+    keyPoints: [
+      "Prepare filter media and lines before loading spirit.",
+      "Control flow for consistent contact time.",
+      "Validate flavor impact so character remains balanced."
+    ],
+    stageFit: "It sits in post-blend polishing before packaging."
+  },
+  "distillery-bottling-line": {
+    overview: "The bottling line packages finished spirit for market release.",
+    keyPoints: [
+      "Verify fill accuracy and closure torque frequently.",
+      "Check label alignment and coding each run segment.",
+      "Use lockout protocols before servicing jam points."
+    ],
+    stageFit: "It completes the distillery process at final packaging."
+  }
+};
+
 const MISSION_ROTATION: MissionType[] = ["Scout", "Challenge", "Scout", "Challenge", "Boss"];
 const TAG_ROTATION: LessonTag[] = ["Foundations", "Aromas", "Structure", "Service"];
-const STAGE_DISTRACTORS = ["Fruit Intake", "Fermentation", "Pressing", "Clarification", "Aging", "Quality Control", "Packaging", "Sanitation"];
+const FACILITY_EQUIPMENT: Record<FacilityId, EquipmentLesson[]> = {
+  winery: WINERY_EQUIPMENT,
+  brewery: BREWERY_EQUIPMENT,
+  distillery: DISTILLERY_EQUIPMENT
+};
+const FACILITY_LEARNING_CONTENT: Record<FacilityId, Record<string, LearningContent>> = {
+  winery: WINERY_LEARNING_CONTENT,
+  brewery: BREWERY_LEARNING_CONTENT,
+  distillery: DISTILLERY_LEARNING_CONTENT
+};
+const FACILITY_ART: Record<FacilityId, string[]> = {
+  winery: WINERY_ART,
+  brewery: BREWERY_ART,
+  distillery: DISTILLERY_ART
+};
+const STAGE_DISTRACTORS = Array.from(
+  new Set(Object.values(FACILITY_EQUIPMENT).flatMap((lessons) => lessons.map((lesson) => lesson.stage)))
+);
+const QUESTION_SEQUENCE: Array<0 | 1 | 2> = [0, 1, 2];
 export const EQUIPMENT_MASTERY_STORAGE_KEY = "sip-studies:academy:equipment-mastery:v1";
 export const EQUIPMENT_MASTERY_EVENT = "sip-studies:equipment-mastery-updated";
-export const EQUIPMENT_MASTERY_TOTAL_NODES = WINERY_EQUIPMENT.length;
+export const EQUIPMENT_MASTERY_TOTAL_NODES = Object.values(FACILITY_EQUIPMENT).reduce(
+  (total, lessons) => total + lessons.length,
+  0
+);
 
 export type EquipmentMasterySnapshot = {
   mastery: Record<string, number>;
@@ -263,8 +694,7 @@ function takeUnique(source: string[], exclude: string, count: number): string[] 
   return shuffle(source.filter((value) => value !== exclude)).slice(0, count);
 }
 
-function buildChallenge(target: EquipmentLesson, allLessons: EquipmentLesson[]): Challenge {
-  const mode = Math.floor(Math.random() * 3);
+function buildChallenge(target: EquipmentLesson, allLessons: EquipmentLesson[], mode: 0 | 1 | 2): Challenge {
   if (mode === 0) {
     const wrong = takeUnique(
       allLessons.map((lesson) => lesson.name),
@@ -273,6 +703,7 @@ function buildChallenge(target: EquipmentLesson, allLessons: EquipmentLesson[]):
     );
     const correctAnswer = target.name;
     return {
+      mode,
       prompt: `Which equipment matches this purpose: ${target.purpose}`,
       options: shuffle([correctAnswer, ...wrong]),
       correctAnswer,
@@ -287,6 +718,7 @@ function buildChallenge(target: EquipmentLesson, allLessons: EquipmentLesson[]):
     );
     const correctAnswer = target.safety;
     return {
+      mode,
       prompt: `What is the key safety callout when operating ${target.name}?`,
       options: shuffle([correctAnswer, ...wrong]),
       correctAnswer,
@@ -296,6 +728,7 @@ function buildChallenge(target: EquipmentLesson, allLessons: EquipmentLesson[]):
   const wrong = takeUnique(STAGE_DISTRACTORS, target.stage, 3);
   const correctAnswer = target.stage;
   return {
+    mode,
     prompt: `In which production stage is ${target.name} most commonly used?`,
     options: shuffle([correctAnswer, ...wrong]),
     correctAnswer,
@@ -303,20 +736,23 @@ function buildChallenge(target: EquipmentLesson, allLessons: EquipmentLesson[]):
   };
 }
 
-function buildWineryNodes(): LessonNode[] {
-  return WINERY_EQUIPMENT.map((lesson, index) => ({
+function buildFacilityNodes(facilityId: FacilityId): LessonNode[] {
+  const lessons = FACILITY_EQUIPMENT[facilityId];
+  const art = FACILITY_ART[facilityId];
+  return lessons.map((lesson, index) => ({
     ...lesson,
     unit: index + 1,
     mission: MISSION_ROTATION[index % MISSION_ROTATION.length],
     tag: TAG_ROTATION[index % TAG_ROTATION.length],
     difficulty: Math.min(5, 1 + Math.floor(index / 2)),
-    art: WINERY_ART[index % WINERY_ART.length]
+    art: art[index % art.length]
   }));
 }
 
-function getLearningContent(lesson: EquipmentLesson): LearningContent {
+function getLearningContent(lesson: EquipmentLesson, facilityId: FacilityId): LearningContent {
+  const learningContent = FACILITY_LEARNING_CONTENT[facilityId];
   return (
-    WINERY_LEARNING_CONTENT[lesson.id] ?? {
+    learningContent[lesson.id] ?? {
       overview: lesson.purpose,
       keyPoints: [lesson.purpose, lesson.safety, lesson.operatorTip],
       stageFit: `This lesson supports the ${lesson.stage} stage.`
@@ -355,27 +791,54 @@ export function readEquipmentMasterySnapshot(): EquipmentMasterySnapshot {
 export function SipStudiosEquipmentMastery() {
   const [facilityId, setFacilityId] = useState<FacilityId>("winery");
   const [mastery, setMastery] = useState<Record<string, number>>(() => readEquipmentMasterySnapshot().mastery);
-  const nodes = useMemo(() => buildWineryNodes(), []);
+  const facilityNodes = useMemo(
+    () => ({
+      winery: buildFacilityNodes("winery"),
+      brewery: buildFacilityNodes("brewery"),
+      distillery: buildFacilityNodes("distillery")
+    }),
+    []
+  );
+  const nodes = facilityNodes[facilityId];
   const [activeNodeId, setActiveNodeId] = useState(nodes[0]?.id ?? "");
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [challenge, setChallenge] = useState<Challenge | null>(() => (nodes[0] ? buildChallenge(nodes[0], nodes) : null));
+  const [challenge, setChallenge] = useState<Challenge | null>(() =>
+    nodes[0] ? buildChallenge(nodes[0], nodes, QUESTION_SEQUENCE[0]) : null
+  );
   const [feedback, setFeedback] = useState<{ correct: boolean; text: string } | null>(null);
   const [lessonAcknowledged, setLessonAcknowledged] = useState(false);
-  const [reviewChecks, setReviewChecks] = useState({ process: false, safety: false });
+  const [questionStep, setQuestionStep] = useState(0);
+  const [correctAnswersInSeries, setCorrectAnswersInSeries] = useState(0);
 
   const selectedFacility = FACILITIES.find((item) => item.id === facilityId) ?? FACILITIES[0];
   const completedCount = nodes.reduce((count, node) => count + (mastery[node.id] ? 1 : 0), 0);
   const progressPercent = nodes.length ? Math.round((completedCount / nodes.length) * 100) : 0;
   const activeIndex = nodes.findIndex((node) => node.id === activeNodeId);
   const activeNode = activeIndex >= 0 ? nodes[activeIndex] : null;
-  const learningContent = activeNode ? getLearningContent(activeNode) : null;
+  const learningContent = activeNode ? getLearningContent(activeNode, facilityId) : null;
   const allComplete = completedCount === nodes.length;
-  const canUnlockQuiz = reviewChecks.process && reviewChecks.safety;
+  const totalQuestions = QUESTION_SEQUENCE.length;
+  const seriesComplete = questionStep >= totalQuestions;
+  const seriesPassed = seriesComplete && correctAnswersInSeries === totalQuestions;
 
   useEffect(() => {
     window.localStorage.setItem(EQUIPMENT_MASTERY_STORAGE_KEY, JSON.stringify({ mastery }));
     window.dispatchEvent(new CustomEvent(EQUIPMENT_MASTERY_EVENT));
   }, [mastery]);
+
+  useEffect(() => {
+    if (!nodes.length) return;
+    const currentNode = nodes.find((node) => node.id === activeNodeId);
+    if (currentNode) return;
+    const firstUnlocked = nodes.find((_, index) => index === 0 || Boolean(mastery[nodes[index - 1].id])) ?? nodes[0];
+    setActiveNodeId(firstUnlocked.id);
+    setLessonAcknowledged(false);
+    setSelectedAnswer(null);
+    setFeedback(null);
+    setQuestionStep(0);
+    setCorrectAnswersInSeries(0);
+    setChallenge(buildChallenge(firstUnlocked, nodes, QUESTION_SEQUENCE[0]));
+  }, [activeNodeId, mastery, nodes]);
 
   const isUnlocked = (index: number) => {
     if (index <= 0) return true;
@@ -388,17 +851,26 @@ export function SipStudiosEquipmentMastery() {
     const nextNode = nodes[nextIndex];
     setActiveNodeId(nextNode.id);
     setLessonAcknowledged(false);
-    setReviewChecks({ process: false, safety: false });
     setSelectedAnswer(null);
     setFeedback(null);
-    setChallenge(buildChallenge(nextNode, nodes));
+    setQuestionStep(0);
+    setCorrectAnswersInSeries(0);
+    setChallenge(buildChallenge(nextNode, nodes, QUESTION_SEQUENCE[0]));
   };
 
-  const answerChallenge = (answer: string) => {
-    if (!lessonAcknowledged || !challenge || !activeNode || selectedAnswer) return;
-    const correct = answer === challenge.correctAnswer;
+  const selectAnswer = (answer: string) => {
+    if (!lessonAcknowledged || !challenge || feedback) return;
     setSelectedAnswer(answer);
-    if (correct) {
+  };
+
+  const submitAnswer = () => {
+    if (!lessonAcknowledged || !challenge || !activeNode || !selectedAnswer || feedback) return;
+    const correct = selectedAnswer === challenge.correctAnswer;
+    const nextQuestionStep = questionStep + 1;
+    const nextCorrectCount = correctAnswersInSeries + (correct ? 1 : 0);
+    setQuestionStep(nextQuestionStep);
+    setCorrectAnswersInSeries(nextCorrectCount);
+    if (nextQuestionStep === totalQuestions && nextCorrectCount === totalQuestions) {
       setMastery((current) => ({ ...current, [activeNode.id]: Math.max(1, current[activeNode.id] ?? 0) }));
     }
     setFeedback({
@@ -409,16 +881,32 @@ export function SipStudiosEquipmentMastery() {
 
   const refreshChallenge = () => {
     if (!activeNode || !lessonAcknowledged) return;
+    if (!feedback) return;
+    if (seriesComplete) {
+      if (seriesPassed) return;
+      setQuestionStep(0);
+      setCorrectAnswersInSeries(0);
+      setSelectedAnswer(null);
+      setFeedback(null);
+      setChallenge(buildChallenge(activeNode, nodes, QUESTION_SEQUENCE[0]));
+      return;
+    }
+    const nextMode = QUESTION_SEQUENCE[questionStep];
+    if (nextMode === undefined) return;
     setSelectedAnswer(null);
     setFeedback(null);
-    setChallenge(buildChallenge(activeNode, nodes));
+    setChallenge(buildChallenge(activeNode, nodes, nextMode));
   };
 
   const acknowledgeLesson = () => {
-    if (!canUnlockQuiz) return;
     setLessonAcknowledged(true);
+    setQuestionStep(0);
+    setCorrectAnswersInSeries(0);
     setSelectedAnswer(null);
     setFeedback(null);
+    if (activeNode) {
+      setChallenge(buildChallenge(activeNode, nodes, QUESTION_SEQUENCE[0]));
+    }
   };
 
   const goToNextNode = () => {
@@ -430,8 +918,21 @@ export function SipStudiosEquipmentMastery() {
     }
     if (activeIndex + 1 < nodes.length && isUnlocked(activeIndex + 1)) {
       openNode(nodes[activeIndex + 1].id);
+      return;
+    }
+    if (nodes.length > 0) {
+      openNode(nodes[0].id);
     }
   };
+
+  const challengeActionLabel = !feedback
+    ? "Submit"
+    : seriesComplete
+      ? seriesPassed
+        ? "Series Complete"
+        : "Retry Series"
+      : "Next Question";
+  const challengeActionDisabled = !feedback ? !selectedAnswer : seriesPassed;
 
   return (
     <section className="academy-game sip-studios-game-v2" aria-label="Sip Studios educational game">
@@ -439,7 +940,7 @@ export function SipStudiosEquipmentMastery() {
         <p className="academy-kicker">Sip Academy Equipment Mastery</p>
         <h2>Equipment Mastery Path</h2>
         <p>
-          Duolingo-style progression is now live for Winery equipment. Complete each node to unlock the next lesson and keep
+          Duolingo-style progression is now live for equipment training. Complete each node to unlock the next lesson and keep
           your team training structured.
         </p>
         <div className="sip-studios-facility-tabs" role="tablist" aria-label="Facility tracks">
@@ -477,12 +978,8 @@ export function SipStudiosEquipmentMastery() {
           </div>
           <div className="academy-quest-log">
             <p className="academy-quest-kicker">Current Sprint</p>
-            <strong>{selectedFacility.enabled ? "Winery equipment module in active rollout." : "Track planning in progress."}</strong>
-            <small>
-              {selectedFacility.enabled
-                ? `Lessons mastered: ${completedCount}/${nodes.length} (${progressPercent}%)`
-                : "Brewery and Distillery will unlock after content and art pass."}
-            </small>
+            <strong>{selectedFacility.label} equipment module in active rollout.</strong>
+            <small>{`Lessons mastered: ${completedCount}/${nodes.length} (${progressPercent}%)`}</small>
           </div>
 
           {selectedFacility.enabled ? (
@@ -541,6 +1038,9 @@ export function SipStudiosEquipmentMastery() {
             <div className="sip-studios-equipment-details academy-pre-quiz sip-studios-pre-quiz-panel">
               <p className="academy-pre-quiz-kicker">Teach First</p>
               <h4 className="academy-pre-quiz-title">Unit {activeNode.unit}: {activeNode.name}</h4>
+              <figure className="academy-equipment-reference">
+                <img src={activeNode.reviewImage} alt={`${activeNode.name} being used during ${activeNode.stage}`} loading="lazy" />
+              </figure>
               <p>
                 <strong>Overview:</strong> {learningContent?.overview ?? activeNode.purpose}
               </p>
@@ -566,23 +1066,11 @@ export function SipStudiosEquipmentMastery() {
             {!lessonAcknowledged ? (
               <div className="academy-lesson-gate">
                 <p>Read the lesson above, then acknowledge it to unlock the quiz.</p>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={reviewChecks.process}
-                    onChange={(event) => setReviewChecks((current) => ({ ...current, process: event.target.checked }))}
-                  />
-                  I reviewed the process and stage fit.
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={reviewChecks.safety}
-                    onChange={(event) => setReviewChecks((current) => ({ ...current, safety: event.target.checked }))}
-                  />
-                  I reviewed the safety callouts.
-                </label>
-                <button type="button" className="btn btn-primary" onClick={acknowledgeLesson} disabled={!canUnlockQuiz}>
+                <ul>
+                  <li>I reviewed the process and stage fit.</li>
+                  <li>I reviewed the safety callouts.</li>
+                </ul>
+                <button type="button" className="btn btn-primary" onClick={acknowledgeLesson}>
                   I reviewed this lesson, continue to quiz
                 </button>
               </div>
@@ -596,8 +1084,8 @@ export function SipStudiosEquipmentMastery() {
                         key={option}
                         type="button"
                         className={`academy-choice ${selectedAnswer === option ? "selected" : ""}`}
-                        disabled={Boolean(selectedAnswer)}
-                        onClick={() => answerChallenge(option)}
+                        disabled={Boolean(feedback)}
+                        onClick={() => selectAnswer(option)}
                       >
                         {option}
                       </button>
@@ -613,11 +1101,21 @@ export function SipStudiosEquipmentMastery() {
                 ) : null}
 
                 <div className="academy-actions">
-                  <button type="button" className="btn btn-light" onClick={refreshChallenge}>
-                    New Prompt
+                  <button
+                    type="button"
+                    className="btn btn-light"
+                    onClick={!feedback ? submitAnswer : refreshChallenge}
+                    disabled={challengeActionDisabled}
+                  >
+                    {challengeActionLabel}
                   </button>
-                  <button type="button" className="btn btn-primary" disabled={!feedback?.correct || allComplete} onClick={goToNextNode}>
-                    {allComplete ? "Path Complete" : "Next Equipment"}
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    disabled={!seriesPassed}
+                    onClick={goToNextNode}
+                  >
+                    {allComplete && activeIndex === nodes.length - 1 ? "Restart Path" : "Next Equipment"}
                   </button>
                 </div>
               </>

@@ -1,0 +1,261 @@
+{
+  "started_at": "2026-04-04T04:02:24.997Z",
+  "batch": "04",
+  "total_terms": 50,
+  "success": [
+    {
+      "term": "Nilgiri",
+      "id": "5fdb4260-b3c9-450b-a868-a10a99cc9d34",
+      "infographic_url": "/infographics/regeneration/nilgiri.png"
+    },
+    {
+      "term": "Reserva",
+      "id": "6a878717-942d-4dcb-94db-6f2fcd233ca0",
+      "infographic_url": "/infographics/regeneration/reserva.png"
+    },
+    {
+      "term": "Ripening",
+      "id": "b1e87b74-56f2-4f0c-b965-fdeed6e1a805",
+      "infographic_url": "/infographics/regeneration/ripening.png"
+    },
+    {
+      "term": "Dortmunder",
+      "id": "ad860ac6-1180-42e3-b902-0fa2e750a393",
+      "infographic_url": "/infographics/regeneration/dortmunder.png"
+    },
+    {
+      "term": "Gaba",
+      "id": "35366226-13ac-4103-8402-2fea8733cf4c",
+      "infographic_url": "/infographics/regeneration/gaba.png"
+    },
+    {
+      "term": "Ale",
+      "id": "0b03f9c0-77b6-411b-9317-d2f6f96c4dd4",
+      "infographic_url": "/infographics/regeneration/ale.png"
+    },
+    {
+      "term": "Kabusecha",
+      "id": "6cb61156-28ce-4a2d-91b0-dc261b014e16",
+      "infographic_url": "/infographics/regeneration/kabusecha.png"
+    },
+    {
+      "term": "Secondary",
+      "id": "1d47d7c7-d6da-45d4-9f05-4b6d06493442",
+      "infographic_url": "/infographics/regeneration/secondary.png"
+    },
+    {
+      "term": "Torrontes",
+      "id": "c5bfbdc4-6cf1-44b9-85dd-43c51431b3f4",
+      "infographic_url": "/infographics/regeneration/torrontes.png"
+    },
+    {
+      "term": "Maillard",
+      "id": "4bbae1f5-9e65-474b-b8fb-305572c99195",
+      "infographic_url": "/infographics/regeneration/maillard.png"
+    },
+    {
+      "term": "Holstein",
+      "id": "7269ff6b-1e35-4575-b57e-5b7368a8a713",
+      "infographic_url": "/infographics/regeneration/holstein.png"
+    },
+    {
+      "term": "Absinthe",
+      "id": "3742e3f7-fd97-4aca-a67e-1df953ca775c",
+      "infographic_url": "/infographics/regeneration/absinthe.png"
+    },
+    {
+      "term": "Bicarbonate",
+      "id": "9e3bc369-990b-4ba2-9c6e-1e8ab1618ac5",
+      "infographic_url": "/infographics/regeneration/bicarbonate.png"
+    },
+    {
+      "term": "Helles",
+      "id": "111a27e0-a3c5-43f7-91ed-4493a16c6d17",
+      "infographic_url": "/infographics/regeneration/helles.png"
+    },
+    {
+      "term": "Homogenization",
+      "id": "503c670c-aa5c-42c8-ad89-3089777a3c4d",
+      "infographic_url": "/infographics/regeneration/homogenization.png"
+    },
+    {
+      "term": "Saaz",
+      "id": "76eda567-41da-43b7-b342-6b34e9d7e6ce",
+      "infographic_url": "/infographics/regeneration/saaz.png"
+    },
+    {
+      "term": "Symbiosis",
+      "id": "a4ed10d7-8eba-47d3-9603-c4d632d5eec9",
+      "infographic_url": "/infographics/regeneration/symbiosis.png"
+    },
+    {
+      "term": "Creamline",
+      "id": "9a8191e3-1217-4b10-8431-ec5bcd78f86e",
+      "infographic_url": "/infographics/regeneration/creamline.png"
+    },
+    {
+      "term": "Grafting",
+      "id": "11511c53-3da3-41ee-ad20-10c9927aae00",
+      "infographic_url": "/infographics/regeneration/grafting.png"
+    },
+    {
+      "term": "Lactose",
+      "id": "a711b8fa-0122-473d-8c93-40e3e765887d",
+      "infographic_url": "/infographics/regeneration/lactose.png"
+    },
+    {
+      "term": "Liqueur",
+      "id": "7d439283-cbfd-412f-b5a7-8498a6b14cc0",
+      "infographic_url": "/infographics/regeneration/liqueur.png"
+    },
+    {
+      "term": "Sauternes",
+      "id": "3aa6f3b4-26d6-4965-8312-ef9738698416",
+      "infographic_url": "/infographics/regeneration/sauternes.png"
+    },
+    {
+      "term": "Sugarcane",
+      "id": "c6fa4e04-d5c6-43b1-806f-f9cb3cd96c22",
+      "infographic_url": "/infographics/regeneration/sugarcane.png"
+    },
+    {
+      "term": "Baihao",
+      "id": "d1ccb0b1-7d98-4ded-866d-60d94ce0b068",
+      "infographic_url": "/infographics/regeneration/baihao.png"
+    },
+    {
+      "term": "Berlinerweisse",
+      "id": "e05fa0a1-31a3-41ba-990c-a118501629d6",
+      "infographic_url": "/infographics/regeneration/berlinerweisse.png"
+    },
+    {
+      "term": "Bitterness",
+      "id": "673e5c75-6261-4617-87aa-538dce196f78",
+      "infographic_url": "/infographics/regeneration/bitterness.png"
+    },
+    {
+      "term": "Phenolic",
+      "id": "bd85737a-ae8a-4c26-bca8-4644e6c1531e",
+      "infographic_url": "/infographics/regeneration/phenolic.png"
+    },
+    {
+      "term": "Potassium",
+      "id": "bbcbb147-f85a-4e0d-9606-04bb8e77e5b3",
+      "infographic_url": "/infographics/regeneration/potassium.png"
+    },
+    {
+      "term": "Reinheitsgebot",
+      "id": "4eaf0a25-e92d-45e8-b9fc-3ea2340cd96d",
+      "infographic_url": "/infographics/regeneration/reinheitsgebot.png"
+    },
+    {
+      "term": "Rye",
+      "id": "e0606405-bd2b-4391-9206-729a6c2c4bba",
+      "infographic_url": "/infographics/regeneration/rye.png"
+    },
+    {
+      "term": "Altbier",
+      "id": "1b071e03-f076-48c0-9f9a-f75e8420405a",
+      "infographic_url": "/infographics/regeneration/altbier.png"
+    },
+    {
+      "term": "Dahongpao",
+      "id": "7d307bc4-f92a-4af8-85f6-706ea5e51d1a",
+      "infographic_url": "/infographics/regeneration/dahongpao.png"
+    },
+    {
+      "term": "Ester",
+      "id": "ed9206f6-71ec-454b-9367-5fa36f73120b",
+      "infographic_url": "/infographics/regeneration/ester.png"
+    },
+    {
+      "term": "Heads",
+      "id": "31945bbe-cf04-45c4-949c-9996f8226779",
+      "infographic_url": "/infographics/regeneration/heads.png"
+    }
+  ],
+  "failed": [
+    {
+      "term": "Stripping",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Cabernet",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Chemex",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Flavoring",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Headspace",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Mucilage",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Muscatel",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Sodium",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Steaming",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Alkalinity",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Assemblage",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Catechin",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Dunder",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Lovibond",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Oxidative",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    },
+    {
+      "term": "Congeners",
+      "stage": "generate",
+      "error": "{\n  \"error\": {\n    \"message\": \"Billing hard limit has been reached.\",\n    \"type\": \"billing_limit_user_error\",\n    \"param\": null,\n    \"code\": \"billing_hard_limit_reached\"\n  }\n}"
+    }
+  ],
+  "db_patch_failed": [],
+  "finished_at": "2026-04-04T04:30:04.161Z"
+}

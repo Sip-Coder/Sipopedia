@@ -6,7 +6,7 @@ title Sip Studies Localhost
 
 if not exist node_modules (
   echo node_modules not found. Installing dependencies...
-  call npm install
+  call npm ci
   if errorlevel 1 (
     echo.
     echo Dependency install failed.

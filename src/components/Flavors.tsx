@@ -1365,7 +1365,7 @@ export function Flavors() {
       <html>
       <head>
         <meta charset="utf-8" />
-        <title>Sip Studies Flavor Journal</title>
+        <title>Sip Studies Tasting Journal</title>
         <style>
           :root {
             --cream-main: #edd4a8;
@@ -1486,7 +1486,7 @@ export function Flavors() {
           <header class="report-header">
             <img class="report-header-pattern" src="${tartanHeader}" alt="" />
             <div class="report-header-content">
-              <h1>Sip Studies Flavor Journal</h1>
+              <h1>Sip Studies Tasting Journal</h1>
               <section class="meta">
                 <p><strong>Generated:</strong> ${esc(generatedAt)}</p>
                 <p><strong>Total Notes:</strong> ${target.length}</p>
@@ -1592,7 +1592,7 @@ export function Flavors() {
 
   return (
     <section className="tasting-journal">
-      <div className="section-header"><h2>Flavor Journal</h2><p>Structured notes, blind scoring analytics, PDF export, and an interactive country map of your tastings.</p></div>
+      <div className="section-header"><h2>Tasting Journal</h2><p>Structured notes, blind scoring analytics, PDF export, and an interactive country map of your tastings.</p></div>
       <div className="journal-tabs">
         <button className={`btn ${tab === "make" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("make")}>New Notes</button>
         <button className={`btn ${tab === "review" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("review")}>Review</button>

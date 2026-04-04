@@ -70,41 +70,49 @@ Redeploy after changing secrets:
 supabase functions deploy ai-router --no-verify-jwt
 ```
 
-## Scheduled terminology harvesting (daily cron)
+## Start Terms terminology automation
 
 This repo now includes:
 
-- `supabase/functions/terminology-harvester/index.ts`
-- `supabase/migrations/202603080001_terminology_harvester_cron.sql`
-- `supabase/migrations/202603080003_enable_terminology_harvester_cron_non_openai.sql`
+- `scripts/start-terms.js`
+- `scripts/audit-terms.js`
+- `scripts/ralph-loop-start.ps1`
+- `docs/TERMS_AUTOMATION_PLAYBOOK.md`
 
 What it does:
-- Runs daily by `pg_cron`
-- Calls `terminology-harvester`
-- Uses public Wikipedia search + summary endpoints (no paid model API required)
-- Dedupes against existing `public.terminology_entries`
-- Inserts up to `250` new schema-compliant terms each run
-- Logs each run to `public.terminology_harvest_runs`
+- Runs a 7-stage agent loop for terminology intake:
+  - planner
+  - source scanner
+  - term extractor
+  - dedupe + policy filter
+  - writer
+  - citation compliance
+  - quality gate + persist
+- Blocks encyclopedia and dictionary domains by policy.
+- Dedupes against existing `public.terminology_entries`.
+- Writes run reports under `review/terminology/`.
 
-Deploy/update steps:
+Run steps:
 
 ```bash
-supabase functions deploy terminology-harvester --no-verify-jwt
-supabase db push
+npm run terms:audit -- --limit 535
+npm run terms:start -- --dry-run
+npm run terms:start
+```
+
+Ralph-style loop mode:
+
+```bash
+npm run terms:loop -- -Iterations 3 -Letters ABC -BatchPerLetter 2 -Target 12 -DryRun
 ```
 
 Required secrets:
-- No OpenAI secret is required for terminology harvesting.
-- Supabase platform secrets (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) are already provided by the project runtime.
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
 
-Optional hardening secret (recommended):
-
-```bash
-supabase secrets set TERMINOLOGY_CRON_SECRET=YOUR_RANDOM_SECRET
-```
-
-Cron expression in migration:
-- `0 16 * * *` (16:00 UTC daily = 08:00 PST fixed UTC-8)
+Legacy note:
+- `supabase/functions/terminology-harvester/index.ts` is now a deprecation stub (HTTP 410).
+- Legacy cron-based Wikipedia pipeline is no longer used in the active workflow.
 
 ## Step 6: Test in app
 

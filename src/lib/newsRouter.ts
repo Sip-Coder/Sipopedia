@@ -60,31 +60,38 @@ type GuildNewsResponse = {
   items: GuildNewsItem[];
 };
 
+function clientSafeErrorFromStatus(status: number): string {
+  if (status === 400) {
+    return "News request was invalid.";
+  }
+  if (status === 401) {
+    return "Sign in is required to load live news.";
+  }
+  if (status === 429) {
+    return "News requests are temporarily rate-limited. Please retry shortly.";
+  }
+  return "News request failed. Please try again.";
+}
+
 async function normalizeFunctionError(error: unknown): Promise<string> {
   if (error instanceof FunctionsHttpError) {
     const response = error.context;
     try {
       const payload = await response.clone().json();
-      if (typeof payload?.error === "string" && payload.error.trim().length > 0) {
-        return payload.error.trim();
-      }
-      if (typeof payload?.message === "string" && payload.message.trim().length > 0) {
-        return payload.message.trim();
-      }
-    } catch {
-      // Fall through to raw body.
-    }
-
-    try {
-      const raw = (await response.clone().text()).trim();
-      if (raw.length > 0) {
-        return raw;
+      const payloadError = typeof payload?.error === "string" ? payload.error.trim() : "";
+      if (payloadError.length > 0) {
+        const lowered = payloadError.toLowerCase();
+        if (lowered.includes("sign in") || lowered.includes("authentication")) {
+          return clientSafeErrorFromStatus(401);
+        }
+        if (lowered.includes("rate limit")) {
+          return clientSafeErrorFromStatus(429);
+        }
       }
     } catch {
-      // Ignore parse errors and return fallback.
+      // Fall through to status-based fallback.
     }
-
-    return `Edge Function failed (${response.status}).`;
+    return clientSafeErrorFromStatus(response.status);
   }
 
   if (error instanceof FunctionsRelayError) {
@@ -93,10 +100,6 @@ async function normalizeFunctionError(error: unknown): Promise<string> {
 
   if (error instanceof FunctionsFetchError) {
     return "Network error calling news-router.";
-  }
-
-  if (error instanceof Error && error.message.trim().length > 0) {
-    return error.message;
   }
 
   return "Could not reach news-router.";

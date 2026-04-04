@@ -1,0 +1,35 @@
+{
+  "started_at": "2026-04-04T16:24:12.827Z",
+  "done": [
+    {
+      "requested": "Whiskey",
+      "canonical": "Whiskey Trail",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\whiskey.png",
+      "db_patched": true,
+      "linked_term": "Whiskey Trail"
+    },
+    {
+      "requested": "Flavor",
+      "canonical": "Flavoring",
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\flavor.png",
+      "db_patched": true,
+      "linked_term": "Flavoring"
+    },
+    {
+      "requested": "Espresso",
+      "canonical": null,
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\espresso.png",
+      "db_patched": false,
+      "linked_term": null
+    },
+    {
+      "requested": "Development",
+      "canonical": null,
+      "file": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\infographics\\regeneration 02\\development.png",
+      "db_patched": false,
+      "linked_term": null
+    }
+  ],
+  "failed": [],
+  "finished_at": "2026-04-04T16:26:14.947Z"
+}

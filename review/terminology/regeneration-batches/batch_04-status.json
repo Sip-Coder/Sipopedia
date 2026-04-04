@@ -1,0 +1,8 @@
+{
+  "batch": "04",
+  "original_failed": 16,
+  "retry_02_success": 16,
+  "retry_02_failed": 0,
+  "remaining_terms": [],
+  "retry_log": "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\review\\terminology\\regeneration-batches\\batch_04-retry_02.json"
+}

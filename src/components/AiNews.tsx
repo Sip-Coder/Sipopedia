@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchGuildNews, type NewsRouterSource } from "../lib/newsRouter";
+import { safeHttpUrl } from "../lib/urlSafety";
 
 type SourceLoadMode = "loaded" | "fallback" | "seeded" | "failed";
 type SourceCategory = "AI Labs" | "Hardware News" | "Media & Podcasts" | "Research";
@@ -1023,19 +1024,28 @@ export function AiNews() {
 
       <div className="news-grid">
         {visibleArticles.map((article) => (
-          <article className="news-card" key={article.id}>
-            <NewsCardImage article={article} />
-            <p className="news-card-tag">{article.sourceCategory}</p>
-            <h3>{article.title}</h3>
-            <p>{article.summary}</p>
-            <p className="news-card-meta">
-              {article.sourceName} | {formatDate(article.publishedAt)}
-              {article.translatedFrom ? ` | translated from ${article.translatedFrom.toUpperCase()}` : ""}
-            </p>
-            <a className="btn btn-light news-link" href={article.url} target="_blank" rel="noreferrer">
-              Read Article
-            </a>
-          </article>
+          (() => {
+            const safeArticleUrl = safeHttpUrl(article.url);
+            return (
+              <article className="news-card" key={article.id}>
+                <NewsCardImage article={article} />
+                <p className="news-card-tag">{article.sourceCategory}</p>
+                <h3>{article.title}</h3>
+                <p>{article.summary}</p>
+                <p className="news-card-meta">
+                  {article.sourceName} | {formatDate(article.publishedAt)}
+                  {article.translatedFrom ? ` | translated from ${article.translatedFrom.toUpperCase()}` : ""}
+                </p>
+                {safeArticleUrl ? (
+                  <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">
+                    Read Article
+                  </a>
+                ) : (
+                  <span className="btn btn-light news-link">Invalid article URL</span>
+                )}
+              </article>
+            );
+          })()
         ))}
       </div>
 

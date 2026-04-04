@@ -42,13 +42,18 @@ function isLikelyText(buffer) {
 
 const patterns = [
   { name: "Supabase service role key", regex: /sb_secret_[A-Za-z0-9_-]{10,}/g },
-  { name: "OpenAI secret key", regex: /sk-[A-Za-z0-9]{20,}/g },
+  { name: "OpenAI secret key", regex: /sk-(?:proj-)?[A-Za-z0-9]{20,}/g },
   { name: "GitHub token", regex: /(ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})/g },
   { name: "Google API key", regex: /AIza[0-9A-Za-z\-_]{20,}/g },
   { name: "Private key block", regex: /-----BEGIN [A-Z ]+PRIVATE KEY-----/g },
   {
-    name: "Hardcoded provider key assignment",
+    name: "Hardcoded provider key assignment (quoted)",
     regex: /\b(SUPABASE_SERVICE_ROLE_KEY|OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_AI_API_KEY|ROBERT_PARKER_API_KEY)\b\s*[:=]\s*["'][^"']{8,}["']/g
+  },
+  {
+    name: "Hardcoded provider key assignment (unquoted)",
+    regex:
+      /\b(SUPABASE_SERVICE_ROLE_KEY|OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_AI_API_KEY|ROBERT_PARKER_API_KEY)\b\s*[:=]\s*[A-Za-z0-9_+=-]{8,}/g
   }
 ];
 
@@ -56,7 +61,10 @@ const allowedValueTokens = new Set([
   "YOUR_KEY_HERE",
   "<real-service-role-key>",
   "REPLACE_ME",
-  "CHANGEME"
+  "CHANGEME",
+  "your_key_here",
+  "replace_me",
+  "YOUR_KEY"
 ]);
 
 function isAllowedMatch(matchText) {

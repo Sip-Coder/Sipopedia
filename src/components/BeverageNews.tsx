@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchGuildNews } from "../lib/newsRouter";
 import { MAGAZINE_NEWS_REFERENCES } from "../data/magazineNewsReferences";
+import { safeHttpUrl } from "../lib/urlSafety";
 
 type BeverageType = "Wine" | "Spirits" | "Beer" | "Sake" | "General";
 type SourceLoadMode = "loaded" | "fallback" | "failed";
@@ -1298,12 +1299,21 @@ export function BeverageNews() {
         <p className="hint">
           Selected references are not wired for live ingestion yet:{" "}
           {selectedReferenceSources.map((source, index) => (
-            <span key={source.id}>
-              {index > 0 ? ", " : ""}
-              <a href={source.homepage} target="_blank" rel="noreferrer">
-                {source.name}
-              </a>
-            </span>
+            (() => {
+              const safeHomepage = safeHttpUrl(source.homepage);
+              return (
+                <span key={source.id}>
+                  {index > 0 ? ", " : ""}
+                  {safeHomepage ? (
+                    <a href={safeHomepage} target="_blank" rel="noreferrer">
+                      {source.name}
+                    </a>
+                  ) : (
+                    <span>{source.name}</span>
+                  )}
+                </span>
+              );
+            })()
           ))}
           .
         </p>
@@ -1324,19 +1334,28 @@ export function BeverageNews() {
 
       <div className="news-grid">
         {visibleArticles.map((article) => (
-          <article className="news-card" key={article.id}>
-            <NewsCardImage article={article} />
-            <p className="news-card-tag">{article.sourceCategory}</p>
-            <h3>{article.title}</h3>
-            <p>{article.summary}</p>
-            <p className="news-card-meta">
-              {article.sourceName} | {formatDate(article.publishedAt)}
-              {article.translatedFrom ? ` | translated from ${article.translatedFrom.toUpperCase()}` : ""}
-            </p>
-            <a className="btn btn-light news-link" href={article.url} target="_blank" rel="noreferrer">
-              Read Article
-            </a>
-          </article>
+          (() => {
+            const safeArticleUrl = safeHttpUrl(article.url);
+            return (
+              <article className="news-card" key={article.id}>
+                <NewsCardImage article={article} />
+                <p className="news-card-tag">{article.sourceCategory}</p>
+                <h3>{article.title}</h3>
+                <p>{article.summary}</p>
+                <p className="news-card-meta">
+                  {article.sourceName} | {formatDate(article.publishedAt)}
+                  {article.translatedFrom ? ` | translated from ${article.translatedFrom.toUpperCase()}` : ""}
+                </p>
+                {safeArticleUrl ? (
+                  <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">
+                    Read Article
+                  </a>
+                ) : (
+                  <span className="btn btn-light news-link">Invalid article URL</span>
+                )}
+              </article>
+            );
+          })()
         ))}
       </div>
 
