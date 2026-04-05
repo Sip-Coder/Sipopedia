@@ -8,8 +8,9 @@ externalPort = 80
 
 [deployment]
 build = ["npm", "run", "build"]
-deploymentTarget = "static"
+deploymentTarget = "autoscale"
 publicDir = "dist"
+run = ["npm", "run", "preview"]
 
 [workflows]
 runButton = "Project"
