@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from "react";
 import {
   getTerminologyById,
   listTerminologyPage,
@@ -180,6 +180,8 @@ export function Terminology() {
   const [editorialProcessOpen, setEditorialProcessOpen] = useState(false);
   const [infographicIndex, setInfographicIndex] = useState(0);
   const [infographicExhausted, setInfographicExhausted] = useState(false);
+  const swipeStartXRef = useRef<number | null>(null);
+  const swipeStartYRef = useRef<number | null>(null);
 
   const navigateSelectedTerm = useCallback(
     (direction: 1 | -1) => {
@@ -323,6 +325,40 @@ export function Terminology() {
     setPage((value) => Math.min(pageCount - 1, value + 1));
   };
 
+  const resetSwipeTracking = () => {
+    swipeStartXRef.current = null;
+    swipeStartYRef.current = null;
+  };
+
+  const handleModalTouchStart = (event: TouchEvent<HTMLElement>) => {
+    const firstTouch = event.touches[0];
+    if (!firstTouch) return;
+    swipeStartXRef.current = firstTouch.clientX;
+    swipeStartYRef.current = firstTouch.clientY;
+  };
+
+  const handleModalTouchEnd = (event: TouchEvent<HTMLElement>) => {
+    const startX = swipeStartXRef.current;
+    const startY = swipeStartYRef.current;
+    resetSwipeTracking();
+
+    const endTouch = event.changedTouches[0];
+    if (startX === null || startY === null || !endTouch) return;
+
+    const dx = endTouch.clientX - startX;
+    const dy = endTouch.clientY - startY;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+
+    if (absDx < 60 || absDx < absDy * 1.25) return;
+
+    if (dx < 0) {
+      navigateSelectedTerm(1);
+    } else {
+      navigateSelectedTerm(-1);
+    }
+  };
+
   const renderPagination = (className?: string) => (
     <div className={`terminology-pagination${className ? ` ${className}` : ""}`}>
       <button className="btn btn-light" onClick={handlePrevious} disabled={topImportant || page === 0}>
@@ -457,7 +493,13 @@ export function Terminology() {
 
       {selectedTermId ? (
         <div className="term-modal-overlay" onClick={() => setSelectedTermId(null)}>
-          <article className="term-modal" onClick={(event) => event.stopPropagation()}>
+          <article
+            className="term-modal"
+            onClick={(event) => event.stopPropagation()}
+            onTouchStart={handleModalTouchStart}
+            onTouchEnd={handleModalTouchEnd}
+            onTouchCancel={resetSwipeTracking}
+          >
             {detailLoading ? <p>Loading term details...</p> : null}
             {detailError ? <p className="error">{detailError}</p> : null}
             {!detailLoading && !detailError && selectedTerm ? (
