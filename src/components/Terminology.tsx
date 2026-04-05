@@ -127,33 +127,40 @@ function uniqueUrls(urls: string[]) {
 
 function buildInfographicCandidates(term: string, url: string | null) {
   const original = String(url || "").trim();
-  const candidates: string[] = [];
+  const preferred: string[] = [];
+  const compatibility: string[] = [];
 
-  const tryFilenameCandidates = (filename: string) => {
+  const addPreferredFromFilename = (filename: string) => {
     if (!filename) return;
-    candidates.push(`/infographics/regeneration/${filename}`);
+    preferred.push(`/infographics/regeneration/${filename}`);
   };
 
-  if (original) {
-    candidates.push(original);
-    if (original.startsWith("/infographics/regeneration/")) {
+  if (original && original.startsWith("/infographics/regeneration/")) {
+    preferred.push(original);
+    const filename = original.split("/").pop() || "";
+    addPreferredFromFilename(filename);
+  } else if (original) {
+    if (original.startsWith("/infographics/regeneration 02/") || original.startsWith("/infographics/regeneration%2002/")) {
       const filename = original.split("/").pop() || "";
-      tryFilenameCandidates(filename);
-    } else if (original.startsWith("/infographics/regeneration 02/") || original.startsWith("/infographics/regeneration%2002/")) {
-      const filename = original.split("/").pop() || "";
-      tryFilenameCandidates(filename);
+      addPreferredFromFilename(filename);
     } else if (original.startsWith("/infographics/")) {
       const filename = original.split("/").pop() || "";
-      tryFilenameCandidates(filename);
+      addPreferredFromFilename(filename);
+    } else {
+      compatibility.push(original);
     }
   }
 
   const slug = toTermSlug(term);
   if (slug) {
-    candidates.push(`/infographics/regeneration/${slug}.png`);
+    preferred.push(`/infographics/regeneration/${slug}.png`);
   }
 
-  return uniqueUrls(candidates);
+  if (original && !original.startsWith("/infographics/regeneration/")) {
+    compatibility.push(original);
+  }
+
+  return uniqueUrls([...preferred, ...compatibility]);
 }
 
 export function Terminology() {
