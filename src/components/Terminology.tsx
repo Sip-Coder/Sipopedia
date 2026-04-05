@@ -8,8 +8,6 @@ import {
 } from "../lib/terminology";
 import { supabase } from "../lib/supabase";
 import { safeHttpUrl } from "../lib/urlSafety";
-import anaerobicInfographic from "@assets/image_1775373876736.png";
-import academyHeroPhoto from "@assets/image_1775373898527.png";
 
 const buckets: TermBucket[] = ["ALL", "#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
 const pageSizeOptions = [
@@ -130,28 +128,27 @@ function uniqueUrls(urls: string[]) {
 function buildInfographicCandidates(term: string, url: string | null) {
   const original = String(url || "").trim();
   const candidates: string[] = [];
-  const mappedAssets: Record<string, string> = {
-    anaerobic: anaerobicInfographic,
-    sippy: academyHeroPhoto,
-    roma: academyHeroPhoto,
-    hummin: academyHeroPhoto
-  };
 
-  const slug = toTermSlug(term);
-  if (slug in mappedAssets) {
-    candidates.push(mappedAssets[slug]);
-  }
+  const tryFilenameCandidates = (filename: string) => {
+    if (!filename) return;
+    candidates.push(`/infographics/regeneration/${filename}`);
+  };
 
   if (original) {
     candidates.push(original);
-    if (original.startsWith("/infographics/regeneration/") || original.startsWith("/infographics/regeneration 02/") || original.startsWith("/infographics/regeneration%2002/") || original.startsWith("/infographics/")) {
+    if (original.startsWith("/infographics/regeneration/")) {
       const filename = original.split("/").pop() || "";
-      if (filename) {
-        candidates.push(`/infographics/regeneration/${filename}`);
-      }
+      tryFilenameCandidates(filename);
+    } else if (original.startsWith("/infographics/regeneration 02/") || original.startsWith("/infographics/regeneration%2002/")) {
+      const filename = original.split("/").pop() || "";
+      tryFilenameCandidates(filename);
+    } else if (original.startsWith("/infographics/")) {
+      const filename = original.split("/").pop() || "";
+      tryFilenameCandidates(filename);
     }
   }
 
+  const slug = toTermSlug(term);
   if (slug) {
     candidates.push(`/infographics/regeneration/${slug}.png`);
   }
@@ -254,13 +251,13 @@ export function Terminology() {
     setDetailError("");
 
     getTerminologyById(selectedTermId)
-      .then((result) => {
+      .then((value) => {
         if (!active) return;
-        setSelectedTerm(result);
+        setSelectedTerm(value);
       })
       .catch((loadError: unknown) => {
         if (!active) return;
-        setDetailError(loadError instanceof Error ? loadError.message : "Could not load term details.");
+        setDetailError(loadError instanceof Error ? loadError.message : "Could not load term.");
       })
       .finally(() => {
         if (active) {
@@ -271,8 +268,28 @@ export function Terminology() {
     return () => {
       active = false;
     };
-  }, [selectedTermId]);
+  }, [selectedTermId, refreshTick]);
 
+  useEffect(() => {
+    const client = supabase;
+    if (!client) return;
+
+    const channel = client
+      .channel("terminology-live-updates")
+      .on("postgres_changes", { event: "*", schema: "public", table: "terminology_entries" }, () => {
+        setRefreshTick((value) => value + 1);
+      })
+      .subscribe();
+
+    return () => {
+      void client.removeChannel(channel);
+    };
+  }, []);
+
+  const topImportant = pageSizeMode === "TOP_100";
+  const topAllByLetter = topImportant && bucket === "ALL";
+  const effectivePageSize = topAllByLetter ? 104 : topImportant ? 100 : Number(pageSizeMode);
+  const pageCount = useMemo(() => Math.max(1, Math.ceil(total / effectivePageSize)), [effectivePageSize, total]);
   const infographicCandidates = useMemo(
     () => buildInfographicCandidates(selectedTerm?.term ?? "", selectedTerm?.infographic_url ?? null),
     [selectedTerm?.infographic_url, selectedTerm?.term]
@@ -283,5 +300,335 @@ export function Terminology() {
     setInfographicIndex(0);
   }, [selectedTerm?.id, selectedTerm?.infographic_url, selectedTerm?.term]);
 
-  return null;
+  const handlePrevious = () => {
+    setPage((value) => Math.max(0, value - 1));
+  };
+
+  const handleNext = () => {
+    if (topImportant) {
+      setPageSizeMode("100");
+      setPage(0);
+      return;
+    }
+    setPage((value) => Math.min(pageCount - 1, value + 1));
+  };
+
+  const renderPagination = (className?: string) => (
+    <div className={`terminology-pagination${className ? ` ${className}` : ""}`}>
+      <button className="btn btn-light" onClick={handlePrevious} disabled={topImportant || page === 0}>
+        Previous
+      </button>
+      <span className="pagination-sep" aria-hidden="true">
+        |
+      </span>
+      <span>
+        Page {page + 1} of {pageCount} ({total.toLocaleString()} terms)
+      </span>
+      <span className="pagination-sep" aria-hidden="true">
+        |
+      </span>
+      <button className="btn btn-light" onClick={handleNext} disabled={topImportant ? false : page >= pageCount - 1}>
+        Next
+      </button>
+    </div>
+  );
+
+  return (
+    <section className="terminology">
+      <div className="section-header">
+        <div className="section-header-copy">
+          <h2>Terminology</h2>
+          <p>
+            Book-sourced beverage definitions with full attribution, practical guidance, references, examples, and citations.
+            All Sipopedia entries are original editorial rewrites (no verbatim source excerpts).
+            Sorted as # first, then A-Z.
+          </p>
+        </div>
+        <button type="button" className="btn btn-light section-header-action" onClick={() => setEditorialProcessOpen(true)}>
+          Editorial Process
+        </button>
+      </div>
+
+      <div className="terminology-layout">
+        <aside className="terminology-sidebar" aria-label="Terminology filters">
+          <div className="terminology-search">
+            <label htmlFor="term-search">Search</label>
+            <div className="search-input-wrap">
+              <input
+                id="term-search"
+                value={query}
+                onChange={(event) => {
+                  const nextQuery = event.target.value;
+                  const hadQuery = query.trim().length > 0;
+                  const hasQuery = nextQuery.trim().length > 0;
+                  if (!hadQuery && hasQuery) {
+                    setBucket("ALL");
+                  }
+                  setQuery(nextQuery);
+                  setPage(0);
+                }}
+                placeholder="Search by term name"
+              />
+              {query.trim().length > 0 ? (
+                <button
+                  type="button"
+                  className="search-clear-btn"
+                  aria-label="Clear search"
+                  onClick={() => {
+                    setQuery("");
+                    setPage(0);
+                  }}
+                >
+                  x
+                </button>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="terminology-controls">
+            <label htmlFor="term-page-size">Terms per page</label>
+            <select
+              id="term-page-size"
+              value={pageSizeMode}
+              onChange={(event) => {
+                setPageSizeMode(event.target.value as PageSizeMode);
+                setPage(0);
+              }}
+            >
+              {pageSizeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="terminology-bucket-grid" role="tablist" aria-label="Term buckets">
+            {buckets.map((item) => (
+              <button
+                key={item}
+                role="tab"
+                aria-selected={item === bucket}
+                className={`bucket-pill terminology-bucket-pill ${item === bucket ? "active" : ""}`}
+                onClick={() => {
+                  setBucket(item);
+                  setPage(0);
+                }}
+              >
+                {item === "ALL" ? "All" : item}
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        <div className="terminology-main">
+          {renderPagination("terminology-pagination-top")}
+
+                <div className="terminology-list">
+            {loading ? <p>Loading terms...</p> : null}
+            {error ? <p className="error">{error}</p> : null}
+            {!loading && !error && rows.length === 0 ? <p>No terms found for this bucket and query.</p> : null}
+            {!loading && !error
+              ? rows.map((row) => (
+                  <button key={row.id} className="term-row" onClick={() => setSelectedTermId(row.id)}>
+                    <div>
+                      <h3>{toTitleCaseTerm(row.term)}</h3>
+                      <p>{shortMeaning(row.meaning)}</p>
+                    </div>
+                    <span className="term-row-tag">{row.sort_group}</span>
+                  </button>
+                ))
+              : null}
+          </div>
+
+          {renderPagination()}
+        </div>
+      </div>
+
+      {selectedTermId ? (
+        <div className="term-modal-overlay" onClick={() => setSelectedTermId(null)}>
+          <article className="term-modal" onClick={(event) => event.stopPropagation()}>
+            {detailLoading ? <p>Loading term details...</p> : null}
+            {detailError ? <p className="error">{detailError}</p> : null}
+            {!detailLoading && !detailError && selectedTerm ? (
+              <>
+                <header className="term-modal-header">
+                  <div>
+                    <p className="lesson-chip">Term {selectedTerm.sort_group}</p>
+                    <h3>{toTitleCaseTerm(selectedTerm.term)}</h3>
+                    <p>Updated: {formatDate(selectedTerm.updated_at)}</p>
+                  </div>
+                  <button className="btn btn-light" onClick={() => setSelectedTermId(null)}>
+                    Close
+                  </button>
+                </header>
+
+                <div className="term-modal-grid">
+                  <section>
+                    <h4>Meaning</h4>
+                    <p>{selectedTerm.meaning}</p>
+                    <h4>How to apply in Beverage Study</h4>
+                    <p>{selectedTerm.how_to_apply}</p>
+                    <h4>Real-world Example</h4>
+                    <ul>
+                      {selectedTerm.examples.map((item) => (
+                        <li key={`example-${item}`}>{item}</li>
+                      ))}
+                    </ul>
+                  </section>
+
+                  <aside>
+                    <h4>Book source</h4>
+                    <p>
+                      <strong>Title:</strong> {selectedTerm.source_title || "Not set"}
+                    </p>
+                    <h4>Authors</h4>
+                    {selectedTerm.source_authors.length > 0 ? (
+                      <ul>
+                        {selectedTerm.source_authors.map((author) => (
+                          <li key={author}>{author}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="hint">No source authors attached yet.</p>
+                    )}
+
+                    <h4>Infographic</h4>
+                    {infographicSrc ? (
+                      <div className="term-infographic-wrap">
+                        <img
+                          className="term-infographic"
+                          src={infographicSrc}
+                          alt={selectedTerm.term}
+                          onError={(event) => {
+                            event.preventDefault();
+                            setInfographicIndex((current) => {
+                              const next = current + 1;
+                              return next < infographicCandidates.length ? next : current;
+                            });
+                          }}
+                        />
+                        <a
+                          className="btn btn-light term-infographic-download"
+                          href={infographicSrc}
+                          download={`${selectedTerm.term.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-infographic.png`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Download Infographic
+                        </a>
+                      </div>
+                    ) : (
+                      <p className="hint">No infographic URL added yet.</p>
+                    )}
+                    {selectedTerm.infographic_caption ? <p className="hint">{selectedTerm.infographic_caption}</p> : null}
+
+                    <h4>Purchase links</h4>
+                    {selectedTerm.purchase_links.length > 0 ? (
+                      <ul>
+                        {selectedTerm.purchase_links.map((link, index) => {
+                          const safeLink = safeHttpUrl(link);
+                          return (
+                            <li key={`${link}-${index}`}>
+                              {safeLink ? (
+                                <a href={safeLink} target="_blank" rel="noreferrer">
+                                  {purchaseLinkLabel(link, index)}
+                                </a>
+                              ) : (
+                                <span className="hint">{link}</span>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      <p className="hint">No purchase links attached yet.</p>
+                    )}
+
+                    <h4>References</h4>
+                    {selectedTerm.reference_links.length > 0 ? (
+                      <ul>
+                        {selectedTerm.reference_links.map((link, index) => {
+                          const safeLink = safeHttpUrl(link);
+                          return (
+                            <li key={link}>
+                              {safeLink ? (
+                                <a href={safeLink} target="_blank" rel="noreferrer">
+                                  {referenceLabel(
+                                    selectedTerm.source_title,
+                                    selectedTerm.mla_citations[index],
+                                    index,
+                                    selectedTerm.reference_links.length
+                                  )}
+                                </a>
+                              ) : (
+                                <span className="hint">{link}</span>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      <p className="hint">No verified references attached yet.</p>
+                    )}
+                    <h4>MLA citations</h4>
+                    {selectedTerm.mla_citations.length > 0 ? (
+                      <ul>
+                        {selectedTerm.mla_citations.map((citation) => (
+                          <li key={citation}>{citation}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="hint">No MLA citation recorded for this term yet.</p>
+                    )}
+                    <h4>Editorial policy</h4>
+                    <p>Original editorial definition. No verbatim source excerpts are published in Sipopedia.</p>
+                  </aside>
+                </div>
+              </>
+            ) : null}
+          </article>
+        </div>
+      ) : null}
+
+      {editorialProcessOpen ? (
+        <div className="term-modal-overlay" onClick={() => setEditorialProcessOpen(false)}>
+          <article className="term-modal editorial-process-modal" onClick={(event) => event.stopPropagation()}>
+            <header className="term-modal-header">
+              <div>
+                <p className="lesson-chip">Sipopedia Standard</p>
+                <h3>Editorial Process</h3>
+                <p>How Sipopedia uses AI-assisted editorial production to scale beverage knowledge responsibly.</p>
+              </div>
+              <button className="btn btn-light" onClick={() => setEditorialProcessOpen(false)}>
+                Close
+              </button>
+            </header>
+
+            <div className="editorial-process-body">
+              <p>
+                Sipopedia uses AI as a drafting tool, not as a source authority. We use it to accelerate first-pass glossary production across wine,
+                beer, spirits, coffee, tea, water, dairy, juice, kombucha, and other beverage categories where the vocabulary load is large and growing.
+              </p>
+              <p>
+                Each published definition is written as original editorial prose. The goal is not to reproduce another author&apos;s sentence, but to distill
+                the professional meaning of a term into clear language that works for service, tasting, production, retail, and study.
+              </p>
+              <ul>
+                <li>We draft definitions in a professional beverage voice designed for working users and serious learners.</li>
+                <li>We cite respected books and reference works so users can see the intellectual lineage behind the topic.</li>
+                <li>We include purchase links to help redirect readers toward the original authors and publishers who built the field.</li>
+                <li>We do not publish verbatim source excerpts as glossary definitions inside Sipopedia.</li>
+              </ul>
+              <p>
+                The result is a community-facing knowledge layer: original definitions for fast understanding, plus transparent citation and author credit
+                for deeper study. Sipopedia is intended to widen access without obscuring provenance.
+              </p>
+            </div>
+          </article>
+        </div>
+      ) : null}
+    </section>
+  );
 }
+
