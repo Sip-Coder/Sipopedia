@@ -179,6 +179,7 @@ export function Terminology() {
   const [refreshTick, setRefreshTick] = useState(0);
   const [editorialProcessOpen, setEditorialProcessOpen] = useState(false);
   const [infographicIndex, setInfographicIndex] = useState(0);
+  const [infographicExhausted, setInfographicExhausted] = useState(false);
 
   const navigateSelectedTerm = useCallback(
     (direction: 1 | -1) => {
@@ -302,9 +303,11 @@ export function Terminology() {
     [selectedTerm?.infographic_url, selectedTerm?.term]
   );
   const infographicSrc = infographicCandidates[infographicIndex] || "";
+  const hasRenderableInfographic = !infographicExhausted && Boolean(infographicSrc);
 
   useEffect(() => {
     setInfographicIndex(0);
+    setInfographicExhausted(false);
   }, [selectedTerm?.id, selectedTerm?.infographic_url, selectedTerm?.term]);
 
   const handlePrevious = () => {
@@ -501,7 +504,7 @@ export function Terminology() {
                     )}
 
                     <h4>Infographic</h4>
-                    {infographicSrc ? (
+                    {hasRenderableInfographic ? (
                       <div className="term-infographic-wrap">
                         <img
                           className="term-infographic"
@@ -511,7 +514,11 @@ export function Terminology() {
                             event.preventDefault();
                             setInfographicIndex((current) => {
                               const next = current + 1;
-                              return next < infographicCandidates.length ? next : current;
+                              if (next < infographicCandidates.length) {
+                                return next;
+                              }
+                              setInfographicExhausted(true);
+                              return current;
                             });
                           }}
                         />
@@ -526,7 +533,7 @@ export function Terminology() {
                         </a>
                       </div>
                     ) : (
-                      <p className="hint">No infographic URL added yet.</p>
+                      <p className="hint">No infographic available yet.</p>
                     )}
                     {selectedTerm.infographic_caption ? <p className="hint">{selectedTerm.infographic_caption}</p> : null}
 
