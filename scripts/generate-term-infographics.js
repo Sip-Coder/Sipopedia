@@ -189,7 +189,7 @@ async function main() {
   const supabaseUrl = requireEnv("SUPABASE_URL");
   const serviceKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
   const openAiKey = args.dryRun ? "" : requireEnv("OPENAI_API_KEY");
-  const outDir = path.join(process.cwd(), "public", "infographics");
+  const outDir = path.join(process.cwd(), "public", "infographics", "regeneration");
 
   fs.mkdirSync(outDir, { recursive: true });
   const candidates = await fetchCandidates({
@@ -236,7 +236,7 @@ async function main() {
     for (const entry of candidates) {
       const slug = slugify(entry.term);
       const filename = `${slug || entry.id}.png`;
-      const relativeUrl = `/infographics/${filename}`;
+      const relativeUrl = `/infographics/regeneration/${filename}`;
       console.log(`[dry-run] ${entry.term} -> ${relativeUrl}`);
     }
   } else {
@@ -259,7 +259,7 @@ async function main() {
         try {
           const slug = slugify(entry.term);
           const filename = `${slug || entry.id}.png`;
-          const relativeUrl = `/infographics/${filename}`;
+          const relativeUrl = `/infographics/regeneration/${filename}`;
           const absolutePath = path.join(outDir, filename);
           const prompt = buildPrompt(entry);
 

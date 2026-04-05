@@ -77,24 +77,83 @@ function toTitleCaseTerm(value: string) {
     .join(" ");
 }
 
-function buildInfographicSources(url: string | null) {
+function toTermSlug(value: string) {
+  return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function decodeAmazonSearchTitle(rawUrl: string) {
+  try {
+    const parsed = new URL(rawUrl);
+    if (!parsed.hostname.includes("amazon.")) return null;
+    const k = parsed.searchParams.get("k");
+    if (!k) return null;
+    const decoded = decodeURIComponent(k.replace(/\+/g, " ")).replace(/\s+/g, " ").trim();
+    return decoded || null;
+  } catch {
+    return null;
+  }
+}
+
+function purchaseLinkLabel(rawUrl: string, index: number) {
+  const fromAmazon = decodeAmazonSearchTitle(rawUrl);
+  if (fromAmazon) {
+    return fromAmazon;
+  }
+
+  const safe = safeHttpUrl(rawUrl);
+  if (!safe) {
+    return `Purchase link ${index + 1}`;
+  }
+
+  try {
+    const parsed = new URL(safe);
+    return parsed.hostname.replace(/^www\./, "");
+  } catch {
+    return `Purchase link ${index + 1}`;
+  }
+}
+
+function uniqueUrls(urls: string[]) {
+  const seen = new Set<string>();
+  const next: string[] = [];
+  for (const url of urls) {
+    const value = url.trim();
+    if (!value || seen.has(value)) continue;
+    seen.add(value);
+    next.push(value);
+  }
+  return next;
+}
+
+function buildInfographicCandidates(term: string, url: string | null) {
   const original = String(url || "").trim();
-  if (!original) {
-    return { preferred: "", fallback: "" };
-  }
-  if (original.startsWith("/infographics/regeneration/")) {
-    return { preferred: original, fallback: original };
-  }
-  if (original.startsWith("/infographics/")) {
-    const filename = original.split("/").pop() || "";
-    if (filename) {
-      return {
-        preferred: `/infographics/regeneration/${filename}`,
-        fallback: original
-      };
+  const candidates: string[] = [];
+
+  const tryFilenameCandidates = (filename: string) => {
+    if (!filename) return;
+    candidates.push(`/infographics/regeneration/${filename}`);
+  };
+
+  if (original) {
+    candidates.push(original);
+    if (original.startsWith("/infographics/regeneration/")) {
+      const filename = original.split("/").pop() || "";
+      tryFilenameCandidates(filename);
+    } else if (original.startsWith("/infographics/regeneration 02/") || original.startsWith("/infographics/regeneration%2002/")) {
+      const filename = original.split("/").pop() || "";
+      tryFilenameCandidates(filename);
+    } else if (original.startsWith("/infographics/")) {
+      const filename = original.split("/").pop() || "";
+      tryFilenameCandidates(filename);
     }
   }
-  return { preferred: original, fallback: original };
+
+  const slug = toTermSlug(term);
+  if (slug) {
+    candidates.push(`/infographics/regeneration/${slug}.png`);
+  }
+
+  return uniqueUrls(candidates);
 }
 
 export function Terminology() {
@@ -112,6 +171,7 @@ export function Terminology() {
   const [detailError, setDetailError] = useState("");
   const [refreshTick, setRefreshTick] = useState(0);
   const [editorialProcessOpen, setEditorialProcessOpen] = useState(false);
+  const [infographicIndex, setInfographicIndex] = useState(0);
 
   const navigateSelectedTerm = useCallback(
     (direction: 1 | -1) => {
@@ -230,7 +290,15 @@ export function Terminology() {
   const topAllByLetter = topImportant && bucket === "ALL";
   const effectivePageSize = topAllByLetter ? 104 : topImportant ? 100 : Number(pageSizeMode);
   const pageCount = useMemo(() => Math.max(1, Math.ceil(total / effectivePageSize)), [effectivePageSize, total]);
-  const infographicSources = useMemo(() => buildInfographicSources(selectedTerm?.infographic_url ?? null), [selectedTerm?.infographic_url]);
+  const infographicCandidates = useMemo(
+    () => buildInfographicCandidates(selectedTerm?.term ?? "", selectedTerm?.infographic_url ?? null),
+    [selectedTerm?.infographic_url, selectedTerm?.term]
+  );
+  const infographicSrc = infographicCandidates[infographicIndex] || "";
+
+  useEffect(() => {
+    setInfographicIndex(0);
+  }, [selectedTerm?.id, selectedTerm?.infographic_url, selectedTerm?.term]);
 
   const handlePrevious = () => {
     setPage((value) => Math.max(0, value - 1));
@@ -410,6 +478,10 @@ export function Terminology() {
                   </section>
 
                   <aside>
+                    <h4>Book source</h4>
+                    <p>
+                      <strong>Title:</strong> {selectedTerm.source_title || "Not set"}
+                    </p>
                     <h4>Authors</h4>
                     {selectedTerm.source_authors.length > 0 ? (
                       <ul>
@@ -422,21 +494,23 @@ export function Terminology() {
                     )}
 
                     <h4>Infographic</h4>
-                    {selectedTerm.infographic_url ? (
+                    {infographicSrc ? (
                       <div className="term-infographic-wrap">
                         <img
                           className="term-infographic"
-                          src={infographicSources.preferred}
+                          src={infographicSrc}
                           alt={selectedTerm.term}
                           onError={(event) => {
-                            const target = event.currentTarget;
-                            if (target.src.endsWith(infographicSources.fallback)) return;
-                            target.src = infographicSources.fallback;
+                            event.preventDefault();
+                            setInfographicIndex((current) => {
+                              const next = current + 1;
+                              return next < infographicCandidates.length ? next : current;
+                            });
                           }}
                         />
                         <a
                           className="btn btn-light term-infographic-download"
-                          href={infographicSources.preferred}
+                          href={infographicSrc}
                           download={`${selectedTerm.term.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-infographic.png`}
                           target="_blank"
                           rel="noreferrer"
@@ -448,6 +522,28 @@ export function Terminology() {
                       <p className="hint">No infographic URL added yet.</p>
                     )}
                     {selectedTerm.infographic_caption ? <p className="hint">{selectedTerm.infographic_caption}</p> : null}
+
+                    <h4>Purchase links</h4>
+                    {selectedTerm.purchase_links.length > 0 ? (
+                      <ul>
+                        {selectedTerm.purchase_links.map((link, index) => {
+                          const safeLink = safeHttpUrl(link);
+                          return (
+                            <li key={`${link}-${index}`}>
+                              {safeLink ? (
+                                <a href={safeLink} target="_blank" rel="noreferrer">
+                                  {purchaseLinkLabel(link, index)}
+                                </a>
+                              ) : (
+                                <span className="hint">{link}</span>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      <p className="hint">No purchase links attached yet.</p>
+                    )}
 
                     <h4>References</h4>
                     {selectedTerm.reference_links.length > 0 ? (
