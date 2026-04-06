@@ -3023,6 +3023,33 @@ img {
   padding: 0.85rem;
 }
 
+.journal-storage-banner {
+  margin-top: 0.5rem;
+  border: 1px solid #c8d8dd;
+  border-radius: 10px;
+  padding: 0.44rem 0.65rem;
+  background: #edf7f9;
+  color: #2d5664;
+}
+
+.journal-storage-banner.mode-cloud {
+  border-color: #97c5d2;
+  background: #e8f4f9;
+  color: #1e4e62;
+}
+
+.journal-storage-banner.mode-local {
+  border-color: #d6c8a9;
+  background: #f8f1e2;
+  color: #6c4c32;
+}
+
+.journal-storage-banner.mode-cloud-fallback {
+  border-color: #d4b383;
+  background: #fff0de;
+  color: #7a4d14;
+}
+
 .journal-form-grid {
   display: grid;
   gap: 0.65rem;

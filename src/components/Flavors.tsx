@@ -52,6 +52,7 @@ type Note = {
   blindGuessProducer: string;
   blindGuessConfidence: number;
   grapeCorrect: ReviewFlag;
+  alcoholCorrect: ReviewFlag;
   countryCorrect: ReviewFlag;
   regionCorrect: ReviewFlag;
   vintageCorrect: ReviewFlag;
@@ -516,6 +517,7 @@ function createEmptyNote(type: BeverageType): Note {
     blindGuessProducer: "",
     blindGuessConfidence: 50,
     grapeCorrect: null,
+    alcoholCorrect: null,
     countryCorrect: null,
     regionCorrect: null,
     vintageCorrect: null,
@@ -566,6 +568,7 @@ function noteFromGuest(value: unknown): Note | null {
     blindGuessProducer: asText(value.blindGuessProducer),
     blindGuessConfidence: asNum(value.blindGuessConfidence, 50),
     grapeCorrect: asFlag(value.grapeCorrect),
+    alcoholCorrect: asFlag(value.alcoholCorrect),
     countryCorrect: asFlag(value.countryCorrect),
     regionCorrect: asFlag(value.regionCorrect),
     vintageCorrect: asFlag(value.vintageCorrect),
@@ -591,9 +594,31 @@ function loadGuestNotes(): Note[] {
   }
 }
 
-function saveGuestNotes(notes: Note[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(LOCAL_TASTING_NOTES_KEY, JSON.stringify(notes));
+type LocalSaveResult = "ok" | "trimmed" | "failed";
+
+function stripLocalMedia(note: Note): Note {
+  return {
+    ...note,
+    labelImageUrl: "",
+    backLabelImageUrl: "",
+    additionalImageUrls: []
+  };
+}
+
+function saveGuestNotes(notes: Note[]): LocalSaveResult {
+  if (typeof window === "undefined") return "failed";
+  try {
+    window.localStorage.setItem(LOCAL_TASTING_NOTES_KEY, JSON.stringify(notes));
+    return "ok";
+  } catch {
+    try {
+      const trimmed = notes.map(stripLocalMedia);
+      window.localStorage.setItem(LOCAL_TASTING_NOTES_KEY, JSON.stringify(trimmed));
+      return "trimmed";
+    } catch {
+      return "failed";
+    }
+  }
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -638,6 +663,7 @@ function noteFromRecord(record: TastingNoteRecord): Note {
     blindGuessProducer: asText(fields.blindGuessProducer),
     blindGuessConfidence: asNum(fields.blindGuessConfidence, confNum(record.confidence)),
     grapeCorrect: asFlag(fields.grapeCorrect),
+    alcoholCorrect: asFlag(fields.alcoholCorrect),
     countryCorrect: asFlag(fields.countryCorrect),
     regionCorrect: asFlag(fields.regionCorrect),
     vintageCorrect: asFlag(fields.vintageCorrect),
@@ -650,8 +676,17 @@ function noteFromRecord(record: TastingNoteRecord): Note {
   };
 }
 
+function safeNoteFromRecord(record: unknown): Note | null {
+  if (!isObject(record)) return null;
+  try {
+    return noteFromRecord(record as TastingNoteRecord);
+  } catch {
+    return null;
+  }
+}
+
 function countFlags(note: Note) {
-  const flags = [note.grapeCorrect, note.countryCorrect, note.regionCorrect, note.vintageCorrect];
+  const flags = [note.grapeCorrect, note.alcoholCorrect, note.countryCorrect, note.regionCorrect, note.vintageCorrect];
   return { total: flags.filter((flag) => flag !== null).length, correct: flags.filter((flag) => flag === true).length };
 }
 
@@ -712,6 +747,7 @@ function toUpsert(note: Note): TastingNoteUpsertInput {
       blindGuessProducer: note.blindGuessProducer.trim(),
       blindGuessConfidence: Math.round(note.blindGuessConfidence),
       grapeCorrect: note.grapeCorrect,
+      alcoholCorrect: note.alcoholCorrect,
       countryCorrect: note.countryCorrect,
       regionCorrect: note.regionCorrect,
       vintageCorrect: note.vintageCorrect,
@@ -780,9 +816,15 @@ function pct(item: Accuracy) {
   return item.total ? `${Math.round((item.correct / item.total) * 100)}%` : "0%";
 }
 
-function recommendations(total: number, grape: Accuracy, country: Accuracy, region: Accuracy, vintage: Accuracy) {
+function recommendations(total: number, grape: Accuracy, alcohol: Accuracy, country: Accuracy, region: Accuracy, vintage: Accuracy) {
   if (total < 4) return ["Record more tastings to get personalized recommendations.", "Compare wines side-by-side to reinforce your identification skills.", "Explore new varieties and regions to broaden your palate."];
-  const dims = [{ label: "grape", v: grape.total ? grape.correct / grape.total : 1 }, { label: "country", v: country.total ? country.correct / country.total : 1 }, { label: "region", v: region.total ? region.correct / region.total : 1 }, { label: "vintage", v: vintage.total ? vintage.correct / vintage.total : 1 }].sort((a, b) => a.v - b.v);
+  const dims = [
+    { label: "grape", v: grape.total ? grape.correct / grape.total : 1 },
+    { label: "alcohol", v: alcohol.total ? alcohol.correct / alcohol.total : 1 },
+    { label: "country", v: country.total ? country.correct / country.total : 1 },
+    { label: "region", v: region.total ? region.correct / region.total : 1 },
+    { label: "vintage", v: vintage.total ? vintage.correct / vintage.total : 1 }
+  ].sort((a, b) => a.v - b.v);
   return [`Focus blind study on ${dims[0].label} identification in your next tasting block.`, `Run side-by-side comparisons for ${dims[1].label} calibration and memory retention.`, "Explore new styles and regions to broaden your tasting pattern library."];
 }
 
@@ -801,6 +843,7 @@ export function Flavors() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [storageMode, setStorageMode] = useState<"cloud" | "local" | "cloud-fallback">("local");
   const [mapPaths, setMapPaths] = useState<MapCountryPath[]>([]);
   const [mapLoading, setMapLoading] = useState(true);
   const [mapCountry, setMapCountry] = useState<string | null>(null);
@@ -845,6 +888,13 @@ export function Flavors() {
     { id: "none", label: "Descriptors", stage: "primary", descriptors: [], subcategories: {} };
 
   useEffect(() => {
+    setStorageMode((current) => {
+      if (!useCloudStorage) return "local";
+      return current === "cloud-fallback" ? "cloud-fallback" : "cloud";
+    });
+  }, [useCloudStorage]);
+
+  useEffect(() => {
     let cancelled = false;
     setMapLoading(true);
     fetch("/world-topo.json")
@@ -867,7 +917,13 @@ export function Flavors() {
       setLoadingNotes(true);
       listTastingNotes(user.id)
         .then((rows) => {
-          if (!cancelled) setNotes(rows.map(noteFromRecord));
+          if (cancelled) return;
+          const safeRows = Array.isArray(rows) ? rows : [];
+          const normalized = safeRows.map((row) => safeNoteFromRecord(row)).filter((row): row is Note => row !== null);
+          setNotes(normalized);
+          if (normalized.length !== safeRows.length) {
+            setDataError("Some tasting notes were skipped because they were malformed.");
+          }
         })
         .catch((error: unknown) => {
           if (!cancelled) setDataError(error instanceof Error ? error.message : "Unable to load tasting notes.");
@@ -935,6 +991,7 @@ export function Flavors() {
 
   const analytics = useMemo(() => {
     const byGrape: Record<string, Accuracy> = {};
+    const byAlcohol: Record<string, Accuracy> = {};
     const byCountry: Record<string, Accuracy> = {};
     const byRegion: Record<string, Accuracy> = {};
     const byVintage: Record<string, Accuracy> = {};
@@ -953,15 +1010,27 @@ export function Flavors() {
       correct += flags.correct;
       total += flags.total;
       add(byGrape, note.actualGrape, note.grapeCorrect);
+      add(byAlcohol, note.actualAlcohol, note.alcoholCorrect);
       add(byCountry, note.actualCountry, note.countryCorrect);
       add(byRegion, note.actualRegion, note.regionCorrect);
       add(byVintage, note.actualVintage, note.vintageCorrect);
     }
     const grape = sumAccuracy(byGrape);
+    const alcohol = sumAccuracy(byAlcohol);
     const country = sumAccuracy(byCountry);
     const region = sumAccuracy(byRegion);
     const vintage = sumAccuracy(byVintage);
-    return { total: ordered.length, blind, overall: total ? Math.round((correct / total) * 100) : null, grape, country, region, vintage, recs: recommendations(ordered.length, grape, country, region, vintage) };
+    return {
+      total: ordered.length,
+      blind,
+      overall: total ? Math.round((correct / total) * 100) : null,
+      grape,
+      alcohol,
+      country,
+      region,
+      vintage,
+      recs: recommendations(ordered.length, grape, alcohol, country, region, vintage)
+    };
   }, [ordered]);
 
   const mapDirectory = useMemo(() => {
@@ -1216,6 +1285,7 @@ export function Flavors() {
     const timestamp = nowIso();
     const nextDraft = { ...draft, updatedAt: timestamp };
     const isEditing = Boolean(editingId);
+    const wasCloudAttempt = useCloudStorage && Boolean(user);
     setSaving(true);
     setDataError(null);
     try {
@@ -1223,36 +1293,79 @@ export function Flavors() {
         const payload = toUpsert(nextDraft);
         if (editingId) {
           const updated = await updateTastingNote(user.id, editingId, payload);
-          const next = noteFromRecord(updated);
+          const next = safeNoteFromRecord(updated);
+          if (!next) throw new Error("Update succeeded but returned malformed tasting note data.");
           setNotes((cur) => cur.map((note) => (note.id === editingId ? next : note)));
           setStatusMessage("Tasting note updated.");
+          setStorageMode("cloud");
         } else {
           const created = await createTastingNote(user.id, payload);
-          setNotes((cur) => [noteFromRecord(created), ...cur]);
+          const next = safeNoteFromRecord(created);
+          if (!next) throw new Error("Save succeeded but returned malformed tasting note data.");
+          setNotes((cur) => [next, ...cur]);
           setStatusMessage("Tasting note saved.");
+          setStorageMode("cloud");
         }
       } else {
         if (editingId) {
           setNotes((cur) => {
             const next = cur.map((note) => (note.id === editingId ? { ...nextDraft, id: editingId } : note));
-            saveGuestNotes(next);
+            const persisted = saveGuestNotes(next);
+            if (persisted === "trimmed") {
+              setStatusMessage("Saved locally, but photo URLs were trimmed to fit browser storage.");
+            } else if (persisted === "failed") {
+              setStatusMessage("Saved in memory for this session, but browser local storage is full.");
+            }
             return next;
           });
         } else {
           const created: Note = { ...nextDraft, id: newLocalId(), createdAt: timestamp };
           setNotes((cur) => {
             const next = [created, ...cur];
-            saveGuestNotes(next);
+            const persisted = saveGuestNotes(next);
+            if (persisted === "trimmed") {
+              setStatusMessage("Saved locally, but photo URLs were trimmed to fit browser storage.");
+            } else if (persisted === "failed") {
+              setStatusMessage("Saved in memory for this session, but browser local storage is full.");
+            }
             return next;
           });
         }
-        setStatusMessage(isEditing ? "Tasting note updated locally." : "Tasting note saved locally.");
+        setStatusMessage((current) => current ?? (isEditing ? "Tasting note updated locally." : "Tasting note saved locally."));
+        setStorageMode("local");
       }
       setEditingId(null);
       const fresh = createEmptyNote(draft.beverageType);
       setDraft(fresh);
       setRevealActual(!fresh.isBlind);
     } catch (error: unknown) {
+      // Keep work safe if cloud persistence fails: store locally so user does not lose the note.
+      if (wasCloudAttempt) {
+        const fallbackId = editingId ?? newLocalId();
+        const fallbackNote: Note = {
+          ...nextDraft,
+          id: fallbackId,
+          createdAt: editingId
+            ? notes.find((note) => note.id === editingId)?.createdAt ?? timestamp
+            : timestamp
+        };
+        setNotes((cur) => {
+          const next = editingId ? cur.map((note) => (note.id === editingId ? fallbackNote : note)) : [fallbackNote, ...cur];
+          const persisted = saveGuestNotes(next);
+          if (persisted === "trimmed") {
+            setStatusMessage("Cloud save failed. Local fallback saved, but photo URLs were trimmed.");
+          } else if (persisted === "failed") {
+            setStatusMessage("Cloud save failed. Local fallback kept this note for the session only.");
+          }
+          return next;
+        });
+        setEditingId(null);
+        const fresh = createEmptyNote(draft.beverageType);
+        setDraft(fresh);
+        setRevealActual(!fresh.isBlind);
+        setStatusMessage("Cloud save failed, but your note was saved locally in this browser.");
+        setStorageMode("cloud-fallback");
+      }
       setDataError(error instanceof Error ? error.message : "Unable to save tasting note.");
     } finally {
       setSaving(false);
@@ -1523,7 +1636,28 @@ export function Flavors() {
 
   const renderFieldInput = (field: Field, value: string, disabled: boolean) => {
     if (field.type === "textarea") return <textarea id={`field-${field.id}`} rows={3} value={value} placeholder={field.placeholder} onChange={(e) => updateDetail(field.id, e.target.value)} disabled={disabled} />;
-    if (field.type === "select") return <select id={`field-${field.id}`} value={value} onChange={(e) => updateDetail(field.id, e.target.value)} disabled={disabled}><option value="">Select...</option>{(field.options ?? []).map((option) => <option key={option} value={option}>{option}</option>)}</select>;
+    if (field.type === "select") {
+      return (
+        <div className="journal-choice-row" role="radiogroup" aria-label={field.label}>
+          {(field.options ?? []).map((option) => {
+            const selected = value === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                className={`journal-choice-btn ${selected ? "selected" : ""}`}
+                onClick={() => updateDetail(field.id, option)}
+                disabled={disabled}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
+      );
+    }
     return <input id={`field-${field.id}`} value={value} placeholder={field.placeholder} onChange={(e) => updateDetail(field.id, e.target.value)} disabled={disabled} />;
   };
 
@@ -1599,6 +1733,13 @@ export function Flavors() {
         <button className={`btn ${tab === "analyze" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("analyze")}>Improve</button>
         <button className={`btn ${tab === "map" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("map")}>Tasting Map</button>
       </div>
+      <p className={`hint journal-storage-banner mode-${storageMode}`}>
+        {storageMode === "cloud"
+          ? "Storage Mode: Cloud sync active."
+          : storageMode === "cloud-fallback"
+            ? "Storage Mode: Cloud fallback to local browser storage."
+            : "Storage Mode: Local browser storage only."}
+      </p>
       {!useCloudStorage ? <p className="hint">Guest mode active. Notes save in this browser until auth is enabled.</p> : null}
       {loadingNotes ? <p className="hint">Loading tasting notes...</p> : null}
       {dataError ? <p className="error">{dataError}</p> : null}
@@ -1638,7 +1779,23 @@ export function Flavors() {
                 <h3>Tasting Settings</h3>
                 <div className="flavors-setting-row">
                   <div><strong>Beverage Type</strong><p className="hint">Select the type of beverage you are tasting</p></div>
-                  <select value={settingsType(draft.beverageType)} onChange={(e) => selectSettingsType(e.target.value as SettingsBeverage)}>{SETTINGS_BEVERAGE_OPTIONS.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</select>
+                  <div className="journal-choice-row" role="radiogroup" aria-label="Beverage Type">
+                    {SETTINGS_BEVERAGE_OPTIONS.map((option) => {
+                      const selected = settingsType(draft.beverageType) === option.id;
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          role="radio"
+                          aria-checked={selected}
+                          className={`journal-choice-btn ${selected ? "selected" : ""}`}
+                          onClick={() => selectSettingsType(option.id)}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
                 <div className="flavors-setting-row">
                   <div><strong>Blind Tasting Mode</strong><p className="hint">Test yourself without seeing wine details</p></div>
@@ -1837,7 +1994,7 @@ export function Flavors() {
               {draft.isBlind && revealActual ? (
                 <section className="journal-block journal-score-block">
                   <h3>Score Your Guesses</h3>
-                  {[{ label: "Grape Variety", guess: draft.blindGuessGrape, actual: draft.actualGrape, key: "grapeCorrect" }, { label: "Country", guess: draft.blindGuessCountry, actual: draft.actualCountry, key: "countryCorrect" }, { label: "Region", guess: draft.blindGuessRegion, actual: draft.actualRegion, key: "regionCorrect" }, { label: "Vintage", guess: draft.blindGuessVintage, actual: draft.actualVintage, key: "vintageCorrect" }].map((row) => <div className="journal-score-row" key={row.label}><div><strong>{row.label}</strong><p className="hint">Your guess: {row.guess || "—"} | Actual: {row.actual || "—"}</p></div><div className="journal-score-actions"><button type="button" className={`btn ${(draft as unknown as Record<string, ReviewFlag>)[row.key] === true ? "btn-primary" : "btn-light"}`} onClick={() => updateDraft({ [row.key]: true } as Partial<Note>)}>Correct</button><button type="button" className={`btn ${(draft as unknown as Record<string, ReviewFlag>)[row.key] === false ? "btn-primary" : "btn-light"}`} onClick={() => updateDraft({ [row.key]: false } as Partial<Note>)}>Incorrect</button></div></div>)}
+                  {[{ label: "Grape Variety", guess: draft.blindGuessGrape, actual: draft.actualGrape, key: "grapeCorrect" }, { label: "Alcohol", guess: draft.blindGuessAlcohol, actual: draft.actualAlcohol, key: "alcoholCorrect" }, { label: "Country", guess: draft.blindGuessCountry, actual: draft.actualCountry, key: "countryCorrect" }, { label: "Region", guess: draft.blindGuessRegion, actual: draft.actualRegion, key: "regionCorrect" }, { label: "Vintage", guess: draft.blindGuessVintage, actual: draft.actualVintage, key: "vintageCorrect" }].map((row) => <div className="journal-score-row" key={row.label}><div><strong>{row.label}</strong><p className="hint">Your guess: {row.guess || "—"} | Actual: {row.actual || "—"}</p></div><div className="journal-score-actions"><button type="button" className={`btn ${(draft as unknown as Record<string, ReviewFlag>)[row.key] === true ? "btn-primary" : "btn-light"}`} onClick={() => updateDraft({ [row.key]: true } as Partial<Note>)}>Correct</button><button type="button" className={`btn ${(draft as unknown as Record<string, ReviewFlag>)[row.key] === false ? "btn-primary" : "btn-light"}`} onClick={() => updateDraft({ [row.key]: false } as Partial<Note>)}>Incorrect</button></div></div>)}
                 </section>
               ) : null}
 
@@ -1863,7 +2020,7 @@ export function Flavors() {
       {tab === "analyze" ? (
         <div className="journal-shell">
           <article className="journal-card"><div className="journal-metrics"><div><h3>{analytics.total}</h3><p>Total tasting notes</p></div><div><h3>{analytics.blind}</h3><p>Blind tasting notes</p></div><div><h3>{analytics.overall !== null ? `${analytics.overall}%` : "—"}</h3><p>Overall accuracy</p></div><div><h3>{countryCounts.size}</h3><p>Countries tasted</p></div></div></article>
-          <aside className="journal-card"><h3>Performance Analytics</h3><ul><li><strong>Grape:</strong> {analytics.grape.correct} / {analytics.grape.total} ({pct(analytics.grape)})</li><li><strong>Country:</strong> {analytics.country.correct} / {analytics.country.total} ({pct(analytics.country)})</li><li><strong>Region:</strong> {analytics.region.correct} / {analytics.region.total} ({pct(analytics.region)})</li><li><strong>Vintage:</strong> {analytics.vintage.correct} / {analytics.vintage.total} ({pct(analytics.vintage)})</li></ul><h3>Suggested Study Focus</h3><ul>{analytics.recs.map((rec) => <li key={rec}>{rec}</li>)}</ul></aside>
+          <aside className="journal-card"><h3>Performance Analytics</h3><ul><li><strong>Grape:</strong> {analytics.grape.correct} / {analytics.grape.total} ({pct(analytics.grape)})</li><li><strong>Alcohol:</strong> {analytics.alcohol.correct} / {analytics.alcohol.total} ({pct(analytics.alcohol)})</li><li><strong>Country:</strong> {analytics.country.correct} / {analytics.country.total} ({pct(analytics.country)})</li><li><strong>Region:</strong> {analytics.region.correct} / {analytics.region.total} ({pct(analytics.region)})</li><li><strong>Vintage:</strong> {analytics.vintage.correct} / {analytics.vintage.total} ({pct(analytics.vintage)})</li></ul><h3>Suggested Study Focus</h3><ul>{analytics.recs.map((rec) => <li key={rec}>{rec}</li>)}</ul></aside>
         </div>
       ) : null}
 
