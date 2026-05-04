@@ -27,7 +27,9 @@ function mapAuthError(message: string): string {
   if (message.includes("Unsupported provider") || message.includes("provider is not enabled")) {
     return "Google login is disabled in Supabase. Enable Google under Authentication > Providers, then retry.";
   }
-
+  if (message.includes("redirect_uri_mismatch") || message.includes("redirect URI") || message.includes("redirect_uri")) {
+    return "OAuth redirect URL not authorised. Add this site's URL to your Supabase project's Redirect URLs under Authentication → URL Configuration.";
+  }
   return message;
 }
 
@@ -70,10 +72,26 @@ async function finalizeAuthFromUrl(): Promise<string | null> {
   const type = query.get("type");
   const accessToken = hash.get("access_token");
   const refreshToken = hash.get("refresh_token");
+  const errorParam = hash.get("error") ?? query.get("error");
   const errorDescription = hash.get("error_description") ?? query.get("error_description");
 
+  const hasOAuthParams = code || (tokenHash && type) || (accessToken && refreshToken) || errorParam || errorDescription;
+
+  // No OAuth params in the URL — return immediately without touching the URL.
+  // The old code used a try/finally that always ran replaceState, which fired a
+  // hashchange on every page load and routed the app to #login unintentionally.
+  if (!hasOAuthParams) return null;
+
+  const cleanUrl = `${window.location.pathname}#login`;
+
   if (errorDescription) {
+    window.history.replaceState({}, document.title, cleanUrl);
     return decodeURIComponent(errorDescription);
+  }
+
+  if (errorParam) {
+    window.history.replaceState({}, document.title, cleanUrl);
+    return decodeURIComponent(errorParam);
   }
 
   try {
@@ -92,11 +110,9 @@ async function finalizeAuthFromUrl(): Promise<string | null> {
         refresh_token: refreshToken
       });
       if (error) return error.message;
-    } else {
-      return null;
     }
   } finally {
-    window.history.replaceState({}, document.title, `${window.location.pathname}#login`);
+    window.history.replaceState({}, document.title, cleanUrl);
   }
 
   return null;
