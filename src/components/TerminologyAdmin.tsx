@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
+import { isPrivilegedAdminEmail } from "../lib/adminAccess";
 import {
   getTerminologyById,
   listTerminologyPage,
@@ -79,6 +80,12 @@ export function TerminologyAdmin() {
 
     if (!supabase || !user) {
       setIsAdmin(false);
+      setAdminLoading(false);
+      return;
+    }
+
+    if (isPrivilegedAdminEmail(user.email)) {
+      setIsAdmin(true);
       setAdminLoading(false);
       return;
     }

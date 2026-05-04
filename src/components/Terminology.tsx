@@ -125,6 +125,24 @@ function uniqueUrls(urls: string[]) {
   return next;
 }
 
+function readTerminologyHashState() {
+  if (typeof window === "undefined") {
+    return { termId: null as string | null, query: "" };
+  }
+
+  const hash = window.location.hash.replace(/^#/, "");
+  const queryIndex = hash.indexOf("?");
+  if (queryIndex === -1) {
+    return { termId: null as string | null, query: "" };
+  }
+
+  const params = new URLSearchParams(hash.slice(queryIndex + 1));
+  return {
+    termId: params.get("term") || params.get("termId"),
+    query: params.get("q") || params.get("search") || ""
+  };
+}
+
 function buildInfographicCandidates(term: string, url: string | null) {
   const original = String(url || "").trim();
   const preferred: string[] = [];
@@ -164,15 +182,16 @@ function buildInfographicCandidates(term: string, url: string | null) {
 }
 
 export function Terminology() {
+  const initialHashState = useMemo(() => readTerminologyHashState(), []);
   const [bucket, setBucket] = useState<TermBucket>("ALL");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialHashState.query);
   const [page, setPage] = useState(0);
   const [pageSizeMode, setPageSizeMode] = useState<PageSizeMode>("TOP_100");
   const [rows, setRows] = useState<TerminologySummary[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedTermId, setSelectedTermId] = useState<string | null>(null);
+  const [selectedTermId, setSelectedTermId] = useState<string | null>(initialHashState.termId);
   const [selectedTerm, setSelectedTerm] = useState<TerminologyDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState("");
@@ -193,6 +212,28 @@ export function Terminology() {
     },
     [rows, selectedTermId]
   );
+
+  useEffect(() => {
+    const syncFromHash = () => {
+      const nextHashState = readTerminologyHashState();
+      if (nextHashState.query) {
+        setQuery(nextHashState.query);
+        setBucket("ALL");
+        setPage(0);
+      }
+      if (nextHashState.termId) {
+        setSelectedTermId(nextHashState.termId);
+      }
+    };
+
+    syncFromHash();
+    window.addEventListener("hashchange", syncFromHash);
+    window.addEventListener("popstate", syncFromHash);
+    return () => {
+      window.removeEventListener("hashchange", syncFromHash);
+      window.removeEventListener("popstate", syncFromHash);
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;

@@ -1,13 +1,21 @@
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 export function AuthPanel() {
-  const { user, loading, isConfigured, errorMessage, signInWithGoogle, signOut } = useAuth();
+  const { user, loading, isConfigured, googleEnabled, authSettingsLoaded, errorMessage, signInWithGoogle, signOut } =
+    useAuth();
+  const [showLoginOptions, setShowLoginOptions] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    window.location.hash = "app/launch";
+  }, [user]);
 
   return (
     <section className="auth-panel">
       <div>
         <h2>Account access</h2>
-        <p>Everything in Starter tier is open today. Login is ready for profile sync and progress tracking.</p>
+        <p>Sign in to activate your workspace and track your learning profile across modules.</p>
       </div>
       <div className="auth-actions">
         {loading ? (
@@ -20,18 +28,27 @@ export function AuthPanel() {
             </button>
           </>
         ) : (
-          <>
-            <button onClick={signInWithGoogle} className="btn btn-primary">
-              Continue with Google
-            </button>
-            {!isConfigured ? (
-              <p className="hint">Set Supabase env vars to enable login.</p>
-            ) : null}
-          </>
+          <div className="auth-login-flow">
+            {!showLoginOptions ? (
+              <button className="btn btn-primary" onClick={() => setShowLoginOptions(true)}>
+                Click to Login
+              </button>
+            ) : (
+              <>
+                <p className="hint">Select login type.</p>
+                <button onClick={() => void signInWithGoogle()} className="btn btn-primary">
+                  Login with Google
+                </button>
+                {authSettingsLoaded && !googleEnabled ? (
+                  <p className="hint">Google OAuth did not advertise as enabled from Supabase settings. Additional login types can be added after provider setup is reviewed.</p>
+                ) : null}
+              </>
+            )}
+            {!isConfigured ? <p className="hint">Set Supabase env vars to enable login.</p> : null}
+          </div>
         )}
       </div>
       {errorMessage ? <p className="error">{errorMessage}</p> : null}
     </section>
   );
 }
-

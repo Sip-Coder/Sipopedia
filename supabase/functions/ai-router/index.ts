@@ -35,9 +35,10 @@ type TerminologyRunRequest = Partial<TerminologyRunBatchInput>;
 const MAX_PROMPT_LENGTH = 4_000;
 const MAX_SYSTEM_LENGTH = 1_200;
 const FETCH_TIMEOUT_MS = 15_000;
+const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN")?.trim() || "*";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
 };
@@ -98,17 +99,17 @@ function getBearerToken(request: Request): string | null {
   return token.length > 0 ? token : null;
 }
 
-async function verifyAuthenticatedUser(request: Request): Promise<boolean> {
+async function verifyAuthenticatedUser(request: Request): Promise<string | null> {
   const token = getBearerToken(request);
   if (!token) {
-    return false;
+    return null;
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim() ?? "";
   const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")?.trim() ?? "";
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error("ai-router auth verification is not configured.");
-    return false;
+    return null;
   }
 
   try {
@@ -120,12 +121,12 @@ async function verifyAuthenticatedUser(request: Request): Promise<boolean> {
       }
     });
     if (!response.ok) {
-      return false;
+      return null;
     }
     const data = (await response.json()) as { id?: string };
-    return typeof data.id === "string" && data.id.length > 0;
+    return typeof data.id === "string" && data.id.length > 0 ? data.id : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -133,6 +134,39 @@ function getSupabaseServiceConfig(): { supabaseUrl: string; serviceRoleKey: stri
   const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim() ?? "";
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim() ?? "";
   return { supabaseUrl, serviceRoleKey };
+}
+
+async function consumeRateLimit(userId: string): Promise<boolean> {
+  const { supabaseUrl, serviceRoleKey } = getSupabaseServiceConfig();
+  if (!supabaseUrl || !serviceRoleKey) {
+    return false;
+  }
+
+  try {
+    const response = await fetchWithTimeout(`${supabaseUrl}/rest/v1/rpc/consume_rate_limit`, {
+      method: "POST",
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        p_function_name: "ai-router",
+        p_user_id: userId,
+        p_window_seconds: 60,
+        p_max_requests: 20
+      })
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const allowed = await response.json();
+    return allowed === true;
+  } catch {
+    return false;
+  }
 }
 
 function isOperationsRunPath(pathname: string): boolean {
@@ -406,8 +440,12 @@ Deno.serve(async (request) => {
   }
 
   try {
-    if (!(await verifyAuthenticatedUser(request))) {
+    const userId = await verifyAuthenticatedUser(request);
+    if (!userId) {
       return json(401, { error: "Sign in is required to use ai-router." });
+    }
+    if (!(await consumeRateLimit(userId))) {
+      return json(429, { error: "Rate limit exceeded. Please try again shortly." });
     }
 
     if (isOperationsRunPath(pathname)) {
@@ -501,7 +539,7 @@ Deno.serve(async (request) => {
       return json(405, { error: "Use POST only." });
     }
 
-    const body = (await request.json()) as RouterRequest;
+    const body = (await request.json().catch(() => ({}))) as RouterRequest;
     const provider = body.provider ?? "openai";
     const prompt = body.prompt?.trim() ?? "";
     const system = body.system?.trim() || "You are a helpful AI tutor for beginners.";

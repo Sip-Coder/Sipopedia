@@ -37,18 +37,98 @@ create table if not exists public.lesson_progress (
   unique (user_id, lesson_id)
 );
 
+create schema if not exists private;
+
 alter table public.profiles enable row level security;
 alter table public.lesson_progress enable row level security;
 
+create or replace function private.current_user_is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.profiles p
+    where p.id = (select auth.uid()) and p.role = 'admin'
+  );
+$$;
+
+revoke all on function private.current_user_is_admin() from public;
+grant usage on schema private to authenticated, service_role;
+grant execute on function private.current_user_is_admin() to authenticated, service_role;
+
+drop policy if exists "profiles are self-readable" on public.profiles;
 create policy "profiles are self-readable"
   on public.profiles
   for select
-  using (auth.uid() = id);
+  to authenticated
+  using ((select auth.uid()) = id);
 
+drop policy if exists "profiles are self-updatable" on public.profiles;
 create policy "profiles are self-updatable"
   on public.profiles
   for update
-  using (auth.uid() = id);
+  to authenticated
+  using ((select auth.uid()) = id)
+  with check ((select auth.uid()) = id);
+
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = private, public
+as $$
+  select private.current_user_is_admin();
+$$;
+
+revoke all on function public.is_admin() from public;
+grant execute on function public.is_admin() to authenticated, service_role;
+
+drop policy if exists "admins read all profiles" on public.profiles;
+create policy "admins read all profiles"
+  on public.profiles
+  for select
+  to authenticated
+  using ((select private.current_user_is_admin()));
+
+drop policy if exists "admins update all profiles" on public.profiles;
+create policy "admins update all profiles"
+  on public.profiles
+  for update
+  to authenticated
+  using ((select private.current_user_is_admin()))
+  with check ((select private.current_user_is_admin()));
+
+create or replace function public.enforce_profile_update_guardrails()
+returns trigger
+language plpgsql
+set search_path = public, private
+as $$
+begin
+  if new.id is distinct from old.id then
+    raise exception 'Profile id is immutable';
+  end if;
+
+  if new.created_at is distinct from old.created_at then
+    raise exception 'Profile created_at is immutable';
+  end if;
+
+  if new.role is distinct from old.role and not private.current_user_is_admin() then
+    raise exception 'Only admins can change profile roles';
+  end if;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists enforce_profile_update_guardrails on public.profiles;
+create trigger enforce_profile_update_guardrails
+  before update on public.profiles
+  for each row execute procedure public.enforce_profile_update_guardrails();
 
 create policy "users read own progress"
   on public.lesson_progress
@@ -69,6 +149,7 @@ create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer
+set search_path = public
 as $$
 begin
   insert into public.profiles (id, display_name)
@@ -266,26 +347,16 @@ drop policy if exists "public can read published terminology" on public.terminol
 create policy "public can read published terminology"
   on public.terminology_entries
   for select
+  to anon, authenticated
   using (is_published = true);
 
 drop policy if exists "admins manage terminology" on public.terminology_entries;
 create policy "admins manage terminology"
   on public.terminology_entries
   for all
-  using (
-    exists (
-      select 1
-      from public.profiles p
-      where p.id = auth.uid() and p.role = 'admin'
-    )
-  )
-  with check (
-    exists (
-      select 1
-      from public.profiles p
-      where p.id = auth.uid() and p.role = 'admin'
-    )
-  );
+  to authenticated
+  using ((select private.current_user_is_admin()))
+  with check ((select private.current_user_is_admin()));
 
 create table if not exists public.tasting_notes (
   id uuid primary key default gen_random_uuid(),
@@ -417,3 +488,167 @@ create table if not exists public.operations_learning_memory (
 
 create index if not exists operations_learning_memory_created_at_idx
   on public.operations_learning_memory (created_at desc);
+
+create table if not exists public.customer_subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  provider text not null default 'stripe',
+  provider_customer_id text,
+  provider_subscription_id text,
+  plan_code text not null default 'pro_monthly',
+  status text not null default 'incomplete' check (
+    status in ('trialing', 'active', 'past_due', 'unpaid', 'canceled', 'incomplete', 'incomplete_expired')
+  ),
+  current_period_end timestamptz,
+  cancel_at_period_end boolean not null default false,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (provider, provider_subscription_id)
+);
+
+create index if not exists customer_subscriptions_user_idx
+  on public.customer_subscriptions (user_id, updated_at desc);
+
+create index if not exists customer_subscriptions_status_idx
+  on public.customer_subscriptions (status, current_period_end desc);
+
+create or replace function public.set_customer_subscriptions_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+drop trigger if exists set_customer_subscriptions_updated_at on public.customer_subscriptions;
+create trigger set_customer_subscriptions_updated_at
+  before update on public.customer_subscriptions
+  for each row execute procedure public.set_customer_subscriptions_updated_at();
+
+alter table public.customer_subscriptions enable row level security;
+
+drop policy if exists "users read own subscriptions" on public.customer_subscriptions;
+create policy "users read own subscriptions"
+  on public.customer_subscriptions
+  for select
+  using (auth.uid() = user_id);
+
+drop policy if exists "service role manages subscriptions" on public.customer_subscriptions;
+create policy "service role manages subscriptions"
+  on public.customer_subscriptions
+  for all
+  using (auth.role() = 'service_role')
+  with check (auth.role() = 'service_role');
+
+drop policy if exists "admins read all subscriptions" on public.customer_subscriptions;
+create policy "admins read all subscriptions"
+  on public.customer_subscriptions
+  for select
+  to authenticated
+  using ((select private.current_user_is_admin()));
+
+create table if not exists public.billing_webhook_events (
+  event_id text primary key,
+  provider text not null default 'stripe',
+  received_at timestamptz not null default now()
+);
+
+create index if not exists billing_webhook_events_received_at_idx
+  on public.billing_webhook_events (received_at desc);
+
+alter table public.billing_webhook_events enable row level security;
+
+drop policy if exists "service role manages billing webhook events" on public.billing_webhook_events;
+create policy "service role manages billing webhook events"
+  on public.billing_webhook_events
+  for all
+  using (auth.role() = 'service_role')
+  with check (auth.role() = 'service_role');
+
+create table if not exists public.api_rate_limits (
+  function_name text not null,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  window_start timestamptz not null,
+  request_count integer not null default 0 check (request_count >= 0),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (function_name, user_id, window_start)
+);
+
+create index if not exists api_rate_limits_window_idx
+  on public.api_rate_limits (function_name, window_start desc);
+
+create or replace function public.set_api_rate_limits_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+drop trigger if exists set_api_rate_limits_updated_at on public.api_rate_limits;
+create trigger set_api_rate_limits_updated_at
+  before update on public.api_rate_limits
+  for each row execute procedure public.set_api_rate_limits_updated_at();
+
+alter table public.api_rate_limits enable row level security;
+
+drop policy if exists "service role manages api rate limits" on public.api_rate_limits;
+create policy "service role manages api rate limits"
+  on public.api_rate_limits
+  for all
+  using (auth.role() = 'service_role')
+  with check (auth.role() = 'service_role');
+
+create or replace function public.consume_rate_limit(
+  p_function_name text,
+  p_user_id uuid,
+  p_window_seconds integer,
+  p_max_requests integer
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_window_start timestamptz;
+  v_request_count integer;
+begin
+  if p_function_name is null or btrim(p_function_name) = '' then
+    return false;
+  end if;
+
+  if p_user_id is null then
+    return false;
+  end if;
+
+  if p_window_seconds is null or p_window_seconds < 1 then
+    return false;
+  end if;
+
+  if p_max_requests is null or p_max_requests < 1 then
+    return false;
+  end if;
+
+  v_window_start := to_timestamp(floor(extract(epoch from now()) / p_window_seconds) * p_window_seconds);
+
+  insert into public.api_rate_limits (function_name, user_id, window_start, request_count)
+  values (p_function_name, p_user_id, v_window_start, 1)
+  on conflict (function_name, user_id, window_start)
+  do update
+    set request_count = public.api_rate_limits.request_count + 1,
+        updated_at = now()
+  returning request_count into v_request_count;
+
+  return v_request_count <= p_max_requests;
+end;
+$$;
+
+revoke all on function public.consume_rate_limit(text, uuid, integer, integer) from public;
+grant execute on function public.consume_rate_limit(text, uuid, integer, integer) to service_role;

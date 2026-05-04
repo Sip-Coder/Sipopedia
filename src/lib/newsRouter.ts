@@ -20,6 +20,7 @@ export type NewsRouterSource =
   | "brewers-association"
   | "tea-masters"
   | "sipstudies"
+  | "sipstudies-blog"
   | "ttb-news"
   | "inao-news"
   | "eu-agri-news"

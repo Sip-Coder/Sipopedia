@@ -1,98 +1,109 @@
-# AI Edu - First Pass
+# Sip Studies
 
-This app now has a safe AI path:
+Sip Studies is a React and TypeScript beverage education workspace for wine, beer, spirits, cocktails, maps, terminology, tasting notes, and study resources. The app is built as a Vite single page application with hash-based routing, Supabase-backed auth/content features, and local-first study interactions where cloud sync is not required.
 
-- Frontend (public): no secret keys
-- Supabase Edge Function (private): keeps provider keys hidden
-- Supports OpenAI, Anthropic, and Google through one function: `ai-router`
+## Current Product Areas
 
-## Step 1: Install and run frontend
+- **Learn**: Sip Academy, Sipopedia, Beverage Quiz, Regions, Maps, Grapes & Grains, Bev Recipes, Resources.
+- **Taste**: Flavor Wheel, Journal Archive, Tasting Journal.
+- **Connect**: Beverage News, Tasting Groups, AI News, Somm Events.
+- **Admin**: Admin console and Terminology Admin for privileged users.
+
+## Quick Start
 
 ```bash
 npm.cmd install
 npm.cmd run dev
 ```
 
-## Step 2: Connect frontend to Supabase
-
-Create `.env` from `.env.example`:
+Local host helper:
 
 ```bash
-VITE_SUPABASE_URL=YOUR_PROJECT_URL
-VITE_SUPABASE_ANON_KEY=YOUR_ANON_KEY
+npm.cmd run localhost
 ```
 
-Important:
-- `VITE_SUPABASE_ANON_KEY` is public-safe.
-- Do not put OpenAI/Anthropic/Google keys in `.env` for frontend.
-
-## Step 3: Run database SQL
-
-In Supabase SQL Editor, run:
-
-- `supabase/schema.sql`
-
-## Step 4: Add secure AI function
-
-This repo already includes:
-
-- `supabase/functions/ai-router/index.ts`
-
-Deploy it with Supabase CLI:
+Production build:
 
 ```bash
-supabase login
-supabase link --project-ref YOUR_PROJECT_REF
-supabase functions deploy ai-router --no-verify-jwt
+npm.cmd run build
 ```
 
-## Step 5: Save provider keys as Supabase secrets
+Website validation:
 
-Set secrets (these stay server-side):
+```powershell
+powershell -File .\validators\validate-website.ps1 -SkipInstall
+```
+
+## Environment
+
+Create `.env` from `.env.example`.
+
+Required for Supabase-backed features:
 
 ```bash
-supabase secrets set OPENAI_API_KEY=YOUR_KEY
-supabase secrets set ANTHROPIC_API_KEY=YOUR_KEY
-supabase secrets set GOOGLE_AI_API_KEY=YOUR_KEY
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
 ```
 
-Optional model overrides:
+Optional commerce/contact variables:
 
 ```bash
-supabase secrets set OPENAI_MODEL=gpt-4.1-mini
-supabase secrets set ANTHROPIC_MODEL=claude-3-5-sonnet-latest
-supabase secrets set GOOGLE_MODEL=gemini-2.0-flash
+VITE_CHECKOUT_URL=
+VITE_SALES_EMAIL=
 ```
 
-Redeploy after changing secrets:
+Provider API keys do not belong in frontend env files. Keep OpenAI, Anthropic, Google, billing webhook, and other private keys in Supabase Edge Function secrets.
+
+## Documentation Index
+
+- [Website Product Spec](docs/WEBSITE_SPEC.md): product scope, information architecture, page responsibilities, and user workflows.
+- [Architecture](docs/ARCHITECTURE.md): runtime architecture, routing, access model, data sources, and module boundaries.
+- [Content and Data Spec](docs/CONTENT_DATA_SPEC.md): content ownership, beverage data rules, image assets, storage, and terminology policy.
+- [UX and Navigation Spec](docs/UX_NAVIGATION_SPEC.md): keyboard/swipe behavior, major interaction contracts, and accessibility expectations.
+- [QA and Release Checklist](docs/QA_RELEASE_CHECKLIST.md): baseline validation and manual smoke checks.
+- [Implementation Spec](docs/IMPLEMENTATION_SPEC.md): coding, routing, local storage, asset, and documentation standards.
+- [Repo Review and Refactor Notes](docs/REPO_REVIEW.md): current findings, refactor candidates, and open product questions.
+- [Terms Automation Playbook](docs/TERMS_AUTOMATION_PLAYBOOK.md): Sipopedia terminology automation workflow.
+- [Supabase Sync Notes](docs/SUPABASE_SYNC.md): Supabase operational notes.
+
+## Repository Layout
+
+```text
+src/
+  App.tsx                 Main route shell and workspace navigation
+  components/             Feature pages and shared UI surfaces
+  context/                Auth and access providers
+  data/                   Static study data and reference catalogs
+  lib/                    Supabase, analytics, journal, news, and utility modules
+  assets/                 Bundled brand and curriculum assets
+public/                   Runtime static assets loaded by URL
+supabase/                 Migrations, schema, and Edge Functions
+scripts/                  Operational scripts and terminology automation
+validators/               PowerShell validation entrypoints
+docs/                     Product, technical, runbook, and workflow docs
+```
+
+## Supabase
+
+The app runs without Supabase for public/local study surfaces, but auth, profiles, subscriptions, terminology, admin workflows, and some data-backed features require Supabase.
+
+Deploy Edge Functions as needed:
 
 ```bash
-supabase functions deploy ai-router --no-verify-jwt
+supabase functions deploy ai-router
+supabase functions deploy billing-webhook
+supabase functions deploy news-router
 ```
 
-## Start Terms terminology automation
+Apply migrations with the Supabase CLI:
 
-This repo now includes:
+```bash
+npx supabase db push
+```
 
-- `scripts/start-terms.js`
-- `scripts/audit-terms.js`
-- `scripts/ralph-loop-start.ps1`
-- `docs/TERMS_AUTOMATION_PLAYBOOK.md`
+## Terminology Automation
 
-What it does:
-- Runs a 7-stage agent loop for terminology intake:
-  - planner
-  - source scanner
-  - term extractor
-  - dedupe + policy filter
-  - writer
-  - citation compliance
-  - quality gate + persist
-- Blocks encyclopedia and dictionary domains by policy.
-- Dedupes against existing `public.terminology_entries`.
-- Writes run reports under `review/terminology/`.
-
-Run steps:
+Default workflow:
 
 ```bash
 npm run terms:audit -- --limit 535
@@ -100,54 +111,32 @@ npm run terms:start -- --dry-run
 npm run terms:start
 ```
 
-Ralph-style loop mode:
+Policy:
+
+- Do not use encyclopedia or dictionary domains as terminology sources.
+- Do not insert duplicate terms.
+- Enrich existing terms only with additive, non-redundant updates.
+- Review generated files under `review/terminology/` before applying live changes.
+
+## Current Validation Baseline
+
+Required before merging UI or data changes:
 
 ```bash
-npm run terms:loop -- -Iterations 3 -Letters ABC -BatchPerLetter 2 -Target 12 -DryRun
+npm.cmd run build
+powershell -File .\validators\validate-website.ps1 -SkipInstall
 ```
 
-Required secrets:
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
+For terminology changes:
 
-Legacy note:
-- `supabase/functions/terminology-harvester/index.ts` is now a deprecation stub (HTTP 410).
-- Legacy cron-based Wikipedia pipeline is no longer used in the active workflow.
+```bash
+powershell -File .\validators\validate-terminology.ps1
+```
 
-## Step 6: Test in app
+## Known Engineering Priorities
 
-Open the website and use the **Safe AI test box**.
-
-- Pick provider
-- Type prompt
-- Click `Send safely`
-
-Your browser never sees secret provider keys.
-
-## Step 7: Terminology page (30,000+ terms)
-
-This repo now includes a second page: **Terminology**.
-
-- Sorted buckets: `#` first, then `A-Z`
-- Terms are loaded from Supabase table: `public.terminology_entries`
-- Click any term to open a detail modal (meaning, apply, references, examples, other ideas)
-- MLA citations are supported per term with `mla_citations` array
-- Admin editor is available on **Terminology Admin** page (requires `profiles.role = 'admin'`)
-
-For bulk import and upsert workflow, use:
-
-- `supabase/terminology_import_template.sql`
-- `supabase/terminology_seed_30000_scaffold.sql` (optional load-test scaffold, unpublished by default)
-- `supabase/terminology_first_104_seed.sql` (first curated batch seed)
-
-Dev note:
-- Current migrations include a development convenience that defaults new profile roles to `admin` for Terminology Admin access.
-- Before production, revert profile default role to `student` and manage admin roles explicitly.
-
-Keep entries original and rewritten in your own words to avoid plagiarism.
-Do not use placeholder citations. Store only verified source URLs and matching MLA citations per term.
-
-## MCP note
-
-MCP is helpful for your coding workflow, but it is not your runtime secret vault.
-The real secret vault for production is Supabase Edge Function secrets.
+- Extract large page components into feature folders with data, hooks, and presentational components split apart.
+- Move Bev Recipes data out of `Cocktails.tsx` into typed data modules.
+- Split `src/styles.css` into feature-scoped styles or a documented layer system.
+- Add at least smoke-level browser tests for routing, keyboard navigation, contrast-sensitive forms, and chart interactions.
+- Generate or add beer and wine recipe images under `public/beers/` and `public/wines/`, or intentionally keep the current fallback state documented.

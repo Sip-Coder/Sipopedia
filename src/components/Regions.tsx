@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type TouchEvent } from "react";
 import {
   allRegionCountries,
   continentLabels,
@@ -88,7 +88,12 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
     if (!route.countrySlug) return null;
     return selectedCategoryCountries.find((item) => item.slug === route.countrySlug) ?? null;
   }, [route.countrySlug, selectedCategoryCountries]);
+  const selectedCountryIndex = useMemo(() => {
+    if (!country) return -1;
+    return selectedCategoryCountries.findIndex((item) => item.slug === country.slug);
+  }, [country, selectedCategoryCountries]);
   const [activeSlide, setActiveSlide] = useState(0);
+  const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const countriesByContinent = useMemo(
     () =>
       continentOrder.reduce((acc, continent) => {
@@ -118,6 +123,73 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
     const target = document.getElementById(toContinentAnchor(continent));
     if (!target) return;
     target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const navigateCountryByDirection = (direction: 1 | -1) => {
+    if (!country || selectedCategoryCountries.length <= 1 || selectedCountryIndex < 0) return;
+    const nextIndex = (selectedCountryIndex + direction + selectedCategoryCountries.length) % selectedCategoryCountries.length;
+    const nextCountry = selectedCategoryCountries[nextIndex];
+    onNavigate(`regions/${selectedCategory}/${nextCountry.slug}`);
+  };
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!country) return;
+      const target = event.target as HTMLElement | null;
+      if (target) {
+        const tagName = target.tagName.toLowerCase();
+        if (target.isContentEditable || tagName === "input" || tagName === "textarea" || tagName === "select") {
+          return;
+        }
+      }
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onNavigate(`regions/${selectedCategory}`);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        navigateCountryByDirection(-1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        navigateCountryByDirection(1);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [country, selectedCategoryCountries, selectedCountryIndex, selectedCategory, onNavigate]);
+
+  const handleCountryTouchStart = (event: TouchEvent<HTMLElement>) => {
+    if (!country || event.touches.length !== 1) {
+      swipeStartRef.current = null;
+      return;
+    }
+    const touch = event.touches[0];
+    swipeStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleCountryTouchEnd = (event: TouchEvent<HTMLElement>) => {
+    if (!country) return;
+    const start = swipeStartRef.current;
+    swipeStartRef.current = null;
+    if (!start || event.changedTouches.length === 0) return;
+
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    const horizontalThreshold = 52;
+    const horizontalDominance = Math.abs(dy) * 1.2;
+
+    if (Math.abs(dx) < horizontalThreshold) return;
+    if (Math.abs(dx) < horizontalDominance) return;
+
+    if (dx < 0) {
+      navigateCountryByDirection(1);
+    } else {
+      navigateCountryByDirection(-1);
+    }
   };
 
   if (!route.countrySlug) {
@@ -209,12 +281,19 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
               <div className="regions-country-grid">
                 {countriesByContinent[continent].map((item) => (
                   <article className="regions-country-card" key={item.slug}>
-                    <img
-                      className="regions-country-card-image"
-                      src={item.profile.countryImageUrl}
-                      alt={`${item.name} vineyards`}
-                      loading="lazy"
-                    />
+                    <button
+                      type="button"
+                      className="regions-country-image-button"
+                      aria-label={`Open ${item.name}`}
+                      onClick={() => onNavigate(`regions/${selectedCategory}/${item.slug}`)}
+                    >
+                      <img
+                        className="regions-country-card-image"
+                        src={item.profile.countryImageUrl}
+                        alt={`${item.name} vineyards`}
+                        loading="lazy"
+                      />
+                    </button>
                     <h4>{item.name}</h4>
                     <p>{item.profile.winesOverview}</p>
                     <button className="btn btn-light" onClick={() => onNavigate(`regions/${selectedCategory}/${item.slug}`)}>
@@ -251,7 +330,7 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
   const locationLines = parseLocationLines(profile.location);
 
   return (
-    <section className="regions-shell">
+    <section className="regions-shell" onTouchStart={handleCountryTouchStart} onTouchEnd={handleCountryTouchEnd}>
       <div className="regions-country-topbar">
         <button className="btn btn-light" onClick={() => onNavigate(`regions/${selectedCategory}`)}>Back to Category</button>
         <button className="btn btn-light" onClick={() => onNavigate("regions")}>All Categories</button>

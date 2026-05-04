@@ -42,6 +42,24 @@ export type TastingNoteUpsertInput = {
   fields_json: Record<string, unknown>;
 };
 
+async function requireCurrentUserId(): Promise<string> {
+  if (!supabase) {
+    throw new Error("Supabase is not configured.");
+  }
+
+  const { data, error } = await supabase.auth.getUser();
+  if (error) {
+    throw new Error(mapTastingError(error.message));
+  }
+
+  const userId = data.user?.id;
+  if (!userId) {
+    throw new Error("Sign in is required for cloud tasting notes.");
+  }
+
+  return userId;
+}
+
 function mapTastingError(message: string): string {
   const lower = message.toLowerCase();
   if (lower.includes("relation") && lower.includes("tasting_notes")) {
@@ -70,10 +88,12 @@ function normalizeRow(row: TastingNoteRecord): TastingNoteRecord {
   };
 }
 
-export async function listTastingNotes(userId: string): Promise<TastingNoteRecord[]> {
+export async function listTastingNotes(): Promise<TastingNoteRecord[]> {
   if (!supabase) {
     throw new Error("Supabase is not configured.");
   }
+
+  const userId = await requireCurrentUserId();
 
   const { data, error } = await supabase
     .from("tasting_notes")
@@ -88,13 +108,12 @@ export async function listTastingNotes(userId: string): Promise<TastingNoteRecor
   return (data ?? []).map((row) => normalizeRow(row as TastingNoteRecord));
 }
 
-export async function createTastingNote(
-  userId: string,
-  input: TastingNoteUpsertInput
-): Promise<TastingNoteRecord> {
+export async function createTastingNote(input: TastingNoteUpsertInput): Promise<TastingNoteRecord> {
   if (!supabase) {
     throw new Error("Supabase is not configured.");
   }
+
+  const userId = await requireCurrentUserId();
 
   const { data, error } = await supabase
     .from("tasting_notes")
@@ -112,14 +131,12 @@ export async function createTastingNote(
   return normalizeRow(data as TastingNoteRecord);
 }
 
-export async function updateTastingNote(
-  userId: string,
-  noteId: string,
-  input: TastingNoteUpsertInput
-): Promise<TastingNoteRecord> {
+export async function updateTastingNote(noteId: string, input: TastingNoteUpsertInput): Promise<TastingNoteRecord> {
   if (!supabase) {
     throw new Error("Supabase is not configured.");
   }
+
+  const userId = await requireCurrentUserId();
 
   const { data, error } = await supabase
     .from("tasting_notes")
@@ -136,10 +153,12 @@ export async function updateTastingNote(
   return normalizeRow(data as TastingNoteRecord);
 }
 
-export async function deleteTastingNote(userId: string, noteId: string): Promise<void> {
+export async function deleteTastingNote(noteId: string): Promise<void> {
   if (!supabase) {
     throw new Error("Supabase is not configured.");
   }
+
+  const userId = await requireCurrentUserId();
 
   const { error } = await supabase.from("tasting_notes").delete().eq("id", noteId).eq("user_id", userId);
   if (error) {

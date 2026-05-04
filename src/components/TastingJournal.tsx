@@ -575,6 +575,7 @@ function recommendations(total: number, grape: Accuracy, alcohol: Accuracy, coun
 
 export function TastingJournal() {
   const { user, isConfigured } = useAuth();
+  const useCloudStorage = isConfigured && Boolean(user);
   const [tab, setTab] = useState<TabId>("make");
   const [notes, setNotes] = useState<Note[]>([]);
   const [loadingNotes, setLoadingNotes] = useState(false);
@@ -595,7 +596,6 @@ export function TastingJournal() {
   const [mapHover, setMapHover] = useState<string | null>(null);
   const [mapSearch, setMapSearch] = useState("");
 
-  const useCloudStorage = isConfigured && Boolean(user);
   const schema = SCHEMAS[draft.beverageType];
 
   useEffect(() => {
@@ -619,7 +619,7 @@ export function TastingJournal() {
     setDataError(null);
     if (useCloudStorage && user) {
       setLoadingNotes(true);
-      listTastingNotes(user.id)
+      listTastingNotes()
         .then((rows) => {
           if (cancelled) return;
           const safeRows = Array.isArray(rows) ? rows : [];
@@ -734,14 +734,14 @@ export function TastingJournal() {
       if (useCloudStorage && user) {
         const payload = toUpsert(nextDraft);
         if (editingId) {
-          const updated = await updateTastingNote(user.id, editingId, payload);
+          const updated = await updateTastingNote(editingId, payload);
           const next = safeNoteFromRecord(updated);
           if (!next) throw new Error("Update succeeded but returned malformed tasting note data.");
           setNotes((cur) => cur.map((note) => (note.id === editingId ? next : note)));
           setStatusMessage("Tasting note updated.");
           setStorageMode("cloud");
         } else {
-          const created = await createTastingNote(user.id, payload);
+          const created = await createTastingNote(payload);
           const next = safeNoteFromRecord(created);
           if (!next) throw new Error("Save succeeded but returned malformed tasting note data.");
           setNotes((cur) => [next, ...cur]);
@@ -834,7 +834,7 @@ export function TastingJournal() {
     setDeletingId(id);
     try {
       if (useCloudStorage && user) {
-        await deleteTastingNote(user.id, id);
+        await deleteTastingNote(id);
         setNotes((cur) => cur.filter((note) => note.id !== id));
       } else {
         setNotes((cur) => {
@@ -1107,11 +1107,10 @@ export function TastingJournal() {
       <div className="section-header"><h2>Tasting Journal</h2><p>Structured notes, blind scoring analytics, PDF export, and an interactive country map of your tastings.</p></div>
       <div className="journal-tabs">
         <button className={`btn ${tab === "make" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("make")}>New Notes</button>
-        <button className={`btn ${tab === "review" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("review")}>Review</button>
+        <button className={`btn ${tab === "review" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("review")}>Archive</button>
         <button className={`btn ${tab === "analyze" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("analyze")}>Improve</button>
         <button className={`btn ${tab === "map" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("map")}>Tasting Map</button>
       </div>
-      {!useCloudStorage ? <p className="hint">Guest mode active. Notes save in this browser until auth is enabled.</p> : null}
       {loadingNotes ? <p className="hint">Loading tasting notes...</p> : null}
       {dataError ? <p className="error">{dataError}</p> : null}
       {statusMessage ? <p className="hint journal-message">{statusMessage}</p> : null}
@@ -1216,7 +1215,7 @@ export function TastingJournal() {
           <article className="journal-card journal-map-card">
             <h3>World Map</h3>
             {mapCountry ? <p className="hint">Selected: {displayCountry(mapCountry)} <button className="btn btn-light" type="button" onClick={() => setMapCountry(null)}>Clear</button></p> : null}
-            {mapLoading ? <p className="hint">Loading map...</p> : <div className="journal-region-map-wrap"><svg viewBox="0 0 800 400" className="journal-region-map-svg" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="800" height="400" fill="#D8E6DA" />{Array.from({ length: 17 }, (_, i) => (i - 8) * 10).filter((lat) => lat > -90 && lat < 90).map((lat) => { const y = ((90 - lat) / 180) * 400; return <line key={`lat-${lat}`} x1="0" y1={y} x2="800" y2={y} stroke="#817985" strokeWidth="0.5" strokeOpacity="0.1" pointerEvents="none" />; })}{mapPaths.map((country) => { const has = countryCounts.has(country.name); const selectedMapCountry = mapCountry === country.name; const hovered = mapHover === country.name; const fill = selectedMapCountry || (has && hovered) ? "#185552" : has ? "#185552" : "#EDD4A8"; const opacity = selectedMapCountry || (has && hovered) ? 0.9 : has ? 0.25 : 0.45; return <path key={country.id} d={country.path} fill={fill} fillOpacity={opacity} stroke="#817985" strokeWidth={selectedMapCountry || hovered ? "1" : "0.5"} className={has ? "journal-country-clickable" : ""} onClick={(e) => { e.stopPropagation(); if (!has) return; setMapCountry((cur) => cur === country.name ? null : country.name); document.getElementById("journal-region-directory")?.scrollIntoView({ behavior: "smooth" }); }} onMouseEnter={() => { if (has) setMapHover(country.name); }} onMouseLeave={() => setMapHover(null)} />; })}</svg>{mapHover && countryCounts.has(mapHover) ? <div className="journal-map-tooltip"><strong>{displayCountry(mapHover)}</strong><span>{countryCounts.get(mapHover)} {countryCounts.get(mapHover) === 1 ? "tasting" : "tastings"}</span></div> : null}<div className="journal-map-count-pill">{countryCounts.size} {countryCounts.size === 1 ? "country" : "countries"} tasted</div></div>}
+            {mapLoading ? <p className="hint">Loading map...</p> : <div className="journal-region-map-wrap"><svg viewBox="0 0 800 400" className="journal-region-map-svg" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="800" height="400" fill="#07131f" />{Array.from({ length: 17 }, (_, i) => (i - 8) * 10).filter((lat) => lat > -90 && lat < 90).map((lat) => { const y = ((90 - lat) / 180) * 400; return <line key={`lat-${lat}`} x1="0" y1={y} x2="800" y2={y} stroke="#9fdaf5" strokeWidth="0.5" strokeOpacity="0.16" pointerEvents="none" />; })}{mapPaths.map((country) => { const has = countryCounts.has(country.name); const selectedMapCountry = mapCountry === country.name; const hovered = mapHover === country.name; const fill = selectedMapCountry || (has && hovered) ? "#9fdaf5" : has ? "#edd4a8" : "#185552"; const opacity = selectedMapCountry || (has && hovered) ? 0.86 : has ? 0.64 : 0.3; return <path key={country.id} d={country.path} fill={fill} fillOpacity={opacity} stroke="#9fdaf5" strokeWidth={selectedMapCountry || hovered ? "1" : "0.5"} className={has ? "journal-country-clickable" : ""} onClick={(e) => { e.stopPropagation(); if (!has) return; setMapCountry((cur) => cur === country.name ? null : country.name); document.getElementById("journal-region-directory")?.scrollIntoView({ behavior: "smooth" }); }} onMouseEnter={() => { if (has) setMapHover(country.name); }} onMouseLeave={() => setMapHover(null)} />; })}</svg>{mapHover && countryCounts.has(mapHover) ? <div className="journal-map-tooltip"><strong>{displayCountry(mapHover)}</strong><span>{countryCounts.get(mapHover)} {countryCounts.get(mapHover) === 1 ? "tasting" : "tastings"}</span></div> : null}<div className="journal-map-count-pill">{countryCounts.size} {countryCounts.size === 1 ? "country" : "countries"} tasted</div></div>}
           </article>
           <aside id="journal-region-directory" className="journal-card"><h3>Region Directory</h3><div className="journal-toolbar"><input placeholder="Search regions or wines..." value={mapSearch} onChange={(e) => setMapSearch(e.target.value)} /></div><div className="journal-note-list">{Object.entries(mapDirectory).length > 0 ? Object.entries(mapDirectory).map(([country, regions]) => <div key={country} className="journal-region-country"><h4>{country}</h4>{Object.entries(regions).map(([region, regionNotes]) => <div key={`${country}-${region}`} className="journal-region-group"><p><strong>{region}</strong> ({regionNotes.length})</p><div className="journal-note-list">{regionNotes.map((note) => <article key={note.id} className={`journal-note-row compact ${activeId === note.id ? "active" : ""}`} onClick={() => { setActiveId(note.id); setTab("review"); }}><div className="journal-note-copy"><h3>{note.actualWineName || "Untitled Tasting"}</h3><p>{fmtDate(note.tastingDate)}</p></div></article>)}</div></div>)}</div>) : <p className="hint">No regions found. Try clearing filters or add more tasting notes.</p>}</div></aside>
         </div>

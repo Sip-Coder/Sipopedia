@@ -17,6 +17,7 @@ type NewsRouterSource =
   | "brewers-association"
   | "tea-masters"
   | "sipstudies"
+  | "sipstudies-blog"
   | "ttb-news"
   | "inao-news"
   | "eu-agri-news"
@@ -64,18 +65,18 @@ type WpPost = {
   };
 };
 
+const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN")?.trim() || "*";
+
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS"
 };
 
 const MAX_ITEMS = 8;
+const MAX_SIPSTUDIES_ITEMS = 30;
 const MAX_SUMMARY_LENGTH = 220;
 const FETCH_TIMEOUT_MS = 15_000;
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX_REQUESTS = 40;
-const requestLogByUser = new Map<string, number[]>();
 
 const WSET_NEWS_URL = "https://www.wsetglobal.com/news-events/news/";
 const ROBERT_PARKER_API_URL = "https://api.robertparker.com/v2/v2/articles/highlighted?offset=0&limit=8";
@@ -89,6 +90,7 @@ const BARISTA_GUILD_WELCOME_URL = "https://baristaguild.coffee/welcome";
 const BREWERS_ASSOCIATION_WP_URL =
   "https://www.brewersassociation.org/wp-json/wp/v2/posts?_fields=id,date,title,link,excerpt&per_page=8";
 const SIPSTUDIES_SUBSTACK_FEED_URL = "https://sipstudies.substack.com/feed";
+const SIPSTUDIES_BLOG_JSON_URL = "https://www.sipstudies.com/blog?format=json";
 const TTB_PRESS_ROOM_URL = "https://www.ttb.gov/public-information/press-room/news-and-events";
 const INAO_ACTUALITES_URL = "https://www.inao.gouv.fr/en/actualites";
 const EU_AGRI_FILTERED_NEWS_URL =
@@ -165,18 +167,38 @@ async function verifyAuthenticatedUser(request: Request): Promise<string | null>
   }
 }
 
-function takeUserRateLimitSlot(userId: string): boolean {
-  const now = Date.now();
-  const windowStart = now - RATE_LIMIT_WINDOW_MS;
-  const current = requestLogByUser.get(userId) ?? [];
-  const recent = current.filter((ts) => ts >= windowStart);
-  if (recent.length >= RATE_LIMIT_MAX_REQUESTS) {
-    requestLogByUser.set(userId, recent);
+async function consumeRateLimit(userId: string): Promise<boolean> {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim() ?? "";
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim() ?? "";
+  if (!supabaseUrl || !serviceRoleKey) {
     return false;
   }
-  recent.push(now);
-  requestLogByUser.set(userId, recent);
-  return true;
+
+  try {
+    const response = await fetchWithTimeout(`${supabaseUrl}/rest/v1/rpc/consume_rate_limit`, {
+      method: "POST",
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        p_function_name: "news-router",
+        p_user_id: userId,
+        p_window_seconds: 60,
+        p_max_requests: 40
+      })
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const allowed = await response.json();
+    return allowed === true;
+  } catch {
+    return false;
+  }
 }
 
 function isAllowedHost(hostname: string, allowedHosts: string[]): boolean {
@@ -563,13 +585,13 @@ function extractWsetArticles(html: string): GuildNewsItem[] {
   return articles;
 }
 
-function extractRssItems(xml: string, sourceName: string): GuildNewsItem[] {
+function extractRssItems(xml: string, sourceName: string, maxItems = MAX_ITEMS): GuildNewsItem[] {
   const items: GuildNewsItem[] = [];
   const itemRegex = /<item\b[\s\S]*?<\/item>/gi;
   let match: RegExpExecArray | null = itemRegex.exec(xml);
   let index = 0;
 
-  while (match && items.length < MAX_ITEMS) {
+  while (match && items.length < maxItems) {
     const rawItem = match[0];
     const title = normalizeText(extractTagContent(rawItem, "title"));
     const link = normalizeText(extractTagContent(rawItem, "link"));
@@ -622,9 +644,9 @@ async function fetchWsetNews(): Promise<GuildNewsItem[]> {
   return items;
 }
 
-async function fetchRssNews(feedUrl: string, sourceName: string): Promise<GuildNewsItem[]> {
+async function fetchRssNews(feedUrl: string, sourceName: string, maxItems = MAX_ITEMS): Promise<GuildNewsItem[]> {
   const xml = await fetchText(feedUrl, "application/rss+xml,application/xml,text/xml");
-  const items = extractRssItems(xml, sourceName);
+  const items = extractRssItems(xml, sourceName, maxItems);
   if (!items.length) {
     throw new Error(`${sourceName} RSS parser found no articles.`);
   }
@@ -706,7 +728,12 @@ async function fetchWpNews(endpoint: string, sourceName: string): Promise<GuildN
   return items;
 }
 
-async function fetchSquarespaceJsonNews(jsonUrl: string, baseUrl: string, sourceName: string): Promise<GuildNewsItem[]> {
+async function fetchSquarespaceJsonNews(
+  jsonUrl: string,
+  baseUrl: string,
+  sourceName: string,
+  maxItems = MAX_ITEMS
+): Promise<GuildNewsItem[]> {
   const response = await fetchWithTimeout(jsonUrl, {
     headers: {
       "User-Agent": "SipStudies-NewsRouter/1.0",
@@ -722,7 +749,7 @@ async function fetchSquarespaceJsonNews(jsonUrl: string, baseUrl: string, source
   const rows = Array.isArray(payload?.items) ? payload.items : [];
 
   const items = rows
-    .slice(0, MAX_ITEMS)
+    .slice(0, maxItems)
     .map((row, index) => {
       const title = normalizeText(String(row.title ?? row.name ?? "Untitled"));
       const href = String(row.fullUrl ?? row.url ?? "");
@@ -1126,7 +1153,14 @@ async function fetchBySource(source: NewsRouterSource): Promise<GuildNewsItem[]>
     case "tea-masters":
       return await fetchRssNews("https://teamasters.org/feed/", "Tea Masters");
     case "sipstudies":
-      return await fetchRssNews(SIPSTUDIES_SUBSTACK_FEED_URL, "SipStudies");
+      return await fetchRssNews(SIPSTUDIES_SUBSTACK_FEED_URL, "SipStudies", MAX_SIPSTUDIES_ITEMS);
+    case "sipstudies-blog":
+      return await fetchSquarespaceJsonNews(
+        SIPSTUDIES_BLOG_JSON_URL,
+        "https://www.sipstudies.com",
+        "SipStudies Blog",
+        MAX_SIPSTUDIES_ITEMS
+      );
     case "ttb-news":
       return await fetchHtmlLinkNews(
         {
@@ -1404,7 +1438,7 @@ Deno.serve(async (request) => {
     if (!userId) {
       return json(401, { error: "Authentication required." });
     }
-    if (!takeUserRateLimitSlot(userId)) {
+    if (!(await consumeRateLimit(userId))) {
       return json(429, { error: "Rate limit exceeded. Please try again shortly." });
     }
 

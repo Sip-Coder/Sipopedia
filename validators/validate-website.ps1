@@ -33,9 +33,9 @@ function Get-PackageScripts {
 function Invoke-External {
   param(
     [string]$Exe,
-    [string[]]$Args
+    [string[]]$ArgumentList
   )
-  & $Exe @Args | Out-Host
+  & $Exe @ArgumentList | Out-Host
   if ($null -eq $LASTEXITCODE) { return 0 }
   return [int]$LASTEXITCODE
 }
@@ -58,9 +58,9 @@ function Add-Result {
 }
 
 function Run-Stage {
-  param([string]$Stage, [string]$Exe, [string[]]$Args)
-  Write-Host "==> [$Stage] $Exe $($Args -join ' ')"
-  $code = Invoke-External -Exe $Exe -Args $Args
+  param([string]$Stage, [string]$Exe, [string[]]$ArgumentList)
+  Write-Host "==> [$Stage] $Exe $($ArgumentList -join ' ')"
+  $code = Invoke-External -Exe $Exe -ArgumentList $ArgumentList
   if ($code -eq 0) {
     Add-Result -Stage $Stage -Status "PASS" -Note ""
     return $true
@@ -84,11 +84,11 @@ elseif (Test-Path "node_modules") {
 }
 else {
   switch ($pm.Name) {
-    "pnpm" { $ok = Run-Stage -Stage "install" -Exe $pm.Exec -Args @("install", "--frozen-lockfile") }
-    "yarn" { $ok = Run-Stage -Stage "install" -Exe $pm.Exec -Args @("install", "--frozen-lockfile") }
+    "pnpm" { $ok = Run-Stage -Stage "install" -Exe $pm.Exec -ArgumentList @("install", "--frozen-lockfile") }
+    "yarn" { $ok = Run-Stage -Stage "install" -Exe $pm.Exec -ArgumentList @("install", "--frozen-lockfile") }
     default {
-      if (Test-Path "package-lock.json") { $ok = Run-Stage -Stage "install" -Exe $pm.Exec -Args @("ci") }
-      else { $ok = Run-Stage -Stage "install" -Exe $pm.Exec -Args @("install") }
+      if (Test-Path "package-lock.json") { $ok = Run-Stage -Stage "install" -Exe $pm.Exec -ArgumentList @("ci") }
+      else { $ok = Run-Stage -Stage "install" -Exe $pm.Exec -ArgumentList @("install") }
     }
   }
   if (-not $ok) { $failed = $true }
@@ -96,7 +96,7 @@ else {
 
 # 1. lint
 if ($scripts.ContainsKey("lint")) {
-  if (-not (Run-Stage -Stage "lint" -Exe $pm.Exec -Args @("run", "lint"))) { $failed = $true }
+  if (-not (Run-Stage -Stage "lint" -Exe $pm.Exec -ArgumentList @("run", "lint"))) { $failed = $true }
 }
 else {
   Add-Result -Stage "lint" -Status "SKIP" -Note "No lint script."
@@ -104,10 +104,10 @@ else {
 
 # 2. typecheck
 if ($scripts.ContainsKey("typecheck")) {
-  if (-not (Run-Stage -Stage "typecheck" -Exe $pm.Exec -Args @("run", "typecheck"))) { $failed = $true }
+  if (-not (Run-Stage -Stage "typecheck" -Exe $pm.Exec -ArgumentList @("run", "typecheck"))) { $failed = $true }
 }
 elseif ((Test-Path "tsconfig.json") -and $hasTypeScript) {
-  if (-not (Run-Stage -Stage "typecheck" -Exe "npx.cmd" -Args @("tsc", "--noEmit"))) { $failed = $true }
+  if (-not (Run-Stage -Stage "typecheck" -Exe "npx.cmd" -ArgumentList @("tsc", "--noEmit"))) { $failed = $true }
 }
 else {
   Add-Result -Stage "typecheck" -Status "SKIP" -Note "No typecheck script/setup."
@@ -115,7 +115,7 @@ else {
 
 # 3. test
 if ($scripts.ContainsKey("test")) {
-  if (-not (Run-Stage -Stage "test" -Exe $pm.Exec -Args @("run", "test"))) { $failed = $true }
+  if (-not (Run-Stage -Stage "test" -Exe $pm.Exec -ArgumentList @("run", "test"))) { $failed = $true }
 }
 else {
   Add-Result -Stage "test" -Status "SKIP" -Note "No test script."
@@ -123,7 +123,7 @@ else {
 
 # 4. build
 if ($scripts.ContainsKey("build")) {
-  if (-not (Run-Stage -Stage "build" -Exe $pm.Exec -Args @("run", "build"))) { $failed = $true }
+  if (-not (Run-Stage -Stage "build" -Exe $pm.Exec -ArgumentList @("run", "build"))) { $failed = $true }
 }
 else {
   Add-Result -Stage "build" -Status "SKIP" -Note "No build script."

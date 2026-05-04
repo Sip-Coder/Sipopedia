@@ -35,6 +35,11 @@ export type TerminologyPage = {
   total: number;
 };
 
+export type TerminologyLinkTarget = {
+  id: string;
+  term: string;
+};
+
 const letterBuckets: Exclude<TermBucket, "ALL" | "#">[] = [
   "A",
   "B",
@@ -105,8 +110,13 @@ function mapTerminologyError(message: string): string {
     return "Permission denied. Check RLS policies and user role configuration.";
   }
 
+  if (lower.includes("infinite recursion") && lower.includes("profiles")) {
+    return "Terminology access is blocked by a recursive Supabase profile policy. Apply the latest RLS migration, then refresh Sipopedia.";
+  }
+
   return message;
 }
+
 
 function fallbackFilter(bucket: TermBucket, query: string) {
   const normalizedQuery = query.trim().toLowerCase();
@@ -168,7 +178,6 @@ export async function listTerminologyPage(input: {
   }
 
   const client = supabase;
-
   let request = client
     .from("terminology_entries")
     .select("id,term,sort_group,meaning,infographic_url", { count: "exact" });
@@ -231,6 +240,45 @@ export async function listTerminologyPage(input: {
     rows: (data ?? []) as TerminologySummary[],
     total: topImportant ? Math.min(count ?? 0, 100) : count ?? 0
   };
+}
+
+export async function listTerminologyLinkTargets(): Promise<TerminologyLinkTarget[]> {
+  if (!supabase) {
+    return fallbackRows
+      .filter((row) => row.is_published !== false)
+      .map((row) => ({
+        id: row.id,
+        term: row.term
+      }));
+  }
+
+  const rows: TerminologyLinkTarget[] = [];
+  const pageSize = 1000;
+  let from = 0;
+
+  while (from < 10000) {
+    const { data, error } = await supabase
+      .from("terminology_entries")
+      .select("id,term")
+      .eq("is_published", true)
+      .order("normalized_term", { ascending: true })
+      .range(from, from + pageSize - 1);
+
+    if (error) {
+      throw new Error(mapTerminologyError(error.message));
+    }
+
+    const pageRows = (data ?? []) as TerminologyLinkTarget[];
+    rows.push(...pageRows);
+
+    if (pageRows.length < pageSize) {
+      break;
+    }
+
+    from += pageSize;
+  }
+
+  return rows;
 }
 
 function computeFallbackImportance(term: string): number {

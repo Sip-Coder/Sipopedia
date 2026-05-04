@@ -1,0 +1,10 @@
+﻿Use case: photorealistic-natural.
+Asset type: Sip Studies Grapes & Grains three-view rotation frame.
+Primary request: Using the supplied front-view reference image as frame 1, create a matching back view of the same darjeeling tea ingredient for a 3-frame rotation viewer.
+Viewpoint: back view, rotated about 180 degrees from the original front view.
+Scene/backdrop: keep the same premium dark teal studio background, clean educational product-photo setting, and similar subject scale.
+Style/medium: photorealistic macro or tabletop educational reference photography, realistic morphology and material texture.
+Composition/framing: one centered primary subject, fully visible, generous margin, square crop, suitable for panning and zooming.
+Lighting/mood: soft directional studio light, crisp detail, restrained premium academic feel.
+Constraints: preserve the ingredient identity from the reference image while changing only the rotation/viewpoint; no text, labels, watermark, logo, hands, packaging, glassware, cartoon, or illustration.
+Avoid: cut-off edges, repeated borders, white seam lines, UI elements, captions, plates, bowls, bags, or brand marks.

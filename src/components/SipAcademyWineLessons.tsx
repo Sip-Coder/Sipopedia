@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type WheelEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type TouchEvent, type WheelEvent } from "react";
 import { SipAcademyStory } from "./SipAcademyStory";
 import {
   EQUIPMENT_MASTERY_STORAGE_KEY,
@@ -1546,6 +1546,12 @@ const VOICE_MODE_LABELS: Record<MentorVoiceMode, string> = {
   story: "Story"
 };
 
+const VOICE_MODE_DESCRIPTIONS: Record<MentorVoiceMode, string> = {
+  classic: "Wine lessons, quizzes, and realm progression.",
+  tactical: "Cellar and service equipment drills.",
+  story: "Narrated wine-history journey."
+};
+
 function dateStamp(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -1647,6 +1653,12 @@ function nextMentorInCycle(mentor: MentorId): MentorId {
   const index = MENTOR_ROTATION.indexOf(mentor);
   if (index < 0) return MENTOR_ROTATION[0];
   return MENTOR_ROTATION[(index + 1) % MENTOR_ROTATION.length];
+}
+
+function previousMentorInCycle(mentor: MentorId): MentorId {
+  const index = MENTOR_ROTATION.indexOf(mentor);
+  if (index < 0) return MENTOR_ROTATION[0];
+  return MENTOR_ROTATION[(index - 1 + MENTOR_ROTATION.length) % MENTOR_ROTATION.length];
 }
 
 const STORY_REALM_HISTORY: Record<number, string> = {
@@ -1798,6 +1810,7 @@ export function SipAcademyWineLessons() {
   const [flashUnlockedLessonId, setFlashUnlockedLessonId] = useState<string | null>(null);
   const [profileMentorId, setProfileMentorId] = useState<MentorId | null>(null);
   const [equipmentSnapshot, setEquipmentSnapshot] = useState(() => readEquipmentMasterySnapshot());
+  const mentorTouchStartRef = useRef<{ x: number; y: number } | null>(null);
   const realmsStripRef = useRef<HTMLElement | null>(null);
   const pathStripRef = useRef<HTMLDivElement | null>(null);
   const liveGraphTickRef = useRef(LIVE_GRAPH_POINTS);
@@ -1860,6 +1873,14 @@ export function SipAcademyWineLessons() {
     if (!profileMentorId) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setProfileMentorId(null);
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        setProfileMentorId((current) => nextMentorInCycle(current ?? profileMentorId));
+      }
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        setProfileMentorId((current) => previousMentorInCycle(current ?? profileMentorId));
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     const previousOverflow = document.body.style.overflow;
@@ -1869,6 +1890,25 @@ export function SipAcademyWineLessons() {
       document.body.style.overflow = previousOverflow;
     };
   }, [profileMentorId]);
+
+  const handleMentorTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    mentorTouchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleMentorTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
+    if (!profileMentorId) return;
+    const touch = event.changedTouches[0];
+    const start = mentorTouchStartRef.current;
+    mentorTouchStartRef.current = null;
+    if (!touch || !start) return;
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    const horizontalSwipe = Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.15;
+    if (!horizontalSwipe) return;
+    setProfileMentorId(deltaX < 0 ? nextMentorInCycle(profileMentorId) : previousMentorInCycle(profileMentorId));
+  };
 
   const completedCount = LESSONS.filter((lesson) => (progress.lessons[lesson.id]?.completions ?? 0) > 0).length;
   const masteryTotal = LESSONS.reduce((sum, lesson) => sum + (progress.lessons[lesson.id]?.mastery ?? 0), 0);
@@ -1901,6 +1941,7 @@ export function SipAcademyWineLessons() {
   const highlightedRealmUnit = activeLesson?.unit ?? summaryLesson?.unit ?? nextLesson.unit;
   const highlightedRealm = realmProgress.find((realm) => realm.unit === highlightedRealmUnit) ?? realmProgress[0];
   const activeRealmMedia = REALM_MEDIA[highlightedRealm?.unit ?? 1] ?? REALM_MEDIA[1];
+  const activeUnitLessons = LESSONS.filter((lesson) => lesson.unit === (highlightedRealm?.unit ?? 1));
   const lowHearts = activeLesson ? hearts <= 2 : false;
   const activeUnitGuide = activeLesson ? UNIT_TEACHING_GUIDES[activeLesson.unit] ?? null : null;
   const liveGraphLines = useMemo(
@@ -2210,98 +2251,100 @@ export function SipAcademyWineLessons() {
         summary?.passed ? " academy-state-win" : ""
       }`}
     >
-      <header className="academy-game-header">
-        <div className="academy-header-hero">
-          <div className="academy-header-photo">
-            <img src={ACADEMY_WELCOME_IMAGE} alt="Sip Academy welcome group photo" loading="lazy" decoding="async" />
-          </div>
-          <div className="academy-header-hero-copy">
-            <p className="academy-kicker">Sip Academy Study Hub</p>
-            <h3>Your Guided Path to Beverage Mastery</h3>
-            <p>
-              Build real tasting confidence with structured lessons, sensory coaching, and service-ready practice built for everyone studying on Sip Studies.
-            </p>
-            <div className="academy-header-highlights" aria-label="Sip Academy study flow">
-              <span>Train fundamentals</span>
-              <span>Practice with mentors</span>
-              <span>Test with quiz rounds</span>
-              <span>Track your progression</span>
+      <header className="academy-game-header academy-learning-hero">
+        <div className="academy-hero-grid">
+          <div className="academy-header-hero">
+            <div className="academy-header-photo">
+              <img src={ACADEMY_WELCOME_IMAGE} alt="Sip Academy welcome group photo" loading="lazy" decoding="async" />
             </div>
-            <div className="academy-header-hero-mentors" aria-label="Sip Academy mentors">
-              <button type="button" className={`academy-header-mentor ${guideState.speaker === "sippy" ? "active" : ""}`} onClick={() => setProfileMentorId("sippy")}>
-                <img src={sippyImage} alt="" loading="lazy" decoding="async" />
-                <span>Sippy</span>
-              </button>
-              <button type="button" className={`academy-header-mentor ${guideState.speaker === "roma" ? "active" : ""}`} onClick={() => setProfileMentorId("roma")}>
-                <img src={romaImage} alt="" loading="lazy" decoding="async" />
-                <span>Roma</span>
-              </button>
-              <button type="button" className={`academy-header-mentor ${guideState.speaker === "hummin" ? "active" : ""}`} onClick={() => setProfileMentorId("hummin")}>
-                <img src={humminImage} alt="" loading="lazy" decoding="async" />
-                <span>Hummin</span>
-              </button>
+            <div className="academy-header-hero-copy">
+              <p className="academy-kicker">01 Sip Academy</p>
+              <h2>Sippy, Roma, and Hummin: Wine Quest Campaign</h2>
+              <p>
+                {voiceMode === "story"
+                  ? `${LESSONS.length} guided missions across ${REALMS.length} realms, narrated as a wine-history journey through regions, styles, and service rituals.`
+                  : `${LESSONS.length} guided missions across ${REALMS.length} realms. Start with the next mission, choose a unit when you want control, and learn in short quiz rounds built for mobile and desktop.`}
+              </p>
+              <div className="academy-header-highlights" aria-label="Sip Academy study flow">
+                <span>1. Continue</span>
+                <span>2. Choose unit</span>
+                <span>3. Read briefing</span>
+                <span>4. Clear quiz</span>
+                <span>5. Build mastery</span>
+              </div>
+              <div className="academy-header-hero-mentors" aria-label="Sip Academy mentors">
+                <button type="button" className={`academy-header-mentor ${guideState.speaker === "sippy" ? "active" : ""}`} onClick={() => setProfileMentorId("sippy")}>
+                  <img src={sippyImage} alt="" loading="lazy" decoding="async" />
+                  <span>Sippy</span>
+                </button>
+                <button type="button" className={`academy-header-mentor ${guideState.speaker === "roma" ? "active" : ""}`} onClick={() => setProfileMentorId("roma")}>
+                  <img src={romaImage} alt="" loading="lazy" decoding="async" />
+                  <span>Roma</span>
+                </button>
+                <button type="button" className={`academy-header-mentor ${guideState.speaker === "hummin" ? "active" : ""}`} onClick={() => setProfileMentorId("hummin")}>
+                  <img src={humminImage} alt="" loading="lazy" decoding="async" />
+                  <span>Hummin</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div>
-          <p className="academy-kicker">Sip Academy Adventure Mode</p>
-          <h2>Sippy, Roma, and Hummin: Wine Quest Campaign</h2>
-          <p>
-            {voiceMode === "story"
-              ? `${LESSONS.length} guided missions across ${REALMS.length} realms, now narrated as a wine-history journey through regions, styles, and service rituals.`
-              : `${LESSONS.length} guided missions across ${REALMS.length} realms. Build tasting skill trees, clear boss rounds, and level your service game.`}
-          </p>
-        </div>
-        <div className="academy-campaign-spotlight">
-          <p className="academy-campaign-kicker">Next Quest</p>
-          <h3>
-            Unit {nextLesson.unit}: {nextLesson.title}
-          </h3>
-          <p>
-            {nextLesson.realm} - {missionLabel(nextLesson.mission)} mission with {MENTORS[nextLesson.mentor].name}. Difficulty {nextLesson.difficulty}/5.
-          </p>
-        </div>
-        <div className="academy-level-band">
-          <div>
-            <strong>{Math.round(combinedCompletionRatio * 100)}%</strong>
-            <span>Path Completion</span>
-          </div>
-          <div>
-            <strong>{combinedCompletedCount}</strong>
-            <span>Lessons Cleared</span>
-          </div>
-          <div>
-            <strong>{combinedMasteryTotal}</strong>
-            <span>Mastery Points</span>
-          </div>
-        </div>
-        <div className="academy-metrics">
-          <span className="academy-chip academy-chip-xp">XP {progress.totalXp}</span>
-          <span className="academy-chip academy-chip-streak">Streak {progress.streak}</span>
-          <span className="academy-chip academy-chip-mastery">Mastery {masteryTotal}</span>
-          <span className={`academy-chip academy-chip-hearts${lowHearts ? " is-danger" : ""}`}>
-            Hearts {activeLesson ? hearts : MAX_HEARTS}
-          </span>
-        </div>
-        <div className="academy-voice-modes" aria-label="Mentor voice mode">
-          {(["classic", "tactical", "story"] as MentorVoiceMode[]).map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              className={`academy-voice-btn ${voiceMode === mode ? "active" : ""}`}
-              onClick={() => setVoiceMode(mode)}
-            >
-              {VOICE_MODE_LABELS[mode]}
-            </button>
-          ))}
+          <aside className="academy-command-card" aria-label="Sip Academy next mission and mode controls">
+            <div className="academy-campaign-spotlight">
+              <p className="academy-campaign-kicker">Continue Next</p>
+              <h3>
+                Unit {nextLesson.unit}: {nextLesson.title}
+              </h3>
+              <p>
+                {nextLesson.realm} - {missionLabel(nextLesson.mission)} mission with {MENTORS[nextLesson.mentor].name}. Difficulty {nextLesson.difficulty}/5.
+              </p>
+              <button type="button" className="btn btn-primary academy-next-mission-btn" onClick={() => startLesson(nextLesson.id)}>
+                Start Recommended Mission
+              </button>
+            </div>
+            <div className="academy-level-band">
+              <div>
+                <strong>{Math.round(combinedCompletionRatio * 100)}%</strong>
+                <span>Path Completion</span>
+              </div>
+              <div>
+                <strong>{combinedCompletedCount}</strong>
+                <span>Lessons Cleared</span>
+              </div>
+              <div>
+                <strong>{combinedMasteryTotal}</strong>
+                <span>Mastery Points</span>
+              </div>
+            </div>
+            <div className="academy-metrics">
+              <span className="academy-chip academy-chip-xp">XP {progress.totalXp}</span>
+              <span className="academy-chip academy-chip-streak">Streak {progress.streak}</span>
+              <span className="academy-chip academy-chip-mastery">Mastery {masteryTotal}</span>
+              <span className={`academy-chip academy-chip-hearts${lowHearts ? " is-danger" : ""}`}>
+                Hearts {activeLesson ? hearts : MAX_HEARTS}
+              </span>
+            </div>
+            <div className="academy-voice-modes" aria-label="Mentor voice mode">
+              {(["classic", "tactical", "story"] as MentorVoiceMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  className={`academy-voice-btn ${voiceMode === mode ? "active" : ""}`}
+                  onClick={() => setVoiceMode(mode)}
+                >
+                  <span>{VOICE_MODE_LABELS[mode]}</span>
+                  <small>{VOICE_MODE_DESCRIPTIONS[mode]}</small>
+                </button>
+              ))}
+            </div>
+          </aside>
         </div>
       </header>
 
       {voiceMode === "tactical" ? (
         <SipStudiosEquipmentMastery />
       ) : voiceMode !== "story" ? (
-        <>
+        <div className="academy-learning-flow">
       <section className="academy-cinematic" aria-label="Active realm cinematic preview">
         <div className="academy-cinematic-stage">
           <img
@@ -2360,6 +2403,19 @@ export function SipAcademyWineLessons() {
         </div>
       </section>
 
+      <section className="academy-flow-intro" aria-label="Sip Academy learning flow">
+        <div>
+          <p className="academy-campaign-kicker">Choose Your Route</p>
+          <h3>Pick a realm, then launch a lesson card.</h3>
+          <p>
+            The campaign is built for short sessions: choose a unit, read the briefing, answer the quiz, and come back anytime without losing progress.
+          </p>
+        </div>
+        <button type="button" className="btn btn-primary" onClick={() => startLesson(nextLesson.id)}>
+          Continue Next Mission
+        </button>
+      </section>
+
       <div className="academy-scroll-shell">
         <button
           type="button"
@@ -2415,6 +2471,9 @@ export function SipAcademyWineLessons() {
 
       <div className="academy-hud" aria-label="Your quest progress">
         <div className="academy-hud-left">
+          <span className="academy-hud-label academy-hud-label-clean">
+            Unit {highlightedRealm?.unit} - {highlightedRealm?.title ?? "Crystal Atrium"}
+          </span>
           <span className="academy-hud-label">
             Unit {highlightedRealm?.unit} · {highlightedRealm?.title ?? "Crystal Atrium"}
           </span>
@@ -2430,7 +2489,11 @@ export function SipAcademyWineLessons() {
           </div>
           <span className="academy-hud-sub">{completedCount} of {LESSONS.length} missions cleared</span>
         </div>
-        <div className="academy-hud-chips">
+        <div className="academy-hud-chips academy-hud-chips-refreshed">
+          <span className="academy-hud-chip">XP {progress.totalXp}</span>
+          <span className="academy-hud-chip">Streak {progress.streak}d</span>
+          <span className="academy-hud-chip">Mastery {masteryTotal}</span>
+          <span className="academy-hud-chip">{Math.round(completionRatio * 100)}% done</span>
           <span className="academy-hud-chip">⚡ {progress.totalXp} XP</span>
           <span className="academy-hud-chip">🔥 {progress.streak}d streak</span>
           <span className="academy-hud-chip">★ {masteryTotal} mastery</span>
@@ -2439,6 +2502,7 @@ export function SipAcademyWineLessons() {
         <div className="academy-hud-next">
           <span className="academy-hud-next-kicker">Up Next</span>
           <span className="academy-hud-next-title">{nextLesson.title}</span>
+          <span className="academy-hud-next-meta academy-hud-next-meta-clean">Unit {nextLesson.unit} - {nextLesson.realm}</span>
           <span className="academy-hud-next-meta">Unit {nextLesson.unit} · {nextLesson.realm}</span>
         </div>
       </div>
@@ -2459,6 +2523,9 @@ export function SipAcademyWineLessons() {
               {nextLesson.realm} - {missionLabel(nextLesson.mission)} - Mentor {MENTORS[nextLesson.mentor].name}
             </small>
           </div>
+          <button type="button" className="btn btn-primary academy-path-start" onClick={() => startLesson(nextLesson.id)}>
+            Start Recommended
+          </button>
           <div className="academy-scroll-shell">
             <button
               type="button"
@@ -2474,7 +2541,7 @@ export function SipAcademyWineLessons() {
               onWheel={handleHorizontalWheel}
               ref={pathStripRef}
             >
-              {LESSONS.filter((lesson) => lesson.unit === (highlightedRealm?.unit ?? 1)).map((lesson) => {
+              {activeUnitLessons.map((lesson) => {
                 const lessonProgress = progress.lessons[lesson.id];
                 const unlocked = lessonProgress?.unlocked ?? false;
                 const mastery = lessonProgress?.mastery ?? 0;
@@ -2717,7 +2784,7 @@ export function SipAcademyWineLessons() {
           )}
         </article>
       </div>
-      </>
+      </div>
       ) : (
         <SipAcademyStory />
       )}
@@ -2729,6 +2796,8 @@ export function SipAcademyWineLessons() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="academy-mentor-modal-title"
+            onTouchStart={handleMentorTouchStart}
+            onTouchEnd={handleMentorTouchEnd}
           >
             <button type="button" className="academy-mentor-modal-close" aria-label="Close mentor profile" onClick={() => setProfileMentorId(null)}>
               x

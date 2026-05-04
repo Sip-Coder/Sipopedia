@@ -29,6 +29,10 @@
 - Open latest queue:
   - `$f = Get-ChildItem .\review\terminology\*.md | Sort-Object LastWriteTime -Descending | Select-Object -First 1; if ($f) { notepad $f.FullName }`
 
+## Repair Sipopedia RLS Recursion
+- If Sipopedia shows zero terms with a recursive Supabase `profiles` policy error, use `docs/SIPOPEDIA_RLS_RECURSION_FIX.md`.
+- The persistent fix is `supabase/migrations/20260421235809_fix_admin_rls_recursion.sql`.
+
 ## Create A New Program File In The Future
 1. Add `programs/program.<name>.md`.
 2. Add mapping in `control/select-program.ps1`.

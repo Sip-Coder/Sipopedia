@@ -1,0 +1,392 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 1934 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+1 0 0 1 54 738 Tm
+(# How To Build Codex Agents) Tj
+T*
+() Tj
+T*
+(Last updated: April 21, 2026) Tj
+T*
+() Tj
+T*
+(## 1\) What you are building) Tj
+T*
+() Tj
+T*
+(A Codex agent is a task runner that can:) Tj
+T*
+(- read your repo context,) Tj
+T*
+(- follow local rules \(`AGENTS.md`, policies, runbooks\),) Tj
+T*
+(- use tools \(shell, MCP connectors, web when needed\),) Tj
+T*
+(- and implement scoped engineering work safely.) Tj
+T*
+() Tj
+T*
+(There are two practical build tracks:) Tj
+T*
+() Tj
+T*
+(1. In-repo Codex agent workflow \(best for engineering execution\)) Tj
+T*
+(2. App-level API agent workflow \(best for product features in your app\)) Tj
+T*
+() Tj
+T*
+(## 2\) Fast path: in-repo Codex agent workflow) Tj
+T*
+() Tj
+T*
+(### Step A: Define agent behavior in repo policy files) Tj
+T*
+() Tj
+T*
+(Create or maintain:) Tj
+T*
+(- `AGENTS.md` for coding rules, validation commands, and guardrails) Tj
+T*
+(- mission docs \(for example: `program.md`, `CHANGE_POLICY.md`\)) Tj
+T*
+(- validator scripts your agent can run every cycle) Tj
+T*
+() Tj
+T*
+(Goal: make expectations explicit so the agent executes consistently.) Tj
+T*
+() Tj
+T*
+(### Step B: Add reusable capabilities via skills) Tj
+T*
+() Tj
+T*
+(Use skills for specialized workflows \(example: Supabase, docs lookup, image generation\).) Tj
+T*
+(Keep each skill focused:) Tj
+T*
+(- trigger conditions) Tj
+T*
+(- exact run steps) Tj
+T*
+(- fallback behavior) Tj
+T*
+(- constraints) Tj
+T*
+() Tj
+T*
+(Goal: reduce prompt repetition and improve reliability.) Tj
+T*
+() Tj
+T*
+(### Step C: Add MCP connectors for external systems) Tj
+T*
+() Tj
+T*
+(Use MCP when the agent needs structured access to platforms \(docs, GitHub, Canva, etc.\).) Tj
+T*
+() Tj
+T*
+(Typical setup command pattern:) Tj
+T*
+(- `codex mcp add <name> --url <server-url>`) Tj
+T*
+() Tj
+T*
+(Goal: avoid brittle scraping and give the agent typed tool calls.) Tj
+T*
+() Tj
+T*
+(### Step D: Use the right runtime mode) Tj
+T*
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 1606 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+1 0 0 1 54 738 Tm
+() Tj
+T*
+(Interactive development:) Tj
+T*
+(- `codex`) Tj
+T*
+() Tj
+T*
+(Automated one-shot runs:) Tj
+T*
+(- `codex exec "your task"`) Tj
+T*
+() Tj
+T*
+(Higher-autonomy automation:) Tj
+T*
+(- `codex exec --full-auto "your task"`) Tj
+T*
+() Tj
+T*
+(Goal: choose interactivity level based on risk and CI context.) Tj
+T*
+() Tj
+T*
+(### Step E: Add a loop for safe execution) Tj
+T*
+() Tj
+T*
+(Recommended loop:) Tj
+T*
+(1. Read constraints \(`AGENTS.md`, program docs\)) Tj
+T*
+(2. Inspect relevant files only) Tj
+T*
+(3. Make minimal scoped edits) Tj
+T*
+(4. Run validators \(`build`, project scripts, policy checks\)) Tj
+T*
+(5. Summarize exact outcomes and next steps) Tj
+T*
+() Tj
+T*
+(Goal: maintain velocity without widening blast radius.) Tj
+T*
+() Tj
+T*
+(## 3\) App-level API agent workflow \(product integration\)) Tj
+T*
+() Tj
+T*
+(### Step A: Use Responses API as the agent core) Tj
+T*
+() Tj
+T*
+(Use Responses API for stateful, tool-using workflows.) Tj
+T*
+() Tj
+T*
+(### Step B: Select coding-capable model) Tj
+T*
+() Tj
+T*
+(For coding-focused flows, use a coding-capable model \(for example `gpt-5-codex`\) according to) Tj
+T*
+(current model docs.) Tj
+T*
+() Tj
+T*
+(### Step C: Add tools) Tj
+T*
+() Tj
+T*
+(Implement tool calling for:) Tj
+T*
+(- internal functions \(CRUD, business actions\),) Tj
+T*
+(- retrieval/search,) Tj
+T*
+(- external MCP resources where needed.) Tj
+T*
+() Tj
+T*
+(### Step D: Add orchestration and memory) Tj
+T*
+() Tj
+T*
+(Track:) Tj
+T*
+(- conversation/session state,) Tj
+T*
+(- task state,) Tj
+T*
+(- tool outputs,) Tj
+T*
+(- retry/fallback policies.) Tj
+T*
+() Tj
+T*
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 1983 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+1 0 0 1 54 738 Tm
+(### Step E: Add safety and observability) Tj
+T*
+() Tj
+T*
+(Minimum production controls:) Tj
+T*
+(- authentication and authorization checks) Tj
+T*
+(- rate limiting) Tj
+T*
+(- structured error handling) Tj
+T*
+(- audit logs and traces) Tj
+T*
+(- eval runs before rollout) Tj
+T*
+() Tj
+T*
+(## 4\) Build checklist \(copy/paste\)) Tj
+T*
+() Tj
+T*
+(1. Define agent rules in `AGENTS.md`) Tj
+T*
+(2. Add or refine validator scripts) Tj
+T*
+(3. Add skills for recurring workflows) Tj
+T*
+(4. Add required MCP connectors) Tj
+T*
+(5. Test interactive run on one bounded task) Tj
+T*
+(6. Test non-interactive run on same bounded task) Tj
+T*
+(7. Add CI/autonomous mode only after validation is stable) Tj
+T*
+(8. Keep diffs small and reversible) Tj
+T*
+() Tj
+T*
+(## 5\) Common mistakes to avoid) Tj
+T*
+() Tj
+T*
+(- Missing policy files, forcing behavior to depend on prompt wording) Tj
+T*
+(- Overly broad tasks that mix multiple objectives in one run) Tj
+T*
+(- Skipping validation after edits) Tj
+T*
+(- Letting the agent touch secrets, billing, or schema without explicit approval) Tj
+T*
+(- Adding many connectors before core workflow is stable) Tj
+T*
+() Tj
+T*
+(## 6\) Suggested repo pattern) Tj
+T*
+() Tj
+T*
+(- `AGENTS.md` -> operational rules and constraints) Tj
+T*
+(- `docs/` -> runbooks and automation playbooks) Tj
+T*
+(- `validators/` -> deterministic quality gates) Tj
+T*
+(- `scripts/` -> repeatable operational commands) Tj
+T*
+(- `TUTORIALS/` -> onboarding docs \(this file\)) Tj
+T*
+() Tj
+T*
+(## 7\) Practical starter prompts) Tj
+T*
+() Tj
+T*
+(Interactive:) Tj
+T*
+(- "Audit the routing logic in `src/App.tsx`, propose minimal changes, then implement and run) Tj
+T*
+(build.") Tj
+T*
+() Tj
+T*
+(Non-interactive:) Tj
+T*
+(- `codex exec "Fix TypeScript errors in src/lib, run npm run build, and summarize changed) Tj
+T*
+(files."`) Tj
+T*
+() Tj
+T*
+(## 8\) Official docs \(reference\)) Tj
+T*
+() Tj
+T*
+(- Tools guide: https://developers.openai.com/api/docs/guides/tools) Tj
+T*
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 607 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+1 0 0 1 54 738 Tm
+(- Responses migration: https://developers.openai.com/api/docs/guides/migrate-to-responses) Tj
+T*
+(- GPT-5-Codex model docs: https://developers.openai.com/api/docs/models/gpt-5-codex) Tj
+T*
+(- Codex non-interactive mode: https://developers.openai.com/codex/noninteractive) Tj
+T*
+(- Codex SDK: https://developers.openai.com/codex/sdk) Tj
+T*
+(- Codex MCP: https://developers.openai.com/codex/mcp) Tj
+T*
+(- Codex subagents: https://developers.openai.com/codex/subagents) Tj
+T*
+(- Agents SDK guide: https://developers.openai.com/api/docs/guides/agents-sdk) Tj
+T*
+() Tj
+T*
+ET
+endstream
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000019 00000 n 
+0000000068 00000 n 
+0000000144 00000 n 
+0000000214 00000 n 
+0000000340 00000 n 
+0000002326 00000 n 
+0000002452 00000 n 
+0000004110 00000 n 
+0000004236 00000 n 
+0000006271 00000 n 
+0000006399 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+7058
+%%EOF

@@ -658,9 +658,70 @@ function metricWidth(value: number) {
   return `${(clamped / 10) * 100}%`;
 }
 
+function normalizeFlavorName(value: string) {
+  return value.toLowerCase().replace(/[-_]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function displayFlavorName(value: string) {
+  return normalizeFlavorName(value)
+    .split(" ")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+const descriptorMetricProfiles: Array<{ keywords: string[]; acidity: number; sweetness: number }> = [
+  { keywords: ["citrus", "lemon", "lime", "grapefruit", "yuzu", "bergamot", "kumquat", "citron"], acidity: 9, sweetness: 3 },
+  { keywords: ["green apple", "gooseberry", "cranberry", "sea buckthorn", "sour", "tart", "lactic", "yogurt"], acidity: 9, sweetness: 3 },
+  { keywords: ["pineapple", "passionfruit", "guava", "mango", "lychee", "papaya", "banana", "tropical"], acidity: 6, sweetness: 7 },
+  { keywords: ["honey", "caramel", "toffee", "molasses", "praline", "butterscotch", "vanilla", "sugar", "treacle"], acidity: 2, sweetness: 8 },
+  { keywords: ["chocolate", "cocoa", "espresso", "coffee", "roast", "toast", "biscuit", "bread", "cracker"], acidity: 3, sweetness: 5 },
+  { keywords: ["chalk", "flint", "slate", "stone", "shell", "saline", "sea spray", "mineral"], acidity: 8, sweetness: 2 },
+  { keywords: ["mint", "sage", "thyme", "fennel", "eucalyptus", "bay", "herbal", "grass", "pine", "resin"], acidity: 6, sweetness: 2 },
+  { keywords: ["pepper", "clove", "cinnamon", "anise", "cardamom", "nutmeg", "spice"], acidity: 4, sweetness: 3 },
+  { keywords: ["oak", "cedar", "wood", "smoke", "char", "ash", "tobacco", "leather"], acidity: 3, sweetness: 3 },
+  { keywords: ["mushroom", "truffle", "earth", "loam", "forest floor", "graphite"], acidity: 5, sweetness: 2 },
+  { keywords: ["flower", "floral", "rose", "violet", "jasmine", "honeysuckle", "lavender", "elderflower"], acidity: 5, sweetness: 5 },
+  { keywords: ["nut", "hazelnut", "almond", "walnut", "sesame", "marzipan"], acidity: 3, sweetness: 5 }
+];
+
+function findMatchingFruitReference(value: string) {
+  const normalized = normalizeFlavorName(value);
+  return fruitReference.find((fruit) => {
+    const fruitName = normalizeFlavorName(fruit.name);
+    return normalized === fruitName || normalized.includes(fruitName) || fruitName.includes(normalized);
+  });
+}
+
+function resolveFlavorDetail(flavorName: string, segment: FlavorSegment) {
+  const normalized = normalizeFlavorName(flavorName);
+  const fruit = findMatchingFruitReference(flavorName);
+
+  if (fruit) {
+    return {
+      label: displayFlavorName(flavorName),
+      description: `${displayFlavorName(flavorName)} in the ${fruit.climate} climate reference band.`,
+      acidity: fruit.acidity,
+      sweetness: fruit.sweetness,
+      fruit
+    };
+  }
+
+  const profile = descriptorMetricProfiles.find((item) =>
+    item.keywords.some((keyword) => normalized.includes(normalizeFlavorName(keyword)))
+  );
+
+  return {
+    label: displayFlavorName(flavorName),
+    description: `${displayFlavorName(flavorName)} inside the ${segment.label} family.`,
+    acidity: profile?.acidity ?? segment.acidity,
+    sweetness: profile?.sweetness ?? segment.sweetness
+  };
+}
+
 export function FlavorWheel() {
   const [activeBeverage, setActiveBeverage] = useState<BeverageId>("wine");
   const [activeSegmentId, setActiveSegmentId] = useState("");
+  const [activeFlavorName, setActiveFlavorName] = useState("");
 
   const fruitStatsByClimate = useMemo(() => {
     const map = new Map<ClimateBand, { acidity: number; sweetness: number; count: number }>();
@@ -722,6 +783,17 @@ export function FlavorWheel() {
       .sort((left, right) => left.name.localeCompare(right.name));
   }, [selectedClimate]);
 
+  const activeFlavorDetail = activeFlavorName ? resolveFlavorDetail(activeFlavorName, selectedSegment) : null;
+  const selectedFruit =
+    activeBeverage === "fruit"
+      ? selectedClimateFruit.find((fruit) => normalizeFlavorName(fruit.name) === normalizeFlavorName(activeFlavorName)) ?? null
+      : null;
+
+  const detailLabel = activeFlavorDetail?.label ?? selectedSegment.label;
+  const detailDescription = activeFlavorDetail?.description ?? selectedSegment.description;
+  const detailAcidity = activeFlavorDetail?.acidity ?? selectedSegment.acidity;
+  const detailSweetness = activeFlavorDetail?.sweetness ?? selectedSegment.sweetness;
+
   const selectedCueImages = useMemo(
     () =>
       selectedSegment.examples.map((item) => ({
@@ -731,6 +803,30 @@ export function FlavorWheel() {
       })),
     [selectedSegment.examples]
   );
+
+  const visibleCueImages = useMemo(() => {
+    if (!activeFlavorName) return selectedCueImages;
+    const activeNormalized = normalizeFlavorName(activeFlavorName);
+    const activeCueInSegment = selectedCueImages.some((cue) => normalizeFlavorName(cue.item) === activeNormalized);
+    if (activeCueInSegment) return selectedCueImages;
+
+    return [
+      {
+        item: activeFlavorName,
+        imageSrc: resolveFlavorImagePath(activeFlavorName),
+        fallbackSrc: resolveFlavorFallbackPath(activeFlavorName)
+      },
+      ...selectedCueImages
+    ];
+  }, [activeFlavorName, selectedCueImages]);
+
+  const selectFlavor = (flavorName: string) => {
+    const fruit = findMatchingFruitReference(flavorName);
+    if (activeBeverage === "fruit" && fruit) {
+      setActiveSegmentId(climateSegmentId(fruit.climate));
+    }
+    setActiveFlavorName(flavorName);
+  };
 
   const handleFlavorImageError = (event: SyntheticEvent<HTMLImageElement>, fallbackSrc: string) => {
     const image = event.currentTarget;
@@ -776,6 +872,7 @@ export function FlavorWheel() {
             onClick={() => {
               setActiveBeverage(tab.id);
               setActiveSegmentId("");
+              setActiveFlavorName("");
             }}
           >
             {tab.label}
@@ -790,16 +887,50 @@ export function FlavorWheel() {
           {selectedCueImages.length > 0 ? (
             <div className="flavor-wheel-fruit-strip" aria-label="Selected flavor thumbnails">
               {selectedCueImages.map(({ item, imageSrc, fallbackSrc }) => (
-                <img
+                <button
                   key={`wheel-fruit-${selectedSegment.id}-${item}`}
-                  className="flavor-wheel-fruit-strip-image"
-                  src={imageSrc}
-                  onError={(event) => handleFlavorImageError(event, fallbackSrc)}
-                  alt={`${item} flavor thumbnail`}
-                />
+                  type="button"
+                  className={`flavor-wheel-fruit-strip-button ${
+                    normalizeFlavorName(activeFlavorName) === normalizeFlavorName(item) ? "active" : ""
+                  }`}
+                  aria-pressed={normalizeFlavorName(activeFlavorName) === normalizeFlavorName(item)}
+                  aria-label={`Select ${item} flavor`}
+                  onClick={() => selectFlavor(item)}
+                >
+                  <img
+                    className="flavor-wheel-fruit-strip-image"
+                    src={imageSrc}
+                    onError={(event) => handleFlavorImageError(event, fallbackSrc)}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                </button>
               ))}
             </div>
           ) : null}
+
+          <div className="flavor-wheel-mobile-detail" aria-live="polite">
+            <div className="flavor-wheel-mobile-detail-head">
+              <h4>{detailLabel}</h4>
+              <span>
+                A{detailAcidity} / S{detailSweetness}
+              </span>
+            </div>
+            <div className="flavor-wheel-mobile-meter-row">
+              <div className="flavor-wheel-mobile-meter">
+                <span>Acidity</span>
+                <div className="flavor-wheel-meter-track">
+                  <span style={{ width: metricWidth(detailAcidity) }} />
+                </div>
+              </div>
+              <div className="flavor-wheel-mobile-meter">
+                <span>Sweetness</span>
+                <div className="flavor-wheel-meter-track">
+                  <span style={{ width: metricWidth(detailSweetness) }} />
+                </div>
+              </div>
+            </div>
+          </div>
 
           <svg viewBox={`0 0 ${svgSize} ${svgSize}`} className="flavor-wheel-svg" role="img" aria-label={activeWheel.title}>
             <circle cx={center} cy={center} r={outerRadius + 10} fill="#f8f4ea" stroke="#cbbca2" strokeWidth="1.2" />
@@ -822,7 +953,10 @@ export function FlavorWheel() {
                     stroke={isSelected ? "#17323d" : "rgba(28, 43, 54, 0.32)"}
                     strokeWidth={isSelected ? 2.6 : 1.2}
                     opacity={isSelected ? 1 : 0.9}
-                    onClick={() => setActiveSegmentId(segment.id)}
+                    onClick={() => {
+                      setActiveSegmentId(segment.id);
+                      setActiveFlavorName("");
+                    }}
                   >
                     <title>{segment.label}</title>
                   </path>
@@ -855,36 +989,44 @@ export function FlavorWheel() {
               {activeWheel.centerLabel}
             </text>
             <text x={center} y={center + 16} textAnchor="middle" className="flavor-wheel-core-sub">
-              {selectedSegment.label}
+              {detailLabel}
             </text>
           </svg>
         </article>
 
         <aside className="flavor-wheel-detail">
-          <h3>{selectedSegment.label}</h3>
-          <p>{selectedSegment.description}</p>
+          <h3>{detailLabel}</h3>
+          <p>{detailDescription}</p>
 
           <div className="flavor-wheel-meter-grid">
             <div className="flavor-wheel-meter">
               <p>Acidity</p>
               <div className="flavor-wheel-meter-track">
-                <span style={{ width: metricWidth(selectedSegment.acidity) }} />
+                <span style={{ width: metricWidth(detailAcidity) }} />
               </div>
-              <strong>{selectedSegment.acidity}/10</strong>
+              <strong>{detailAcidity}/10</strong>
             </div>
             <div className="flavor-wheel-meter">
               <p>Sweetness</p>
               <div className="flavor-wheel-meter-track">
-                <span style={{ width: metricWidth(selectedSegment.sweetness) }} />
+                <span style={{ width: metricWidth(detailSweetness) }} />
               </div>
-              <strong>{selectedSegment.sweetness}/10</strong>
+              <strong>{detailSweetness}/10</strong>
             </div>
           </div>
 
           <h4>Descriptor cues</h4>
           <div className="flavor-wheel-tags">
-            {selectedCueImages.map(({ item, imageSrc, fallbackSrc }) => (
-              <span key={`${selectedSegment.id}-${item}`} className="flavor-wheel-tag">
+            {visibleCueImages.map(({ item, imageSrc, fallbackSrc }) => (
+              <button
+                key={`${selectedSegment.id}-${item}`}
+                type="button"
+                className={`flavor-wheel-tag ${
+                  normalizeFlavorName(activeFlavorName) === normalizeFlavorName(item) ? "active" : ""
+                }`}
+                aria-pressed={normalizeFlavorName(activeFlavorName) === normalizeFlavorName(item)}
+                onClick={() => selectFlavor(item)}
+              >
                 <img
                   className="flavor-wheel-tag-image"
                   src={imageSrc}
@@ -893,7 +1035,7 @@ export function FlavorWheel() {
                   aria-hidden="true"
                 />
                 {item}
-              </span>
+              </button>
             ))}
           </div>
 
@@ -960,18 +1102,19 @@ export function FlavorWheel() {
                   </text>
 
                   {fruitReference.map((fruit) => {
-                    const selected = selectedClimate === fruit.climate;
+                    const selected = selectedFruit?.name === fruit.name;
+                    const inActiveClimate = selectedClimate === fruit.climate;
                     return (
                       <circle
                         key={fruit.name}
                         cx={xForAcidity(fruit.acidity)}
                         cy={yForSweetness(fruit.sweetness)}
-                        r={selected ? 6 : 4.2}
+                        r={selected ? 7 : inActiveClimate ? 5.2 : 4.2}
                         fill={climateColors[fruit.climate]}
                         stroke={selected ? "#102631" : "rgba(22, 34, 44, 0.35)"}
-                        strokeWidth={selected ? 1.8 : 1}
-                        opacity={selected ? 0.98 : 0.62}
-                        onClick={() => setActiveSegmentId(climateSegmentId(fruit.climate))}
+                        strokeWidth={selected ? 2.2 : 1}
+                        opacity={selected ? 1 : inActiveClimate ? 0.88 : 0.62}
+                        onClick={() => selectFlavor(fruit.name)}
                       >
                         <title>
                           {fruit.name}: A{fruit.acidity} / S{fruit.sweetness} ({fruit.climate})
@@ -995,10 +1138,17 @@ export function FlavorWheel() {
               <ul className="fruit-reference-list">
                 {selectedClimateFruit.map((fruit) => (
                   <li key={`${fruit.climate}-${fruit.name}`}>
-                    <span>{fruit.name}</span>
-                    <small>
-                      A{fruit.acidity} / S{fruit.sweetness}
-                    </small>
+                    <button
+                      type="button"
+                      className={`fruit-reference-button ${selectedFruit?.name === fruit.name ? "active" : ""}`}
+                      aria-pressed={selectedFruit?.name === fruit.name}
+                      onClick={() => selectFlavor(fruit.name)}
+                    >
+                      <span>{fruit.name}</span>
+                      <small>
+                        A{fruit.acidity} / S{fruit.sweetness}
+                      </small>
+                    </button>
                   </li>
                 ))}
               </ul>

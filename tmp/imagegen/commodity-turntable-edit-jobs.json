@@ -1,0 +1,994 @@
+﻿[
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\arabica.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\arabica-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-arabica-side.txt",
+        "view":  "side",
+        "commodity":  "coffee",
+        "id":  "arabica"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\arabica.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\arabica-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-arabica-back.txt",
+        "view":  "back",
+        "commodity":  "coffee",
+        "id":  "arabica"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\bourbon-coffee.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\bourbon-coffee-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-bourbon-coffee-side.txt",
+        "view":  "side",
+        "commodity":  "coffee",
+        "id":  "bourbon-coffee"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\bourbon-coffee.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\bourbon-coffee-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-bourbon-coffee-back.txt",
+        "view":  "back",
+        "commodity":  "coffee",
+        "id":  "bourbon-coffee"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\caturra.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\caturra-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-caturra-side.txt",
+        "view":  "side",
+        "commodity":  "coffee",
+        "id":  "caturra"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\caturra.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\caturra-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-caturra-back.txt",
+        "view":  "back",
+        "commodity":  "coffee",
+        "id":  "caturra"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\excelsa.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\excelsa-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-excelsa-side.txt",
+        "view":  "side",
+        "commodity":  "coffee",
+        "id":  "excelsa"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\excelsa.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\excelsa-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-excelsa-back.txt",
+        "view":  "back",
+        "commodity":  "coffee",
+        "id":  "excelsa"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\gesha.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\gesha-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-gesha-side.txt",
+        "view":  "side",
+        "commodity":  "coffee",
+        "id":  "gesha"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\gesha.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\gesha-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-gesha-back.txt",
+        "view":  "back",
+        "commodity":  "coffee",
+        "id":  "gesha"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\liberica.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\liberica-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-liberica-side.txt",
+        "view":  "side",
+        "commodity":  "coffee",
+        "id":  "liberica"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\liberica.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\liberica-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-liberica-back.txt",
+        "view":  "back",
+        "commodity":  "coffee",
+        "id":  "liberica"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\pacamara.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\pacamara-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-pacamara-side.txt",
+        "view":  "side",
+        "commodity":  "coffee",
+        "id":  "pacamara"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\pacamara.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\pacamara-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-pacamara-back.txt",
+        "view":  "back",
+        "commodity":  "coffee",
+        "id":  "pacamara"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\robusta.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\robusta-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-robusta-side.txt",
+        "view":  "side",
+        "commodity":  "coffee",
+        "id":  "robusta"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\robusta.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\robusta-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-robusta-back.txt",
+        "view":  "back",
+        "commodity":  "coffee",
+        "id":  "robusta"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\sl28.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\sl28-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-sl28-side.txt",
+        "view":  "side",
+        "commodity":  "coffee",
+        "id":  "sl28"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\sl28.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\sl28-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-sl28-back.txt",
+        "view":  "back",
+        "commodity":  "coffee",
+        "id":  "sl28"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\typica.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\typica-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-typica-side.txt",
+        "view":  "side",
+        "commodity":  "coffee",
+        "id":  "typica"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\typica.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\coffee\\typica-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\coffee-typica-back.txt",
+        "view":  "back",
+        "commodity":  "coffee",
+        "id":  "typica"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\apple.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\apple-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-apple-side.txt",
+        "view":  "side",
+        "commodity":  "fruit",
+        "id":  "apple"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\apple.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\apple-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-apple-back.txt",
+        "view":  "back",
+        "commodity":  "fruit",
+        "id":  "apple"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\berries.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\berries-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-berries-side.txt",
+        "view":  "side",
+        "commodity":  "fruit",
+        "id":  "berries"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\berries.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\berries-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-berries-back.txt",
+        "view":  "back",
+        "commodity":  "fruit",
+        "id":  "berries"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\cherry.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\cherry-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-cherry-side.txt",
+        "view":  "side",
+        "commodity":  "fruit",
+        "id":  "cherry"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\cherry.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\cherry-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-cherry-back.txt",
+        "view":  "back",
+        "commodity":  "fruit",
+        "id":  "cherry"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\citrus.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\citrus-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-citrus-side.txt",
+        "view":  "side",
+        "commodity":  "fruit",
+        "id":  "citrus"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\citrus.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\citrus-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-citrus-back.txt",
+        "view":  "back",
+        "commodity":  "fruit",
+        "id":  "citrus"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pear.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pear-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-pear-side.txt",
+        "view":  "side",
+        "commodity":  "fruit",
+        "id":  "pear"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pear.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pear-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-pear-back.txt",
+        "view":  "back",
+        "commodity":  "fruit",
+        "id":  "pear"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pineapple.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pineapple-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-pineapple-side.txt",
+        "view":  "side",
+        "commodity":  "fruit",
+        "id":  "pineapple"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pineapple.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pineapple-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-pineapple-back.txt",
+        "view":  "back",
+        "commodity":  "fruit",
+        "id":  "pineapple"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pomegranate.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pomegranate-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-pomegranate-side.txt",
+        "view":  "side",
+        "commodity":  "fruit",
+        "id":  "pomegranate"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pomegranate.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\pomegranate-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-pomegranate-back.txt",
+        "view":  "back",
+        "commodity":  "fruit",
+        "id":  "pomegranate"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\quince.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\quince-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-quince-side.txt",
+        "view":  "side",
+        "commodity":  "fruit",
+        "id":  "quince"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\quince.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\quince-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-quince-back.txt",
+        "view":  "back",
+        "commodity":  "fruit",
+        "id":  "quince"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\stone-fruit.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\stone-fruit-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-stone-fruit-side.txt",
+        "view":  "side",
+        "commodity":  "fruit",
+        "id":  "stone-fruit"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\stone-fruit.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\stone-fruit-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-stone-fruit-back.txt",
+        "view":  "back",
+        "commodity":  "fruit",
+        "id":  "stone-fruit"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\tropical-fruit.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\tropical-fruit-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-tropical-fruit-side.txt",
+        "view":  "side",
+        "commodity":  "fruit",
+        "id":  "tropical-fruit"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\tropical-fruit.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\fruit\\tropical-fruit-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\fruit-tropical-fruit-back.txt",
+        "view":  "back",
+        "commodity":  "fruit",
+        "id":  "tropical-fruit"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\barley.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\barley-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-barley-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "barley"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\barley.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\barley-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-barley-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "barley"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\buckwheat.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\buckwheat-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-buckwheat-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "buckwheat"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\buckwheat.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\buckwheat-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-buckwheat-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "buckwheat"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\corn.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\corn-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-corn-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "corn"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\corn.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\corn-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-corn-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "corn"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\millet.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\millet-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-millet-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "millet"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\millet.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\millet-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-millet-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "millet"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\oats.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\oats-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-oats-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "oats"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\oats.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\oats-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-oats-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "oats"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\quinoa.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\quinoa-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-quinoa-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "quinoa"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\quinoa.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\quinoa-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-quinoa-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "quinoa"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\rice.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\rice-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-rice-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "rice"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\rice.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\rice-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-rice-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "rice"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\rye.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\rye-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-rye-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "rye"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\rye.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\rye-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-rye-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "rye"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\sorghum.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\sorghum-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-sorghum-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "sorghum"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\sorghum.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\sorghum-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-sorghum-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "sorghum"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\spelt.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\spelt-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-spelt-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "spelt"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\spelt.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\spelt-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-spelt-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "spelt"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\triticale.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\triticale-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-triticale-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "triticale"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\triticale.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\triticale-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-triticale-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "triticale"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\wheat.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\wheat-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-wheat-side.txt",
+        "view":  "side",
+        "commodity":  "grains",
+        "id":  "wheat"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\wheat.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\grains\\wheat-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\grains-wheat-back.txt",
+        "view":  "back",
+        "commodity":  "grains",
+        "id":  "wheat"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\amarillo.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\amarillo-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-amarillo-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "amarillo"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\amarillo.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\amarillo-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-amarillo-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "amarillo"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\cascade.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\cascade-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-cascade-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "cascade"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\cascade.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\cascade-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-cascade-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "cascade"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\centennial.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\centennial-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-centennial-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "centennial"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\centennial.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\centennial-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-centennial-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "centennial"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\chinook.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\chinook-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-chinook-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "chinook"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\chinook.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\chinook-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-chinook-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "chinook"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\citra.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\citra-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-citra-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "citra"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\citra.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\citra-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-citra-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "citra"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\columbus.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\columbus-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-columbus-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "columbus"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\columbus.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\columbus-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-columbus-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "columbus"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\east-kent-golding.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\east-kent-golding-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-east-kent-golding-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "east-kent-golding"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\east-kent-golding.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\east-kent-golding-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-east-kent-golding-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "east-kent-golding"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\fuggle.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\fuggle-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-fuggle-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "fuggle"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\fuggle.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\fuggle-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-fuggle-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "fuggle"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\galaxy.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\galaxy-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-galaxy-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "galaxy"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\galaxy.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\galaxy-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-galaxy-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "galaxy"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\hallertau.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\hallertau-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-hallertau-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "hallertau"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\hallertau.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\hallertau-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-hallertau-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "hallertau"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\mosaic.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\mosaic-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-mosaic-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "mosaic"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\mosaic.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\mosaic-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-mosaic-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "mosaic"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\motueka.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\motueka-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-motueka-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "motueka"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\motueka.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\motueka-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-motueka-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "motueka"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\nelson-sauvin.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\nelson-sauvin-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-nelson-sauvin-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "nelson-sauvin"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\nelson-sauvin.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\nelson-sauvin-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-nelson-sauvin-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "nelson-sauvin"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\saaz.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\saaz-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-saaz-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "saaz"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\saaz.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\saaz-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-saaz-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "saaz"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\sabro.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\sabro-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-sabro-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "sabro"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\sabro.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\sabro-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-sabro-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "sabro"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\simcoe.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\simcoe-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-simcoe-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "simcoe"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\simcoe.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\simcoe-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-simcoe-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "simcoe"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\sorachi-ace.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\sorachi-ace-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-sorachi-ace-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "sorachi-ace"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\sorachi-ace.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\sorachi-ace-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-sorachi-ace-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "sorachi-ace"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\strata.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\strata-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-strata-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "strata"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\strata.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\strata-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-strata-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "strata"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\tettnang.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\tettnang-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-tettnang-side.txt",
+        "view":  "side",
+        "commodity":  "hops",
+        "id":  "tettnang"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\tettnang.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\hops\\tettnang-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\hops-tettnang-back.txt",
+        "view":  "back",
+        "commodity":  "hops",
+        "id":  "tettnang"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\assam.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\assam-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-assam-side.txt",
+        "view":  "side",
+        "commodity":  "tea",
+        "id":  "assam"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\assam.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\assam-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-assam-back.txt",
+        "view":  "back",
+        "commodity":  "tea",
+        "id":  "assam"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\black-tea.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\black-tea-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-black-tea-side.txt",
+        "view":  "side",
+        "commodity":  "tea",
+        "id":  "black-tea"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\black-tea.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\black-tea-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-black-tea-back.txt",
+        "view":  "back",
+        "commodity":  "tea",
+        "id":  "black-tea"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\darjeeling.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\darjeeling-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-darjeeling-side.txt",
+        "view":  "side",
+        "commodity":  "tea",
+        "id":  "darjeeling"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\darjeeling.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\darjeeling-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-darjeeling-back.txt",
+        "view":  "back",
+        "commodity":  "tea",
+        "id":  "darjeeling"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\green.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\green-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-green-side.txt",
+        "view":  "side",
+        "commodity":  "tea",
+        "id":  "green"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\green.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\green-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-green-back.txt",
+        "view":  "back",
+        "commodity":  "tea",
+        "id":  "green"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\gyokuro.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\gyokuro-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-gyokuro-side.txt",
+        "view":  "side",
+        "commodity":  "tea",
+        "id":  "gyokuro"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\gyokuro.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\gyokuro-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-gyokuro-back.txt",
+        "view":  "back",
+        "commodity":  "tea",
+        "id":  "gyokuro"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\matcha.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\matcha-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-matcha-side.txt",
+        "view":  "side",
+        "commodity":  "tea",
+        "id":  "matcha"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\matcha.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\matcha-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-matcha-back.txt",
+        "view":  "back",
+        "commodity":  "tea",
+        "id":  "matcha"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\oolong.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\oolong-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-oolong-side.txt",
+        "view":  "side",
+        "commodity":  "tea",
+        "id":  "oolong"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\oolong.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\oolong-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-oolong-back.txt",
+        "view":  "back",
+        "commodity":  "tea",
+        "id":  "oolong"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\pu-erh.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\pu-erh-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-pu-erh-side.txt",
+        "view":  "side",
+        "commodity":  "tea",
+        "id":  "pu-erh"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\pu-erh.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\pu-erh-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-pu-erh-back.txt",
+        "view":  "back",
+        "commodity":  "tea",
+        "id":  "pu-erh"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\sencha.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\sencha-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-sencha-side.txt",
+        "view":  "side",
+        "commodity":  "tea",
+        "id":  "sencha"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\sencha.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\sencha-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-sencha-back.txt",
+        "view":  "back",
+        "commodity":  "tea",
+        "id":  "sencha"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\white-tea.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\white-tea-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-white-tea-side.txt",
+        "view":  "side",
+        "commodity":  "tea",
+        "id":  "white-tea"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\white-tea.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\white-tea-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-white-tea-back.txt",
+        "view":  "back",
+        "commodity":  "tea",
+        "id":  "white-tea"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\yellow-tea.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\yellow-tea-side.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-yellow-tea-side.txt",
+        "view":  "side",
+        "commodity":  "tea",
+        "id":  "yellow-tea"
+    },
+    {
+        "image":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\yellow-tea.png",
+        "out":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\public\\commodities\\tea\\yellow-tea-back.png",
+        "prompt":  "C:\\codebase\\sip_studies\\actual\\Sip-Studies\\tmp\\imagegen\\commodity-turntable-prompts\\tea-yellow-tea-back.txt",
+        "view":  "back",
+        "commodity":  "tea",
+        "id":  "yellow-tea"
+    }
+]

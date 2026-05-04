@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
   [int]$Limit = 535,
-  [switch]$Apply
+  [switch]$Apply,
+  [switch]$AllowOffline
 )
 
 Set-StrictMode -Version Latest
@@ -27,9 +28,13 @@ Write-Host "==> policy: no encyclopedia/dictionary sources"
 Write-Host "==> required fields: term, updated date, meaning, how_to_apply, examples, authors, infographic, references, mla citations, editorial policy"
 
 if (-not $hasSupabaseUrl -or -not $hasServiceRole) {
-  Write-Host "warning: SUPABASE_URL/VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing."
-  Write-Host "warning: skipping live table audit. Set env vars and re-run validator for full validation."
-  exit 0
+  $message = "SUPABASE_URL/VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required for full terminology validation."
+  if ($AllowOffline) {
+    Write-Host "warning: $message"
+    Write-Host "warning: skipping live table audit because -AllowOffline was set."
+    exit 0
+  }
+  throw $message
 }
 
 $args = @("scripts/audit-terms.js", "--limit", "$Limit")

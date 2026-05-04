@@ -26,6 +26,7 @@ export default defineConfig({
             if (id.includes("SommEvents")) return "page-somm-events";
             if (id.includes("AiNews")) return "page-ai-news";
             if (id.includes("Terminology")) return "page-terminology";
+            if (id.includes("Grapes")) return "page-grapes";
           }
 
           if (id.includes("/src/data/regions")) return "data-regions";
