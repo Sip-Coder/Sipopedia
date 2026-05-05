@@ -55,9 +55,18 @@ VITE_SALES_EMAIL=
 
 Provider API keys do not belong in frontend env files. Keep OpenAI, Anthropic, Google, billing webhook, and other private keys in Supabase Edge Function secrets.
 
-For production publish targets, set `VITE_APP_URL` to the canonical site URL
-such as `https://sipopedia.com` so OAuth callbacks return to the deployed
-domain instead of the local dev host.
+For production publish targets, set `VITE_APP_URL` to the canonical site URL,
+such as `https://sipopedia.com`, so OAuth callbacks return to the deployed
+domain. Leave it blank for local development unless you intentionally want local
+login to return to production.
+
+Supabase Auth redirect URLs should include:
+
+```text
+https://sipopedia.com
+http://localhost:3000
+http://127.0.0.1:5173
+```
 
 ## Documentation Index
 

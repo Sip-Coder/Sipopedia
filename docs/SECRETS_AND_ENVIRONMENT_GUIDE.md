@@ -84,10 +84,19 @@ For hosted frontend publishing, make sure the frontend has only the public `VITE
 For Supabase OAuth sign-in to work:
 
 - the frontend needs the correct `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+- production should set `VITE_APP_URL=https://sipopedia.com`
 - the Supabase Auth provider must be configured with the right redirect URLs
 - deployed environments must allow the same callback and redirect flow
 
 Do not commit Google OAuth client secrets or downloaded client JSON files into the repo.
+
+Recommended Supabase Auth redirect URLs:
+
+```text
+https://sipopedia.com
+http://localhost:3000
+http://127.0.0.1:5173
+```
 
 ## Database And Access Control
 

@@ -6,9 +6,12 @@ import { AccessProvider } from "./context/AccessContext";
 import { AppErrorBoundary } from "./components/AppErrorBoundary";
 import { GlobalShootingStars } from "./components/GlobalShootingStars";
 import { trackEvent } from "./lib/analytics";
+import { captureAndScrubAuthCallbackFromUrl } from "./lib/authCallback";
 import "./styles.css";
 
 if (typeof window !== "undefined") {
+  captureAndScrubAuthCallbackFromUrl();
+
   window.addEventListener("error", (event) => {
     trackEvent("app_runtime_error", {
       message: event.message,

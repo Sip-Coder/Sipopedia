@@ -7,6 +7,7 @@ import {
   useState
 } from "react";
 import type { EmailOtpType, User } from "@supabase/supabase-js";
+import { cleanAuthCallbackUrlFromCurrentPath, consumeAuthCallbackParams } from "../lib/authCallback";
 import { isSupabaseConfigured, supabase } from "../lib/supabase";
 
 type AuthContextValue = {
@@ -50,12 +51,6 @@ function detectGoogleEnabled(settings: unknown): boolean | null {
   return null;
 }
 
-function parseHashParams(hash: string): URLSearchParams {
-  const trimmed = hash.replace(/^#/, "");
-  if (!trimmed) return new URLSearchParams();
-  return new URLSearchParams(trimmed);
-}
-
 function getAuthRedirectUrl(): string {
   const configuredUrl = import.meta.env.VITE_APP_URL as string | undefined;
   if (configuredUrl) {
@@ -73,17 +68,15 @@ function getAuthRedirectUrl(): string {
 async function finalizeAuthFromUrl(): Promise<string | null> {
   if (!supabase || typeof window === "undefined") return null;
 
-  const url = new URL(window.location.href);
-  const query = url.searchParams;
-  const hash = parseHashParams(window.location.hash);
+  const params = consumeAuthCallbackParams();
 
-  const code = query.get("code");
-  const tokenHash = query.get("token_hash");
-  const type = query.get("type");
-  const accessToken = hash.get("access_token");
-  const refreshToken = hash.get("refresh_token");
-  const errorParam = hash.get("error") ?? query.get("error");
-  const errorDescription = hash.get("error_description") ?? query.get("error_description");
+  const code = params.get("code");
+  const tokenHash = params.get("token_hash");
+  const type = params.get("type");
+  const accessToken = params.get("access_token");
+  const refreshToken = params.get("refresh_token");
+  const errorParam = params.get("error");
+  const errorDescription = params.get("error_description");
 
   const hasOAuthParams = code || (tokenHash && type) || (accessToken && refreshToken) || errorParam || errorDescription;
 
@@ -92,7 +85,7 @@ async function finalizeAuthFromUrl(): Promise<string | null> {
   // hashchange on every page load and routed the app to #login unintentionally.
   if (!hasOAuthParams) return null;
 
-  const cleanUrl = `${window.location.pathname}#login`;
+  const cleanUrl = cleanAuthCallbackUrlFromCurrentPath();
 
   if (errorDescription) {
     window.history.replaceState({}, document.title, cleanUrl);
