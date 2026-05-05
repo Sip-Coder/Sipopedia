@@ -12,3 +12,6 @@ tmp_*
 local-secrets/*
 !local-secrets/README.md
 !local-secrets/.env.example
+local-secrets/.env
+local-secrets/*.json
+local-secrets/*.rtf
