@@ -57,7 +57,17 @@ function parseHashParams(hash: string): URLSearchParams {
 }
 
 function getAuthRedirectUrl(): string {
-  return `${window.location.origin}${window.location.pathname}`;
+  const configuredUrl = import.meta.env.VITE_APP_URL as string | undefined;
+  if (configuredUrl) {
+    try {
+      const url = new URL(configuredUrl);
+      return `${url.origin}${url.pathname.replace(/\/+$/, "") || "/"}`;
+    } catch {
+      // Fall back to the current host if the configured URL is malformed.
+    }
+  }
+
+  return `${window.location.origin}${window.location.pathname.replace(/\/+$/, "") || "/"}`;
 }
 
 async function finalizeAuthFromUrl(): Promise<string | null> {

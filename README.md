@@ -41,6 +41,7 @@ Create `.env` from `.env.example`.
 Required for Supabase-backed features:
 
 ```bash
+VITE_APP_URL=
 VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
 ```
@@ -53,6 +54,10 @@ VITE_SALES_EMAIL=
 ```
 
 Provider API keys do not belong in frontend env files. Keep OpenAI, Anthropic, Google, billing webhook, and other private keys in Supabase Edge Function secrets.
+
+For production publish targets, set `VITE_APP_URL` to the canonical site URL
+such as `https://sipopedia.com` so OAuth callbacks return to the deployed
+domain instead of the local dev host.
 
 ## Documentation Index
 

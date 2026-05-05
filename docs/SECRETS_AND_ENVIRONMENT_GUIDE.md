@@ -11,6 +11,7 @@ The rule is simple: if a value can grant server access, admin access, billing ac
 
 These values are safe to expose to the frontend because they are already visible to the browser at runtime:
 
+- `VITE_APP_URL`
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 - `VITE_CHECKOUT_URL`
@@ -59,6 +60,7 @@ For Replit, Supabase Edge Functions, CI, or any hosted environment, add the secr
 
 The host should provide:
 
+- `VITE_APP_URL`
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 - `SUPABASE_URL`
