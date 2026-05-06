@@ -94,9 +94,14 @@ Recommended Supabase Auth redirect URLs:
 
 ```text
 https://sipopedia.com
+https://www.sipopedia.com
 http://localhost:3000
 http://127.0.0.1:5173
 ```
+
+If Replit is using a temporary deployment URL before `sipopedia.com` is active,
+add that exact Replit URL to Supabase Auth redirect URLs while testing. Replit
+must not use a `VITE_APP_URL` value that points to `localhost`.
 
 ## Database And Access Control
 

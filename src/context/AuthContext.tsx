@@ -23,6 +23,8 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const LOCAL_AUTH_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+const PRODUCTION_AUTH_HOSTS = new Set(["sipopedia.com", "www.sipopedia.com"]);
 
 function mapAuthError(message: string): string {
   if (message.includes("Unsupported provider") || message.includes("provider is not enabled")) {
@@ -53,16 +55,28 @@ function detectGoogleEnabled(settings: unknown): boolean | null {
 
 function getAuthRedirectUrl(): string {
   const configuredUrl = import.meta.env.VITE_APP_URL as string | undefined;
+  const currentUrl = new URL(window.location.href);
+  const currentIsLocal = LOCAL_AUTH_HOSTS.has(currentUrl.hostname);
+  const currentIsProduction = PRODUCTION_AUTH_HOSTS.has(currentUrl.hostname);
+
   if (configuredUrl) {
     try {
       const url = new URL(configuredUrl);
+      const configuredIsLocal = LOCAL_AUTH_HOSTS.has(url.hostname);
+      if (configuredIsLocal && !currentIsLocal) {
+        return `${currentUrl.origin}${currentUrl.pathname.replace(/\/+$/, "") || "/"}`;
+      }
       return `${url.origin}${url.pathname.replace(/\/+$/, "") || "/"}`;
     } catch {
       // Fall back to the current host if the configured URL is malformed.
     }
   }
 
-  return `${window.location.origin}${window.location.pathname.replace(/\/+$/, "") || "/"}`;
+  if (currentIsProduction) {
+    return `${currentUrl.origin}${currentUrl.pathname.replace(/\/+$/, "") || "/"}`;
+  }
+
+  return `${currentUrl.origin}${currentUrl.pathname.replace(/\/+$/, "") || "/"}`;
 }
 
 async function finalizeAuthFromUrl(): Promise<string | null> {

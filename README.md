@@ -64,9 +64,14 @@ Supabase Auth redirect URLs should include:
 
 ```text
 https://sipopedia.com
+https://www.sipopedia.com
 http://localhost:3000
 http://127.0.0.1:5173
 ```
+
+If testing login on a temporary Replit URL before the custom domain is active,
+add that exact Replit URL to Supabase Auth redirect URLs too. Do not set
+`VITE_APP_URL` to a localhost URL in Replit.
 
 ## Documentation Index
 
