@@ -58,13 +58,18 @@ function getAuthRedirectUrl(): string {
   const currentUrl = new URL(window.location.href);
   const currentIsLocal = LOCAL_AUTH_HOSTS.has(currentUrl.hostname);
   const currentIsProduction = PRODUCTION_AUTH_HOSTS.has(currentUrl.hostname);
+  const currentRedirectUrl = `${currentUrl.origin}${currentUrl.pathname.replace(/\/+$/, "") || "/"}`;
+
+  if (currentIsProduction) {
+    return currentRedirectUrl;
+  }
 
   if (configuredUrl) {
     try {
       const url = new URL(configuredUrl);
       const configuredIsLocal = LOCAL_AUTH_HOSTS.has(url.hostname);
       if (configuredIsLocal && !currentIsLocal) {
-        return `${currentUrl.origin}${currentUrl.pathname.replace(/\/+$/, "") || "/"}`;
+        return currentRedirectUrl;
       }
       return `${url.origin}${url.pathname.replace(/\/+$/, "") || "/"}`;
     } catch {
@@ -72,11 +77,7 @@ function getAuthRedirectUrl(): string {
     }
   }
 
-  if (currentIsProduction) {
-    return `${currentUrl.origin}${currentUrl.pathname.replace(/\/+$/, "") || "/"}`;
-  }
-
-  return `${currentUrl.origin}${currentUrl.pathname.replace(/\/+$/, "") || "/"}`;
+  return currentRedirectUrl;
 }
 
 async function finalizeAuthFromUrl(): Promise<string | null> {
