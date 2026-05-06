@@ -225,10 +225,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
       return;
     }
 
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: getAuthRedirectUrl()
+        redirectTo: getAuthRedirectUrl(),
+        skipBrowserRedirect: true
       }
     });
 
@@ -238,6 +239,24 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
 
     setErrorMessage(null);
+
+    if (!data?.url) return;
+
+    // If the app is running inside an iframe (e.g. the Replit workspace
+    // preview), Google's OAuth screen refuses to load (X-Frame-Options: DENY)
+    // and the flow silently fails. Break out of the iframe by navigating the
+    // top window, or open in a new tab if the parent is cross-origin.
+    const inIframe = window.top !== null && window.top !== window.self;
+    if (inIframe) {
+      try {
+        window.top!.location.href = data.url;
+        return;
+      } catch {
+        window.open(data.url, "_blank", "noopener,noreferrer");
+        return;
+      }
+    }
+    window.location.href = data.url;
   };
 
   const signInWithMagicLink = async (email: string) => {
