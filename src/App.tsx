@@ -16,6 +16,7 @@ import { AdminConsole } from "./components/AdminConsole";
 import { PublicFooter } from "./components/PublicFooter";
 import { StarterFeatureDemo } from "./components/StarterFeatureDemo";
 import { TerminologyAutoLinker } from "./components/TerminologyAutoLinker";
+import { PowerfulPoint } from "./components/PowerfulPoint";
 import {
   PAGE_STATUS_EVENT,
   type PageStatusMap,
@@ -91,7 +92,7 @@ type WorkspacePage =
   | "ai-news"
   | "somm-events";
 
-type PublicRoute = "home" | "pricing" | "checkout" | "login" | "logout" | "account" | "terms" | "privacy" | "refund" | "success" | "cancel";
+type PublicRoute = "home" | "pricing" | "checkout" | "powerful-point" | "login" | "logout" | "account" | "terms" | "privacy" | "refund" | "success" | "cancel";
 type AdminRoute = "admin" | "admin/terminology";
 type AppRoute = PublicRoute | AdminRoute | `app/${WorkspacePage}`;
 type BrandTier = "sip-studios" | "ai-rnd" | "somm-support";
@@ -152,6 +153,7 @@ function normalizeLegacyHash(hash: string): AppRoute {
   if (hash === "" || hash === "home") return "home";
   if (hash === "pricing") return "pricing";
   if (hash === "checkout") return "checkout";
+  if (hash === "powerful-point") return "powerful-point";
   if (hash === "login") return "login";
   if (hash === "logout") return "logout";
   if (hash === "account") return "account";
@@ -371,6 +373,7 @@ function SiteRoomNav({
         { label: "Home", route: "home" },
         { label: "Pricing", route: "pricing" },
         { label: "Enroll", route: "checkout" },
+        { label: "Powerful Point", route: "powerful-point" },
         { label: "Launch Deck", route: gameRoute }
       ]
     }
@@ -732,6 +735,7 @@ function WorkspaceShell({
                   <option value="home">Lobby Home</option>
                   <option value="pricing">Plan & Pricing</option>
                   <option value="checkout">Enroll Now</option>
+                  <option value="powerful-point">Powerful Point</option>
                   <option value={defaultGameRoomRoute(isPaid, isAdmin)}>Launch Deck</option>
                 </select>
               </label>
@@ -1086,6 +1090,7 @@ function App() {
       {route === "home" ? <MarketingHome onNavigate={navigateFromString} /> : null}
       {route === "pricing" ? <PricingPage onNavigate={navigateFromString} /> : null}
       {route === "checkout" ? <CheckoutPage onNavigate={navigateFromString} /> : null}
+      {route === "powerful-point" ? <PowerfulPoint onNavigate={navigateFromString} /> : null}
       {route === "login" ? <AuthPanel /> : null}
       {route === "account" ? <AccountDashboard onNavigate={navigateFromString} /> : null}
       {route === "logout" ? (

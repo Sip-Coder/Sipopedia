@@ -15566,3 +15566,76 @@ select option:checked {
     font-size: clamp(2.4rem, 12vw, 4.3rem);
   }
 }
+
+.powerful-point-page {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: clamp(1.25rem, 2.8vw, 2.5rem);
+  display: grid;
+  gap: 1rem;
+}
+
+.powerful-point-hero {
+  margin: 0;
+}
+
+.powerful-point-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.powerful-point-card {
+  background: linear-gradient(145deg, rgba(8, 31, 50, 0.86), rgba(4, 16, 32, 0.92));
+  border: 1px solid rgba(88, 210, 255, 0.24);
+  border-radius: 12px;
+  padding: 1rem 1rem 1.05rem;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+.powerful-point-card h3 {
+  margin: 0 0 0.45rem;
+  color: #8ee8ff;
+  font-size: 1rem;
+}
+
+.powerful-point-card p {
+  margin: 0;
+  color: #def3ff;
+}
+
+.powerful-point-band {
+  background: linear-gradient(135deg, rgba(6, 24, 40, 0.86), rgba(6, 36, 62, 0.75));
+  border: 1px solid rgba(88, 210, 255, 0.24);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.powerful-point-band h3 {
+  margin: 0 0 0.75rem;
+  color: #f2d08d;
+}
+
+.powerful-point-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.powerful-point-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.34rem 0.64rem;
+  border-radius: 999px;
+  border: 1px solid rgba(146, 230, 255, 0.34);
+  background: rgba(8, 29, 48, 0.7);
+  color: #e4f7ff;
+  font-size: 0.9rem;
+}
+
+.powerful-point-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
