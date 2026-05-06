@@ -814,7 +814,9 @@ function WorkspaceShell({
         <div className="workspace-command-split" aria-label="Welcome deck command row">
           <div className="workspace-command-status workspace-command-card">
             <span className="nav-overline">Navigation Guide</span>
-            <h2>{`Welcome ${starterWelcomeName}!`}</h2>
+            <h2>
+              Welcome <span className="launch-welcome-name">{starterWelcomeName}</span>!
+            </h2>
             <p>Explore the launch deck below, then tap into the full Sip Academy experience when you are ready.</p>
           </div>
           <article className="workspace-command-account-preview workspace-command-card" aria-label="Account dashboard preview">
