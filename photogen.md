@@ -625,6 +625,19 @@ Purpose:
 - Keep a repeatable record for generating Sip Studies image assets with the same visual language and file conventions.
 - Use this section before starting future batches for grapes, grains, hops, coffee, tea, fruit, wine, beer, and beverage recipe images.
 
+## Checkpoint Image Generation Policy - 2026-05-08
+
+Sip Studios / Learn / Sip Game / Sip by Bit checkpoint images must default to the built-in Codex `image_gen` workflow, not local scripts that call the OpenAI API with `OPENAI_API_KEY`.
+
+Cost and permission rules:
+
+- Built-in `image_gen` is the default for checkpoint photos and game checkpoint scene batches.
+- Do not run `scripts/regenerate-checkpoint-scenes.js`, `scripts/regenerate-checkpoint-scenes.mjs`, or any other OpenAI SDK/API image script for checkpoints unless the user explicitly approves paid API usage in that turn.
+- Before starting any image generation batch, state clearly whether the run uses built-in image generation or the paid API/CLI path.
+- Do not ask the user to paste API keys in chat. If a key is exposed in chat, screenshots, logs, or committed files, stop using it and rotate it before any further API use.
+- Keep generated checkpoint drafts under `Checkpoint_Img/<batch-name>/`, then copy approved images into `public/game/checkpoint-scenes/`.
+- Preserve the lead-character rule from `docs/CHECKPOINTS_IMAGE_PLAN.md`: Sippy, Roma, and Hummin are the only checkpoint lead characters. Ari, Bruno, and Sol can appear only as supporting/background NPCs.
+
 Primary generation path:
 
 1. Build a JSONL batch file under `tmp/imagegen/`.
@@ -703,3 +716,68 @@ Operational notes:
 - Spot-check at least 3-4 representative images per batch before considering the batch complete.
 - If images show cut-off edges, repeated background seams, odd white lines, or hallucinated forms, regenerate with stronger margin/background/subject-isolation instructions.
 - Update this file after each successful new asset family so future batches reuse the proven process.
+
+## Sip Studios Adventure Game Assets - 2026-05-06
+
+Generated a local-first V1 visual pass for `#app/sip-game` using the built-in Codex image generation path, then copied final assets into `public/game/`.
+
+Final asset paths:
+
+```text
+public/game/backgrounds/winery-hub-v1.png
+public/game/backgrounds/brewery-hub-v1.png
+public/game/backgrounds/distillery-hub-v1.png
+public/game/sprites/sippy-sheet-v1.png
+public/game/sprites/sippy-sheet-v1-alpha.png
+public/game/sprites/mentors-sheet-v1.png
+public/game/sprites/mentors-sheet-v1-alpha.png
+public/game/sprites/sippy-sheet-v2.png
+public/game/sprites/sippy-sheet-v2-alpha.png
+public/game/sprites/main-characters-sheet-v2.png
+public/game/sprites/main-characters-sheet-v2-alpha.png
+public/game/sprites/roma-sheet-v3.png
+public/game/sprites/roma-sheet-v3-alpha.png
+public/game/sprites/equipment-sheet-v1.png
+public/game/sprites/equipment-sheet-v1-alpha.png
+public/game/equipment-scenes/winery-crusher-destemmer-sippy-v1.png
+public/game/equipment-scenes/winery-wine-press-sippy-v1.png
+public/game/equipment-scenes/winery-fermentation-tank-sippy-v1.png
+public/game/equipment-scenes/brewery-mash-tun-roma-v1.png
+public/game/equipment-scenes/brewery-brew-kettle-roma-v1.png
+public/game/equipment-scenes/brewery-conical-fermenter-roma-v1.png
+public/game/equipment-scenes/distillery-pot-still-hummin-v1.png
+public/game/equipment-scenes/distillery-spirit-safe-hummin-v1.png
+public/game/equipment-scenes/distillery-washback-hummin-v1.png
+```
+
+Style direction:
+
+- Wide 16:9 hand-painted hub backgrounds with open walking paths.
+- Modern pixel-art sprite sheets combining friendly learning-game readability with classic 16-bit JRPG staging.
+- Palette mix: teal, grape purple, hop green, copper, cream, wood, and stainless steel.
+- No generated text, labels, logos, watermarks, or UI embedded inside assets.
+- Character generation must use the canonical Sippy, Roma, and Hummin reference images in `DUMP-IN/Sippy & Roma/Main Photos/`.
+
+Sprite workflow notes:
+
+- Character and equipment sheets were generated on a green chroma-key background.
+- Alpha versions were produced with:
+
+```powershell
+python C:\Users\TwoKn\.codex\skills\.system\imagegen\scripts\remove_chroma_key.py --input public\game\sprites\{sheet}.png --out public\game\sprites\{sheet}-alpha.png --auto-key border --soft-matte --transparent-threshold 45 --opaque-threshold 180 --despill
+```
+
+- React/CSS consumes the alpha sheets with deterministic frame positions rather than splitting the sheets into individual files.
+- Sippy V1 cup sheet remains the current playable walking avatar because it has the strongest cute navigation read.
+- Sippy V2 sheet uses 8 frames based on `Sippy.jpg`: idle frames, walk frames, point, celebrate.
+- Main characters V2 sheet uses 6 frames based on canonical references: Roma idle/explain, Hummin idle/explain, Sippy idle/explain.
+- Roma V3 sheet uses `DUMP-IN/Sippy & Roma/image (4).jpg`, `DUMP-IN/Sippy & Roma/Roma - Tea.png`, and `DUMP-IN/Sippy & Roma/Old Sippy & Roma/OG Roma.webp` for a warmer feminine Roma silhouette. It is now preferred over the Roma frames in the shared main character sheet.
+- Mentor V1 sheet uses 6 frames: two poses each for winery, brewery, and distillery support mentors. It is retained for support NPCs alongside Sippy, Roma, and Hummin.
+- Equipment sheet uses 8 frames: crusher-destemmer, wine press, fermentation tank, mash tun, brew kettle, conical fermenter, pot still, spirit safe.
+- Equipment scene photos are realistic teaching-modal images with Sippy, Roma, or Hummin demonstrating the clicked equipment.
+
+Validation:
+
+- `npm.cmd run build` passed.
+- Local route smoke check passed: `http://127.0.0.1:5173/#app/sip-game`.
+- Local asset smoke checks passed for `/game/backgrounds/winery-hub-v1.png` and `/game/sprites/sippy-sheet-v1-alpha.png`.

@@ -22,13 +22,30 @@ export class AppErrorBoundary extends Component<Props, State> {
     this.props.onError?.(error, info);
   }
 
+  componentDidMount(): void {
+    window.addEventListener("hashchange", this.handleRouteChange);
+    window.addEventListener("popstate", this.handleRouteChange);
+  }
+
+  componentWillUnmount(): void {
+    window.removeEventListener("hashchange", this.handleRouteChange);
+    window.removeEventListener("popstate", this.handleRouteChange);
+  }
+
+  private handleRouteChange = (): void => {
+    if (this.state.hasError) {
+      this.setState({ hasError: false });
+    }
+  };
+
   private handleReload = (): void => {
     window.location.reload();
   };
 
   private handleGoHome = (): void => {
-    window.location.hash = "sip-academy";
-    window.location.reload();
+    this.setState({ hasError: false }, () => {
+      window.location.hash = "app/sip-academy";
+    });
   };
 
   render() {
