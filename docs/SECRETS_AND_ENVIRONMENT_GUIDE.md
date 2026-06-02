@@ -14,7 +14,6 @@ These values are safe to expose to the frontend because they are already visible
 - `VITE_APP_URL`
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
-- `VITE_CHECKOUT_URL`
 - `VITE_SALES_EMAIL`
 
 The Supabase anon key is not a secret by itself. It is meant to be public, but it must still be paired with correct RLS policies on the database.
@@ -27,6 +26,10 @@ These values must never be committed to git:
 - `SUPABASE_URL` when used for private server-side access
 - `SUPABASE_ANON_KEY` when used by server-side tools that should not depend on frontend env files
 - `GOOGLE_AI_API_KEY`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_PRICE_ID_PRO`
+- `STRIPE_PRICE_ID_FOUNDING`
+- `STRIPE_WEBHOOK_SECRET`
 - OAuth client secrets
 - Stripe or billing secrets
 - Any downloaded JSON credential file
@@ -68,6 +71,12 @@ The host should provide:
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `GOOGLE_AI_API_KEY`
 - `GOOGLE_MODEL`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_PRICE_ID_PRO`
+- `STRIPE_PRICE_ID_FOUNDING`
+- `STRIPE_WEBHOOK_SECRET`
+- `APP_URL`
+- `ALLOWED_ORIGIN`
 
 For hosted frontend publishing, make sure the frontend has only the public `VITE_*` variables and that server-side secrets stay in the backend or host secret store.
 

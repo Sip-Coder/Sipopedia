@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2100" height="1400" viewBox="0 0 2100 1400" role="img" aria-label="Israel Wine Map">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#04131f"/>
+      <stop offset="0.48" stop-color="#082d33"/>
+      <stop offset="1" stop-color="#171f25"/>
+    </linearGradient>
+    <radialGradient id="glowGold" cx="20%" cy="16%" r="70%">
+      <stop offset="0" stop-color="#edd4a8" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#edd4a8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowCyan" cx="60%" cy="45%" r="70%">
+      <stop offset="0" stop-color="#48e5dc" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#48e5dc" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="land" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0ce"/>
+      <stop offset="0.44" stop-color="#c99a22"/>
+      <stop offset="1" stop-color="#3dd7ca"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="28" stdDeviation="26" flood-color="#000816" flood-opacity="0.52"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#48e5dc" flood-opacity="0.22"/>
+    </filter>
+    <style>
+      .frame { fill: none; stroke: rgba(159, 218, 245, 0.32); stroke-width: 2; }
+      .grid { stroke: rgba(159, 218, 245, 0.14); stroke-width: 1; }
+      .micro { fill: rgba(217, 247, 255, 0.64); font: 800 19px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 8px; text-transform: uppercase; }
+      .title { fill: #fff0ce; font: 900 66px 'Trebuchet MS', Arial, sans-serif; letter-spacing: -2px; }
+      .subtitle { fill: rgba(217, 247, 255, 0.78); font: 800 25px 'Trebuchet MS', Arial, sans-serif; }
+      .land-core { fill: url(#land); stroke: #fff0ce; stroke-width: 3; stroke-linejoin: round; filter: url(#softShadow); }
+      .land-line { fill: none; stroke: rgba(4, 13, 24, 0.72); stroke-width: 10; opacity: 0.55; stroke-linejoin: round; }
+      .contour { fill: none; stroke: rgba(237, 212, 168, 0.16); stroke-width: 3; stroke-linecap: round; }
+      .region-panel { fill: rgba(5, 18, 28, 0.72); stroke: rgba(159, 218, 245, 0.28); stroke-width: 2; }
+      .region-heading { fill: #fff0ce; font: 900 34px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 5px; text-transform: uppercase; }
+      .region-subheading { fill: rgba(217, 247, 255, 0.68); font: 700 22px 'Trebuchet MS', Arial, sans-serif; }
+      .region-row rect { fill: rgba(4, 19, 31, 0.82); stroke: rgba(159, 218, 245, 0.38); stroke-width: 1.6; }
+      .region-row circle { fill: rgba(237, 212, 168, 0.95); }
+      .region-number { fill: #04131f; font: 900 18px 'Trebuchet MS', Arial, sans-serif; }
+      .region-name { fill: #fff0ce; font: 900 31px 'Trebuchet MS', Arial, sans-serif; }
+      .badge { fill: rgba(7, 35, 48, 0.88); stroke: rgba(237, 212, 168, 0.48); stroke-width: 1.5; }
+      .badge-text { fill: #edd4a8; font: 900 18px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 3px; text-transform: uppercase; }
+      .footer { fill: rgba(217, 247, 255, 0.58); font: 700 18px 'Trebuchet MS', Arial, sans-serif; }
+    </style>
+  </defs>
+  <rect width="2100" height="1400" fill="url(#bg)"/>
+  <rect width="2100" height="1400" fill="url(#glowGold)"/>
+  <rect width="2100" height="1400" fill="url(#glowCyan)"/>
+  <line class="grid" x1="120" y1="0" x2="120" y2="1400"/><line class="grid" x1="240" y1="0" x2="240" y2="1400"/><line class="grid" x1="360" y1="0" x2="360" y2="1400"/><line class="grid" x1="480" y1="0" x2="480" y2="1400"/><line class="grid" x1="600" y1="0" x2="600" y2="1400"/><line class="grid" x1="720" y1="0" x2="720" y2="1400"/><line class="grid" x1="840" y1="0" x2="840" y2="1400"/><line class="grid" x1="960" y1="0" x2="960" y2="1400"/><line class="grid" x1="1080" y1="0" x2="1080" y2="1400"/><line class="grid" x1="1200" y1="0" x2="1200" y2="1400"/><line class="grid" x1="1320" y1="0" x2="1320" y2="1400"/><line class="grid" x1="1440" y1="0" x2="1440" y2="1400"/><line class="grid" x1="1560" y1="0" x2="1560" y2="1400"/><line class="grid" x1="1680" y1="0" x2="1680" y2="1400"/><line class="grid" x1="1800" y1="0" x2="1800" y2="1400"/>
+  <line class="grid" x1="0" y1="180" x2="2100" y2="180"/><line class="grid" x1="0" y1="300" x2="2100" y2="300"/><line class="grid" x1="0" y1="420" x2="2100" y2="420"/><line class="grid" x1="0" y1="540" x2="2100" y2="540"/><line class="grid" x1="0" y1="660" x2="2100" y2="660"/><line class="grid" x1="0" y1="780" x2="2100" y2="780"/><line class="grid" x1="0" y1="900" x2="2100" y2="900"/><line class="grid" x1="0" y1="1020" x2="2100" y2="1020"/>
+  <rect x="34" y="34" width="2032" height="1332" rx="42" class="frame"/>
+  <text x="80" y="108" class="micro">Sip Studios Maps / Country Study Plate</text>
+  <text x="80" y="185" class="title">Israel Wine Map</text>
+  <text x="84" y="232" class="subtitle">Asia / 5 study regions / Wine geography</text>
+  <g opacity="0.9">
+    <path class="contour" d="M134 284 C 390 212, 670 426, 922 320 S 1170 268, 1250 334"/><path class="contour" d="M134 389 C 390 317, 670 469, 922 394 S 1170 342, 1250 408"/><path class="contour" d="M134 494 C 390 422, 670 512, 922 468 S 1170 416, 1250 482"/><path class="contour" d="M134 535 C 390 463, 670 619, 922 542 S 1170 490, 1250 556"/><path class="contour" d="M134 640 C 390 568, 670 662, 922 616 S 1170 564, 1250 630"/><path class="contour" d="M134 681 C 390 609, 670 769, 922 690 S 1170 638, 1250 704"/><path class="contour" d="M134 786 C 390 714, 670 812, 922 764 S 1170 712, 1250 778"/><path class="contour" d="M134 827 C 390 755, 670 919, 922 838 S 1170 786, 1250 852"/>
+    <path class="land-line" d="M788.76,374.80L762.83,421.36L709.62,400.74L678.36,499.83L715.61,515.80L677.70,536.41L671.05,575.65L740.88,555.04L744.87,612.90L670.38,849.00L656.41,810.43L573.94,594.94L616.51,546.39L606.53,538.41L645.77,469.24L675.70,357.51L696.98,320.26L700.97,318.93L750.19,318.93L763.49,293.00L803.40,291.00L806.06,351.52L785.44,374.13L788.76,374.80Z"/>
+    <path class="land-core" d="M788.76,374.80L762.83,421.36L709.62,400.74L678.36,499.83L715.61,515.80L677.70,536.41L671.05,575.65L740.88,555.04L744.87,612.90L670.38,849.00L656.41,810.43L573.94,594.94L616.51,546.39L606.53,538.41L645.77,469.24L675.70,357.51L696.98,320.26L700.97,318.93L750.19,318.93L763.49,293.00L803.40,291.00L806.06,351.52L785.44,374.13L788.76,374.80Z" fill-rule="evenodd"/>
+  </g>
+  <rect x="1370" y="305" width="610" height="132" rx="24" class="badge"/>
+  <text x="1410" y="358" class="badge-text">Israel / atlas outline</text>
+  <text x="1410" y="398" class="footer">Primary atlas outline fitted for country-scale study.</text>
+  <rect x="88" y="940" width="1924" height="382" rx="30" class="region-panel"/>
+  <text x="132" y="998" class="region-heading">Study Region Index</text>
+  <text x="132" y="1335" class="footer">Showing 5 of 5 study regions. Internal wine-region borders require an authoritative GIS layer before drawing.</text>
+  
+      <g class="region-row" transform="translate(135 1038)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">1</text>
+        <text x="54" y="28" class="region-name">Galilee</text>
+      </g>
+      <g class="region-row" transform="translate(1045 1038)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">2</text>
+        <text x="54" y="28" class="region-name">Judean Hills</text>
+      </g>
+      <g class="region-row" transform="translate(135 1086)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">3</text>
+        <text x="54" y="28" class="region-name">Samson</text>
+      </g>
+      <g class="region-row" transform="translate(1045 1086)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">4</text>
+        <text x="54" y="28" class="region-name">Negev</text>
+      </g>
+      <g class="region-row" transform="translate(135 1134)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">5</text>
+        <text x="54" y="28" class="region-name">Golan Heights</text>
+      </g>
+</svg>

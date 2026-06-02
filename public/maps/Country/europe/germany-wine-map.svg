@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2100" height="1400" viewBox="0 0 2100 1400" role="img" aria-label="Germany Wine Map">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#04131f"/>
+      <stop offset="0.48" stop-color="#082d33"/>
+      <stop offset="1" stop-color="#171f25"/>
+    </linearGradient>
+    <radialGradient id="glowGold" cx="20%" cy="16%" r="70%">
+      <stop offset="0" stop-color="#edd4a8" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#edd4a8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowCyan" cx="60%" cy="45%" r="70%">
+      <stop offset="0" stop-color="#48e5dc" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#48e5dc" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="land" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0ce"/>
+      <stop offset="0.44" stop-color="#c99a22"/>
+      <stop offset="1" stop-color="#3dd7ca"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="28" stdDeviation="26" flood-color="#000816" flood-opacity="0.52"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#48e5dc" flood-opacity="0.22"/>
+    </filter>
+    <style>
+      .frame { fill: none; stroke: rgba(159, 218, 245, 0.32); stroke-width: 2; }
+      .grid { stroke: rgba(159, 218, 245, 0.14); stroke-width: 1; }
+      .micro { fill: rgba(217, 247, 255, 0.64); font: 800 19px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 8px; text-transform: uppercase; }
+      .title { fill: #fff0ce; font: 900 66px 'Trebuchet MS', Arial, sans-serif; letter-spacing: -2px; }
+      .subtitle { fill: rgba(217, 247, 255, 0.78); font: 800 25px 'Trebuchet MS', Arial, sans-serif; }
+      .land-core { fill: url(#land); stroke: #fff0ce; stroke-width: 3; stroke-linejoin: round; filter: url(#softShadow); }
+      .land-line { fill: none; stroke: rgba(4, 13, 24, 0.72); stroke-width: 10; opacity: 0.55; stroke-linejoin: round; }
+      .contour { fill: none; stroke: rgba(237, 212, 168, 0.16); stroke-width: 3; stroke-linecap: round; }
+      .region-panel { fill: rgba(5, 18, 28, 0.72); stroke: rgba(159, 218, 245, 0.28); stroke-width: 2; }
+      .region-heading { fill: #fff0ce; font: 900 34px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 5px; text-transform: uppercase; }
+      .region-subheading { fill: rgba(217, 247, 255, 0.68); font: 700 22px 'Trebuchet MS', Arial, sans-serif; }
+      .region-row rect { fill: rgba(4, 19, 31, 0.82); stroke: rgba(159, 218, 245, 0.38); stroke-width: 1.6; }
+      .region-row circle { fill: rgba(237, 212, 168, 0.95); }
+      .region-number { fill: #04131f; font: 900 18px 'Trebuchet MS', Arial, sans-serif; }
+      .region-name { fill: #fff0ce; font: 900 31px 'Trebuchet MS', Arial, sans-serif; }
+      .badge { fill: rgba(7, 35, 48, 0.88); stroke: rgba(237, 212, 168, 0.48); stroke-width: 1.5; }
+      .badge-text { fill: #edd4a8; font: 900 18px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 3px; text-transform: uppercase; }
+      .footer { fill: rgba(217, 247, 255, 0.58); font: 700 18px 'Trebuchet MS', Arial, sans-serif; }
+    </style>
+  </defs>
+  <rect width="2100" height="1400" fill="url(#bg)"/>
+  <rect width="2100" height="1400" fill="url(#glowGold)"/>
+  <rect width="2100" height="1400" fill="url(#glowCyan)"/>
+  <line class="grid" x1="120" y1="0" x2="120" y2="1400"/><line class="grid" x1="240" y1="0" x2="240" y2="1400"/><line class="grid" x1="360" y1="0" x2="360" y2="1400"/><line class="grid" x1="480" y1="0" x2="480" y2="1400"/><line class="grid" x1="600" y1="0" x2="600" y2="1400"/><line class="grid" x1="720" y1="0" x2="720" y2="1400"/><line class="grid" x1="840" y1="0" x2="840" y2="1400"/><line class="grid" x1="960" y1="0" x2="960" y2="1400"/><line class="grid" x1="1080" y1="0" x2="1080" y2="1400"/><line class="grid" x1="1200" y1="0" x2="1200" y2="1400"/><line class="grid" x1="1320" y1="0" x2="1320" y2="1400"/><line class="grid" x1="1440" y1="0" x2="1440" y2="1400"/><line class="grid" x1="1560" y1="0" x2="1560" y2="1400"/><line class="grid" x1="1680" y1="0" x2="1680" y2="1400"/><line class="grid" x1="1800" y1="0" x2="1800" y2="1400"/>
+  <line class="grid" x1="0" y1="180" x2="2100" y2="180"/><line class="grid" x1="0" y1="300" x2="2100" y2="300"/><line class="grid" x1="0" y1="420" x2="2100" y2="420"/><line class="grid" x1="0" y1="540" x2="2100" y2="540"/><line class="grid" x1="0" y1="660" x2="2100" y2="660"/><line class="grid" x1="0" y1="780" x2="2100" y2="780"/><line class="grid" x1="0" y1="900" x2="2100" y2="900"/><line class="grid" x1="0" y1="1020" x2="2100" y2="1020"/>
+  <rect x="34" y="34" width="2032" height="1332" rx="42" class="frame"/>
+  <text x="80" y="108" class="micro">Sip Studios Maps / Country Study Plate</text>
+  <text x="80" y="185" class="title">Germany Wine Map</text>
+  <text x="84" y="232" class="subtitle">Europe / 7 study regions / Wine geography</text>
+  <g opacity="0.9">
+    <path class="contour" d="M134 335 C 390 263, 670 375, 922 320 S 1170 268, 1250 334"/><path class="contour" d="M134 376 C 390 304, 670 482, 922 394 S 1170 342, 1250 408"/><path class="contour" d="M134 481 C 390 409, 670 525, 922 468 S 1170 416, 1250 482"/><path class="contour" d="M134 522 C 390 450, 670 632, 922 542 S 1170 490, 1250 556"/><path class="contour" d="M134 627 C 390 555, 670 675, 922 616 S 1170 564, 1250 630"/><path class="contour" d="M134 668 C 390 596, 670 782, 922 690 S 1170 638, 1250 704"/><path class="contour" d="M134 773 C 390 701, 670 825, 922 764 S 1170 712, 1250 778"/><path class="contour" d="M134 814 C 390 742, 670 932, 922 838 S 1170 786, 1250 852"/>
+    <path class="land-line" d="M952.82,380.24L969.49,417.18L949.55,436.47L975.70,462.29L994.01,501.19L988.12,526.36L1017.87,572.78L985.51,580.30L966.55,572.12L948.24,585.85L895.94,599.91L868.81,617.89L816.18,633.91L828.93,655.48L836.77,686.21L873.71,703.53L914.57,734.92L889.08,768.26L862.92,777.41L873.38,824.81L866.52,836.91L843.64,822.20L808.99,819.91L757.01,832.98L692.94,830.04L682.81,849.00L645.87,829.06L623.97,832.98L546.17,810.75L531.13,826.44L469.68,826.12L478.83,774.14L515.44,724.46L410.84,711.05L376.51,692.09L380.76,660.38L366.05,644.04L374.22,594.68L362.13,518.51L405.61,518.51L423.91,491.38L442.22,424.70L428.82,400.18L442.87,384.82L503.67,380.89L517.08,396.91L566.44,360.95L549.76,333.82L546.50,292.63L601.41,302.11L647.83,291.00L648.81,319.11L722.36,336.11L721.71,361.93L795.59,348.21L836.45,328.27L918.17,357.03L952.82,380.24Z"/>
+    <path class="land-core" d="M952.82,380.24L969.49,417.18L949.55,436.47L975.70,462.29L994.01,501.19L988.12,526.36L1017.87,572.78L985.51,580.30L966.55,572.12L948.24,585.85L895.94,599.91L868.81,617.89L816.18,633.91L828.93,655.48L836.77,686.21L873.71,703.53L914.57,734.92L889.08,768.26L862.92,777.41L873.38,824.81L866.52,836.91L843.64,822.20L808.99,819.91L757.01,832.98L692.94,830.04L682.81,849.00L645.87,829.06L623.97,832.98L546.17,810.75L531.13,826.44L469.68,826.12L478.83,774.14L515.44,724.46L410.84,711.05L376.51,692.09L380.76,660.38L366.05,644.04L374.22,594.68L362.13,518.51L405.61,518.51L423.91,491.38L442.22,424.70L428.82,400.18L442.87,384.82L503.67,380.89L517.08,396.91L566.44,360.95L549.76,333.82L546.50,292.63L601.41,302.11L647.83,291.00L648.81,319.11L722.36,336.11L721.71,361.93L795.59,348.21L836.45,328.27L918.17,357.03L952.82,380.24Z" fill-rule="evenodd"/>
+  </g>
+  <rect x="1370" y="305" width="610" height="132" rx="24" class="badge"/>
+  <text x="1410" y="358" class="badge-text">Germany / atlas outline</text>
+  <text x="1410" y="398" class="footer">Primary atlas outline fitted for country-scale study.</text>
+  <rect x="88" y="940" width="1924" height="382" rx="30" class="region-panel"/>
+  <text x="132" y="998" class="region-heading">Study Region Index</text>
+  <text x="132" y="1335" class="footer">Showing 7 of 7 study regions. Internal wine-region borders require an authoritative GIS layer before drawing.</text>
+  
+      <g class="region-row" transform="translate(135 1038)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">1</text>
+        <text x="54" y="28" class="region-name">Mosel</text>
+      </g>
+      <g class="region-row" transform="translate(1045 1038)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">2</text>
+        <text x="54" y="28" class="region-name">Rheingau</text>
+      </g>
+      <g class="region-row" transform="translate(135 1086)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">3</text>
+        <text x="54" y="28" class="region-name">Pfalz</text>
+      </g>
+      <g class="region-row" transform="translate(1045 1086)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">4</text>
+        <text x="54" y="28" class="region-name">Baden</text>
+      </g>
+      <g class="region-row" transform="translate(135 1134)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">5</text>
+        <text x="54" y="28" class="region-name">Nahe</text>
+      </g>
+      <g class="region-row" transform="translate(1045 1134)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">6</text>
+        <text x="54" y="28" class="region-name">Franken</text>
+      </g>
+      <g class="region-row" transform="translate(135 1182)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">7</text>
+        <text x="54" y="28" class="region-name">Rheinhessen</text>
+      </g>
+</svg>

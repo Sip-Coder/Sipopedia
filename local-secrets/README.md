@@ -17,11 +17,21 @@ client files, exports, or notes here.
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `GOOGLE_AI_API_KEY`
 - `GOOGLE_MODEL`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_PRICE_ID_PRO`
+- `STRIPE_PRICE_ID_FOUNDING`
+- `STRIPE_WEBHOOK_SECRET`
 
 ## Optional variables
 
-- `VITE_CHECKOUT_URL`
 - `VITE_SALES_EMAIL`
+- `APP_URL`
+- `ALLOWED_ORIGIN`
+
+Checkout is not configured with a frontend checkout URL. The browser calls the
+`create-checkout-session` Supabase Edge Function, which uses Stripe secrets and
+price IDs from the server environment. Stripe webhook delivery should target
+`billing-webhook` with `STRIPE_WEBHOOK_SECRET`.
 
 ## What not to keep here
 

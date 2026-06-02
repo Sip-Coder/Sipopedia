@@ -5,7 +5,10 @@ import {
   createTastingNote,
   deleteTastingNote,
   listTastingNotes,
+  readLocalTastingNoteItems,
   updateTastingNote,
+  writeLocalTastingNoteItems,
+  type LocalTastingNoteSaveResult,
   type TastingNoteRecord,
   type TastingNoteUpsertInput
 } from "../lib/tastingJournal";
@@ -236,10 +239,10 @@ const normalizeCountry = (name: string) => COUNTRY_ALIAS[name.trim()] ?? name.tr
 const displayCountry = (name: string) => COUNTRY_DISPLAY[name] ?? name;
 const asType = (value: string): BeverageType => {
   if (value === "wine") return "red_wine";
+  if (value === "food") return "other";
   return value in SCHEMAS ? (value as BeverageType) : "red_wine";
 };
 const isWineType = (type: BeverageType) => type === "red_wine" || type === "white_wine";
-const LOCAL_TASTING_NOTES_KEY = "sipstudies:tasting-journal:guest-notes:v1";
 
 function newLocalId() {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
@@ -344,19 +347,10 @@ function noteFromGuest(value: unknown): Note | null {
 }
 
 function loadGuestNotes(): Note[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(LOCAL_TASTING_NOTES_KEY);
-    if (!raw) return [];
-    const parsed: unknown = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.map((item) => noteFromGuest(item)).filter((item): item is Note => item !== null);
-  } catch {
-    return [];
-  }
+  return readLocalTastingNoteItems().map((item) => noteFromGuest(item)).filter((item): item is Note => item !== null);
 }
 
-type LocalSaveResult = "ok" | "trimmed" | "failed";
+type LocalSaveResult = LocalTastingNoteSaveResult;
 
 function stripLocalMedia(note: Note): Note {
   return {
@@ -367,19 +361,7 @@ function stripLocalMedia(note: Note): Note {
 }
 
 function saveGuestNotes(notes: Note[]): LocalSaveResult {
-  if (typeof window === "undefined") return "failed";
-  try {
-    window.localStorage.setItem(LOCAL_TASTING_NOTES_KEY, JSON.stringify(notes));
-    return "ok";
-  } catch {
-    try {
-      const trimmed = notes.map(stripLocalMedia);
-      window.localStorage.setItem(LOCAL_TASTING_NOTES_KEY, JSON.stringify(trimmed));
-      return "trimmed";
-    } catch {
-      return "failed";
-    }
-  }
+  return writeLocalTastingNoteItems(notes, stripLocalMedia);
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -1118,8 +1100,8 @@ export function TastingJournal() {
         {storageMode === "cloud"
           ? "Storage Mode: Cloud sync active."
           : storageMode === "cloud-fallback"
-            ? "Storage Mode: Cloud fallback to local browser storage."
-            : "Storage Mode: Local browser storage only."}
+            ? "Storage Mode: Cloud fallback to shared local tasting archive."
+            : "Storage Mode: Shared local tasting archive."}
       </p>
       {!useCloudStorage ? <p className="hint">Guest mode active. Notes save in this browser until auth is enabled.</p> : null}
 

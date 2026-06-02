@@ -1,25 +1,50 @@
 import { AuthPanel } from "./AuthPanel";
 import { useAccess } from "../context/AccessContext";
+import { buildOnboardingRoute } from "../lib/onboardingIntent";
+import { buildWorkspaceLanePreviews, workspaceLabelForRoute } from "../lib/workspaceNavigation";
 
 type PaywallPanelProps = {
   onNavigate: (route: string) => void;
+  postLoginRoute?: string;
 };
 
-export function PaywallPanel({ onNavigate }: PaywallPanelProps) {
+export function PaywallPanel({ onNavigate, postLoginRoute }: PaywallPanelProps) {
   const { tier, errorMessage, subscription, profile } = useAccess();
+  const paywallLanePreview = buildWorkspaceLanePreviews();
   const isSignedIn = Boolean(profile);
+  const nextRoute = postLoginRoute ?? "app/launch";
+  const pricingRoute = buildOnboardingRoute("pricing", { planId: "pro", source: "paywall", next: nextRoute });
+  const checkoutRoute = buildOnboardingRoute("checkout", { planId: "pro", source: "paywall", next: nextRoute });
+  const nextRouteLabel = workspaceLabelForRoute(nextRoute) ?? nextRoute.replace(/^app\//, "").replace(/-/g, " ");
+
   return (
     <section className="paywall-panel">
-      <header className="section-header">
-        <h2>Pro Workspace + Founding Cohort Locked</h2>
-        <p>Upgrade to unlock Sip Studios, Ai RnD, Somm Support, and all pro learning modules.</p>
+      <header className="section-header paywall-hero">
+        <p className="checkout-eyebrow">Access Checkpoint</p>
+        <h2>This room is locked, but your route is saved.</h2>
+        <p>Upgrade or log in to unlock the Learn, Taste, and Connect modules connected to this destination.</p>
+        <div className="paywall-route-chip" aria-label="Blocked route intent">
+          <span>Trying to open</span>
+          <strong>{nextRouteLabel}</strong>
+          <em>Locked route saved</em>
+        </div>
       </header>
 
       <div className="paywall-grid">
-        <article className="paywall-card">
-          <h3>Current tier</h3>
-          <p className="paywall-tier">{tier.toUpperCase()}</p>
-          <p>Starter accounts can access the Starter page only. Pro and Founding Cohort modules require upgrade access.</p>
+        <article className="paywall-card paywall-status-card">
+          <p className="checkout-eyebrow">Current access</p>
+          <h3>{tier.toUpperCase()}</h3>
+          <div className="access-state-row" aria-label="Access state">
+            <span className="access-state-chip access-state-current">Current</span>
+            <span className="access-state-chip access-state-preview">{isSignedIn ? "Included" : "Preview"}</span>
+            <span className="access-state-chip access-state-locked">Locked room</span>
+          </div>
+          <p className="paywall-tier">{isSignedIn ? "Launch Pad access" : "Public preview"}</p>
+          <p>
+            {isSignedIn
+              ? "Your account can use the Launch Pad while you upgrade. Paid checkout starts from this same account."
+              : "Public visitors can preview the workspace before enrolling. Log in first, then pay, so access attaches correctly."}
+          </p>
           {subscription ? (
             <p className="hint">
               Subscription status: <strong>{subscription.status}</strong> ({subscription.planCode})
@@ -28,21 +53,44 @@ export function PaywallPanel({ onNavigate }: PaywallPanelProps) {
           <div className="paywall-actions">
             {isSignedIn ? (
               <button className="btn btn-light" onClick={() => onNavigate("app/launch")}>
-                Open Starter Page
+                Open Launch Pad
               </button>
             ) : null}
-            <button className="btn btn-primary" onClick={() => onNavigate("pricing")}>
+            <button className="btn btn-primary" onClick={() => onNavigate(pricingRoute)}>
               Compare Plans
             </button>
-            <button className="btn btn-light" onClick={() => onNavigate("checkout")}>
+            <button className="btn btn-light" onClick={() => onNavigate(checkoutRoute)}>
               Start Enrollment
             </button>
           </div>
           {errorMessage ? <p className="error">{errorMessage}</p> : null}
         </article>
 
-        <article className="paywall-card">
-          <AuthPanel />
+        <article className="paywall-card paywall-unlock-card">
+          <p className="checkout-eyebrow">What unlocks</p>
+          <h3>Workspace lanes</h3>
+          <div className="paywall-lane-list">
+            {paywallLanePreview.map((lane) => (
+              <section key={lane.label}>
+                <span>{lane.modules}</span>
+                <strong>{lane.label}</strong>
+                <p>{lane.detail}</p>
+              </section>
+            ))}
+          </div>
+        </article>
+
+        <article className="paywall-card paywall-auth-card">
+          <AuthPanel postLoginRoute={postLoginRoute} />
+        </article>
+
+        <article className="paywall-card paywall-preview-card">
+          <p className="checkout-eyebrow">No lost path</p>
+          <h3>Enrollment resumes here.</h3>
+          <p>
+            Compare Plans and Start Enrollment both carry <strong>{nextRouteLabel}</strong> as the next route, so the user can return to the room
+            that triggered this checkpoint. Checkout creates a secure session only after the learner is signed in.
+          </p>
         </article>
       </div>
     </section>

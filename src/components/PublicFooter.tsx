@@ -1,3 +1,5 @@
+import { buildOnboardingRoute } from "../lib/onboardingIntent";
+
 type PublicFooterProps = {
   onNavigate: (route: string) => void;
 };
@@ -58,10 +60,16 @@ export function PublicFooter({ onNavigate }: PublicFooterProps) {
         <button className="btn btn-light" onClick={() => onNavigate("home")}>
           Home
         </button>
-        <button className="btn btn-light" onClick={() => onNavigate("pricing")}>
+        <button className="btn btn-light" onClick={() => onNavigate(buildOnboardingRoute("pricing", { planId: "pro", source: "footer" }))}>
           Pricing
         </button>
-        <button className="btn btn-light" onClick={() => onNavigate("checkout")}>
+        <button className="btn btn-light" onClick={() => onNavigate("study-paths")}>
+          Study Paths
+        </button>
+        <button className="btn btn-light" onClick={() => onNavigate("support")}>
+          Support
+        </button>
+        <button className="btn btn-light" onClick={() => onNavigate(buildOnboardingRoute("checkout", { planId: "pro", source: "footer" }))}>
           Enroll
         </button>
       </div>

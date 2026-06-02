@@ -1,9 +1,12 @@
 ﻿import { useEffect, useMemo, useState } from "react";
+import { dailySipReports, type DailySipItem, type DailySipReport } from "../data/dailySip";
+import { buildDailySipCutPack } from "../lib/mediaCutPack";
 import { fetchGuildNews, type NewsRouterSource } from "../lib/newsRouter";
 import { safeHttpUrl } from "../lib/urlSafety";
+import { MediaCutPackPanel } from "./MediaCutPack";
 
 type SourceLoadMode = "loaded" | "fallback" | "failed";
-type BlogSourceId = "sipstudies-site" | "sipstudies-substack";
+type BlogSourceId = "sipstudies-site" | "sipstudies-substack" | "daily-sip";
 type BlogFilter = "all" | BlogSourceId;
 
 type BlogSource = {
@@ -12,13 +15,14 @@ type BlogSource = {
   homepage: string;
   feedUrl?: string;
   edgeSource?: NewsRouterSource;
+  staticArticles?: () => BlogArticle[];
 };
 
 type BlogArticle = {
   id: string;
   sourceId: BlogSourceId;
   sourceName: string;
-  sourceCategory: "Flavor Blog";
+  sourceCategory: "Flavor Blog" | "Daily Sip";
   title: string;
   url: string;
   publishedAt: string;
@@ -53,6 +57,12 @@ const BLOG_SOURCES: BlogSource[] = [
     homepage: "https://sipstudies.substack.com/",
     feedUrl: "https://sipstudies.substack.com/feed",
     edgeSource: "sipstudies"
+  },
+  {
+    id: "daily-sip",
+    name: "Daily Sip",
+    homepage: "https://sipopedia.com/#app/flavor-blog?source=daily-sip",
+    staticArticles: buildDailySipArticles
   }
 ];
 
@@ -62,7 +72,7 @@ const PAGE_SIZE_OPTIONS = [12, 24, 48, 120, 240] as const;
 type BlogPageSize = (typeof PAGE_SIZE_OPTIONS)[number];
 const MAX_PAGE_COUNT = 10;
 const SOURCE_FETCH_TIMEOUT_MS = 8000;
-const BLOG_CACHE_KEY = "sipstudies:flavor-blog:v4";
+const BLOG_CACHE_KEY = "sipstudies:flavor-blog:v5";
 const BLOG_CACHE_MAX_AGE_MS = 1000 * 60 * 45;
 
 type FallbackBlogArticle = Omit<BlogArticle, "sourceCategory">;
@@ -319,6 +329,144 @@ function BlogCardImage({ article }: { article: BlogArticle }) {
   );
 }
 
+function buildDailySipArticles(): BlogArticle[] {
+  return dailySipReports.map((report) => ({
+      id: report.id,
+      sourceId: "daily-sip",
+      sourceName: "Daily Sip",
+      sourceCategory: "Daily Sip",
+      title: report.title,
+      url: `https://sipopedia.com/#app/flavor-blog?source=daily-sip&entry=${encodeURIComponent(report.id)}`,
+      publishedAt: report.generatedAt,
+      summary: report.executiveSummary[0] ?? report.subtitle,
+      imageUrl: report.headerImageUrl
+    }));
+}
+
+function getInitialBlogFilter(): BlogFilter {
+  if (typeof window === "undefined") return "all";
+  const hashQuery = window.location.hash.split("?")[1] ?? "";
+  const hashSource = new URLSearchParams(hashQuery).get("source");
+  const searchSource = new URLSearchParams(window.location.search).get("source");
+  const source = hashSource || searchSource;
+  return source === "daily-sip" || source === "sipstudies-site" || source === "sipstudies-substack" ? source : "all";
+}
+
+function getInitialDailySipEntry(): string | null {
+  if (typeof window === "undefined") return null;
+  const hashQuery = window.location.hash.split("?")[1] ?? "";
+  return new URLSearchParams(hashQuery).get("entry");
+}
+
+function DailySipMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="daily-sip-metric">
+      <strong>{value}</strong>
+      <span>{label}</span>
+    </div>
+  );
+}
+
+function DailySipArticleRow({ item }: { item: DailySipItem }) {
+  const safeUrl = safeHttpUrl(item.url);
+  return (
+    <li className="daily-sip-story">
+      <div className="daily-sip-story-copy">
+        <p className="news-card-tag">{item.category}</p>
+        <h4>
+          {item.rank}. {item.title}
+        </h4>
+        <p>{item.summary}</p>
+        <p>
+          <strong>Why it matters:</strong> {item.whyItMatters}
+        </p>
+        <p>
+          <strong>Watch next:</strong> {item.marketImpact}
+        </p>
+        <p className="news-card-meta">
+          {item.sourceName} | {formatDate(item.publishedAt)}
+        </p>
+      </div>
+      {safeUrl ? (
+        <a className="btn btn-light news-link" href={safeUrl} target="_blank" rel="noreferrer">
+          Original Article
+        </a>
+      ) : null}
+    </li>
+  );
+}
+
+function DailySipReportView({ report, onBack }: { report: DailySipReport; onBack: () => void }) {
+  const coverage = report.coverage.length ? report.coverage.join(", ") : "Beverage market";
+  const cutPack = useMemo(() => buildDailySipCutPack(report), [report]);
+
+  return (
+    <article className="daily-sip-report">
+      <header className="daily-sip-hero">
+        <button className="btn btn-light daily-sip-back" type="button" onClick={onBack}>
+          All Daily Sip
+        </button>
+        {report.headerImageUrl ? (
+          <img className="daily-sip-hero-image" src={report.headerImageUrl} alt="" loading="lazy" />
+        ) : null}
+        <p className="news-card-tag">Daily Sip</p>
+        <h3>{report.title}</h3>
+        <p>{report.subtitle}</p>
+        <div className="daily-sip-metrics">
+          <DailySipMetric label="ranked articles" value={report.articleCount.toLocaleString()} />
+          <DailySipMetric label="sources scanned" value={report.sourceCount.toLocaleString()} />
+          <DailySipMetric label="latest refresh" value={formatDate(report.generatedAt)} />
+        </div>
+      </header>
+
+      <section className="daily-sip-copy">
+        <h4>Market Read</h4>
+        {report.executiveSummary.map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
+      </section>
+
+      <section className="daily-sip-copy">
+        <h4>Coverage</h4>
+        <p>{coverage}</p>
+      </section>
+
+      <MediaCutPackPanel pack={cutPack} className="daily-sip-cut-pack" />
+
+      <section className="daily-sip-theme-grid">
+        {report.marketThemes.map((theme) => (
+          <div className="daily-sip-theme" key={theme.title}>
+            <h4>{theme.title}</h4>
+            <p>{theme.body}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="daily-sip-copy">
+        <h4>Watchlist</h4>
+        <ul className="daily-sip-watchlist">
+          {report.watchlist.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="daily-sip-copy">
+        <h4>Top 20 Articles</h4>
+        {report.articles.length ? (
+          <ol className="daily-sip-list">
+            {report.articles.map((item) => (
+              <DailySipArticleRow item={item} key={`${item.rank}-${item.url}`} />
+            ))}
+          </ol>
+        ) : (
+          <p className="hint">Daily Sip is installed. Run npm run daily-sip to generate the first live top-20 article.</p>
+        )}
+      </section>
+    </article>
+  );
+}
+
 async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: string): Promise<T> {
   let timerId: ReturnType<typeof setTimeout> | undefined;
   const timeoutPromise = new Promise<never>((_, reject) => {
@@ -365,10 +513,13 @@ function mapArticle(source: BlogSource, article: Omit<BlogArticle, "sourceId" | 
 }
 
 function buildFallbackArticles(): BlogArticle[] {
-  return FALLBACK_BLOG_ARTICLES.map((article) => ({
-    ...article,
-    sourceCategory: "Flavor Blog" as const
-  })).sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+  return [
+    ...FALLBACK_BLOG_ARTICLES.map((article) => ({
+      ...article,
+      sourceCategory: "Flavor Blog" as const
+    })),
+    ...buildDailySipArticles()
+  ].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 }
 
 function mergeWithFallbackForFailedSources(results: SourceLoadResult[]): BlogArticle[] {
@@ -473,6 +624,10 @@ async function fetchSourceFromEdge(source: BlogSource): Promise<BlogArticle[]> {
 }
 
 async function fetchSource(source: BlogSource): Promise<SourceLoadResult> {
+  if (source.staticArticles) {
+    return { sourceId: source.id, mode: "loaded", articles: source.staticArticles() };
+  }
+
   try {
     const viaRss = await fetchSourceFromRss(source);
     if (viaRss.length) {
@@ -517,7 +672,8 @@ export function FlavorBlog() {
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [articlesPerPage, setArticlesPerPage] = useState<BlogPageSize>(12);
   const [page, setPage] = useState(0);
-  const [filter, setFilter] = useState<BlogFilter>("all");
+  const [filter, setFilter] = useState<BlogFilter>(getInitialBlogFilter);
+  const [selectedDailySipId, setSelectedDailySipId] = useState<string | null>(getInitialDailySipEntry);
   const [sourceModes, setSourceModes] = useState<Record<string, SourceLoadMode>>({});
 
   useEffect(() => {
@@ -621,6 +777,11 @@ export function FlavorBlog() {
     const start = page * articlesPerPage;
     return capped.slice(start, start + articlesPerPage);
   }, [articlesPerPage, filteredArticles, maxVisibleArticles, page]);
+  const selectedDailySipReport = useMemo(
+    () => dailySipReports.find((report) => report.id === selectedDailySipId) ?? null,
+    [selectedDailySipId]
+  );
+  const showDailySipReport = filter === "daily-sip" && selectedDailySipReport !== null;
 
   const renderPageControls = (position: "top" | "bottom") => (
     <div className="news-page-controls">
@@ -662,7 +823,7 @@ export function FlavorBlog() {
       <div className="section-header">
         <div>
           <h2>Flavor Blog</h2>
-          <p>Posts from the Sip Studies blog and Sip Studies Substack, gathered into one Flavor Blog stream.</p>
+          <p>Posts from the Sip Studies blog, Sip Studies Substack, and Daily Sip market briefing.</p>
         </div>
         <button className="btn btn-light" onClick={() => setRefreshCount((value) => value + 1)} disabled={isLoading}>
           {isLoading ? "Refreshing..." : "Refresh"}
@@ -672,7 +833,14 @@ export function FlavorBlog() {
       <div className="news-filter-group">
         <p className="news-filter-label">Blog</p>
         <div className="news-source-strip">
-          <button type="button" className={`news-source-chip ${filter === "all" ? "active" : ""}`} onClick={() => setFilter("all")}>
+          <button
+            type="button"
+            className={`news-source-chip ${filter === "all" ? "active" : ""}`}
+            onClick={() => {
+              setSelectedDailySipId(null);
+              setFilter("all");
+            }}
+          >
             All Flavor Blog
           </button>
           {BLOG_SOURCES.map((source) => {
@@ -683,7 +851,10 @@ export function FlavorBlog() {
                 key={source.id}
                 type="button"
                 className={`news-source-chip ${filter === source.id ? "active" : ""}`}
-                onClick={() => setFilter(source.id)}
+                onClick={() => {
+                  setSelectedDailySipId(null);
+                  setFilter(source.id);
+                }}
               >
                 {source.name}
                 {statusSuffix}
@@ -693,8 +864,8 @@ export function FlavorBlog() {
         </div>
       </div>
 
-      {renderPageControls("top")}
-      {filteredArticles.length > maxVisibleArticles ? (
+      {showDailySipReport ? null : renderPageControls("top")}
+      {!showDailySipReport && filteredArticles.length > maxVisibleArticles ? (
         <p className="hint">
           Showing the first {maxVisibleArticles.toLocaleString()} matched articles (page cap: {MAX_PAGE_COUNT}/{MAX_PAGE_COUNT}).
         </p>
@@ -705,31 +876,48 @@ export function FlavorBlog() {
       {error ? <p className="error">{error}</p> : null}
       {!isLoading && !error && !visibleArticles.length ? <p className="hint">No Flavor Blog posts found for this filter yet.</p> : null}
 
-      <div className="news-grid">
-        {visibleArticles.map((article) => {
-          const safeArticleUrl = safeHttpUrl(article.url);
-          return (
-            <article className="news-card" key={article.id}>
-              <BlogCardImage article={article} />
-              <p className="news-card-tag">{article.sourceCategory}</p>
-              <h3>{article.title}</h3>
-              <p>{article.summary}</p>
-              <p className="news-card-meta">
-                {article.sourceName} | {formatDate(article.publishedAt)}
-              </p>
-              {safeArticleUrl ? (
-                <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">
-                  Read Article
-                </a>
-              ) : (
-                <span className="btn btn-light news-link">Invalid article URL</span>
-              )}
-            </article>
-          );
-        })}
-      </div>
+      {showDailySipReport && selectedDailySipReport ? (
+        <DailySipReportView report={selectedDailySipReport} onBack={() => setSelectedDailySipId(null)} />
+      ) : (
+        <>
+          <div className="news-grid">
+            {visibleArticles.map((article) => {
+              const safeArticleUrl = safeHttpUrl(article.url);
+              return (
+                <article className="news-card" key={article.id}>
+                  <BlogCardImage article={article} />
+                  <p className="news-card-tag">{article.sourceCategory}</p>
+                  <h3>{article.title}</h3>
+                  <p>{article.summary}</p>
+                  <p className="news-card-meta">
+                    {article.sourceName} | {formatDate(article.publishedAt)}
+                  </p>
+                  {article.sourceId === "daily-sip" ? (
+                    <button
+                      className="btn btn-light news-link"
+                      type="button"
+                      onClick={() => {
+                        setFilter("daily-sip");
+                        setSelectedDailySipId(article.id);
+                      }}
+                    >
+                      Read Article
+                    </button>
+                  ) : safeArticleUrl ? (
+                    <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">
+                      Read Article
+                    </a>
+                  ) : (
+                    <span className="btn btn-light news-link">Invalid article URL</span>
+                  )}
+                </article>
+              );
+            })}
+          </div>
 
-      {renderPageControls("bottom")}
+          {renderPageControls("bottom")}
+        </>
+      )}
     </section>
   );
 }

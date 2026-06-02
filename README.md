@@ -49,9 +49,33 @@ VITE_SUPABASE_ANON_KEY=
 Optional commerce/contact variables:
 
 ```bash
-VITE_CHECKOUT_URL=
 VITE_SALES_EMAIL=
 ```
+
+Checkout is created server-side by the `create-checkout-session` Supabase Edge Function. Configure these as Supabase secrets, not frontend variables:
+
+```bash
+STRIPE_SECRET_KEY=
+STRIPE_PRICE_ID_PRO=
+STRIPE_PRICE_ID_FOUNDING=
+STRIPE_WEBHOOK_SECRET=
+APP_URL=
+ALLOWED_ORIGIN=
+```
+
+Use Stripe Price IDs so the selected plan cannot open the wrong billing product. Pro uses Stripe Checkout in subscription mode; Founding Cohort uses Checkout in payment mode. The function attaches the signed-in Supabase user ID, selected plan, source, and next route to Checkout metadata.
+
+Stripe should send these events to the deployed `billing-webhook` function:
+
+```text
+checkout.session.completed
+checkout.session.async_payment_succeeded
+customer.subscription.created
+customer.subscription.updated
+customer.subscription.deleted
+```
+
+The webhook accepts Stripe's `Stripe-Signature` header with `STRIPE_WEBHOOK_SECRET`, keeps the older internal `x-billing-webhook-*` HMAC path, and writes paid access state to `customer_subscriptions`.
 
 Provider API keys do not belong in frontend env files. Keep OpenAI, Anthropic, Google, billing webhook, and other private keys in Supabase Edge Function secrets.
 
@@ -111,8 +135,21 @@ Deploy Edge Functions as needed:
 ```bash
 supabase functions deploy ai-router
 supabase functions deploy billing-webhook
+supabase functions deploy create-checkout-session
 supabase functions deploy news-router
 ```
+
+After deploying `billing-webhook`, add the deployed function URL as a Stripe Dashboard webhook endpoint and select:
+
+```text
+checkout.session.completed
+checkout.session.async_payment_succeeded
+customer.subscription.created
+customer.subscription.updated
+customer.subscription.deleted
+```
+
+`billing-webhook` intentionally uses `verify_jwt = false` because Stripe cannot send a Supabase JWT. The endpoint is protected by Stripe's `Stripe-Signature` verification with `STRIPE_WEBHOOK_SECRET`; the older internal `x-billing-webhook-*` HMAC path remains available for trusted server-to-server billing updates.
 
 Apply migrations with the Supabase CLI:
 

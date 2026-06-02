@@ -1,0 +1,271 @@
+{
+  "id": "daily-sip-2026-05-17",
+  "slug": "daily-sip",
+  "title": "Daily Sip: Beverage Market Briefing for May 17, 2026",
+  "subtitle": "An in-depth Flavor Blog overview of the top 20 beverage industry articles across wine, beer, spirits, coffee, tea, regulation, and adjacent market signals.",
+  "generatedAt": "2026-05-17T12:00:00.000Z",
+  "headerImageUrl": "/daily-sip/daily-sip-2026-05-17-header.png",
+  "sourceCount": 13,
+  "articleCount": 20,
+  "editorialStandard": "daily-sip-avant-garde-v2-2026-05",
+  "coverage": [
+    "Wine",
+    "Beer",
+    "Spirits",
+    "Coffee",
+    "Regulation"
+  ],
+  "executiveSummary": [
+    "Daily Sip scanned 13 beverage sources and selected 20 stories with clear source attribution, concrete trade relevance, and limited hype.",
+    "Today's strongest signals sit in Coffee, Regulation, Beer, Spirits, Wine. The leading source trail begins with Daily Coffee News, Alcohol and Tobacco Tax and Trade Bureau, Brewers Association, The Beer Connoisseur.",
+    "Editorial stance: launches, awards, investments, and claims are treated as signals, not endorsements. The test is what may change for price, access, labor, compliance, training, or guest language."
+  ],
+  "marketThemes": [
+    {
+      "title": "Rules rewrite the shelf",
+      "body": "2 ranked stories sit here, led by Alcohol and Tobacco Tax and Trade Bureau. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Demand splits into smaller occasions",
+      "body": "8 ranked stories sit here, led by Daily Coffee News, Brewers Association, The Beer Connoisseur. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Supply sets the tempo",
+      "body": "1 ranked story sits here, led by Specialty Coffee Association. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Capital moves the room",
+      "body": "1 ranked story sits here, led by Good Beer Hunting. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    }
+  ],
+  "watchlist": [
+    "Watch whether Coffee, Regulation, Beer repeat across the next two scans before calling them trends.",
+    "Check primary sources before changing menu, shelf, pricing, or compliance language.",
+    "Separate product launches and awards from independent evidence of demand.",
+    "Flag single-source, disputed, or promotional claims for human review before amplifying them."
+  ],
+  "articles": [
+    {
+      "rank": 1,
+      "title": "U.S. Grocery Coffee Prices Hit All-Time Average High in April",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-05-15T16:14:11.000Z",
+      "url": "https://dailycoffeenews.com/2026/05/15/u-s-grocery-coffee-prices-hit-all-time-average-high-in-april/",
+      "summary": "Daily Coffee News reports: U.S. Grocery Coffee Prices Hit All-Time Average High in April. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 2,
+      "title": "TTB Newsletter for May 15 2026",
+      "sourceName": "Alcohol and Tobacco Tax and Trade Bureau",
+      "category": "Regulation",
+      "publishedAt": "2026-05-15T07:00:00.000Z",
+      "url": "https://content.govdelivery.com/accounts/USTTB/bulletins/41770aa",
+      "summary": "Alcohol and Tobacco Tax and Trade Bureau reports: TTB Newsletter for May 15 2026. Context: Latest regulatory or market update from Alcohol and Tobacco Tax and Trade Bureau. Regulatory pressure is the signal: labels, warnings, taxes, or trade rules may alter cost, access, or compliance work.",
+      "whyItMatters": "Follow the operational burden first: producers, importers, retailers, or restaurants may need to adjust before customers see the change.",
+      "marketImpact": "compliance timelines, label language, import friction, and whether operators need new staff talking points."
+    },
+    {
+      "rank": 3,
+      "title": "Craft Beer's Vibe Shift, Quantified",
+      "sourceName": "Brewers Association",
+      "category": "Beer",
+      "publishedAt": "2026-05-11T22:33:51.000Z",
+      "url": "https://www.brewersassociation.org/insights/craft-beers-vibe-shift-quantified/",
+      "summary": "Brewers Association reports: Craft Beer's Vibe Shift, Quantified. Context: After years of difficult headlines, the craft beer industry entered 2026 with something it has missed: better vibes. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 4,
+      "title": "ARARAT Nairi Armenian Brandy Aged 20 Years: Premium Product, Characteristics, and Tasting Features",
+      "sourceName": "The Beer Connoisseur",
+      "category": "Beer",
+      "publishedAt": "2026-05-15T22:44:14.000Z",
+      "url": "https://beerconnoisseur.com/ararat-nairi-armenian-brandy-aged-20-years/",
+      "summary": "The Beer Connoisseur reports: ARARAT Nairi Armenian Brandy Aged 20 Years: Premium Product, Characteristics, and Tasting Features. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 5,
+      "title": "A Look Inside American Drinking Places",
+      "sourceName": "Brewers Association",
+      "category": "Beer",
+      "publishedAt": "2026-05-13T22:10:59.000Z",
+      "url": "https://www.brewersassociation.org/insights/a-look-inside-american-drinking-places/",
+      "summary": "Brewers Association reports: A Look Inside American Drinking Places. Context: What's happening inside today's drinking place, and what does it mean for craft beer? Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 6,
+      "title": "Bitburger Launches Limited-Edition \"Soccer Edition 2026\" Premium Pilsner Cans Celebrating Global Soccer Fans",
+      "sourceName": "The Beer Connoisseur",
+      "category": "Beer",
+      "publishedAt": "2026-05-13T18:25:30.000Z",
+      "url": "https://beerconnoisseur.com/bitburger-soccer-edition-2026-premium-pilsner/",
+      "summary": "The Beer Connoisseur reports: Bitburger Launches Limited-Edition \"Soccer Edition 2026\" Premium Pilsner Cans Celebrating Global Soccer Fans. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 7,
+      "title": "New SCA Equitable Value Distribution Report",
+      "sourceName": "Specialty Coffee Association",
+      "category": "Coffee",
+      "publishedAt": "2026-05-13T03:00:14.000Z",
+      "url": "https://sca.coffee/sca-news/2026/5/12/sca-report-equitable-value-distribution",
+      "summary": "Specialty Coffee Association reports: New SCA Equitable Value Distribution Report. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 8,
+      "title": "Coffee, Carbon and Biodiversity: Rethinking Sustainability Initiatives for Shared Value | 25, Issue 25",
+      "sourceName": "Specialty Coffee Association",
+      "category": "Coffee",
+      "publishedAt": "2026-04-29T11:14:27.000Z",
+      "url": "https://sca.coffee/sca-news/25/issue-25-business-carbon-and-biodiversity",
+      "summary": "Specialty Coffee Association reports: Coffee, Carbon and Biodiversity: Rethinking Sustainability Initiatives for Shared Value | 25, Issue 25. Supply is the signal: weather, harvest, inventory, or logistics pressure may show up later as price or availability changes.",
+      "whyItMatters": "Supply pressure matters before it becomes obvious: buyers may need alternatives, flexible pricing, or clearer substitution language.",
+      "marketImpact": "allocation changes, substitute products, by-the-glass pricing, and how transparently buyers explain scarcity."
+    },
+    {
+      "rank": 9,
+      "title": "3 NYC Bartenders Take Us on Their Favorite Summer Bar Crawls",
+      "sourceName": "VinePair",
+      "category": "Spirits",
+      "publishedAt": "2026-05-17T15:00:21.000Z",
+      "url": "https://vinepair.com/articles/nyc-bartenders-neighborhood-bar-crawls/",
+      "summary": "VinePair reports: 3 NYC Bartenders Take Us on Their Favorite Summer Bar Crawls. Category signal: watch whether this spirits story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the spirits signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 10,
+      "title": "The VinePair Podcast: Why Has NYC Turned Prohibitionist?",
+      "sourceName": "VinePair",
+      "category": "Wine",
+      "publishedAt": "2026-05-15T13:00:24.000Z",
+      "url": "https://vinepair.com/articles/vp-podcast-has-nyc-turned-prohibitionist/",
+      "summary": "VinePair reports: The VinePair Podcast: Why Has NYC Turned Prohibitionist?. Context: Today's episode of the \"VinePair Podcast\" is brought to you by Domenica. Category signal: watch whether this wine story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the wine signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 11,
+      "title": "Inside Whiskey Allocations: Why Only Some Stores Get Pappy, Buffalo Trace, and Other Prized Bottles",
+      "sourceName": "VinePair",
+      "category": "Spirits",
+      "publishedAt": "2026-05-14T16:00:45.000Z",
+      "url": "https://vinepair.com/articles/inside-whiskey-allocation-system/",
+      "summary": "VinePair reports: Inside Whiskey Allocations: Why Only Some Stores Get Pappy, Buffalo Trace, and Other Prized Bottles. Context: Every weekday morning, between the hours of 9 and 11 a.m. Category signal: watch whether this spirits story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the spirits signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 12,
+      "title": "Whisky Watch: Two Releases From Penelope, Nikka From The Barrel Deconstructed, & More",
+      "sourceName": "Whisky Advocate",
+      "category": "Spirits",
+      "publishedAt": "2026-05-15T15:05:00.000Z",
+      "url": "https://whiskyadvocate.com/new-whiskey-from-nikka-penelope-and-more",
+      "summary": "Whisky Advocate reports: Whisky Watch: Two Releases From Penelope, Nikka From The Barrel Deconstructed, & More. Context: The first three releases in Penelope's Architects of Golf Series are here, Filmland Spirits Crimson Cask is out, and Nikka From the Barrel's new three-bottle set. Category signal: watch whether this spirits story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the spirits signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 13,
+      "title": "News Notes: Win Your Own Backyard Bar, Buffalo Trace Has a New Restaurant & More",
+      "sourceName": "Whisky Advocate",
+      "category": "Spirits",
+      "publishedAt": "2026-05-15T14:28:22.000Z",
+      "url": "https://whiskyadvocate.com/whisky-news-roundup-May-15-2026",
+      "summary": "Whisky Advocate reports: News Notes: Win Your Own Backyard Bar, Buffalo Trace Has a New Restaurant & More. Context: Buffalo Trace's John G. Category signal: watch whether this spirits story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the spirits signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 14,
+      "title": "Hoplark unveils comprehensive brand refresh",
+      "sourceName": "Beverage Industry Tea and Coffee",
+      "category": "Coffee",
+      "publishedAt": "2026-05-15T14:00:00.000Z",
+      "url": "https://www.bevindustry.com/articles/98379-hoplark-unveils-comprehensive-brand-refresh",
+      "summary": "Beverage Industry Tea and Coffee reports: Hoplark unveils comprehensive brand refresh. Context: Hoplark is unveiling a comprehensive brand refresh, introducing a new visual identity inspired by how people actually drink today. Category signal: watch whether this coffee story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the coffee signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 15,
+      "title": "Weekly Coffee News: Weber Opens European HQ + New Cup Tasters Champ",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-05-15T12:59:31.000Z",
+      "url": "https://dailycoffeenews.com/2026/05/15/weekly-coffee-news-weber-opens-european-hq-new-cup-tasters-champ/",
+      "summary": "Daily Coffee News reports: Weekly Coffee News: Weber Opens European HQ + New Cup Tasters Champ. Context: Welcome to DCN's Weekly Coffee News! Category signal: watch whether this coffee story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the coffee signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 16,
+      "title": "From Punchline to Bottom Line - Sazarac Buys Up the BuzzBallz Juggernaut",
+      "sourceName": "Good Beer Hunting",
+      "category": "Beer",
+      "publishedAt": "2024-03-20T23:05:16.000Z",
+      "url": "https://www.goodbeerhunting.com/sightlines/2024/3/20/sazarac-buys-up-the-buzzballz",
+      "summary": "Good Beer Hunting reports: From Punchline to Bottom Line - Sazarac Buys Up the BuzzBallz Juggernaut. Context: THE GIST On March 20, spirits giant Sazerac announced it would acquire BuzzBallz, a Texas-based brand that turned $3.50 spherical cocktails into millions in annual sales. Capital is the signal: ownership, funding, or distribution shifts can change who gets reach and negotiating power.",
+      "whyItMatters": "Capital movement can reshape distribution leverage, category visibility, and the room smaller producers have to compete.",
+      "marketImpact": "distribution gains, portfolio changes, retail/menu placement, and whether smaller competitors lose visibility."
+    },
+    {
+      "rank": 17,
+      "title": "TTB Newsletter for May 1 2026",
+      "sourceName": "Alcohol and Tobacco Tax and Trade Bureau",
+      "category": "Regulation",
+      "publishedAt": "2026-05-01T07:00:00.000Z",
+      "url": "https://content.govdelivery.com/accounts/USTTB/bulletins/41570a2",
+      "summary": "Alcohol and Tobacco Tax and Trade Bureau reports: TTB Newsletter for May 1 2026. Context: Latest regulatory or market update from Alcohol and Tobacco Tax and Trade Bureau. Regulatory pressure is the signal: labels, warnings, taxes, or trade rules may alter cost, access, or compliance work.",
+      "whyItMatters": "Follow the operational burden first: producers, importers, retailers, or restaurants may need to adjust before customers see the change.",
+      "marketImpact": "compliance timelines, label language, import friction, and whether operators need new staff talking points."
+    },
+    {
+      "rank": 18,
+      "title": "Blue Point Brewing Launches New Year-Round Magic Hour IPA",
+      "sourceName": "The Beer Connoisseur",
+      "category": "Beer",
+      "publishedAt": "2026-05-14T20:02:02.000Z",
+      "url": "https://beerconnoisseur.com/blue-point-brewing-magic-hour-ipa-launch/",
+      "summary": "The Beer Connoisseur reports: Blue Point Brewing Launches New Year-Round Magic Hour IPA. Category signal: watch whether this beer story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the beer signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 19,
+      "title": "A Whisky Lover's Travel Guide to Houston",
+      "sourceName": "Whisky Advocate",
+      "category": "Spirits",
+      "publishedAt": "2026-05-14T15:16:43.000Z",
+      "url": "https://whiskyadvocate.com/48-hours-in-houston",
+      "summary": "Whisky Advocate reports: A Whisky Lover's Travel Guide to Houston. Context: A whisky lover's travel guide to spending 48 Hours in America's Space City. Category signal: watch whether this spirits story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the spirits signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 20,
+      "title": "El Salvador Coffee Report: Production Declining Amid Structural Challenges",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-05-14T14:36:21.000Z",
+      "url": "https://dailycoffeenews.com/2026/05/14/el-salvador-coffee-report-production-declining-amid-structural-challenges/",
+      "summary": "Daily Coffee News reports: El Salvador Coffee Report: Production Declining Amid Structural Challenges. People are the signal: training, labor, and education stories often change how teams explain the category on the floor.",
+      "whyItMatters": "Education and labor stories change the human layer: training, service confidence, hiring, and how teams talk about drinks.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    }
+  ],
+  "headerImagePrompt": "Use case: photorealistic-natural\nAsset type: wide website article header image\nPrimary request: Create a realistic editorial photo for Daily Sip daily-sip-2026-05-17, covering the full beverage market rather than only the lead story.\nLead story cue: Coffee - U.S. Grocery Coffee Prices Hit All-Time Average High in April.\nSupporting beverage topics to represent subtly: Regulation: TTB Newsletter for May 15 2026; Beer: Craft Beer's Vibe Shift, Quantified; Beer: ARARAT Nairi Armenian Brandy Aged 20 Years: Premium Product, Characteristics, and Tasting Features; Beer: A Look Inside American Drinking Places; Beer: Bitburger Launches Limited-Edition \"Soccer Edition 2026\" Premium Pilsner Cans Celebrating Global Soccer Fans.\nCoverage mix: Wine, Beer, Spirits, Coffee, Regulation.\nSubject: a source-attributed, unbiased beverage industry briefing across wine, beer, spirits, coffee, tea, regulation, supply, pricing, and consumer-demand signals.\nComposition direction: bar-and-retail planning table with mixed beverage samples, distributor order sheets, shelf tags without readable text, and supply notes, shot from a low editorial angle.\nScene/backdrop: avant-garde newsroom meets beverage trade desk, refined but restrained, varied category cues, subtle financial research materials, and no single drink category dominating the frame.\nComposition/framing: wide 16:9 landscape crop, visually distinct from other Daily Sip headers, balanced foreground objects, usable dark negative space near the top for page overlay if needed.\nLighting/mood: natural window light mixed with polished editorial contrast, sophisticated and current.\nConstraints: no readable text, no logos, no brand labels, no people, no watermark, no exact replication of any source photo."
+}
+

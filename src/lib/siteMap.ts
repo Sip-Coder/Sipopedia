@@ -1,4 +1,6 @@
-﻿export type PageRoomAccess = "Lobby" | "Game" | "Boss";
+import { WORKSPACE_NAV_ITEMS, type WorkspaceSectionId } from "./workspaceNavigation";
+
+export type PageRoomAccess = "Lobby" | "Game" | "Boss";
 export type PagePublicationStatus = "public" | "edit" | "off";
 
 export type SiteMapPage = {
@@ -22,11 +24,19 @@ export const PAGE_STATUS_STORAGE_KEY = "sipstudies:page-statuses:v2";
 export const LEGACY_PAGE_STATUS_STORAGE_KEY = "sipstudies:page-statuses:v1";
 export const PAGE_STATUS_EVENT = "sipstudies:page-statuses-changed";
 
+const WORKSPACE_SECTION_LABELS: Record<WorkspaceSectionId, string> = {
+  learn: "Learn",
+  taste: "Taste",
+  connect: "Connect"
+};
+
 export const SITE_MAP_PAGES: SiteMapPage[] = [
   { route: "home", label: "Home", room: "Lobby", section: "Marketing", description: "Public landing page.", defaultRoom: "Lobby", defaultStatus: "public" },
   { route: "pricing", label: "Pricing", room: "Lobby", section: "Marketing", description: "Plan comparison and subscription pitch.", defaultRoom: "Lobby", defaultStatus: "public" },
+  { route: "support", label: "Support & Teams", room: "Lobby", section: "Support", description: "FAQ, enrollment help, billing guidance, study remediation, and team-training intake.", defaultRoom: "Lobby", defaultStatus: "public" },
+  { route: "study-paths", label: "Credential Paths", room: "Lobby", section: "Study", description: "Independent WSET, CMS, Cicerone, and regional-scholar study-path guidance.", defaultRoom: "Lobby", defaultStatus: "public" },
   { route: "checkout", label: "Checkout", room: "Lobby", section: "Commerce", description: "Enrollment and checkout intake.", defaultRoom: "Lobby", defaultStatus: "public" },
-  { route: "login", label: "Sign In", room: "Lobby", section: "Account", description: "Authentication panel.", defaultRoom: "Lobby", defaultStatus: "public" },
+  { route: "login", label: "Log In", room: "Lobby", section: "Account", description: "Authentication panel.", defaultRoom: "Lobby", defaultStatus: "public" },
   { route: "account", label: "Account Dashboard", room: "Lobby", section: "Account", description: "User profile, achievements, billing, and privacy controls.", defaultRoom: "Lobby", defaultStatus: "public" },
   { route: "logout", label: "Signed Out", room: "Lobby", section: "Account", description: "Session end landing page.", defaultRoom: "Lobby", defaultStatus: "public" },
   { route: "terms", label: "Terms", room: "Lobby", section: "Policy", description: "Terms of service.", defaultRoom: "Lobby", defaultStatus: "public" },
@@ -34,25 +44,16 @@ export const SITE_MAP_PAGES: SiteMapPage[] = [
   { route: "refund", label: "Refund", room: "Lobby", section: "Policy", description: "Refund policy.", defaultRoom: "Lobby", defaultStatus: "public" },
   { route: "success", label: "Checkout Success", room: "Lobby", section: "Commerce", description: "Successful payment handoff page.", defaultRoom: "Lobby", defaultStatus: "public" },
   { route: "cancel", label: "Checkout Cancel", room: "Lobby", section: "Commerce", description: "Canceled checkout handoff page.", defaultRoom: "Lobby", defaultStatus: "public" },
-  { route: "app/starter", label: "Launch Deck", room: "Lobby", section: "Welcome", description: "Public launch deck preview.", defaultRoom: "Lobby", defaultStatus: "public" },
-  { route: "app/sip-academy", label: "Sip Academy", room: "Game", section: "Learn", description: "Guided wine lessons.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/sip-game", label: "Sip Game", room: "Game", section: "Learn", description: "Game loop and equipment mastery.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/sipopedia", label: "Sipopedia", room: "Game", section: "Learn", description: "Terminology and citations.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/beverage-quiz", label: "Beverage Quiz", room: "Game", section: "Learn", description: "Fast recall checks.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/regions", label: "Regions", room: "Game", section: "Learn", description: "Global region atlas and subpages.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/maps", label: "Maps", room: "Game", section: "Learn", description: "AI wine cartography.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/grapes", label: "Grapes & Grains", room: "Game", section: "Learn", description: "Base ingredients and subpages.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/cocktails", label: "Bev Recipes", room: "Game", section: "Learn", description: "Cocktail, wine, and beer maps.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/resources", label: "Resources", room: "Game", section: "Learn", description: "Reference library and practice prompts.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/flavor-wheel", label: "Flavor Wheel", room: "Game", section: "Taste", description: "Aroma calibration wheel.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/tasting-journal", label: "Journal Archive", room: "Game", section: "Taste", description: "Saved tasting data archive.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/flavors", label: "Tasting Journal", room: "Game", section: "Taste", description: "Structured tasting notes.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/beverage-news", label: "Beverage News", room: "Game", section: "Connect", description: "Industry radar feeds.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/flavor-blog", label: "Flavor Blog", room: "Game", section: "Connect", description: "Sip Studies blog and Substack streams.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/ai-winecast", label: "Ai Winecast", room: "Game", section: "Connect", description: "AI wine podcast index and episode pages.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/tasting-groups", label: "Tasting Groups", room: "Game", section: "Connect", description: "Cohort discovery.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/ai-news", label: "AI News", room: "Game", section: "Connect", description: "AI research and operations feed.", defaultRoom: "Game", defaultStatus: "public" },
-  { route: "app/somm-events", label: "Somm Events", room: "Game", section: "Connect", description: "Event link studio.", defaultRoom: "Game", defaultStatus: "public" },
+  { route: "app/starter", label: "Launch Pad", room: "Lobby", section: "Welcome", description: "Public launch pad preview.", defaultRoom: "Lobby", defaultStatus: "public" },
+  ...WORKSPACE_NAV_ITEMS.map((item) => ({
+    route: item.route,
+    label: item.label,
+    room: "Game" as const,
+    section: WORKSPACE_SECTION_LABELS[item.section],
+    description: item.description,
+    defaultRoom: "Game" as const,
+    defaultStatus: "public" as const
+  })),
   { route: "admin", label: "Admin Console", room: "Boss", section: "Operations", description: "Back-office dashboard.", defaultRoom: "Boss", defaultStatus: "edit" },
   { route: "admin/terminology", label: "Terms Ops", room: "Boss", section: "Operations", description: "Terminology publishing workflow.", defaultRoom: "Boss", defaultStatus: "edit" }
 ];

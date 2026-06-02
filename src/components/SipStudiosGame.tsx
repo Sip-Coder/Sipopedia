@@ -81,6 +81,27 @@ const PLAYER_SHEET = "/game/sprites/sippy-sheet-v1-alpha.png";
 const PLAYER_ASPECT = 0.375;
 const CHARACTER_ASPECT = 0.5;
 
+const FINAL_LEVEL_CELEBRATIONS: Record<FacilityId, { image: string; title: string; copy: string; alt: string }> = {
+  winery: {
+    image: "/game/finale/level8-winery-celebration-v2.png",
+    title: "Winery Pairing Mastery",
+    copy: "You completed the winery pairing course. Sippy, Roma, Hummin, and the wine professionals are opening champagne for your achievement.",
+    alt: "Winery professionals celebrating with Sippy, Roma, and Hummin as champagne corks pop"
+  },
+  brewery: {
+    image: "/game/finale/level8-brewery-celebration-v2.png",
+    title: "Brewery Pairing Mastery",
+    copy: "You completed the brewery pairing course. Sippy, Roma, Hummin, and the brewing professionals are raising glasses for your achievement.",
+    alt: "Brewery professionals celebrating with Sippy, Roma, and Hummin as champagne opens"
+  },
+  distillery: {
+    image: "/game/finale/level8-distillery-celebration-v2.png",
+    title: "Distillery Pairing Mastery",
+    copy: "You completed the distillery pairing course. Sippy, Roma, Hummin, and the spirits professionals are toasting your achievement.",
+    alt: "Distillery professionals celebrating with Sippy, Roma, and Hummin as champagne corks pop"
+  }
+};
+
 const CHARACTER_SPRITES = {
   ariaWine: "/game/sprites/characters/support-0.png",
   brunoBeer: "/game/sprites/characters/support-2.png",
@@ -93,13 +114,19 @@ const CHARACTER_SPRITES = {
   romaBeerClipboard: "/game/sprites/characters/beer-1.png",
   romaSpirit: "/game/sprites/characters/spirit-0.png",
   romaSpiritClipboard: "/game/sprites/characters/spirit-1.png",
+  romaSpark: "/game/sprites/characters/spark-0.png",
+  romaSparkClipboard: "/game/sprites/characters/spark-1.png",
   romaWine: "/game/sprites/characters/roma-0.png",
   romaWineLeaf: "/game/sprites/characters/roma-2.png",
   sippyBeer: "/game/sprites/characters/beer-4.png",
   sippyBeerGesture: "/game/sprites/characters/beer-5.png",
+  sippySpark: "/game/sprites/characters/spark-4.png",
+  sippySparkGesture: "/game/sprites/characters/spark-5.png",
   sippySpirit: "/game/sprites/characters/spirit-4.png",
   sippySpiritGesture: "/game/sprites/characters/spirit-5.png",
   sippyWine: "/game/sprites/characters/main-5.png",
+  humminSpark: "/game/sprites/characters/spark-2.png",
+  humminSparkBook: "/game/sprites/characters/spark-3.png",
   solSpirit: "/game/sprites/characters/support-4.png"
 } satisfies Record<string, string>;
 
@@ -364,9 +391,9 @@ const EQUIPMENT_FACILITIES: Facility[] = [
     background: "/game/backgrounds/winery-hub-v1.png",
     leadId: "sippy",
     guides: layoutGuides("equipment-lab", "winery", "sippy", [
-      placeGuide(MAIN_GUIDES.sippy, 66, 52),
-      placeGuide(MAIN_GUIDES.roma, 50, 64),
-      placeGuide(MAIN_GUIDES.hummin, 82, 58),
+      placeGuide(MAIN_GUIDES.sippy, 66, 52, { sheet: CHARACTER_SPRITES.sippySpark }),
+      placeGuide(MAIN_GUIDES.roma, 50, 64, { sheet: CHARACTER_SPRITES.romaSpark }),
+      placeGuide(MAIN_GUIDES.hummin, 82, 58, { sheet: CHARACTER_SPRITES.humminSpark }),
       {
         id: "cellar-mentor",
         name: "Aria",
@@ -744,8 +771,8 @@ const RAW_INGREDIENT_FACILITIES: Facility[] = [
         stage: "Harvest timing",
         purpose: "Chooses when and how fruit leaves the vineyard based on sugar, acid, flavor, weather, and style.",
         detail: "Harvest decisions balance chemistry and taste. Hand picking protects delicate clusters; machine harvesting can move fast when weather pressure rises.",
-        x: 70,
-        y: 70,
+        x: 73,
+        y: 52,
         w: 20,
         h: 18,
         image: "/game/checkpoint-scenes/winery-harvest-pick-aria-v1.png"
@@ -807,10 +834,10 @@ const RAW_INGREDIENT_FACILITIES: Facility[] = [
         stage: "Hop growing",
         purpose: "Trains hop bines upward so cones develop with airflow, sunlight, and harvest access.",
         detail: "Hop variety, trellis height, disease pressure, harvest date, and drying choices influence bitterness, oil intensity, and aroma freshness.",
-        x: 46,
-        y: 26,
-        w: 17,
-        h: 22,
+        x: 78,
+        y: 70,
+        w: 18,
+        h: 18,
         image: "/commodities/hops/cascade.png"
       },
       {
@@ -819,10 +846,10 @@ const RAW_INGREDIENT_FACILITIES: Facility[] = [
         stage: "Post-harvest prep",
         purpose: "Turns harvested grain into malt with controlled germination and kilning.",
         detail: "Malting unlocks enzymes and flavor. Kilning can keep malt pale and bready or push toast, biscuit, caramel, roast, and color.",
-        x: 78,
-        y: 70,
-        w: 18,
-        h: 18,
+        x: 46,
+        y: 26,
+        w: 17,
+        h: 22,
         image: "/commodities/grains/wheat.png"
       }
     ],
@@ -908,9 +935,9 @@ const RAW_INGREDIENT_FACILITIES: Facility[] = [
 function makeAdvancedGuides(facilityId: FacilityId, leadLines: string[], supportLines: string[]): Guide[] {
   if (facilityId === "winery") {
     return [
-      { ...placeGuide(MAIN_GUIDES.sippy, 72, 48), lines: leadLines },
-      placeGuide(MAIN_GUIDES.roma, 58, 62, { sheet: CHARACTER_SPRITES.romaWineLeaf }),
-      placeGuide(MAIN_GUIDES.hummin, 84, 64),
+      { ...placeGuide(MAIN_GUIDES.sippy, 72, 48, { sheet: CHARACTER_SPRITES.sippySparkGesture }), lines: leadLines },
+      placeGuide(MAIN_GUIDES.roma, 58, 62, { sheet: CHARACTER_SPRITES.romaSparkClipboard }),
+      placeGuide(MAIN_GUIDES.hummin, 84, 64, { sheet: CHARACTER_SPRITES.humminSparkBook }),
       {
         id: "advanced-wine-mentor",
         name: "Aria",
@@ -929,9 +956,9 @@ function makeAdvancedGuides(facilityId: FacilityId, leadLines: string[], support
 
   if (facilityId === "brewery") {
     return [
-      { ...placeGuide(MAIN_GUIDES.roma, 70, 46, { sheet: CHARACTER_SPRITES.romaBeer }), lines: leadLines },
-      placeGuide(MAIN_GUIDES.sippy, 82, 64, { sheet: CHARACTER_SPRITES.sippyBeer }),
-      placeGuide(MAIN_GUIDES.hummin, 56, 66, { sheet: CHARACTER_SPRITES.humminBeer, flip: -1 }),
+    { ...placeGuide(MAIN_GUIDES.roma, 70, 46, { sheet: CHARACTER_SPRITES.romaSpark }), lines: leadLines },
+    placeGuide(MAIN_GUIDES.sippy, 82, 64, { sheet: CHARACTER_SPRITES.sippySpark }),
+    placeGuide(MAIN_GUIDES.hummin, 56, 66, { sheet: CHARACTER_SPRITES.humminSpark, flip: -1 }),
       {
         id: "advanced-brew-mentor",
         name: "Bruno",
@@ -949,9 +976,9 @@ function makeAdvancedGuides(facilityId: FacilityId, leadLines: string[], support
   }
 
   return [
-    { ...placeGuide(MAIN_GUIDES.hummin, 70, 48, { sheet: CHARACTER_SPRITES.humminSpirit }), lines: leadLines },
-    placeGuide(MAIN_GUIDES.sippy, 56, 66, { sheet: CHARACTER_SPRITES.sippySpirit, flip: -1 }),
-    placeGuide(MAIN_GUIDES.roma, 82, 64, { sheet: CHARACTER_SPRITES.romaSpirit }),
+    { ...placeGuide(MAIN_GUIDES.hummin, 70, 48, { sheet: CHARACTER_SPRITES.humminSparkBook }), lines: leadLines },
+    placeGuide(MAIN_GUIDES.sippy, 56, 66, { sheet: CHARACTER_SPRITES.sippySparkGesture, flip: -1 }),
+    placeGuide(MAIN_GUIDES.roma, 82, 64, { sheet: CHARACTER_SPRITES.romaSparkClipboard }),
     {
       id: "advanced-spirit-mentor",
       name: "Sol",
@@ -986,7 +1013,7 @@ function makeFacility(
   checkpoints: Checkpoint[]
 ): Facility {
   const names: Record<FacilityId, string> = { winery: "Winery", brewery: "Brewery", distillery: "Distillery" };
-  const accents: Record<FacilityId, string> = { winery: "#8f3d8d", brewery: "#618531", distillery: "#c87824" };
+  const accents: Record<FacilityId, string> = { winery: "#8f3d8d", brewery: "#c99a22", distillery: "#4f9a62" };
   const leadIds: Record<FacilityId, string> = { winery: "sippy", brewery: "roma", distillery: "hummin" };
   return {
     id,
@@ -1142,12 +1169,16 @@ function getVisitedKey(levelId: LevelId, facilityId: FacilityId, checkpointId: s
 }
 
 function getGeneratedCheckpointImage(levelId: LevelId, facilityId: FacilityId, checkpointId: string): string {
-  return `/game/checkpoint-scenes/${levelId}-${facilityId}-${checkpointId}-v2.png`;
+  return `/game/checkpoint-scenes/${levelId}-${facilityId}-${checkpointId}-v3.png`;
 }
 
 function getGeneratedGuideSprite(levelId: LevelId, facilityId: FacilityId, guideId: string): string {
   const characterId = guideId === "sippy" || guideId === "roma" || guideId === "hummin" ? guideId : "support";
   return `/game/sprites/characters/generated/${levelId}-${facilityId}-${characterId}-v2.png`;
+}
+
+function getRoomCompletionKey(levelId: LevelId, facilityId: FacilityId): string {
+  return `${levelId}:${facilityId}`;
 }
 
 const getFramePosition = (frame: number, totalFrames: number) => `${(frame / Math.max(1, totalFrames - 1)) * 100}%`;
@@ -1207,7 +1238,12 @@ export function SipStudiosGame() {
   const [walkDirection, setWalkDirection] = useState<WalkDirection>("down");
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string>("sippy");
+  const [hasGuideInteraction, setHasGuideInteraction] = useState(false);
   const [checkpointModalId, setCheckpointModalId] = useState<string | null>(null);
+  const [roomCompletionModalKey, setRoomCompletionModalKey] = useState<string | null>(null);
+  const [roomCompletionSeen, setRoomCompletionSeen] = useState<Record<string, true>>({});
+  const [finalCelebrationDismissed, setFinalCelebrationDismissed] = useState<Record<string, true>>({});
+  const [showQuickNextLevelCta, setShowQuickNextLevelCta] = useState(false);
   const [visited, setVisited] = useState<Record<string, number>>({});
   const [lineIndex, setLineIndex] = useState(0);
 
@@ -1233,11 +1269,20 @@ export function SipStudiosGame() {
   const levelCheckpointCount = level.facilities.reduce((total, item) => total + item.checkpoints.length, 0);
   const levelProgress = Math.min(100, (levelVisitedCount / levelCheckpointCount) * 100);
   const levelComplete = levelVisitedCount === levelCheckpointCount;
+  const isFinalLevelRoomComplete = level.number === 8 && roomComplete;
+  const finalCelebrationKey = getRoomCompletionKey(level.id, facility.id);
+  const isFinalLevelCelebration = isFinalLevelRoomComplete && !modalCheckpoint && !roomCompletionModalKey && !finalCelebrationDismissed[finalCelebrationKey];
+  const finalLevelCelebration = FINAL_LEVEL_CELEBRATIONS[facility.id];
+  const otherFacilities = level.facilities.filter((item) => item.id !== facility.id);
+  const nextLevel = LEVELS.find((item) => item.number === level.number + 1) ?? null;
+  const nextCheckpoint = facility.checkpoints.find((item) => !visited[getVisitedKey(level.id, facility.id, item.id)]) ?? null;
 
   const changeLevel = (nextLevelId: LevelId, nextFacilityId: FacilityId = facilityId) => {
     setLevelId(nextLevelId);
     setFacilityId(nextFacilityId);
     setCheckpointModalId(null);
+    setRoomCompletionModalKey(null);
+    setShowQuickNextLevelCta(false);
   };
 
   useEffect(() => {
@@ -1245,8 +1290,15 @@ export function SipStudiosGame() {
     setTarget(null);
     setPendingId(null);
     setActiveId(leadGuide.id);
+    setHasGuideInteraction(false);
+    setShowQuickNextLevelCta(false);
     setLineIndex(0);
   }, [facility.id, leadGuide.id, level.id]);
+
+  useEffect(() => {
+    if (!checkpointModalId) return;
+    if (roomCompletionModalKey) setRoomCompletionModalKey(null);
+  }, [checkpointModalId, roomCompletionModalKey]);
 
   useEffect(() => {
     const step = (ts: number) => {
@@ -1287,11 +1339,14 @@ export function SipStudiosGame() {
       setLineIndex(0);
       setPendingId(null);
       if ("purpose" in destination) {
+        setHasGuideInteraction(false);
         setCheckpointModalId(destination.id);
         setVisited((current) => ({
           ...current,
           [getVisitedKey(level.id, facility.id, destination.id)]: (current[getVisitedKey(level.id, facility.id, destination.id)] ?? 0) + 1
         }));
+      } else {
+        setHasGuideInteraction(true);
       }
     }
   }, [facility, level.id, pendingId, player]);
@@ -1325,10 +1380,26 @@ export function SipStudiosGame() {
     setActiveId(id);
     setLineIndex(0);
     setPendingId(null);
+    setHasGuideInteraction(isGuide);
     if (facility.checkpoints.some((item) => item.id === id)) {
       setCheckpointModalId(id);
       setVisited((current) => ({ ...current, [getVisitedKey(level.id, facility.id, id)]: (current[getVisitedKey(level.id, facility.id, id)] ?? 0) + 1 }));
     }
+  };
+
+  const closeCheckpointModal = () => {
+    const closingCheckpointId = checkpointModalId;
+    const roomWillBeComplete = facility.checkpoints.every(
+      (item) => item.id === closingCheckpointId || visited[getVisitedKey(level.id, facility.id, item.id)]
+    );
+
+    setCheckpointModalId(null);
+    const roomKey = getRoomCompletionKey(level.id, facility.id);
+    if (!roomWillBeComplete || roomCompletionSeen[roomKey]) return;
+    setRoomCompletionSeen((current) => ({ ...current, [roomKey]: true }));
+    setShowQuickNextLevelCta(false);
+    if (level.number === 8) return;
+    setRoomCompletionModalKey(roomKey);
   };
 
   const completeLesson = () => {
@@ -1341,14 +1412,14 @@ export function SipStudiosGame() {
     setLineIndex(0);
   };
 
-  const nextLine = () => {
-    if (roomComplete) {
-      const nextLevel = LEVELS.find((item) => item.number === level.number + 1);
-      if (nextLevel) changeLevel(nextLevel.id, facility.id);
-      return;
-    }
-    if (!activeGuide) return;
-    setLineIndex((current) => Math.min(current + 1, activeGuide.lines.length - 1));
+  const closeFinalCelebration = () => {
+    setFinalCelebrationDismissed((current) => ({ ...current, [finalCelebrationKey]: true }));
+  };
+
+  const navigateToWorkspace = (page: "sipopedia" | "maps" | "cocktails") => {
+    if (typeof window === "undefined") return;
+    setRoomCompletionModalKey(null);
+    window.location.hash = `#app/${page}`;
   };
 
   const toggleFullscreen = async () => {
@@ -1377,8 +1448,8 @@ export function SipStudiosGame() {
     >
       <header className="section-header sip-game-head">
         <div className="section-header-copy">
-          <p className="sip-game-kicker">A development by Sip Studios Adventures</p>
-          <h2>Sip by Bit</h2>
+          <p className="sip-game-kicker">A Development by Sip Studios:</p>
+          <h2>Sip by Bit Adventures</h2>
           <p className="sip-game-version">
             Current version: {level.version} - {level.title}
           </p>
@@ -1510,16 +1581,36 @@ export function SipStudiosGame() {
               <span>{facility.challenge}</span>
             </div>
 
-            <div className="sip-game-master-chip" aria-label={`${facility.name} mastery ${visitedCount} of ${facility.checkpoints.length}`}>
+            <div
+              className={`sip-game-master-chip ${showQuickNextLevelCta && roomComplete && !roomCompletionModalKey ? "has-next-cta" : ""}`}
+              aria-label={`${facility.name} mastery ${visitedCount} of ${facility.checkpoints.length}`}
+            >
               <strong>{facility.name} Mastery</strong>
               <span>{pendingId ? "Walking to hotspot..." : `${visitedCount}/${facility.checkpoints.length} checkpoints`}</span>
               <div className="sip-game-progress">
                 <div style={{ width: `${progress}%` }} />
               </div>
               <small>{roomComplete ? "Room complete" : `${levelVisitedCount}/${levelCheckpointCount} level checkpoints`}</small>
+              {showQuickNextLevelCta && roomComplete && !roomCompletionModalKey ? (
+                <button
+                  type="button"
+                  className="btn btn-primary sip-game-master-next-btn"
+                  onClick={() => {
+                    setShowQuickNextLevelCta(false);
+                    if (nextLevel) {
+                      changeLevel(nextLevel.id, facility.id);
+                      return;
+                    }
+                    setActiveId(leadGuide.id);
+                    setLineIndex(0);
+                  }}
+                >
+                  {nextLevel ? "Next Level" : "Finish Lesson"}
+                </button>
+              ) : null}
             </div>
 
-            {levelComplete ? (
+            {levelComplete && !isFinalLevelCelebration ? (
               <div className="sip-game-completion-card" role="status" aria-live="polite">
                 <p className="sip-game-dialogue-kicker">{level.completionTitle}</p>
                 <strong>{level.title} mastered</strong>
@@ -1533,25 +1624,23 @@ export function SipStudiosGame() {
               </div>
             ) : null}
 
-            <div className="sip-game-dialogue-card" role="dialog" aria-live="polite" aria-label={`${activeTitle} dialogue`}>
+            {activeGuide && hasGuideInteraction ? (
+              <div className="sip-game-dialogue-card" role="dialog" aria-live="polite" aria-label={`${activeTitle} dialogue`}>
               <p className="sip-game-dialogue-kicker">
                 {activeTitle} - {activeRole}
               </p>
               <p>{activeLine}</p>
-              <div className="sip-game-dialogue-actions">
-                <button type="button" className="btn btn-light" onClick={() => setActiveId(leadGuide.id)}>
-                  Lead
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={nextLine}
-                  disabled={!roomComplete && (!activeGuide || lineIndex >= activeGuide.lines.length - 1)}
-                >
-                  {roomComplete && level.number < LEVELS.length ? "Next Level" : "Next"}
-                </button>
+              {nextCheckpoint ? (
+                <p className="sip-game-dialogue-support">
+                  Checkpoint support: next focus is {nextCheckpoint.name} ({nextCheckpoint.stage.toLowerCase()}) for this {facility.name.toLowerCase()} run.
+                </p>
+              ) : (
+                <p className="sip-game-dialogue-support">
+                  Checkpoint support: all three checkpoints are covered for this {facility.name.toLowerCase()} run.
+                </p>
+              )}
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -1560,7 +1649,9 @@ export function SipStudiosGame() {
         <div
           className="sip-game-modal-backdrop"
           role="presentation"
-          onPointerDown={() => setCheckpointModalId(null)}
+          onPointerDown={(event) => {
+            if (event.target === event.currentTarget) closeCheckpointModal();
+          }}
         >
           <article
             className="sip-game-equipment-modal"
@@ -1568,8 +1659,12 @@ export function SipStudiosGame() {
             aria-modal="true"
             aria-label={`${modalCheckpoint.name} checkpoint briefing`}
             onPointerDown={(event) => event.stopPropagation()}
+            onClick={(event) => {
+              if ((event.target as HTMLElement).closest("button, a")) return;
+              closeCheckpointModal();
+            }}
           >
-            <button type="button" className="sip-game-modal-close" onClick={() => setCheckpointModalId(null)} aria-label="Close checkpoint briefing">
+            <button type="button" className="sip-game-modal-close" onClick={closeCheckpointModal} aria-label="Close checkpoint briefing">
               x
             </button>
             <div className="sip-game-equipment-portrait">
@@ -1594,6 +1689,104 @@ export function SipStudiosGame() {
                   <p key={note}>{note}</p>
                 ))}
               </div>
+            </div>
+          </article>
+        </div>
+      ) : null}
+
+      {roomCompletionModalKey === getRoomCompletionKey(level.id, facility.id) && !modalCheckpoint ? (
+        <div
+          className="sip-game-modal-backdrop"
+          role="presentation"
+          onPointerDown={() => {
+            setRoomCompletionModalKey(null);
+            setShowQuickNextLevelCta(true);
+          }}
+        >
+          <article
+            className="sip-game-room-complete-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${facility.name} room complete`}
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={(event) => {
+              if ((event.target as HTMLElement).closest("button, a")) return;
+              setRoomCompletionModalKey(null);
+              setShowQuickNextLevelCta(true);
+            }}
+          >
+            <button type="button" className="sip-game-modal-close" onClick={() => setRoomCompletionModalKey(null)} aria-label="Close room complete message">
+              x
+            </button>
+            <p className="sip-game-dialogue-kicker">{level.completionTitle}</p>
+            <h3>{facility.name} mastery complete</h3>
+            <p>You clicked through and reviewed all 3 checkpoints for this room.</p>
+            <div className="sip-game-progress" aria-hidden="true">
+              <div style={{ width: `${progress}%` }} />
+            </div>
+            <div className="sip-game-dialogue-actions">
+              {otherFacilities.map((targetFacility) => (
+                <button
+                  key={targetFacility.id}
+                  type="button"
+                  className="btn btn-light"
+                  onClick={() => {
+                    setRoomCompletionModalKey(null);
+                    setFacilityId(targetFacility.id);
+                  }}
+                >
+                  Go to {targetFacility.name}
+                </button>
+              ))}
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  setRoomCompletionModalKey(null);
+                  if (nextLevel) {
+                    changeLevel(nextLevel.id, facility.id);
+                    return;
+                  }
+                  setActiveId(leadGuide.id);
+                  setLineIndex(0);
+                }}
+              >
+                {nextLevel ? "Next Level" : "Finish Lesson"}
+              </button>
+            </div>
+          </article>
+        </div>
+      ) : null}
+
+      {isFinalLevelCelebration ? (
+        <div className="sip-game-modal-backdrop" role="presentation" onPointerDown={closeFinalCelebration}>
+          <article
+            className="sip-game-finale-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Level 8 complete celebration"
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={(event) => {
+              if ((event.target as HTMLElement).closest("button, a")) return;
+              closeFinalCelebration();
+            }}
+          >
+            <p className="sip-game-dialogue-kicker">LEVEL 8 COMPLETE</p>
+            <h3>Epic Congratulations: {finalLevelCelebration.title}</h3>
+            <p>{finalLevelCelebration.copy}</p>
+            <div className="sip-game-finale-art" aria-label={finalLevelCelebration.alt}>
+              <img src={finalLevelCelebration.image} alt={finalLevelCelebration.alt} />
+            </div>
+            <div className="sip-game-dialogue-actions">
+              <button type="button" className="btn btn-light" onClick={() => navigateToWorkspace("sipopedia")}>
+                Sipopedia
+              </button>
+              <button type="button" className="btn btn-light" onClick={() => navigateToWorkspace("maps")}>
+                Maps
+              </button>
+              <button type="button" className="btn btn-primary" onClick={() => navigateToWorkspace("cocktails")}>
+                Bev Recipes
+              </button>
             </div>
           </article>
         </div>

@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState, type TouchEvent } from "react";
+import { getCountryMapSource } from "../data/mapSources";
+import { countriesByContinent } from "../data/regions";
+import { countryMapAssetPath, countryMapDownloadName } from "../lib/countryMaps";
 import { VineyardPanoramaViewer, type VineyardPanoramaScene } from "./VineyardPanoramaViewer";
 
 type WineMapId = "north-america" | "south-america" | "europe" | "asia" | "africa" | "oceania";
@@ -39,6 +42,11 @@ type RegionalMapAsset = {
   title: string;
 };
 
+type CountryRegionIndexRow = {
+  region: string;
+  detail?: string;
+};
+
 const continentOptions: { id: WineMapId; label: string }[] = [
   { id: "north-america", label: "North America" },
   { id: "south-america", label: "South America" },
@@ -60,6 +68,23 @@ const REGIONAL_FOLDER_BY_MAP: Record<WineMapId, string> = {
   asia: "Asia",
   africa: "Africa",
   oceania: "Oceania"
+};
+
+const countryRegionIndexOverrides: Record<string, CountryRegionIndexRow[]> = {
+  france: [
+    { region: "Bordeaux / Sud-Ouest", detail: "Medoc, Graves, Right Bank, Sauternes, Bergerac" },
+    { region: "Val de Loire", detail: "Nantais, Anjou-Saumur, Touraine, Centre-Loire" },
+    { region: "Champagne", detail: "Reims, Marne, Cote des Blancs, Cote des Bar" },
+    { region: "Bourgogne / Beaujolais / Jura / Savoie", detail: "Chablis, Cote d'Or, Maconnais, Beaujolais, Jura, Savoie" },
+    { region: "Alsace et Est", detail: "Alsace corridor, Vosges foothills, eastern study belt" },
+    { region: "Vallee du Rhone", detail: "Northern Rhone, Southern Rhone, Ventoux, Luberon edge" },
+    { region: "Languedoc-Roussillon", detail: "Picpoul, Minervois, Corbieres, Limoux, Roussillon" },
+    { region: "Provence-Corse", detail: "Bandol, Cassis, Palette, Cotes de Provence, Corsica" },
+    { region: "Toulouse-Pyrenees", detail: "Gaillac, Fronton, Jurancon, Madiran, Irouleguy" },
+    { region: "Cognac", detail: "Charente winegrowing base for distillation study" },
+    { region: "Armagnac", detail: "Gascogne distillation base and southwest context" },
+    { region: "Vins Doux Naturels", detail: "Banyuls, Maury, Rivesaltes, Muscat production sites" }
+  ]
 };
 
 function regionalMapUrl(folderName: string, fileName: string): string {
@@ -390,12 +415,20 @@ export function SipMaps() {
   const [showDownloadOptions, setShowDownloadOptions] = useState(false);
   const [regionalMaps, setRegionalMaps] = useState<RegionalMapAsset[]>([]);
   const [regionalMapIndex, setRegionalMapIndex] = useState(0);
+  const [countryMapIndex, setCountryMapIndex] = useState(0);
   const [regionalLoading, setRegionalLoading] = useState(false);
   const regionalPauseUntilRef = useRef(0);
   const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const activeMap = wineMaps[activeMapId];
   const showComingSoonNotice = activeMap.status === "coming-soon";
   const activeRegionalMap = regionalMaps[regionalMapIndex] ?? null;
+  const activeCountryMaps = countriesByContinent[activeMapId] ?? [];
+  const activeCountryMap = activeCountryMaps[countryMapIndex] ?? null;
+  const activeCountryMapSource = activeCountryMap ? getCountryMapSource(activeCountryMap.slug) : null;
+  const activeCountryRegionIndex = activeCountryMap
+    ? countryRegionIndexOverrides[activeCountryMap.slug] ??
+      activeCountryMap.profile.majorRegions.map((region) => ({ region: region.region }))
+    : [];
   const mapDownloadAssets: MapDownloadAssets | null =
     activeMap.status === "ready"
       ? {
@@ -412,6 +445,7 @@ export function SipMaps() {
 
   useEffect(() => {
     setShowDownloadOptions(false);
+    setCountryMapIndex(0);
   }, [activeMapId]);
 
   useEffect(() => {
@@ -473,6 +507,16 @@ export function SipMaps() {
     if (regionalMaps.length <= 1) return;
     pauseRegionalCarousel();
     setRegionalMapIndex((current) => (current + 1) % regionalMaps.length);
+  };
+
+  const goToPreviousCountryMap = () => {
+    if (activeCountryMaps.length <= 1) return;
+    setCountryMapIndex((current) => (current - 1 + activeCountryMaps.length) % activeCountryMaps.length);
+  };
+
+  const goToNextCountryMap = () => {
+    if (activeCountryMaps.length <= 1) return;
+    setCountryMapIndex((current) => (current + 1) % activeCountryMaps.length);
   };
 
   const cycleContinent = (direction: 1 | -1) => {
@@ -588,21 +632,8 @@ export function SipMaps() {
       <div className="sip-maps-layout">
         <div className="sip-map-stage">
           <article
-            className={`sip-map-frame sip-map-frame--${activeMap.id}${mapDownloadAssets ? " sip-map-frame--interactive" : ""}`}
+            className={`sip-map-frame sip-map-frame--${activeMap.id}`}
             aria-label={`${activeMap.label} wine regions map`}
-            role={mapDownloadAssets ? "button" : undefined}
-            tabIndex={mapDownloadAssets ? 0 : undefined}
-            onClick={mapDownloadAssets ? () => setShowDownloadOptions((current) => !current) : undefined}
-            onKeyDown={
-              mapDownloadAssets
-                ? (event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      setShowDownloadOptions((current) => !current);
-                    }
-                  }
-                : undefined
-            }
           >
             {activeMap.imageSrc ? (
               <img className="sip-map-generated-image" src={activeMap.imageSrc} alt={activeMap.imageAlt} />
@@ -619,7 +650,7 @@ export function SipMaps() {
           {mapDownloadAssets ? (
             <div className="sip-map-download-controls">
               <button type="button" className="sip-map-download-toggle" onClick={() => setShowDownloadOptions((current) => !current)}>
-                {showDownloadOptions ? "Hide Download Options" : "Download Map"}
+                {showDownloadOptions ? "Hide Download Options" : "Download Atlas PNG"}
               </button>
               {showDownloadOptions ? (
                 <div className="sip-map-download-actions">
@@ -677,15 +708,13 @@ export function SipMaps() {
         <div className="sip-regional-carousel">
           <div className="sip-regional-frame">
             {activeRegionalMap ? (
-              <a className="sip-regional-frame-link" href={activeRegionalMap.src} download={activeRegionalMap.filename}>
-                <img
-                  className="sip-regional-image"
-                  src={activeRegionalMap.src}
-                  alt={`${activeMap.label} regional map ${regionalMapIndex + 1}`}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </a>
+              <img
+                className="sip-regional-image"
+                src={activeRegionalMap.src}
+                alt={`${activeMap.label} regional map ${regionalMapIndex + 1}`}
+                loading="lazy"
+                decoding="async"
+              />
             ) : (
               <div className="sip-regional-empty">
                 <strong>{regionalLoading ? "Loading regional maps..." : "Regional maps coming soon"}</strong>
@@ -728,10 +757,117 @@ export function SipMaps() {
             </button>
             {activeRegionalMap ? (
               <a className="sip-regional-download" href={activeRegionalMap.src} download={activeRegionalMap.filename}>
-                Download Current Map
+                Download Current PNG
               </a>
             ) : null}
           </div>
+        </div>
+      </section>
+
+      <section className="sip-country-maps" aria-label={`${activeMap.label} country map downloads`}>
+        <header className="sip-regional-maps-header">
+          <p className="sip-maps-kicker">A.I. Country Maps</p>
+          <h3>{activeMap.label} Country Map Collection</h3>
+          <p>First-batch country study plates generated from the same Sip Studios atlas system.</p>
+        </header>
+
+        <div className="sip-country-map-layout">
+          <div className="sip-country-map-frame">
+            {activeCountryMap ? (
+              <img
+                className="sip-country-map-image"
+                src={countryMapAssetPath(activeCountryMap)}
+                alt={`${activeCountryMap.name} Sip Studies regional wine map`}
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div className="sip-regional-empty">
+                <strong>Country maps coming soon</strong>
+                <span>No enabled country pages are currently assigned to this continent.</span>
+              </div>
+            )}
+          </div>
+
+          <aside className="sip-country-map-panel">
+            <p className="sip-maps-kicker">Country Plate</p>
+            <h3>{activeCountryMap ? activeCountryMap.name : activeMap.label}</h3>
+            <p>
+              {activeCountryMap
+                ? `${activeCountryMap.name} is wired to its country page and downloadable as an editable SVG map plate.`
+                : "Country map assets will appear here as country pages are enabled."}
+            </p>
+            {activeCountryMapSource ? (
+              <div className={`sip-map-source-panel sip-map-source-panel--${activeCountryMapSource.tone}`}>
+                <div className="sip-map-source-summary">
+                  <span>{activeCountryMapSource.tierLabel}</span>
+                  <strong>{activeCountryMapSource.statusLabel}</strong>
+                </div>
+                <p>
+                  Source:{" "}
+                  {activeCountryMapSource.sourceUrl ? (
+                    <a href={activeCountryMapSource.sourceUrl} target="_blank" rel="noreferrer">
+                      {activeCountryMapSource.sourceName}
+                    </a>
+                  ) : (
+                    activeCountryMapSource.sourceName
+                  )}
+                </p>
+                <p>{activeCountryMapSource.sourceMethod}</p>
+                <div className="sip-map-source-tags" aria-label={`${activeCountryMap.name} available map layers`}>
+                  {activeCountryMapSource.availableLayers.slice(0, 5).map((layer) => (
+                    <span key={`${activeCountryMap.slug}-${layer}`}>{layer}</span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            {activeCountryMap ? (
+              <div className="sip-country-map-actions" aria-label={`${activeCountryMap.name} map actions`}>
+                <a className="sip-regional-download" href={countryMapAssetPath(activeCountryMap)} download={countryMapDownloadName(activeCountryMap)}>
+                  Download SVG
+                </a>
+                <a className="sip-regional-download" href={`#app/regions/wine/${activeCountryMap.slug}`}>
+                  Open Country Page
+                </a>
+              </div>
+            ) : null}
+            {activeCountryMap && activeCountryRegionIndex.length > 0 ? (
+              <div className="sip-country-region-index" aria-label={`${activeCountryMap.name} study region index`}>
+                <p className="sip-maps-kicker">Region Index</p>
+                <ol>
+                  {activeCountryRegionIndex.map((region, index) => (
+                    <li key={`${activeCountryMap.slug}-${region.region}`}>
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <strong>
+                        {region.region}
+                        {region.detail ? <small>{region.detail}</small> : null}
+                      </strong>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ) : null}
+            <div className="sip-map-region-list">
+              {activeCountryMaps.map((country) => (
+                <button
+                  key={country.slug}
+                  type="button"
+                  className={`sip-country-map-chip${activeCountryMap?.slug === country.slug ? " is-active" : ""}`}
+                  onClick={() => setCountryMapIndex(activeCountryMaps.findIndex((item) => item.slug === country.slug))}
+                >
+                  {country.name}
+                </button>
+              ))}
+            </div>
+            <div className="sip-regional-controls">
+              <button type="button" className="sip-regional-step-btn" onClick={goToPreviousCountryMap} disabled={activeCountryMaps.length <= 1}>
+                Previous
+              </button>
+              <button type="button" className="sip-regional-step-btn" onClick={goToNextCountryMap} disabled={activeCountryMaps.length <= 1}>
+                Next
+              </button>
+            </div>
+          </aside>
         </div>
       </section>
     </section>

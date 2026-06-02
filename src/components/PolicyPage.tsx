@@ -1,3 +1,5 @@
+import { buildOnboardingRoute } from "../lib/onboardingIntent";
+
 type PolicyKind = "terms" | "privacy" | "refund";
 
 type PolicyPageProps = {
@@ -48,7 +50,7 @@ export function PolicyPage({ kind, onNavigate }: PolicyPageProps) {
         <button className="btn btn-light" onClick={() => onNavigate("home")}>
           Back Home
         </button>
-        <button className="btn btn-primary" onClick={() => onNavigate("checkout")}>
+        <button className="btn btn-primary" onClick={() => onNavigate(buildOnboardingRoute("checkout", { planId: "pro", source: `${kind}-policy` }))}>
           Continue to Enrollment
         </button>
       </div>

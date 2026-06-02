@@ -1,5 +1,20 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import * as THREE from "three";
+import { BackSide, FrontSide, SRGBColorSpace } from "three/src/constants.js";
+import { PerspectiveCamera } from "three/src/cameras/PerspectiveCamera.js";
+import { BufferAttribute } from "three/src/core/BufferAttribute.js";
+import { BufferGeometry } from "three/src/core/BufferGeometry.js";
+import { Raycaster } from "three/src/core/Raycaster.js";
+import { SphereGeometry } from "three/src/geometries/SphereGeometry.js";
+import { MeshBasicMaterial } from "three/src/materials/MeshBasicMaterial.js";
+import { Vector2 } from "three/src/math/Vector2.js";
+import { Vector3 } from "three/src/math/Vector3.js";
+import { Mesh } from "three/src/objects/Mesh.js";
+import { Object3D } from "three/src/core/Object3D.js";
+import { Points } from "three/src/objects/Points.js";
+import { PointsMaterial } from "three/src/materials/PointsMaterial.js";
+import { WebGLRenderer } from "three/src/renderers/WebGLRenderer.js";
+import { Scene } from "three/src/scenes/Scene.js";
+import { CanvasTexture } from "three/src/textures/CanvasTexture.js";
 
 const GLOBE_R = 1;
 const GLOBE_ROTATION_Y_DEFAULT = 0.4;
@@ -244,10 +259,10 @@ function buildEarthTexture(mapPaths: MapCountryPath[], selectableCountries: Set<
   return canvas;
 }
 
-function latLonToVec3(lat: number, lon: number, r: number): THREE.Vector3 {
+function latLonToVec3(lat: number, lon: number, r: number): Vector3 {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lon + 180) * (Math.PI / 180);
-  return new THREE.Vector3(
+  return new Vector3(
     -r * Math.sin(phi) * Math.cos(theta),
     r * Math.cos(phi),
     r * Math.sin(phi) * Math.sin(theta)
@@ -258,15 +273,15 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
   const wrapRef = useRef<HTMLDivElement>(null);
   const [hoveredPin, setHoveredPin] = useState<GlobePinInput | null>(null);
   const [webglFailed, setWebglFailed] = useState(false);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const earthRef = useRef<THREE.Mesh | null>(null);
+  const cameraRef = useRef<PerspectiveCamera | null>(null);
+  const earthRef = useRef<Mesh | null>(null);
 
   const onPinSelectRef = useRef(onPinSelect);
   onPinSelectRef.current = onPinSelect;
   const setHoveredRef = useRef(setHoveredPin);
   setHoveredRef.current = setHoveredPin;
 
-  const pinDataRef = useRef<Map<string, { mesh: THREE.Mesh; color: number }>>(new Map());
+  const pinDataRef = useRef<Map<string, { mesh: Mesh; color: number }>>(new Map());
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -279,9 +294,9 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
     };
     const { w, h } = getSize();
 
-    let renderer: THREE.WebGLRenderer | null = null;
+    let renderer: WebGLRenderer | null = null;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer = new WebGLRenderer({ antialias: true, alpha: true });
     } catch {
       setWebglFailed(true);
       return;
@@ -291,16 +306,14 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       renderer?.dispose();
       return;
     }
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
+    renderer.outputColorSpace = SRGBColorSpace;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(w, h);
     renderer.setClearColor(0x000000, 0);
     wrap.appendChild(renderer.domElement);
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(36, w / h, 0.01, 100);
+    const scene = new Scene();
+    const camera = new PerspectiveCamera(36, w / h, 0.01, 100);
     camera.position.z = CAMERA_Z_DEFAULT;
     cameraRef.current = camera;
 
@@ -314,32 +327,28 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       starPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
       starPos[i * 3 + 2] = r * Math.cos(phi);
     }
-    const starGeo = new THREE.BufferGeometry();
-    starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
-    const starMat = new THREE.PointsMaterial({
+    const starGeo = new BufferGeometry();
+    starGeo.setAttribute("position", new BufferAttribute(starPos, 3));
+    const starMat = new PointsMaterial({
       color: 0xffffff,
       size: 0.09,
       sizeAttenuation: true,
       transparent: true,
       opacity: 0.75,
     });
-    scene.add(new THREE.Points(starGeo, starMat));
+    scene.add(new Points(starGeo, starMat));
 
     const selectableCountries = new Set(cityPins.map((pin) => normalizeCountryName(pin.cityLabel)));
     let admin1Lines: Admin1LineRecord[] = [];
     const texCanvas = buildEarthTexture(mapPaths, selectableCountries, admin1Lines);
-    const texture = new THREE.CanvasTexture(texCanvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
+    const texture = new CanvasTexture(texCanvas);
+    texture.colorSpace = SRGBColorSpace;
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
     texture.needsUpdate = true;
 
-    const earthGeo = new THREE.SphereGeometry(GLOBE_R, 96, 96);
-    const earthMat = new THREE.MeshPhongMaterial({
-      map: texture,
-      specular: new THREE.Color(0x040b18),
-      shininess: 9,
-    });
-    const earth = new THREE.Mesh(earthGeo, earthMat);
+    const earthGeo = new SphereGeometry(GLOBE_R, 96, 96);
+    const earthMat = new MeshBasicMaterial({ map: texture });
+    const earth = new Mesh(earthGeo, earthMat);
     earth.rotation.y = GLOBE_ROTATION_Y_DEFAULT;
     earth.rotation.x = GLOBE_ROTATION_X_DEFAULT;
     earthRef.current = earth;
@@ -366,35 +375,27 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       repaintTexture();
     });
 
-    const atmoGeo = new THREE.SphereGeometry(GLOBE_R * 1.065, 40, 40);
-    const atmoMat = new THREE.MeshBasicMaterial({
+    const atmoGeo = new SphereGeometry(GLOBE_R * 1.065, 40, 40);
+    const atmoMat = new MeshBasicMaterial({
       color: 0x3a7de8,
       transparent: true,
       opacity: 0.11,
-      side: THREE.BackSide,
+      side: BackSide,
       depthWrite: false,
     });
-    scene.add(new THREE.Mesh(atmoGeo, atmoMat));
+    scene.add(new Mesh(atmoGeo, atmoMat));
 
-    const hazeGeo = new THREE.SphereGeometry(GLOBE_R * 1.018, 32, 32);
-    const hazeMat = new THREE.MeshBasicMaterial({
+    const hazeGeo = new SphereGeometry(GLOBE_R * 1.018, 32, 32);
+    const hazeMat = new MeshBasicMaterial({
       color: 0x1040a0,
       transparent: true,
       opacity: 0.035,
-      side: THREE.FrontSide,
+      side: FrontSide,
       depthWrite: false,
     });
-    scene.add(new THREE.Mesh(hazeGeo, hazeMat));
+    scene.add(new Mesh(hazeGeo, hazeMat));
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.28));
-    const sun = new THREE.DirectionalLight(0xfff4e0, 1.25);
-    sun.position.set(4, 2, 3);
-    scene.add(sun);
-    const fill = new THREE.DirectionalLight(0x3355aa, 0.28);
-    fill.position.set(-3, -1, -2);
-    scene.add(fill);
-
-    const localPinMap = new Map<string, { mesh: THREE.Mesh; color: number }>();
+    const localPinMap = new Map<string, { mesh: Mesh; color: number }>();
 
     for (const pin of cityPins) {
       const focus = pin.groups[0]?.focus ?? "Wine";
@@ -402,9 +403,9 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       const isSelected = pin.cityKey === selectedCityKey;
       const pos = latLonToVec3(pin.lat, pin.lon, GLOBE_R + PIN_R * 0.6);
 
-      const geo = new THREE.SphereGeometry(PIN_R, 12, 12);
-      const mat = new THREE.MeshBasicMaterial({ color: isSelected ? 0xffffff : color });
-      const mesh = new THREE.Mesh(geo, mat);
+      const geo = new SphereGeometry(PIN_R, 12, 12);
+      const mat = new MeshBasicMaterial({ color: isSelected ? 0xffffff : color });
+      const mesh = new Mesh(geo, mat);
       mesh.position.copy(pos);
       earth.add(mesh);
 
@@ -435,8 +436,8 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
       }, 15000);
     };
 
-    const raycaster = new THREE.Raycaster();
-    const ndc = new THREE.Vector2();
+    const raycaster = new Raycaster();
+    const ndc = new Vector2();
 
     const touchMidpoint = (): { x: number; y: number } | null => {
       if (activeTouchPointers.size < 2) return null;
@@ -466,7 +467,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
 
     const allPinMeshes = () => Array.from(localPinMap.values()).map((d) => d.mesh);
 
-    const findPinByMesh = (mesh: THREE.Object3D): GlobePinInput | null => {
+    const findPinByMesh = (mesh: Object3D): GlobePinInput | null => {
       for (const [cityKey, data] of localPinMap.entries()) {
         if (data.mesh === mesh) return cityPins.find((p) => p.cityKey === cityKey) ?? null;
       }
@@ -698,7 +699,7 @@ export function GlobeMap({ cityPins, mapPaths, selectedCityKey, onPinSelect }: G
   useEffect(() => {
     pinDataRef.current.forEach((data, cityKey) => {
       const isSelected = cityKey === selectedCityKey;
-      (data.mesh.material as THREE.MeshBasicMaterial).color.setHex(isSelected ? 0xffffff : data.color);
+      (data.mesh.material as MeshBasicMaterial).color.setHex(isSelected ? 0xffffff : data.color);
       data.mesh.scale.setScalar(isSelected ? PIN_SELECTED_SCALE : 1.0);
     });
   }, [selectedCityKey]);

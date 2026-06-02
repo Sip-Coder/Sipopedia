@@ -1,0 +1,753 @@
+{
+  "generatedAt": "2026-05-15T09:09:56.195Z",
+  "count": 45,
+  "missingOutlines": [
+    "tahiti",
+    "cape-verde"
+  ],
+  "assets": [
+    {
+      "name": "Austria",
+      "slug": "austria",
+      "continent": "europe",
+      "path": "/maps/Country/europe/austria-wine-map.svg",
+      "regions": [
+        "Niederösterreich",
+        "Steiermark (Styria)",
+        "Burgenland",
+        "Vienna (Wien)"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Bulgaria",
+      "slug": "bulgaria",
+      "continent": "europe",
+      "path": "/maps/Country/europe/bulgaria-wine-map.svg",
+      "regions": [
+        "Northern Region",
+        "Eastern Region",
+        "Sub-Balkan Region",
+        "Southwestern Region",
+        "Southern Region"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Croatia",
+      "slug": "croatia",
+      "continent": "europe",
+      "path": "/maps/Country/europe/croatia-wine-map.svg",
+      "regions": [
+        "Slavonia and Danube (Istočna Kontinentalna Hrvatska)",
+        "Istria (Istra)",
+        "Dalmatia (Dalmacija)",
+        "Northern Dalmatia",
+        "Central Dalmatia",
+        "Southern Dalmatia",
+        "Croatian Uplands (Središnja Hrvatska)"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "England",
+      "slug": "england",
+      "continent": "europe",
+      "path": "/maps/Country/europe/england-wine-map.svg",
+      "regions": [
+        "Sussex",
+        "Kent",
+        "Surrey",
+        "Dorset",
+        "Hampshire"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 2,
+      "primarySegments": 2
+    },
+    {
+      "name": "France",
+      "slug": "france",
+      "continent": "europe",
+      "path": "/maps/Country/europe/france-wine-map.svg",
+      "regions": [
+        "Bordeaux / Sud-Ouest",
+        "Val de Loire",
+        "Champagne",
+        "Bourgogne / Beaujolais / Jura / Savoie",
+        "Alsace et Est",
+        "Vallee du Rhone",
+        "Languedoc-Roussillon",
+        "Provence-Corse",
+        "Toulouse-Pyrenees",
+        "Cognac",
+        "Armagnac",
+        "Vins Doux Naturels"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 3,
+      "primarySegments": 2
+    },
+    {
+      "name": "Germany",
+      "slug": "germany",
+      "continent": "europe",
+      "path": "/maps/Country/europe/germany-wine-map.svg",
+      "regions": [
+        "Mosel",
+        "Rheingau",
+        "Pfalz",
+        "Baden",
+        "Nahe",
+        "Franken",
+        "Rheinhessen"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Greece",
+      "slug": "greece",
+      "continent": "europe",
+      "path": "/maps/Country/europe/greece-wine-map.svg",
+      "regions": [
+        "Santorini",
+        "Naoussa",
+        "Nemea",
+        "Crete",
+        "Peloponnese"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 2,
+      "primarySegments": 2
+    },
+    {
+      "name": "Hungary",
+      "slug": "hungary",
+      "continent": "europe",
+      "path": "/maps/Country/europe/hungary-wine-map.svg",
+      "regions": [
+        "Tokaj",
+        "Eger",
+        "Villány",
+        "Somló",
+        "Balaton",
+        "Szekszárd"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Italy",
+      "slug": "italy",
+      "continent": "europe",
+      "path": "/maps/Country/europe/italy-wine-map.svg",
+      "regions": [
+        "Piedmont (Piemonte)",
+        "Tuscany (Toscana)",
+        "Trentino Alto Adige",
+        "Veneto",
+        "Friuli-Venezia Giulia",
+        "Sicily (Sicilia)",
+        "Abruzzo",
+        "Puglia (Apulia)",
+        "Lombardy (Lombardia)",
+        "Campania",
+        "Emilia Romagna",
+        "Marche"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 3,
+      "primarySegments": 3
+    },
+    {
+      "name": "Moldova",
+      "slug": "moldova",
+      "continent": "europe",
+      "path": "/maps/Country/europe/moldova-wine-map.svg",
+      "regions": [
+        "Nistreana",
+        "Codru",
+        "Valul lui Traian"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Portugal",
+      "slug": "portugal",
+      "continent": "europe",
+      "path": "/maps/Country/europe/portugal-wine-map.svg",
+      "regions": [
+        "Mosel",
+        "Rheingau",
+        "Pfalz",
+        "Baden",
+        "Nahe",
+        "Franken",
+        "Rheinhessen"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Romania",
+      "slug": "romania",
+      "continent": "europe",
+      "path": "/maps/Country/europe/romania-wine-map.svg",
+      "regions": [
+        "Moldovia",
+        "Muntenia",
+        "Oltenia (Wallachia)",
+        "Transylvania",
+        "Dobrogea",
+        "Banat",
+        "Crisana",
+        "Maramureș"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Serbia",
+      "slug": "serbia",
+      "continent": "europe",
+      "path": "/maps/Country/europe/serbia-wine-map.svg",
+      "regions": [
+        "Mosel",
+        "Rheingau",
+        "Pfalz",
+        "Baden",
+        "Nahe",
+        "Franken",
+        "Rheinhessen"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Slovenia",
+      "slug": "slovenia",
+      "continent": "europe",
+      "path": "/maps/Country/europe/slovenia-wine-map.svg",
+      "regions": [
+        "Slovenia Northern Corridor",
+        "Slovenia Central Highlands",
+        "Slovenia River Valley Belt",
+        "Slovenia Coastal Influence Zone",
+        "Slovenia Heritage District"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Spain",
+      "slug": "spain",
+      "continent": "europe",
+      "path": "/maps/Country/europe/spain-wine-map.svg",
+      "regions": [
+        "Rioja",
+        "Ribera del Duero",
+        "Priorat",
+        "Rias Baixas",
+        "Jerez"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Switzerland",
+      "slug": "switzerland",
+      "continent": "europe",
+      "path": "/maps/Country/europe/switzerland-wine-map.svg",
+      "regions": [
+        "Switzerland Northern Corridor",
+        "Switzerland Central Highlands",
+        "Switzerland River Valley Belt",
+        "Switzerland Coastal Influence Zone",
+        "Switzerland Heritage District"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Canada",
+      "slug": "canada",
+      "continent": "north-america",
+      "path": "/maps/Country/north-america/canada-wine-map.svg",
+      "regions": [
+        "Okanagan Valley",
+        "Niagara Peninsula",
+        "Similkameen",
+        "Prince Edward County",
+        "Nova Scotia"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 30,
+      "primarySegments": 30
+    },
+    {
+      "name": "Mexico",
+      "slug": "mexico",
+      "continent": "north-america",
+      "path": "/maps/Country/north-america/mexico-wine-map.svg",
+      "regions": [
+        "Valle de Guadalupe",
+        "Valle de Santo Tomas",
+        "Valle de Ojos Negros",
+        "Coahuila",
+        "Queretaro"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "United States",
+      "slug": "united-states",
+      "continent": "north-america",
+      "path": "/maps/Country/north-america/united-states-wine-map.svg",
+      "regions": [
+        "Napa Valley",
+        "Sonoma",
+        "Willamette Valley",
+        "Washington",
+        "Finger Lakes"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 10,
+      "primarySegments": 10
+    },
+    {
+      "name": "Argentina",
+      "slug": "argentina",
+      "continent": "south-america",
+      "path": "/maps/Country/south-america/argentina-wine-map.svg",
+      "regions": [
+        "Lujan de Cuyo",
+        "Uco Valley",
+        "Salta",
+        "Patagonia",
+        "San Juan"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 2,
+      "primarySegments": 2
+    },
+    {
+      "name": "Brasil",
+      "slug": "brasil",
+      "continent": "south-america",
+      "path": "/maps/Country/south-america/brasil-wine-map.svg",
+      "regions": [
+        "Brasil Northern Corridor",
+        "Brasil Central Highlands",
+        "Brasil River Valley Belt",
+        "Brasil Coastal Influence Zone",
+        "Brasil Heritage District"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Chile",
+      "slug": "chile",
+      "continent": "south-america",
+      "path": "/maps/Country/south-america/chile-wine-map.svg",
+      "regions": [
+        "Maipo Valley",
+        "Colchagua Valley",
+        "Casablanca",
+        "Aconcagua",
+        "Itata"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 2,
+      "primarySegments": 2
+    },
+    {
+      "name": "Uruguay",
+      "slug": "uruguay",
+      "continent": "south-america",
+      "path": "/maps/Country/south-america/uruguay-wine-map.svg",
+      "regions": [
+        "Canelones",
+        "Maldonado",
+        "Montevideo",
+        "Colonia",
+        "Paysandu"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Australia",
+      "slug": "australia",
+      "continent": "oceania",
+      "path": "/maps/Country/oceania/australia-wine-map.svg",
+      "regions": [
+        "Barossa Valley",
+        "McLaren Vale",
+        "Yarra Valley",
+        "Margaret River",
+        "Tasmania"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 2,
+      "primarySegments": 2
+    },
+    {
+      "name": "New Zealand",
+      "slug": "new-zealand",
+      "continent": "oceania",
+      "path": "/maps/Country/oceania/new-zealand-wine-map.svg",
+      "regions": [
+        "Marlborough",
+        "Central Otago",
+        "Hawke's Bay",
+        "Martinborough",
+        "Gisborne"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 2,
+      "primarySegments": 2
+    },
+    {
+      "name": "Tahiti",
+      "slug": "tahiti",
+      "continent": "oceania",
+      "path": "/maps/Country/oceania/tahiti-wine-map.svg",
+      "regions": [
+        "Tahiti Northern Corridor",
+        "Tahiti Central Highlands",
+        "Tahiti River Valley Belt",
+        "Tahiti Coastal Influence Zone",
+        "Tahiti Heritage District"
+      ],
+      "outline": "abstract-fallback",
+      "sourceSegments": 0,
+      "primarySegments": 0
+    },
+    {
+      "name": "Algeria",
+      "slug": "algeria",
+      "continent": "africa",
+      "path": "/maps/Country/africa/algeria-wine-map.svg",
+      "regions": [
+        "Algeria Northern Corridor",
+        "Algeria Central Highlands",
+        "Algeria River Valley Belt",
+        "Algeria Coastal Influence Zone",
+        "Algeria Heritage District"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Cape Verde",
+      "slug": "cape-verde",
+      "continent": "africa",
+      "path": "/maps/Country/africa/cape-verde-wine-map.svg",
+      "regions": [
+        "Cape Verde Northern Corridor",
+        "Cape Verde Central Highlands",
+        "Cape Verde River Valley Belt",
+        "Cape Verde Coastal Influence Zone",
+        "Cape Verde Heritage District"
+      ],
+      "outline": "abstract-fallback",
+      "sourceSegments": 0,
+      "primarySegments": 0
+    },
+    {
+      "name": "Ethiopia",
+      "slug": "ethiopia",
+      "continent": "africa",
+      "path": "/maps/Country/africa/ethiopia-wine-map.svg",
+      "regions": [
+        "Ethiopia Northern Corridor",
+        "Ethiopia Central Highlands",
+        "Ethiopia River Valley Belt",
+        "Ethiopia Coastal Influence Zone",
+        "Ethiopia Heritage District"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Kenya",
+      "slug": "kenya",
+      "continent": "africa",
+      "path": "/maps/Country/africa/kenya-wine-map.svg",
+      "regions": [
+        "Kenya Northern Corridor",
+        "Kenya Central Highlands",
+        "Kenya River Valley Belt",
+        "Kenya Coastal Influence Zone",
+        "Kenya Heritage District"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Morocco",
+      "slug": "morocco",
+      "continent": "africa",
+      "path": "/maps/Country/africa/morocco-wine-map.svg",
+      "regions": [
+        "Meknes",
+        "Benslimane",
+        "Guerrouane",
+        "Zaer",
+        "Doukkala"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "South Africa",
+      "slug": "south-africa",
+      "continent": "africa",
+      "path": "/maps/Country/africa/south-africa-wine-map.svg",
+      "regions": [
+        "Stellenbosch",
+        "Swartland",
+        "Paarl",
+        "Walker Bay",
+        "Constantia"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Tanzania",
+      "slug": "tanzania",
+      "continent": "africa",
+      "path": "/maps/Country/africa/tanzania-wine-map.svg",
+      "regions": [
+        "Tanzania Northern Corridor",
+        "Tanzania Central Highlands",
+        "Tanzania River Valley Belt",
+        "Tanzania Coastal Influence Zone",
+        "Tanzania Heritage District"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Tunisia",
+      "slug": "tunisia",
+      "continent": "africa",
+      "path": "/maps/Country/africa/tunisia-wine-map.svg",
+      "regions": [
+        "Cap Bon",
+        "Mornag",
+        "Bizerte",
+        "Sidi Salem",
+        "Thibar"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Uganda",
+      "slug": "uganda",
+      "continent": "africa",
+      "path": "/maps/Country/africa/uganda-wine-map.svg",
+      "regions": [
+        "Uganda Northern Corridor",
+        "Uganda Central Highlands",
+        "Uganda River Valley Belt",
+        "Uganda Coastal Influence Zone",
+        "Uganda Heritage District"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Armenia",
+      "slug": "armenia",
+      "continent": "asia",
+      "path": "/maps/Country/asia/armenia-wine-map.svg",
+      "regions": [
+        "Vayots Dzor",
+        "Ararat Valley",
+        "Tavush",
+        "Armavir",
+        "Aragatsotn"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "China",
+      "slug": "china",
+      "continent": "asia",
+      "path": "/maps/Country/asia/china-wine-map.svg",
+      "regions": [
+        "Ningxia",
+        "Shandong",
+        "Xinjiang",
+        "Hebei",
+        "Yunnan"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 2,
+      "primarySegments": 2
+    },
+    {
+      "name": "Crimea",
+      "slug": "crimea",
+      "continent": "asia",
+      "path": "/maps/Country/asia/crimea-wine-map.svg",
+      "regions": [
+        "Crimea Northern Corridor",
+        "Crimea Central Highlands",
+        "Crimea River Valley Belt",
+        "Crimea Coastal Influence Zone",
+        "Crimea Heritage District"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Cyprus",
+      "slug": "cyprus",
+      "continent": "asia",
+      "path": "/maps/Country/asia/cyprus-wine-map.svg",
+      "regions": [
+        "Cyprus Northern Corridor",
+        "Cyprus Central Highlands",
+        "Cyprus River Valley Belt",
+        "Cyprus Coastal Influence Zone",
+        "Cyprus Heritage District"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Georgia",
+      "slug": "georgia",
+      "continent": "asia",
+      "path": "/maps/Country/asia/georgia-wine-map.svg",
+      "regions": [
+        "Kakheti",
+        "Imereti",
+        "Racha",
+        "Kartli",
+        "Adjara"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "India",
+      "slug": "india",
+      "continent": "asia",
+      "path": "/maps/Country/asia/india-wine-map.svg",
+      "regions": [
+        "India Northern Corridor",
+        "India Central Highlands",
+        "India River Valley Belt",
+        "India Coastal Influence Zone",
+        "India Heritage District"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Israel",
+      "slug": "israel",
+      "continent": "asia",
+      "path": "/maps/Country/asia/israel-wine-map.svg",
+      "regions": [
+        "Galilee",
+        "Judean Hills",
+        "Samson",
+        "Negev",
+        "Golan Heights"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Japan",
+      "slug": "japan",
+      "continent": "asia",
+      "path": "/maps/Country/asia/japan-wine-map.svg",
+      "regions": [
+        "Yamanashi",
+        "Nagano",
+        "Hokkaido",
+        "Yamagata",
+        "Niigata"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 3,
+      "primarySegments": 3
+    },
+    {
+      "name": "Lebanon",
+      "slug": "lebanon",
+      "continent": "asia",
+      "path": "/maps/Country/asia/lebanon-wine-map.svg",
+      "regions": [
+        "Bekaa Valley",
+        "Batroun",
+        "Jezzine",
+        "Bhamdoun",
+        "Akkar"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 1,
+      "primarySegments": 1
+    },
+    {
+      "name": "Turkey",
+      "slug": "turkey",
+      "continent": "asia",
+      "path": "/maps/Country/asia/turkey-wine-map.svg",
+      "regions": [
+        "Aegean",
+        "Thrace",
+        "Central Anatolia",
+        "Cappadocia",
+        "Denizli"
+      ],
+      "outline": "world-topo-primary-group",
+      "sourceSegments": 2,
+      "primarySegments": 2
+    }
+  ]
+}

@@ -77,6 +77,7 @@ const MAX_ITEMS = 8;
 const MAX_SIPSTUDIES_ITEMS = 30;
 const MAX_SUMMARY_LENGTH = 220;
 const FETCH_TIMEOUT_MS = 15_000;
+const ARTICLE_IMAGE_FETCH_TIMEOUT_MS = 3_000;
 
 const WSET_NEWS_URL = "https://www.wsetglobal.com/news-events/news/";
 const ROBERT_PARKER_API_URL = "https://api.robertparker.com/v2/v2/articles/highlighted?offset=0&limit=8";
@@ -123,8 +124,8 @@ function json(status: number, body: Record<string, unknown>) {
   });
 }
 
-async function fetchWithTimeout(input: string, init: RequestInit = {}): Promise<Response> {
-  return await fetch(input, { ...init, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+async function fetchWithTimeout(input: string, init: RequestInit = {}, timeoutMs = FETCH_TIMEOUT_MS): Promise<Response> {
+  return await fetch(input, { ...init, signal: AbortSignal.timeout(timeoutMs) });
 }
 
 function getBearerToken(request: Request): string | null {
@@ -271,7 +272,7 @@ function normalizeText(input: string): string {
 }
 
 function tryToAbsoluteUrl(input: string, baseUrl?: string): string | undefined {
-  const candidate = input.trim();
+  const candidate = decodeEntities(input).trim();
   if (!candidate) {
     return undefined;
   }
@@ -286,23 +287,178 @@ function tryToAbsoluteUrl(input: string, baseUrl?: string): string | undefined {
   }
 }
 
-function extractFirstImageUrl(html: string, baseUrl?: string): string | undefined {
-  const patterns = [
-    /<meta[^>]+property=(["'])og:image\1[^>]+content=(["'])(?<url>[^"']+)\2/i,
-    /<meta[^>]+content=(["'])(?<url>[^"']+)\1[^>]+property=(["'])og:image\2/i,
-    /<img[^>]+src=(["'])(?<url>[^"']+)\1/i
-  ];
-
-  for (const pattern of patterns) {
-    const match = pattern.exec(html);
-    const raw = match?.groups?.url?.trim() ?? "";
-    const absolute = tryToAbsoluteUrl(raw, baseUrl);
-    if (absolute) {
-      return absolute;
-    }
+function isPrivateIpv4Host(hostname: string): boolean {
+  if (!/^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostname)) {
+    return false;
   }
 
-  return undefined;
+  const parts = hostname.split(".").map((part) => Number.parseInt(part, 10));
+  if (parts.some((part) => Number.isNaN(part) || part < 0 || part > 255)) {
+    return true;
+  }
+
+  const [first, second] = parts;
+  return (
+    first === 0 ||
+    first === 10 ||
+    first === 127 ||
+    (first === 169 && second === 254) ||
+    (first === 172 && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168)
+  );
+}
+
+function isPublicHttpsUrl(input: string): boolean {
+  try {
+    const parsed = new URL(input);
+    const hostname = parsed.hostname.toLowerCase();
+    if (parsed.protocol !== "https:") {
+      return false;
+    }
+    if (
+      hostname === "localhost" ||
+      hostname === "::1" ||
+      hostname.endsWith(".localhost") ||
+      hostname.endsWith(".local") ||
+      isPrivateIpv4Host(hostname)
+    ) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function readHtmlAttribute(tag: string, name: string): string {
+  const pattern = new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i");
+  const match = pattern.exec(tag);
+  return decodeEntities((match?.[1] ?? match?.[2] ?? match?.[3] ?? "").trim());
+}
+
+function firstSrcSetUrl(srcset: string): string {
+  return srcset
+    .split(",")
+    .map((entry) => entry.trim().split(/\s+/)[0] ?? "")
+    .find((entry) => entry.length > 0) ?? "";
+}
+
+type ArticleImageCandidate = {
+  url: string;
+  score: number;
+};
+
+const IMAGE_SKIP_PATTERN =
+  /\b(?:logo|favicon|icon|avatar|profile|headshot|author|sprite|tracking|pixel|spacer|transparent|placeholder|blank|share|social|powered|govd-logo|facebook|twitter|linkedin|email)\b/i;
+const GENERIC_NEWSLETTER_IMAGE_PATTERN = /(?:newsletter\s+banner|bulletin\s+banner|ttb-news-banner)/i;
+
+function pushImageCandidate(
+  candidates: ArticleImageCandidate[],
+  rawUrl: string,
+  baseUrl: string | undefined,
+  score: number,
+  context: string
+): void {
+  const absolute = tryToAbsoluteUrl(rawUrl, baseUrl);
+  if (!absolute || !isPublicHttpsUrl(absolute)) {
+    return;
+  }
+
+  const normalizedContext = normalizeText(context).toLowerCase();
+  const normalizedUrl = absolute.toLowerCase();
+  if (
+    IMAGE_SKIP_PATTERN.test(normalizedContext) ||
+    IMAGE_SKIP_PATTERN.test(normalizedUrl) ||
+    GENERIC_NEWSLETTER_IMAGE_PATTERN.test(normalizedContext) ||
+    GENERIC_NEWSLETTER_IMAGE_PATTERN.test(normalizedUrl)
+  ) {
+    return;
+  }
+
+  if (candidates.some((candidate) => candidate.url === absolute)) {
+    return;
+  }
+
+  candidates.push({ url: absolute, score });
+}
+
+function extractBestImageUrl(html: string, baseUrl?: string): string | undefined {
+  const candidates: ArticleImageCandidate[] = [];
+  const metaRegex = /<meta\b[^>]*>/gi;
+  let metaMatch: RegExpExecArray | null = metaRegex.exec(html);
+  while (metaMatch) {
+    const tag = metaMatch[0];
+    const key = (readHtmlAttribute(tag, "property") || readHtmlAttribute(tag, "name")).toLowerCase();
+    if (/^(og:image(?::(?:url|secure_url))?|twitter:image(?::src)?|thumbnail)$/i.test(key)) {
+      pushImageCandidate(candidates, readHtmlAttribute(tag, "content"), baseUrl, 100, tag);
+    }
+    metaMatch = metaRegex.exec(html);
+  }
+
+  const imageRegex = /<img\b[^>]*>/gi;
+  let imageMatch: RegExpExecArray | null = imageRegex.exec(html);
+  while (imageMatch) {
+    const tag = imageMatch[0];
+    const rawUrl =
+      readHtmlAttribute(tag, "src") ||
+      readHtmlAttribute(tag, "data-src") ||
+      readHtmlAttribute(tag, "data-original") ||
+      readHtmlAttribute(tag, "data-lazy-src") ||
+      firstSrcSetUrl(readHtmlAttribute(tag, "srcset") || readHtmlAttribute(tag, "data-srcset"));
+    const context = [
+      readHtmlAttribute(tag, "alt"),
+      readHtmlAttribute(tag, "title"),
+      readHtmlAttribute(tag, "class"),
+      readHtmlAttribute(tag, "id"),
+      rawUrl
+    ].join(" ");
+    const width = Number.parseInt(readHtmlAttribute(tag, "width"), 10);
+    const height = Number.parseInt(readHtmlAttribute(tag, "height"), 10);
+    const tooSmall =
+      (!Number.isNaN(width) && width > 0 && width <= 48) ||
+      (!Number.isNaN(height) && height > 0 && height <= 48);
+    const score =
+      50 +
+      (/\b(article|content|post|hero|main|feature|field-content|photo|image)\b/i.test(context) ? 12 : 0) +
+      (/(\/files\/|\/uploads\/|\/attachments\/|\/fancy_images\/|\/wp-content\/)/i.test(rawUrl) ? 8 : 0) -
+      (tooSmall ? 50 : 0);
+
+    pushImageCandidate(candidates, rawUrl, baseUrl, score, context);
+    imageMatch = imageRegex.exec(html);
+  }
+
+  candidates.sort((a, b) => b.score - a.score);
+  return candidates[0]?.url;
+}
+
+function extractFirstImageUrl(html: string, baseUrl?: string): string | undefined {
+  return extractBestImageUrl(html, baseUrl);
+}
+
+async function fetchArticleImageUrl(articleUrl: string): Promise<string | undefined> {
+  if (!isPublicHttpsUrl(articleUrl)) {
+    return undefined;
+  }
+
+  try {
+    const html = await fetchText(articleUrl, "text/html,application/xhtml+xml", ARTICLE_IMAGE_FETCH_TIMEOUT_MS);
+    return extractBestImageUrl(html, articleUrl);
+  } catch {
+    return undefined;
+  }
+}
+
+async function enrichMissingArticleImages(items: GuildNewsItem[]): Promise<GuildNewsItem[]> {
+  return await Promise.all(
+    items.map(async (item) => {
+      if (item.imageUrl) {
+        return item;
+      }
+
+      const imageUrl = await fetchArticleImageUrl(item.url);
+      return imageUrl ? { ...item, imageUrl } : item;
+    })
+  );
 }
 
 function extractImageFromRssItem(rawItem: string, articleUrl: string): string | undefined {
@@ -620,13 +776,17 @@ function extractRssItems(xml: string, sourceName: string, maxItems = MAX_ITEMS):
   return items;
 }
 
-async function fetchText(url: string, accept: string): Promise<string> {
-  const response = await fetchWithTimeout(url, {
-    headers: {
-      "User-Agent": "SipStudies-NewsRouter/1.0",
-      Accept: accept
-    }
-  });
+async function fetchText(url: string, accept: string, timeoutMs = FETCH_TIMEOUT_MS): Promise<string> {
+  const response = await fetchWithTimeout(
+    url,
+    {
+      headers: {
+        "User-Agent": "SipStudies-NewsRouter/1.0",
+        Accept: accept
+      }
+    },
+    timeoutMs
+  );
 
   if (!response.ok) {
     throw new Error(`Fetch failed for ${url} (${response.status}).`);
@@ -862,7 +1022,8 @@ async function fetchWineSpectatorNews(): Promise<GuildNewsItem[]> {
         title,
         url,
         publishedAt: parseDateOrNow("", index * 60_000),
-        summary: "Latest headline from Wine Spectator News."
+        summary: "Latest headline from Wine Spectator News.",
+        imageUrl: extractBestImageUrl(match[0], url)
       });
       index += 1;
     }
@@ -874,7 +1035,7 @@ async function fetchWineSpectatorNews(): Promise<GuildNewsItem[]> {
     throw new Error("Wine Spectator parser found no articles.");
   }
 
-  return items;
+  return await enrichMissingArticleImages(items);
 }
 
 type HtmlLinkSourceOptions = {
@@ -948,7 +1109,8 @@ async function fetchHtmlLinkNews(options: HtmlLinkSourceOptions, sourceName: str
         title: provisionalTitle,
         url,
         publishedAt: parseDateOrNow("", index * 60_000),
-        summary: options.summary
+        summary: options.summary,
+        imageUrl: extractBestImageUrl(match[0], url)
       });
       index += 1;
     }
@@ -960,7 +1122,7 @@ async function fetchHtmlLinkNews(options: HtmlLinkSourceOptions, sourceName: str
     throw new Error(`${sourceName} parser found no articles.`);
   }
 
-  return items;
+  return await enrichMissingArticleImages(items);
 }
 
 async function fetchSitemapNews(sitemapUrl: string, sourceName: string, summary: string): Promise<GuildNewsItem[]> {
@@ -981,7 +1143,8 @@ async function fetchSitemapNews(sitemapUrl: string, sourceName: string, summary:
         title: titleFromUrl(rawUrl),
         url: rawUrl,
         publishedAt: parseDateOrNow(lastmod, index * 60_000),
-        summary
+        summary,
+        imageUrl: extractBestImageUrl(match[0], rawUrl)
       });
       index += 1;
     }
@@ -992,7 +1155,7 @@ async function fetchSitemapNews(sitemapUrl: string, sourceName: string, summary:
     throw new Error(`${sourceName} sitemap parser found no links.`);
   }
 
-  return items;
+  return await enrichMissingArticleImages(items);
 }
 
 type RawHrefSourceOptions = {
@@ -1042,7 +1205,8 @@ async function fetchRawHrefNews(options: RawHrefSourceOptions, sourceName: strin
         title: titleFromUrl(url),
         url,
         publishedAt: parseDateOrNow("", index * 60_000),
-        summary: options.summary
+        summary: options.summary,
+        imageUrl: extractBestImageUrl(match[0], url)
       });
       index += 1;
     }
@@ -1054,7 +1218,7 @@ async function fetchRawHrefNews(options: RawHrefSourceOptions, sourceName: strin
     throw new Error(`${sourceName} parser found no articles.`);
   }
 
-  return items;
+  return await enrichMissingArticleImages(items);
 }
 
 function filterLexAiTechnologyEpisodes(items: GuildNewsItem[]): GuildNewsItem[] {

@@ -1,4 +1,5 @@
 import exactRegionProfiles from "./regionsExact.json";
+import { categoryCountryProfiles } from "./categoryRegionProfiles";
 
 export type ContinentId = "europe" | "north-america" | "south-america" | "oceania" | "africa" | "asia";
 
@@ -76,6 +77,240 @@ export const regionBeverageCategoryLabels: Record<RegionBeverageCategoryId, stri
   juice: "Juice",
   milk: "Milk",
   water: "Water"
+};
+
+export type RegionCategoryStudyLabels = {
+  overviewTitle: string;
+  sourceConditionsTitle: string;
+  productionTitle: string;
+  servingTitle: string;
+  regulationTitle: string;
+  primaryListTitle: string;
+  secondaryListTitle: string;
+  terminologyTitle: string;
+  townsTitle: string;
+  resourcesTitle: string;
+  carouselTitle: string;
+  countryImageAlt: string;
+  cardImageAlt: string;
+  subregionIndexKicker: string;
+  subregionIndexTitle: string;
+  subregionPrimaryTitle: string;
+  subregionSecondaryTitle: string;
+  mapKicker: string;
+  mapTitle: string;
+  mapDescription: string;
+  mapAlt: string;
+};
+
+export const regionCategoryStudyLabels: Record<RegionBeverageCategoryId, RegionCategoryStudyLabels> = {
+  wine: {
+    overviewTitle: "Country's Wines Overview",
+    sourceConditionsTitle: "Terroir",
+    productionTitle: "Style of Production",
+    servingTitle: "Style of Serving (their wines)",
+    regulationTitle: "Regulations",
+    primaryListTitle: "Top 10 White Grape Varieties",
+    secondaryListTitle: "Top 10 Red Grape Varieties",
+    terminologyTitle: "Terminology",
+    townsTitle: "Biggest Towns Nearby (for tourism)",
+    resourcesTitle: "Resources for Further Exploration",
+    carouselTitle: "Major Regions and Iconic Vineyards",
+    countryImageAlt: "country wine landscape",
+    cardImageAlt: "vineyards",
+    subregionIndexKicker: "Detailed Sub-region Pages",
+    subregionIndexTitle: "Exam Study Regions",
+    subregionPrimaryTitle: "White Grapes",
+    subregionSecondaryTitle: "Red Grapes",
+    mapKicker: "A.I. Country Map",
+    mapTitle: "Regional Study Map",
+    mapDescription: "First-batch Sip Studios country map plate for the regions, grapes, and service context taught on this page.",
+    mapAlt: "Sip Studies regional wine map"
+  },
+  beer: {
+    overviewTitle: "Country Beer Overview",
+    sourceConditionsTitle: "Raw Material Geography",
+    productionTitle: "Brewing Production Pattern",
+    servingTitle: "Beer Service Pattern",
+    regulationTitle: "Rules and Source Claims",
+    primaryListTitle: "Key Inputs",
+    secondaryListTitle: "Testable Styles",
+    terminologyTitle: "Beer Terminology",
+    townsTitle: "Production and Service Gateways",
+    resourcesTitle: "Source and Trade References",
+    carouselTitle: "Major Beer Regions and Source Corridors",
+    countryImageAlt: "beer source landscape",
+    cardImageAlt: "beer source region",
+    subregionIndexKicker: "Detailed Beer Region Pages",
+    subregionIndexTitle: "Beer Exam Study Regions",
+    subregionPrimaryTitle: "Inputs",
+    subregionSecondaryTitle: "Styles",
+    mapKicker: "A.I. Beer Map",
+    mapTitle: "Beer Source Study Map",
+    mapDescription: "Study plate for raw materials, brewing corridors, technical terms, and service context taught on this page.",
+    mapAlt: "Sip Studies beer source map"
+  },
+  spirits: {
+    overviewTitle: "Country Spirits Overview",
+    sourceConditionsTitle: "Agricultural and Distillation Geography",
+    productionTitle: "Distillation Production Pattern",
+    servingTitle: "Spirits Service Pattern",
+    regulationTitle: "Appellation and Label Rules",
+    primaryListTitle: "Key Raw Materials",
+    secondaryListTitle: "Testable Spirits",
+    terminologyTitle: "Spirits Terminology",
+    townsTitle: "Production and Tourism Gateways",
+    resourcesTitle: "Source and Regulatory References",
+    carouselTitle: "Major Spirits Regions and Source Corridors",
+    countryImageAlt: "spirits source landscape",
+    cardImageAlt: "spirits source region",
+    subregionIndexKicker: "Detailed Spirits Region Pages",
+    subregionIndexTitle: "Spirits Exam Study Regions",
+    subregionPrimaryTitle: "Raw Materials",
+    subregionSecondaryTitle: "Spirit Styles",
+    mapKicker: "A.I. Spirits Map",
+    mapTitle: "Spirits Source Study Map",
+    mapDescription: "Study plate for legally defined regions, raw materials, distillation choices, maturation, and service context taught on this page.",
+    mapAlt: "Sip Studies spirits source map"
+  },
+  coffee: {
+    overviewTitle: "Country Coffee Overview",
+    sourceConditionsTitle: "Coffee Terroir and Processing Conditions",
+    productionTitle: "Coffee Production Pattern",
+    servingTitle: "Coffee Service Pattern",
+    regulationTitle: "Quality and Traceability Rules",
+    primaryListTitle: "Key Coffee Inputs",
+    secondaryListTitle: "Testable Cup Styles",
+    terminologyTitle: "Coffee Terminology",
+    townsTitle: "Coffee Gateways",
+    resourcesTitle: "Source and Trade References",
+    carouselTitle: "Major Coffee Regions and Processing Corridors",
+    countryImageAlt: "coffee source landscape",
+    cardImageAlt: "coffee source region",
+    subregionIndexKicker: "Detailed Coffee Region Pages",
+    subregionIndexTitle: "Coffee Exam Study Regions",
+    subregionPrimaryTitle: "Varieties and Processes",
+    subregionSecondaryTitle: "Cup Styles",
+    mapKicker: "A.I. Coffee Map",
+    mapTitle: "Coffee Origin Study Map",
+    mapDescription: "Study plate for growing regions, processing systems, cup profile, sourcing language, and service context taught on this page.",
+    mapAlt: "Sip Studies coffee origin map"
+  },
+  tea: {
+    overviewTitle: "Country Tea Overview",
+    sourceConditionsTitle: "Tea Garden and Processing Conditions",
+    productionTitle: "Tea Production Pattern",
+    servingTitle: "Tea Service Pattern",
+    regulationTitle: "Origin and Quality Rules",
+    primaryListTitle: "Key Tea Inputs",
+    secondaryListTitle: "Testable Tea Styles",
+    terminologyTitle: "Tea Terminology",
+    townsTitle: "Tea Gateways",
+    resourcesTitle: "Source and Cultural References",
+    carouselTitle: "Major Tea Regions and Processing Corridors",
+    countryImageAlt: "tea source landscape",
+    cardImageAlt: "tea source region",
+    subregionIndexKicker: "Detailed Tea Region Pages",
+    subregionIndexTitle: "Tea Exam Study Regions",
+    subregionPrimaryTitle: "Cultivars and Inputs",
+    subregionSecondaryTitle: "Tea Styles",
+    mapKicker: "A.I. Tea Map",
+    mapTitle: "Tea Origin Study Map",
+    mapDescription: "Study plate for tea gardens, processing families, origin language, and service context taught on this page.",
+    mapAlt: "Sip Studies tea origin map"
+  },
+  kombucha: {
+    overviewTitle: "Country Kombucha Overview",
+    sourceConditionsTitle: "Tea, Culture, and Fermentation Conditions",
+    productionTitle: "Kombucha Production Pattern",
+    servingTitle: "Kombucha Service Pattern",
+    regulationTitle: "Food Safety and Alcohol-Control Rules",
+    primaryListTitle: "Key Fermentation Inputs",
+    secondaryListTitle: "Testable Kombucha Styles",
+    terminologyTitle: "Kombucha Terminology",
+    townsTitle: "Tea and Production Gateways",
+    resourcesTitle: "Fermentation References",
+    carouselTitle: "Major Kombucha Source and Production Corridors",
+    countryImageAlt: "kombucha source and fermentation landscape",
+    cardImageAlt: "kombucha source region",
+    subregionIndexKicker: "Detailed Kombucha Region Pages",
+    subregionIndexTitle: "Kombucha Study Regions",
+    subregionPrimaryTitle: "Fermentation Inputs",
+    subregionSecondaryTitle: "Formats",
+    mapKicker: "A.I. Kombucha Map",
+    mapTitle: "Kombucha Source Study Map",
+    mapDescription: "Study plate for tea base, microbial culture, fermentation control, flavoring inputs, and service context taught on this page.",
+    mapAlt: "Sip Studies kombucha source map"
+  },
+  juice: {
+    overviewTitle: "Country Juice Overview",
+    sourceConditionsTitle: "Fruit Belt and Processing Conditions",
+    productionTitle: "Juice Production Pattern",
+    servingTitle: "Juice Service Pattern",
+    regulationTitle: "Identity and Label Rules",
+    primaryListTitle: "Key Fruit Inputs",
+    secondaryListTitle: "Testable Juice Formats",
+    terminologyTitle: "Juice Terminology",
+    townsTitle: "Fruit and Processing Gateways",
+    resourcesTitle: "Source and Trade References",
+    carouselTitle: "Major Juice Regions and Fruit Belts",
+    countryImageAlt: "juice source landscape",
+    cardImageAlt: "juice source region",
+    subregionIndexKicker: "Detailed Juice Region Pages",
+    subregionIndexTitle: "Juice Study Regions",
+    subregionPrimaryTitle: "Fruit Inputs",
+    subregionSecondaryTitle: "Juice Formats",
+    mapKicker: "A.I. Juice Map",
+    mapTitle: "Juice Source Study Map",
+    mapDescription: "Study plate for fruit belts, processing choices, quality measurements, and service context taught on this page.",
+    mapAlt: "Sip Studies juice source map"
+  },
+  milk: {
+    overviewTitle: "Country Milk Overview",
+    sourceConditionsTitle: "Dairy Source Conditions",
+    productionTitle: "Milk Production Pattern",
+    servingTitle: "Milk Service Pattern",
+    regulationTitle: "Dairy Safety and Label Rules",
+    primaryListTitle: "Key Dairy Inputs",
+    secondaryListTitle: "Testable Milk Formats",
+    terminologyTitle: "Milk Terminology",
+    townsTitle: "Dairy Gateways",
+    resourcesTitle: "Source and Dairy References",
+    carouselTitle: "Major Dairy Regions and Milk Corridors",
+    countryImageAlt: "dairy source landscape",
+    cardImageAlt: "dairy source region",
+    subregionIndexKicker: "Detailed Milk Region Pages",
+    subregionIndexTitle: "Milk Study Regions",
+    subregionPrimaryTitle: "Dairy Inputs",
+    subregionSecondaryTitle: "Milk Formats",
+    mapKicker: "A.I. Milk Map",
+    mapTitle: "Milk Source Study Map",
+    mapDescription: "Study plate for dairy regions, milk composition, processing choices, and beverage service context taught on this page.",
+    mapAlt: "Sip Studies milk source map"
+  },
+  water: {
+    overviewTitle: "Country Water Overview",
+    sourceConditionsTitle: "Watershed, Divide, and Mineral Conditions",
+    productionTitle: "Source and Treatment Pattern",
+    servingTitle: "Water Service Pattern",
+    regulationTitle: "Drinking Water and Label Rules",
+    primaryListTitle: "Key Water Sources",
+    secondaryListTitle: "Testable Water Formats",
+    terminologyTitle: "Water Terminology",
+    townsTitle: "Watershed Gateways",
+    resourcesTitle: "Hydrology and Source References",
+    carouselTitle: "Major Watersheds and Flow Corridors",
+    countryImageAlt: "water source landscape",
+    cardImageAlt: "water source region",
+    subregionIndexKicker: "Detailed Water Source Pages",
+    subregionIndexTitle: "Water Source Study Regions",
+    subregionPrimaryTitle: "Water Sources",
+    subregionSecondaryTitle: "Water Formats",
+    mapKicker: "A.I. Water Map",
+    mapTitle: "Watershed Study Map",
+    mapDescription: "Study plate for continental divides, watersheds, source flow, mineral profile, treatment, and service context taught on this page.",
+    mapAlt: "Sip Studies watershed source map"
+  }
 };
 
 const whiteGrapesByContinent: Record<ContinentId, string[]> = {
@@ -1101,10 +1336,30 @@ const countries = continentOrder.flatMap((continent) => {
   });
 });
 
+const countriesBySlug = countries.reduce((acc, country) => {
+  acc[country.slug] = country;
+  return acc;
+}, {} as Record<string, RegionCountry>);
+
 export const allRegionCountries: RegionCountry[] = countries.filter((country) => enabledWineRegionSlugs.has(country.slug));
 
 export const regionCountriesByBeverage = regionBeverageCategoryOrder.reduce((acc, beverage) => {
-  acc[beverage] = beverage === "wine" ? allRegionCountries : [];
+  if (beverage === "wine") {
+    acc[beverage] = allRegionCountries;
+    return acc;
+  }
+
+  const commodityProfiles = categoryCountryProfiles[beverage] ?? {};
+  acc[beverage] = Object.entries(commodityProfiles)
+    .map(([countrySlug, profile]) => {
+      const baseCountry = countriesBySlug[countrySlug];
+      if (!baseCountry) return null;
+      return {
+        ...baseCountry,
+        profile
+      } satisfies RegionCountry;
+    })
+    .filter((country): country is RegionCountry => Boolean(country));
   return acc;
 }, {} as Record<RegionBeverageCategoryId, RegionCountry[]>);
 

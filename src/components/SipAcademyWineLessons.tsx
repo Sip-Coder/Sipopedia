@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent, type WheelEvent } from "react";
+import { CategoryTrainingSprints } from "./CategoryTrainingSprints";
+import { LearningSourcePanel } from "./LearningSourcePanel";
 import { SipAcademyStory } from "./SipAcademyStory";
 import {
   EQUIPMENT_MASTERY_STORAGE_KEY,
@@ -6,6 +8,7 @@ import {
   SipStudiosEquipmentMastery,
   readEquipmentMasterySnapshot
 } from "./SipStudiosEquipmentMastery";
+import { learningSourcePackForAcademyLesson } from "../lib/learningSources";
 
 type LessonTag = "Foundations" | "Aromas" | "Structure" | "Service";
 type MentorId = "sippy" | "roma" | "hummin";
@@ -1397,6 +1400,21 @@ const MENTORS: Record<MentorId, { name: string; title: string }> = {
   hummin: { name: "Hummin", title: "Enologist & Cellar Master" }
 };
 
+const MENTOR_POCKET_ROLES: Record<MentorId, { focus: string; cue: string }> = {
+  sippy: {
+    focus: "Plan",
+    cue: "Keeps the session short, practical, and easy to resume."
+  },
+  roma: {
+    focus: "Recall",
+    cue: "Turns aroma, region, and style clues into faster memory hooks."
+  },
+  hummin: {
+    focus: "Reason",
+    cue: "Links production, structure, and service decisions to the answer."
+  }
+};
+
 const MENTOR_PROFILES: Record<MentorId, MentorProfile> = {
   sippy: {
     name: "Sippy",
@@ -1823,6 +1841,10 @@ export function SipAcademyWineLessons() {
     [activeLessonId]
   );
   const lessonBriefing = useMemo(() => (activeLesson ? buildLessonBriefing(activeLesson) : null), [activeLesson]);
+  const activeLessonSourcePack = useMemo(
+    () => (activeLesson ? learningSourcePackForAcademyLesson(activeLesson.tag, activeLesson.mission, activeLesson.unit) : null),
+    [activeLesson]
+  );
   const activeExercise = activeLesson && lessonPhase === "quiz" ? activeLesson.exercises[exerciseIndex] ?? null : null;
 
   useEffect(() => {
@@ -1924,6 +1946,30 @@ export function SipAcademyWineLessons() {
     }) ??
     LESSONS.find((lesson) => progress.lessons[lesson.id]?.unlocked) ??
     LESSONS[0];
+  const nextLessonProgress = progress.lessons[nextLesson.id];
+  const nextLessonMastery = nextLessonProgress?.mastery ?? 0;
+  const nextLessonBestAccuracy = nextLessonProgress?.bestAccuracy ?? 0;
+  const nextLessonMinutes = Math.max(4, Math.min(8, nextLesson.exercises.length * 2));
+  const pocketSteps = [
+    {
+      label: "Brief",
+      value: compressLessonText(nextLesson.subtitle, 10)
+    },
+    {
+      label: "Drill",
+      value: `${nextLesson.exercises.length} questions, ${Math.round(PASS_TARGET * 100)}% to pass`
+    },
+    {
+      label: "Recall",
+      value: `Mastery ${nextLessonMastery}/${MAX_MASTERY}, best ${Math.round(nextLessonBestAccuracy * 100)}%`
+    }
+  ];
+  const mentorFocusCards = (["sippy", "roma", "hummin"] as MentorId[]).map((mentorId) => ({
+    id: mentorId,
+    ...MENTORS[mentorId],
+    ...MENTOR_POCKET_ROLES[mentorId],
+    image: MENTOR_CARD_IMAGES[mentorId]
+  }));
   const realmProgress = REALMS.map((realm) => {
     const lessons = LESSONS.filter((lesson) => lesson.unit === realm.unit);
     const completed = lessons.filter((lesson) => (progress.lessons[lesson.id]?.completions ?? 0) > 0).length;
@@ -2024,6 +2070,23 @@ export function SipAcademyWineLessons() {
       }
       return { ...current, streak, lastActiveDate: today };
     });
+  };
+
+  const scrollToAcademySection = (sectionId: string) => {
+    window.setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  };
+
+  const startPocketLesson = () => {
+    setVoiceMode("classic");
+    startLesson(nextLesson.id);
+    scrollToAcademySection("academy-current-lesson");
+  };
+
+  const openClassicSection = (sectionId: string) => {
+    setVoiceMode("classic");
+    scrollToAcademySection(sectionId);
   };
 
   const beginLessonQuiz = () => {
@@ -2259,18 +2322,18 @@ export function SipAcademyWineLessons() {
             </div>
             <div className="academy-header-hero-copy">
               <p className="academy-kicker">01 Sip Academy</p>
-              <h2>Sippy, Roma, and Hummin: Wine Quest Campaign</h2>
+              <h2>Daily Pocket Wine Academy</h2>
               <p>
                 {voiceMode === "story"
                   ? `${LESSONS.length} guided missions across ${REALMS.length} realms, narrated as a wine-history journey through regions, styles, and service rituals.`
-                  : `${LESSONS.length} guided missions across ${REALMS.length} realms. Start with the next mission, choose a unit when you want control, and learn in short quiz rounds built for mobile and desktop.`}
+                  : `Sippy, Roma, and Hummin guide one focused sprint at a time: brief, drill, recall, then advance when mastery is strong enough.`}
               </p>
               <div className="academy-header-highlights" aria-label="Sip Academy study flow">
-                <span>1. Continue</span>
-                <span>2. Choose unit</span>
-                <span>3. Read briefing</span>
-                <span>4. Clear quiz</span>
-                <span>5. Build mastery</span>
+                <span>Daily sprint</span>
+                <span>Mentor cue</span>
+                <span>Quiz drill</span>
+                <span>Recall check</span>
+                <span>Next unit</span>
               </div>
               <div className="academy-header-hero-mentors" aria-label="Sip Academy mentors">
                 <button type="button" className={`academy-header-mentor ${guideState.speaker === "sippy" ? "active" : ""}`} onClick={() => setProfileMentorId("sippy")}>
@@ -2290,16 +2353,27 @@ export function SipAcademyWineLessons() {
           </div>
 
           <aside className="academy-command-card" aria-label="Sip Academy next mission and mode controls">
-            <div className="academy-campaign-spotlight">
-              <p className="academy-campaign-kicker">Continue Next</p>
+            <div className="academy-campaign-spotlight academy-pocket-sprint">
+              <div className="academy-pocket-head">
+                <p className="academy-campaign-kicker">Today's Pocket Lesson</p>
+                <span className="academy-pocket-duration">{nextLessonMinutes} min</span>
+              </div>
               <h3>
                 Unit {nextLesson.unit}: {nextLesson.title}
               </h3>
               <p>
-                {nextLesson.realm} - {missionLabel(nextLesson.mission)} mission with {MENTORS[nextLesson.mentor].name}. Difficulty {nextLesson.difficulty}/5.
+                {nextLesson.realm} - {missionLabel(nextLesson.mission)} mission with {MENTORS[nextLesson.mentor].name}. Built for one clean study session.
               </p>
-              <button type="button" className="btn btn-primary academy-next-mission-btn" onClick={() => startLesson(nextLesson.id)}>
-                Start Recommended Mission
+              <div className="academy-pocket-steps" aria-label="Pocket lesson steps">
+                {pocketSteps.map((step) => (
+                  <div className="academy-pocket-step" key={step.label}>
+                    <strong>{step.label}</strong>
+                    <span>{step.value}</span>
+                  </div>
+                ))}
+              </div>
+              <button type="button" className="btn btn-primary academy-next-mission-btn" onClick={startPocketLesson}>
+                Start Focus Sprint
               </button>
             </div>
             <div className="academy-level-band">
@@ -2324,6 +2398,23 @@ export function SipAcademyWineLessons() {
                 Hearts {activeLesson ? hearts : MAX_HEARTS}
               </span>
             </div>
+            <div id="academy-pocket-coaches" className="academy-mentor-focus" aria-label="Daily mentor focus">
+              {mentorFocusCards.map((mentor) => (
+                <button
+                  key={mentor.id}
+                  type="button"
+                  className={`academy-mentor-focus-card ${nextLesson.mentor === mentor.id ? "active" : ""}`}
+                  onClick={() => setProfileMentorId(mentor.id)}
+                >
+                  <img src={mentor.image} alt="" loading="lazy" decoding="async" />
+                  <span className="academy-mentor-focus-copy">
+                    <strong>{mentor.name}</strong>
+                    <small>{mentor.cue}</small>
+                  </span>
+                  <span className="academy-mentor-focus-role">{mentor.focus}</span>
+                </button>
+              ))}
+            </div>
             <div className="academy-voice-modes" aria-label="Mentor voice mode">
               {(["classic", "tactical", "story"] as MentorVoiceMode[]).map((mode) => (
                 <button
@@ -2345,6 +2436,8 @@ export function SipAcademyWineLessons() {
         <SipStudiosEquipmentMastery />
       ) : voiceMode !== "story" ? (
         <div className="academy-learning-flow">
+      <CategoryTrainingSprints />
+
       <section className="academy-cinematic" aria-label="Active realm cinematic preview">
         <div className="academy-cinematic-stage">
           <img
@@ -2397,8 +2490,8 @@ export function SipAcademyWineLessons() {
           <p>{activeRealmMedia.cue}</p>
           <div className="academy-cinematic-tags">
             <span>{activeRealmMedia.trailer}</span>
-            <span>Image prompt deck ready</span>
-            <span>Sora prompt deck ready</span>
+            <span>Mentor-led drills</span>
+            <span>Recall-ready path</span>
           </div>
         </div>
       </section>
@@ -2411,12 +2504,12 @@ export function SipAcademyWineLessons() {
             The campaign is built for short sessions: choose a unit, read the briefing, answer the quiz, and come back anytime without losing progress.
           </p>
         </div>
-        <button type="button" className="btn btn-primary" onClick={() => startLesson(nextLesson.id)}>
+        <button type="button" className="btn btn-primary" onClick={startPocketLesson}>
           Continue Next Mission
         </button>
       </section>
 
-      <div className="academy-scroll-shell">
+      <div id="academy-realm-map" className="academy-scroll-shell">
         <button
           type="button"
           className="academy-scroll-btn"
@@ -2469,14 +2562,9 @@ export function SipAcademyWineLessons() {
         </button>
       </div>
 
-      <div className="academy-hud" aria-label="Your quest progress">
+      <div id="academy-progress-hud" className="academy-hud" aria-label="Your quest progress">
         <div className="academy-hud-left">
-          <span className="academy-hud-label academy-hud-label-clean">
-            Unit {highlightedRealm?.unit} - {highlightedRealm?.title ?? "Crystal Atrium"}
-          </span>
-          <span className="academy-hud-label">
-            Unit {highlightedRealm?.unit} · {highlightedRealm?.title ?? "Crystal Atrium"}
-          </span>
+          <span className="academy-hud-label">Unit {highlightedRealm?.unit} - {highlightedRealm?.title ?? "Crystal Atrium"}</span>
           <div
             className="academy-hud-bar"
             role="progressbar"
@@ -2489,25 +2577,20 @@ export function SipAcademyWineLessons() {
           </div>
           <span className="academy-hud-sub">{completedCount} of {LESSONS.length} missions cleared</span>
         </div>
-        <div className="academy-hud-chips academy-hud-chips-refreshed">
+        <div className="academy-hud-chips">
           <span className="academy-hud-chip">XP {progress.totalXp}</span>
           <span className="academy-hud-chip">Streak {progress.streak}d</span>
           <span className="academy-hud-chip">Mastery {masteryTotal}</span>
-          <span className="academy-hud-chip">{Math.round(completionRatio * 100)}% done</span>
-          <span className="academy-hud-chip">⚡ {progress.totalXp} XP</span>
-          <span className="academy-hud-chip">🔥 {progress.streak}d streak</span>
-          <span className="academy-hud-chip">★ {masteryTotal} mastery</span>
           <span className="academy-hud-chip">{Math.round(completionRatio * 100)}% done</span>
         </div>
         <div className="academy-hud-next">
           <span className="academy-hud-next-kicker">Up Next</span>
           <span className="academy-hud-next-title">{nextLesson.title}</span>
-          <span className="academy-hud-next-meta academy-hud-next-meta-clean">Unit {nextLesson.unit} - {nextLesson.realm}</span>
-          <span className="academy-hud-next-meta">Unit {nextLesson.unit} · {nextLesson.realm}</span>
+          <span className="academy-hud-next-meta">Unit {nextLesson.unit} - {nextLesson.realm}</span>
         </div>
       </div>
 
-      <div className="academy-game-layout">
+      <div id="academy-current-lesson" className="academy-game-layout">
         <aside className="academy-path">
           <h3>Unit {highlightedRealm?.unit}: {highlightedRealm?.title ?? "Crystal Atrium"}</h3>
           <p>
@@ -2643,6 +2726,7 @@ export function SipAcademyWineLessons() {
                   </ul>
                 </div>
               ) : null}
+              {activeLessonSourcePack ? <LearningSourcePanel pack={activeLessonSourcePack} title="Lesson Sources" tone="dark" /> : null}
               <p>Read the prep first. The quiz begins only after you press Start Quiz.</p>
               <div className="academy-actions">
                 <button type="button" className="btn btn-primary" onClick={beginLessonQuiz}>
@@ -2729,6 +2813,7 @@ export function SipAcademyWineLessons() {
                 <div className={`academy-feedback ${feedback.correct ? "correct" : "wrong"}`}>
                   <strong>{feedback.correct ? "Correct" : "Keep going"}</strong>
                   <p>{feedback.note}</p>
+                  {activeLessonSourcePack ? <LearningSourcePanel pack={activeLessonSourcePack} title="Review Sources" compact tone="dark" /> : null}
                   <button type="button" className="btn btn-primary" onClick={continueExercise}>
                     {feedback.heartsAfter <= 0 || exerciseIndex + 1 >= activeLesson.exercises.length ? "Finish Lesson" : "Continue"}
                   </button>
@@ -2788,6 +2873,24 @@ export function SipAcademyWineLessons() {
       ) : (
         <SipAcademyStory />
       )}
+      <nav className="academy-pocket-nav" aria-label="Pocket Academy navigation">
+        <button type="button" onClick={startPocketLesson}>
+          <strong>Lesson</strong>
+          <span>{nextLessonMinutes} min</span>
+        </button>
+        <button type="button" onClick={() => openClassicSection("academy-realm-map")}>
+          <strong>Path</strong>
+          <span>{Math.round(completionRatio * 100)}%</span>
+        </button>
+        <button type="button" onClick={() => setVoiceMode("tactical")}>
+          <strong>Lab</strong>
+          <span>{equipmentSnapshot.completedCount}/{equipmentSnapshot.totalNodes}</span>
+        </button>
+        <button type="button" onClick={() => setVoiceMode("story")}>
+          <strong>Story</strong>
+          <span>Map</span>
+        </button>
+      </nav>
       {activeProfile ? (
         <div className="academy-mentor-modal-overlay" role="presentation" onClick={(event) => event.target === event.currentTarget && setProfileMentorId(null)}>
           <div

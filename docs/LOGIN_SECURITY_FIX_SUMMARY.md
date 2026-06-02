@@ -94,16 +94,19 @@ Safe to expose in frontend:
 - `VITE_APP_URL`
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
-- `VITE_CHECKOUT_URL`
 - `VITE_SALES_EMAIL`
 
 Keep private:
 
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `GOOGLE_AI_API_KEY`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_PRICE_ID_PRO`
+- `STRIPE_PRICE_ID_FOUNDING`
+- `STRIPE_WEBHOOK_SECRET`
 - OAuth client secrets
 - downloaded OAuth JSON files
-- billing webhook secrets
+- billing webhook secrets, including `BILLING_WEBHOOK_SECRET` for internal calls
 - any file containing real tokens
 
 ## Verification Completed

@@ -187,8 +187,10 @@ export function Terminology() {
   const [query, setQuery] = useState(initialHashState.query);
   const [page, setPage] = useState(0);
   const [pageSizeMode, setPageSizeMode] = useState<PageSizeMode>("TOP_100");
+  const [galleryMode, setGalleryMode] = useState(false);
   const [rows, setRows] = useState<TerminologySummary[]>([]);
   const [total, setTotal] = useState(0);
+  const [allTermsTotal, setAllTermsTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedTermId, setSelectedTermId] = useState<string | null>(initialHashState.termId);
@@ -243,7 +245,7 @@ export function Terminology() {
     const topImportant = pageSizeMode === "TOP_100";
     const pageSize = topImportant ? 100 : Number(pageSizeMode);
 
-    listTerminologyPage({ bucket, query, page: topImportant ? 0 : page, pageSize, topImportant })
+    listTerminologyPage({ bucket, query, page: topImportant ? 0 : page, pageSize, topImportant, withInfographicOnly: galleryMode })
       .then((result) => {
         if (!active) return;
         setRows(result.rows);
@@ -262,7 +264,26 @@ export function Terminology() {
     return () => {
       active = false;
     };
-  }, [bucket, page, pageSizeMode, query, refreshTick]);
+  }, [bucket, galleryMode, page, pageSizeMode, query, refreshTick]);
+
+  useEffect(() => {
+    let active = true;
+    listTerminologyPage({ bucket: "ALL", query: "", page: 0, pageSize: 1, topImportant: false, withInfographicOnly: false })
+      .then((result) => {
+        if (active) {
+          setAllTermsTotal(result.total);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setAllTermsTotal((current) => current || total);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [refreshTick, total]);
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -347,6 +368,15 @@ export function Terminology() {
   );
   const infographicSrc = infographicCandidates[infographicIndex] || "";
   const hasRenderableInfographic = !infographicExhausted && Boolean(infographicSrc);
+  const resultModeLabel = galleryMode
+    ? "Infographic gallery"
+    : topAllByLetter
+      ? "Top terms by letter"
+      : topImportant
+        ? "Top terms"
+        : bucket === "ALL"
+          ? "All terms"
+          : `${bucket} terms`;
 
   useEffect(() => {
     setInfographicIndex(0);
@@ -422,22 +452,52 @@ export function Terminology() {
 
   return (
     <section className="terminology">
-      <div className="section-header">
+      <div className="section-header terminology-header">
         <div className="section-header-copy">
-          <h2>Terminology</h2>
+          <p className="nav-overline">A development by Sip Studios:</p>
+          <h2>Sipopedia</h2>
           <p>
-            Book-sourced beverage definitions with full attribution, practical guidance, references, examples, and citations.
-            All Sipopedia entries are original editorial rewrites (no verbatim source excerpts).
-            Sorted as # first, then A-Z.
+            Source-backed beverage terminology with applied meaning, citations, purchase paths, and generated learning graphics.
           </p>
+          <div className="terminology-hero-metrics" aria-label="Sipopedia status">
+            <span>
+              <strong>{(allTermsTotal || total).toLocaleString()}</strong>
+              indexed terms
+            </span>
+            <span>
+              <strong>{galleryMode ? "Gallery" : "Study"}</strong>
+              active view
+            </span>
+            <span>
+              <strong>Ctrl K</strong>
+              term search
+            </span>
+          </div>
         </div>
-        <button type="button" className="btn btn-light section-header-action" onClick={() => setEditorialProcessOpen(true)}>
-          Editorial Process
-        </button>
+        <div className="terminology-header-actions">
+          <button
+            type="button"
+            className={`btn ${galleryMode ? "btn-primary" : "btn-light"} section-header-action`}
+            aria-pressed={galleryMode}
+            onClick={() => {
+              setGalleryMode((current) => !current);
+              setPage(0);
+            }}
+          >
+            Infographic Gallery
+          </button>
+          <button type="button" className="btn btn-light section-header-action" onClick={() => setEditorialProcessOpen(true)}>
+            Editorial Process
+          </button>
+        </div>
       </div>
 
       <div className="terminology-layout">
         <aside className="terminology-sidebar" aria-label="Terminology filters">
+          <div className="terminology-sidebar-head">
+            <span className="nav-overline">Find</span>
+            <h3>Terms</h3>
+          </div>
           <div className="terminology-search">
             <label htmlFor="term-search">Search</label>
             <div className="search-input-wrap">
@@ -509,20 +569,45 @@ export function Terminology() {
         </aside>
 
         <div className="terminology-main">
-          {renderPagination("terminology-pagination-top")}
+          <div className="terminology-results-bar">
+            <div>
+              <span className="nav-overline">{resultModeLabel}</span>
+              <strong>{total.toLocaleString()} indexed entries</strong>
+            </div>
+            {renderPagination("terminology-pagination-top")}
+          </div>
 
-                <div className="terminology-list">
+          <div className="terminology-list">
             {loading ? <p>Loading terms...</p> : null}
             {error ? <p className="error">{error}</p> : null}
             {!loading && !error && rows.length === 0 ? <p>No terms found for this bucket and query.</p> : null}
-            {!loading && !error
+            {!loading && !error && galleryMode ? (
+              <div className="terminology-gallery-grid">
+                {rows.map((row) => {
+                  const [imageSrc] = buildInfographicCandidates(row.term, row.infographic_url);
+                  return (
+                    <button key={row.id} type="button" className="terminology-gallery-card" onClick={() => setSelectedTermId(row.id)}>
+                      {imageSrc ? <img src={imageSrc} alt={row.term} loading="lazy" /> : <span className="terminology-gallery-missing">No image</span>}
+                      <span>
+                        <strong>{toTitleCaseTerm(row.term)}</strong>
+                        <small>{shortMeaning(row.meaning)}</small>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+            {!loading && !error && !galleryMode
               ? rows.map((row) => (
                   <button key={row.id} className="term-row" onClick={() => setSelectedTermId(row.id)}>
                     <div>
                       <h3>{toTitleCaseTerm(row.term)}</h3>
                       <p>{shortMeaning(row.meaning)}</p>
                     </div>
-                    <span className="term-row-tag">{row.sort_group}</span>
+                    <span className="term-row-meta">
+                      {row.infographic_url ? <span className="term-row-infographic">Graphic</span> : null}
+                      <span className="term-row-tag">{row.sort_group}</span>
+                    </span>
                   </button>
                 ))
               : null}
@@ -547,7 +632,7 @@ export function Terminology() {
               <>
                 <header className="term-modal-header">
                   <div>
-                    <p className="lesson-chip">Term {selectedTerm.sort_group}</p>
+                    <p className="lesson-chip">Sipopedia Term {selectedTerm.sort_group}</p>
                     <h3>{toTitleCaseTerm(selectedTerm.term)}</h3>
                     <p>Updated: {formatDate(selectedTerm.updated_at)}</p>
                   </div>
@@ -557,7 +642,7 @@ export function Terminology() {
                 </header>
 
                 <div className="term-modal-grid">
-                  <section>
+                  <section className="term-modal-primary">
                     <h4>Meaning</h4>
                     <p>{selectedTerm.meaning}</p>
                     <h4>How to apply in Beverage Study</h4>
@@ -570,8 +655,8 @@ export function Terminology() {
                     </ul>
                   </section>
 
-                  <aside>
-                    <h4>Book source</h4>
+                  <aside className="term-modal-evidence">
+                    <h4>Source</h4>
                     <p>
                       <strong>Title:</strong> {selectedTerm.source_title || "Not set"}
                     </p>
@@ -586,7 +671,7 @@ export function Terminology() {
                       <p className="hint">No source authors attached yet.</p>
                     )}
 
-                    <h4>Infographic</h4>
+                    <h4>Learning Graphic</h4>
                     {hasRenderableInfographic ? (
                       <div className="term-infographic-wrap">
                         <img

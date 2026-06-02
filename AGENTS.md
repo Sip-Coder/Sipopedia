@@ -4,7 +4,7 @@
 - `src/`: React + TypeScript frontend (`App.tsx`, `components/`, `lib/`, `data/`, `context/`, `assets/`).
 - `public/`: static assets (icons, maps, flavor thumbnails, academy media).
 - `server/hyperagents/`: server-side agent orchestration modules (`coach/`, `operations/`, `structure/`, `terminology/`).
-- `supabase/`: SQL schema, migrations, and Edge Functions (`functions/ai-router`, `functions/news-router`, `functions/terminology-harvester`).
+- `supabase/`: SQL schema, migrations, and Edge Functions (`functions/ai-router`, `functions/news-router`, `functions/terminology-harvester`, `functions/create-checkout-session`, `functions/billing-webhook`).
 - `scripts/`: operational Node scripts (secret scanning and terminology sync/indexing).
 - `validators/`: PowerShell validation entrypoints for website and terminology workflows.
 - `docs/`: runbooks and workflow notes. `archive/` and `DUMP IN/` are reference/history, not primary implementation targets.
@@ -43,10 +43,12 @@
 
 ## Sipopedia Terminology Memory
 - Conversation trigger phrase: `start terms`.
+- Canonical new-term review file: `terminology/sipopedia-new-terms.jsonl`. Do not create or update `terminology/sipopedia-new-terms.md` or the extensionless `terminology/sipopedia-new-terms` duplicate.
+- Each JSONL line is one candidate row shaped for future `public.terminology_entries` import: `term`, `updated_at`, `meaning`, `how_to_apply`, `examples`, `source_authors`, `infographic_url`, `reference_links`, `mla_citations`, `source_note`, plus review metadata such as `candidate_number`, `review_status`, and `batch_id`.
 - Default sequence:
 1. `npm run terms:audit -- --limit 535`
 2. `npm run terms:start -- --dry-run`
-3. review generated markdown under `review/terminology/`
+3. review generated JSONL candidates under `review/terminology/`
 4. `npm run terms:start`
 - Source restrictions: do not use encyclopedia or dictionary domains.
 - Duplicate rule: never insert repeated terms; enrich existing terms only with additive, non-redundant updates.

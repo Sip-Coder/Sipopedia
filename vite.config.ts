@@ -6,31 +6,45 @@ export default defineConfig({
   publicDir: "public",
   build: {
     sourcemap: "hidden",
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes("node_modules")) {
-            if (id.includes("react")) return "vendor-react";
-            if (id.includes("@supabase")) return "vendor-supabase";
-            return "vendor";
-          }
-
-          if (id.includes("/src/components/")) {
-            if (id.includes("SipAcademyWineLessons")) return "page-sip-academy";
-            if (id.includes("BeverageQuiz")) return "page-beverage-quiz";
-            if (id.includes("BeverageNews")) return "page-beverage-news";
-            if (id.includes("TastingGroups")) return "page-tasting-groups";
-            if (id.includes("TastingJournal")) return "page-tasting-journal";
-            if (id.includes("FlavorWheel")) return "page-flavor-wheel";
-            if (id.includes("Regions")) return "page-regions";
-            if (id.includes("SommEvents")) return "page-somm-events";
-            if (id.includes("AiNews")) return "page-ai-news";
-            if (id.includes("Terminology")) return "page-terminology";
-            if (id.includes("Grapes")) return "page-grapes";
-          }
-
-          if (id.includes("/src/data/regions")) return "data-regions";
-          return undefined;
+        codeSplitting: {
+          includeDependenciesRecursively: false,
+          groups: [
+            {
+              name: "three-renderer",
+              test: /node_modules[\\/]three[\\/]src[\\/]renderers[\\/]/,
+              minSize: 0,
+              maxSize: 240000,
+              priority: 50
+            },
+            {
+              name: "three-core",
+              test: /node_modules[\\/]three[\\/]src[\\/]/,
+              minSize: 0,
+              maxSize: 240000,
+              priority: 40
+            },
+            {
+              name: "vendor-react",
+              test: /node_modules[\\/](react|react-dom)[\\/]/,
+              minSize: 0,
+              priority: 30
+            },
+            {
+              name: "vendor-supabase",
+              test: /node_modules[\\/]@supabase[\\/]/,
+              minSize: 0,
+              priority: 30
+            },
+            {
+              name: "vendor",
+              test: /node_modules[\\/]/,
+              minSize: 0,
+              maxSize: 240000,
+              priority: 1
+            }
+          ]
         }
       }
     }

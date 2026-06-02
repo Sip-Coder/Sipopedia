@@ -8,6 +8,9 @@ dist
 **/__pycache__/
 *.tsbuildinfo
 tmp_*
+tmp/
+.codex-runlogs/
+supabase/.temp/
 
 # Local secrets workspace (ignore all real secret files)
 local-secrets/*

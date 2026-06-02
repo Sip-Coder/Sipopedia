@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, type TouchEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from "react";
+import { buildWinecastCutPack } from "../lib/mediaCutPack";
+import { MediaCutPackPanel } from "./MediaCutPack";
 
 type AiWinecastEpisode = {
   slug: string;
@@ -30,6 +32,7 @@ const AI_WINECAST_BG =
   "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/3d95071f-70ff-44b6-9e3c-ecb6e685f68e/Sip+Studies+-+Ai+Winecast+-+BG.png";
 const AI_WINECAST_HEADER =
   "https://images.squarespace-cdn.com/content/v1/60ebc279dcf3287a46adfe4e/33c65a99-d787-4f19-a2c9-6a441e9d81c4/Sip+Studies+-+Ai+Winecast+-+Header+02.png";
+const WINECAST_QUEUE_STORAGE_KEY = "sipStudies.aiWinecastQueue.v1";
 
 const AI_WINECAST_EPISODES: AiWinecastEpisode[] = [
   {
@@ -365,13 +368,62 @@ function sourceUrl(episode: AiWinecastEpisode) {
   return `${PODCAST_BASE_URL}${episode.sourcePath}`;
 }
 
+function readWinecastQueue(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(WINECAST_QUEUE_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((slug): slug is string => typeof slug === "string");
+  } catch {
+    return [];
+  }
+}
+
+function writeWinecastQueue(slugs: string[]) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(WINECAST_QUEUE_STORAGE_KEY, JSON.stringify(slugs));
+}
+
 export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
   const activeEpisode = useMemo(
     () => AI_WINECAST_EPISODES.find((episode) => episode.slug === episodeSlug) ?? null,
     [episodeSlug]
   );
+  const activeCutPack = useMemo(() => (activeEpisode ? buildWinecastCutPack(activeEpisode) : null), [activeEpisode]);
+  const [savedEpisodeSlugs, setSavedEpisodeSlugs] = useState<string[]>([]);
   const swipeStartXRef = useRef<number | null>(null);
   const swipeStartYRef = useRef<number | null>(null);
+  const validSavedEpisodeSlugs = useMemo(
+    () => savedEpisodeSlugs.filter((slug) => AI_WINECAST_EPISODES.some((episode) => episode.slug === slug)),
+    [savedEpisodeSlugs]
+  );
+  const savedEpisodes = useMemo(
+    () => validSavedEpisodeSlugs.map((slug) => AI_WINECAST_EPISODES.find((episode) => episode.slug === slug)).filter((episode): episode is AiWinecastEpisode => Boolean(episode)),
+    [validSavedEpisodeSlugs]
+  );
+  const queueEpisodes = savedEpisodes.length > 0 ? savedEpisodes : AI_WINECAST_EPISODES.slice(0, 4);
+
+  useEffect(() => {
+    setSavedEpisodeSlugs(readWinecastQueue());
+  }, []);
+
+  const toggleQueueEpisode = useCallback((slug: string) => {
+    setSavedEpisodeSlugs((current) => {
+      const cleanCurrent = current.filter((currentSlug) => AI_WINECAST_EPISODES.some((episode) => episode.slug === currentSlug));
+      const next = cleanCurrent.includes(slug)
+        ? cleanCurrent.filter((currentSlug) => currentSlug !== slug)
+        : [slug, ...cleanCurrent].slice(0, 12);
+      writeWinecastQueue(next);
+      return next;
+    });
+  }, []);
+
+  const clearQueue = useCallback(() => {
+    writeWinecastQueue([]);
+    setSavedEpisodeSlugs([]);
+  }, []);
 
   const navigateEpisode = useCallback(
     (direction: 1 | -1) => {
@@ -425,6 +477,7 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
   };
 
   if (activeEpisode) {
+    const isActiveEpisodeSaved = validSavedEpisodeSlugs.includes(activeEpisode.slug);
     return (
       <section className="page ai-winecast ai-winecast-detail" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <div className="ai-winecast-detail-nav">
@@ -437,6 +490,9 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
             </button>
             <button type="button" className="btn btn-light" onClick={() => navigateEpisode(1)}>
               Next
+            </button>
+            <button type="button" className="btn btn-light" onClick={() => toggleQueueEpisode(activeEpisode.slug)}>
+              {isActiveEpisodeSaved ? "Remove from Queue" : "Save to Queue"}
             </button>
           </div>
         </div>
@@ -466,6 +522,30 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
               allowFullScreen
             />
           </div>
+        ) : null}
+
+        {activeCutPack ? <MediaCutPackPanel pack={activeCutPack} className="ai-winecast-cut-pack" /> : null}
+
+        {activeCutPack ? (
+          <section className="ai-winecast-transcript-archive" aria-labelledby="winecast-transcript-title">
+            <div>
+              <p className="ai-winecast-card-label">Transcript Archive</p>
+              <h2 id="winecast-transcript-title">Episode handoff for clips, captions, and study notes.</h2>
+              <p>
+                This archive block keeps the learning script visible next to the episode so a viewer can turn one watch session into a repeatable study or creator asset.
+              </p>
+            </div>
+            <ol>
+              {activeCutPack.transcriptSeed.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ol>
+            <div className="ai-winecast-meta-row">
+              <span>{activeCutPack.runtime}</span>
+              <span>Caption ready</span>
+              <span>Source linked</span>
+            </div>
+          </section>
         ) : null}
 
         <section className="ai-winecast-study-grid" aria-label="Episode study notes">
@@ -544,6 +624,53 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
         </div>
       </section>
 
+      <section className="ai-winecast-watch-queue" aria-labelledby="winecast-watch-queue-title">
+        <div className="ai-winecast-watch-copy">
+          <p className="ai-winecast-card-label">Watch Queue</p>
+          <h2 id="winecast-watch-queue-title">Turn episodes into a bingeable study sequence.</h2>
+          <p>
+            Save episodes locally, start from the next queued lesson, and keep a short transcript-ready sequence beside the archive instead of making students browse one card at a time.
+          </p>
+          <div className="ai-winecast-meta-row">
+            <span>{savedEpisodes.length > 0 ? `${savedEpisodes.length} saved` : "Starter queue"}</span>
+            <span>{AI_WINECAST_EPISODES.filter((episode) => episode.youtubeId).length} videos linked</span>
+            <span>Local device queue</span>
+          </div>
+          <div className="ai-winecast-queue-actions">
+            <button type="button" className="btn btn-primary" onClick={() => onNavigate(`ai-winecast/${queueEpisodes[0].slug}`)}>
+              Start Queue
+            </button>
+            {savedEpisodes.length > 0 ? (
+              <button type="button" className="btn btn-light" onClick={clearQueue}>
+                Clear Saved
+              </button>
+            ) : null}
+          </div>
+        </div>
+        <div className="ai-winecast-queue-list" role="list">
+          {queueEpisodes.map((episode, index) => {
+            const isSaved = validSavedEpisodeSlugs.includes(episode.slug);
+            return (
+              <article key={episode.slug} className="ai-winecast-queue-item" role="listitem">
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <strong>{episode.theme}</strong>
+                  <p>{episode.episodeLabel} - {formatEpisodeDate(episode.publishedAt)}</p>
+                </div>
+                <div>
+                  <button type="button" onClick={() => onNavigate(`ai-winecast/${episode.slug}`)}>
+                    Open
+                  </button>
+                  <button type="button" onClick={() => toggleQueueEpisode(episode.slug)}>
+                    {isSaved ? "Remove" : "Save"}
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="ai-winecast-grid" aria-label="Ai Winecast episodes">
         {AI_WINECAST_EPISODES.map((episode) => (
           <article key={episode.slug} className="ai-winecast-card">
@@ -558,6 +685,9 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
               <div className="ai-winecast-card-actions">
                 <button type="button" className="btn btn-primary" onClick={() => onNavigate(`ai-winecast/${episode.slug}`)}>
                   Open Episode
+                </button>
+                <button type="button" className="btn btn-light" onClick={() => toggleQueueEpisode(episode.slug)}>
+                  {validSavedEpisodeSlugs.includes(episode.slug) ? "Saved" : "Save"}
                 </button>
                 <a className="btn btn-light" href={sourceUrl(episode)} target="_blank" rel="noreferrer">
                   Source

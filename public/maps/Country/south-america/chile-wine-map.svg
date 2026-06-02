@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2100" height="1400" viewBox="0 0 2100 1400" role="img" aria-label="Chile Wine Map">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#04131f"/>
+      <stop offset="0.48" stop-color="#082d33"/>
+      <stop offset="1" stop-color="#171f25"/>
+    </linearGradient>
+    <radialGradient id="glowGold" cx="20%" cy="16%" r="70%">
+      <stop offset="0" stop-color="#edd4a8" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#edd4a8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowCyan" cx="60%" cy="45%" r="70%">
+      <stop offset="0" stop-color="#48e5dc" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#48e5dc" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="land" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0ce"/>
+      <stop offset="0.44" stop-color="#c99a22"/>
+      <stop offset="1" stop-color="#3dd7ca"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="28" stdDeviation="26" flood-color="#000816" flood-opacity="0.52"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#48e5dc" flood-opacity="0.22"/>
+    </filter>
+    <style>
+      .frame { fill: none; stroke: rgba(159, 218, 245, 0.32); stroke-width: 2; }
+      .grid { stroke: rgba(159, 218, 245, 0.14); stroke-width: 1; }
+      .micro { fill: rgba(217, 247, 255, 0.64); font: 800 19px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 8px; text-transform: uppercase; }
+      .title { fill: #fff0ce; font: 900 66px 'Trebuchet MS', Arial, sans-serif; letter-spacing: -2px; }
+      .subtitle { fill: rgba(217, 247, 255, 0.78); font: 800 25px 'Trebuchet MS', Arial, sans-serif; }
+      .land-core { fill: url(#land); stroke: #fff0ce; stroke-width: 3; stroke-linejoin: round; filter: url(#softShadow); }
+      .land-line { fill: none; stroke: rgba(4, 13, 24, 0.72); stroke-width: 10; opacity: 0.55; stroke-linejoin: round; }
+      .contour { fill: none; stroke: rgba(237, 212, 168, 0.16); stroke-width: 3; stroke-linecap: round; }
+      .region-panel { fill: rgba(5, 18, 28, 0.72); stroke: rgba(159, 218, 245, 0.28); stroke-width: 2; }
+      .region-heading { fill: #fff0ce; font: 900 34px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 5px; text-transform: uppercase; }
+      .region-subheading { fill: rgba(217, 247, 255, 0.68); font: 700 22px 'Trebuchet MS', Arial, sans-serif; }
+      .region-row rect { fill: rgba(4, 19, 31, 0.82); stroke: rgba(159, 218, 245, 0.38); stroke-width: 1.6; }
+      .region-row circle { fill: rgba(237, 212, 168, 0.95); }
+      .region-number { fill: #04131f; font: 900 18px 'Trebuchet MS', Arial, sans-serif; }
+      .region-name { fill: #fff0ce; font: 900 31px 'Trebuchet MS', Arial, sans-serif; }
+      .badge { fill: rgba(7, 35, 48, 0.88); stroke: rgba(237, 212, 168, 0.48); stroke-width: 1.5; }
+      .badge-text { fill: #edd4a8; font: 900 18px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 3px; text-transform: uppercase; }
+      .footer { fill: rgba(217, 247, 255, 0.58); font: 700 18px 'Trebuchet MS', Arial, sans-serif; }
+    </style>
+  </defs>
+  <rect width="2100" height="1400" fill="url(#bg)"/>
+  <rect width="2100" height="1400" fill="url(#glowGold)"/>
+  <rect width="2100" height="1400" fill="url(#glowCyan)"/>
+  <line class="grid" x1="120" y1="0" x2="120" y2="1400"/><line class="grid" x1="240" y1="0" x2="240" y2="1400"/><line class="grid" x1="360" y1="0" x2="360" y2="1400"/><line class="grid" x1="480" y1="0" x2="480" y2="1400"/><line class="grid" x1="600" y1="0" x2="600" y2="1400"/><line class="grid" x1="720" y1="0" x2="720" y2="1400"/><line class="grid" x1="840" y1="0" x2="840" y2="1400"/><line class="grid" x1="960" y1="0" x2="960" y2="1400"/><line class="grid" x1="1080" y1="0" x2="1080" y2="1400"/><line class="grid" x1="1200" y1="0" x2="1200" y2="1400"/><line class="grid" x1="1320" y1="0" x2="1320" y2="1400"/><line class="grid" x1="1440" y1="0" x2="1440" y2="1400"/><line class="grid" x1="1560" y1="0" x2="1560" y2="1400"/><line class="grid" x1="1680" y1="0" x2="1680" y2="1400"/><line class="grid" x1="1800" y1="0" x2="1800" y2="1400"/>
+  <line class="grid" x1="0" y1="180" x2="2100" y2="180"/><line class="grid" x1="0" y1="300" x2="2100" y2="300"/><line class="grid" x1="0" y1="420" x2="2100" y2="420"/><line class="grid" x1="0" y1="540" x2="2100" y2="540"/><line class="grid" x1="0" y1="660" x2="2100" y2="660"/><line class="grid" x1="0" y1="780" x2="2100" y2="780"/><line class="grid" x1="0" y1="900" x2="2100" y2="900"/><line class="grid" x1="0" y1="1020" x2="2100" y2="1020"/>
+  <rect x="34" y="34" width="2032" height="1332" rx="42" class="frame"/>
+  <text x="80" y="108" class="micro">Sip Studios Maps / Country Study Plate</text>
+  <text x="80" y="185" class="title">Chile Wine Map</text>
+  <text x="84" y="232" class="subtitle">South America / 5 study regions / Wine geography</text>
+  <g opacity="0.9">
+    <path class="contour" d="M134 289 C 390 217, 670 421, 922 320 S 1170 268, 1250 334"/><path class="contour" d="M134 394 C 390 322, 670 464, 922 394 S 1170 342, 1250 408"/><path class="contour" d="M134 435 C 390 363, 670 571, 922 468 S 1170 416, 1250 482"/><path class="contour" d="M134 540 C 390 468, 670 614, 922 542 S 1170 490, 1250 556"/><path class="contour" d="M134 581 C 390 509, 670 721, 922 616 S 1170 564, 1250 630"/><path class="contour" d="M134 686 C 390 614, 670 764, 922 690 S 1170 638, 1250 704"/><path class="contour" d="M134 791 C 390 719, 670 807, 922 764 S 1170 712, 1250 778"/><path class="contour" d="M134 832 C 390 760, 670 914, 922 838 S 1170 786, 1250 852"/>
+    <path class="land-line" d="M729.15,805.36L729.15,838.11L744.87,838.11L753.72,838.50L748.90,844.44L736.29,849.00L729.09,848.54L720.37,847.35L709.74,842.93L694.36,840.81L675.87,832.63L660.95,824.77L640.68,808.33L652.76,811.36L673.36,821.20L692.91,826.48L700.43,819.75L705.19,809.65L718.72,803.64L729.15,805.36ZM715.09,291.00L722.29,300.97L724.27,311.53L731.99,317.74L727.31,331.94L735.23,348.44L740.97,368.65L751.54,366.60L753.39,370.30L748.30,385.55L732.32,392.75L732.79,417.24L729.75,421.93L734.11,427.74L723.81,436.86L714.17,450.59L708.88,463.93L710.34,478.19L701.29,493.24L708.03,518.53L711.86,521.24L711.79,534.77L703.40,549.04L703.73,561.32L692.64,570.89L692.71,584.43L697.13,598.69L688.42,604.04L684.45,617.11L681.02,632.17L683.46,650.06L677.59,653.03L681.02,669.93L687.62,675.55L682.80,681.69L689.60,684.59L691.19,690.14L684.72,692.91L686.30,701.56L681.02,720.97L673.16,733.45L674.95,740.91L670.26,750.22L659.03,756.69L660.29,772.21L665.44,777.56L675.21,776.57L674.95,787.59L681.02,796.11L716.48,798.09L730.08,800.40L717.01,800.34L709.94,803.90L696.73,809.19L694.36,822.92L688.15,823.25L671.58,818.50L654.81,808.26L636.52,799.88L631.90,790.57L636.12,781.98L628.73,772.21L626.81,747.19L633.08,733.12L648.53,721.76L626.28,717.47L640.28,704.53L645.23,680.17L661.54,685.32L669.20,654.88L659.36,650.98L654.81,669.34L645.56,667.29L650.12,646.29L655.14,619.09L661.87,609.06L657.65,594.73L656.46,578.22L662.66,577.76L671.64,554.05L681.81,530.61L688.02,508.69L684.65,486.71L689.01,474.62L687.23,456.53L695.81,438.57L698.45,410.18L703.21,379.74L707.76,346.93L706.71,322.89L703.67,302.22L711.19,298.53L715.09,291.00Z"/>
+    <path class="land-core" d="M729.15,805.36L729.15,838.11L744.87,838.11L753.72,838.50L748.90,844.44L736.29,849.00L729.09,848.54L720.37,847.35L709.74,842.93L694.36,840.81L675.87,832.63L660.95,824.77L640.68,808.33L652.76,811.36L673.36,821.20L692.91,826.48L700.43,819.75L705.19,809.65L718.72,803.64L729.15,805.36ZM715.09,291.00L722.29,300.97L724.27,311.53L731.99,317.74L727.31,331.94L735.23,348.44L740.97,368.65L751.54,366.60L753.39,370.30L748.30,385.55L732.32,392.75L732.79,417.24L729.75,421.93L734.11,427.74L723.81,436.86L714.17,450.59L708.88,463.93L710.34,478.19L701.29,493.24L708.03,518.53L711.86,521.24L711.79,534.77L703.40,549.04L703.73,561.32L692.64,570.89L692.71,584.43L697.13,598.69L688.42,604.04L684.45,617.11L681.02,632.17L683.46,650.06L677.59,653.03L681.02,669.93L687.62,675.55L682.80,681.69L689.60,684.59L691.19,690.14L684.72,692.91L686.30,701.56L681.02,720.97L673.16,733.45L674.95,740.91L670.26,750.22L659.03,756.69L660.29,772.21L665.44,777.56L675.21,776.57L674.95,787.59L681.02,796.11L716.48,798.09L730.08,800.40L717.01,800.34L709.94,803.90L696.73,809.19L694.36,822.92L688.15,823.25L671.58,818.50L654.81,808.26L636.52,799.88L631.90,790.57L636.12,781.98L628.73,772.21L626.81,747.19L633.08,733.12L648.53,721.76L626.28,717.47L640.28,704.53L645.23,680.17L661.54,685.32L669.20,654.88L659.36,650.98L654.81,669.34L645.56,667.29L650.12,646.29L655.14,619.09L661.87,609.06L657.65,594.73L656.46,578.22L662.66,577.76L671.64,554.05L681.81,530.61L688.02,508.69L684.65,486.71L689.01,474.62L687.23,456.53L695.81,438.57L698.45,410.18L703.21,379.74L707.76,346.93L706.71,322.89L703.67,302.22L711.19,298.53L715.09,291.00Z" fill-rule="evenodd"/>
+  </g>
+  <rect x="1370" y="305" width="610" height="132" rx="24" class="badge"/>
+  <text x="1410" y="358" class="badge-text">Chile / atlas outline</text>
+  <text x="1410" y="398" class="footer">Primary atlas outline fitted for country-scale study.</text>
+  <rect x="88" y="940" width="1924" height="382" rx="30" class="region-panel"/>
+  <text x="132" y="998" class="region-heading">Study Region Index</text>
+  <text x="132" y="1335" class="footer">Showing 5 of 5 study regions. Internal wine-region borders require an authoritative GIS layer before drawing.</text>
+  
+      <g class="region-row" transform="translate(135 1038)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">1</text>
+        <text x="54" y="28" class="region-name">Maipo Valley</text>
+      </g>
+      <g class="region-row" transform="translate(1045 1038)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">2</text>
+        <text x="54" y="28" class="region-name">Colchagua Valley</text>
+      </g>
+      <g class="region-row" transform="translate(135 1086)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">3</text>
+        <text x="54" y="28" class="region-name">Casablanca</text>
+      </g>
+      <g class="region-row" transform="translate(1045 1086)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">4</text>
+        <text x="54" y="28" class="region-name">Aconcagua</text>
+      </g>
+      <g class="region-row" transform="translate(135 1134)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">5</text>
+        <text x="54" y="28" class="region-name">Itata</text>
+      </g>
+</svg>

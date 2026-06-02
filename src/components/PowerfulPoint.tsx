@@ -1,3 +1,5 @@
+import { buildOnboardingRoute } from "../lib/onboardingIntent";
+
 type PowerfulPointProps = {
   onNavigate: (next: string) => void;
 };
@@ -28,11 +30,11 @@ export function PowerfulPoint({ onNavigate }: PowerfulPointProps) {
         </article>
         <article className="powerful-point-card">
           <h3>Plan</h3>
-          <p>Learn core foundations, calibrate sensory skills, apply live workflows, then expand through AI RnD and Somm Support modules.</p>
+          <p>Learn core foundations, calibrate sensory skills, apply live workflows, then expand through the Learn, Taste, and Connect lanes.</p>
         </article>
         <article className="powerful-point-card">
           <h3>Call To Action</h3>
-          <p>Start in the Launch Deck, review plans, then enroll when ready to unlock the full workspace.</p>
+          <p>Start in the Launch Pad, review plans, then enroll when ready to unlock the full workspace.</p>
         </article>
         <article className="powerful-point-card">
           <h3>Success</h3>
@@ -51,22 +53,19 @@ export function PowerfulPoint({ onNavigate }: PowerfulPointProps) {
           <span className="powerful-point-pill">Grapes & Grains</span>
           <span className="powerful-point-pill">Bev Recipes</span>
           <span className="powerful-point-pill">Beverage News</span>
-          <span className="powerful-point-pill">Tasting Groups</span>
-          <span className="powerful-point-pill">AI News & Ai Winecast</span>
-          <span className="powerful-point-pill">Somm Events</span>
-          <span className="powerful-point-pill">Admin + Terminology Ops</span>
+          <span className="powerful-point-pill">Flavor Blog</span>
+          <span className="powerful-point-pill">Launch Pad</span>
         </div>
       </section>
 
       <div className="powerful-point-actions">
-        <button className="btn btn-primary" onClick={() => onNavigate("checkout")}>
+        <button className="btn btn-primary" onClick={() => onNavigate(buildOnboardingRoute("checkout", { planId: "pro", source: "powerful-point" }))}>
           Enroll Now
         </button>
         <button className="btn btn-light" onClick={() => onNavigate("app/starter")}>
-          Open Launch Deck
+          Open Launch Pad
         </button>
       </div>
     </section>
   );
 }
-

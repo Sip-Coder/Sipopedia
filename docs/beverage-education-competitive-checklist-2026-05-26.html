@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sip Studies Competitive Checklist Report - Beverage Education and Entertainment</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172126;
+      --muted: #51626a;
+      --paper: #fffdf8;
+      --panel: #f6f1e7;
+      --line: #d9cdb9;
+      --green: #0f4b3e;
+      --blue: #24566f;
+      --gold: #9f7137;
+      --red: #8f3f35;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #efe7d8;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 40px));
+      margin: 28px auto;
+      padding: 34px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 45px rgba(38, 29, 18, 0.16);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.12;
+    }
+
+    h1 {
+      max-width: 860px;
+      font-size: 38px;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      margin-top: 32px;
+      padding-top: 22px;
+      border-top: 2px solid var(--line);
+      color: var(--green);
+      font-size: 24px;
+    }
+
+    h3 {
+      color: var(--blue);
+      font-size: 18px;
+    }
+
+    p {
+      margin: 10px 0 0;
+    }
+
+    a {
+      color: #164c70;
+      text-decoration-thickness: 1px;
+    }
+
+    .kicker {
+      margin: 0 0 10px;
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .deck {
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .meta-grid,
+    .summary-grid,
+    .check-grid,
+    .competitor-grid,
+    .source-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .meta-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 24px;
+    }
+
+    .summary-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 18px;
+    }
+
+    .check-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .competitor-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .source-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .card strong,
+    .meta-card strong {
+      display: block;
+      color: var(--green);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .meta-card {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbf7ee;
+    }
+
+    .meta-card span {
+      display: block;
+      margin-top: 6px;
+      font-weight: 700;
+    }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+
+    li + li {
+      margin-top: 7px;
+    }
+
+    .checklist {
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .checklist li {
+      position: relative;
+      padding-left: 25px;
+    }
+
+    .checklist li::before {
+      content: "[ ]";
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-weight: 800;
+    }
+
+    .checklist.done li::before {
+      content: "[x]";
+      color: var(--green);
+    }
+
+    table {
+      width: 100%;
+      margin-top: 16px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #eadfc9;
+      color: var(--green);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #e5efe8;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .status.todo {
+      background: #f4e4df;
+      color: var(--red);
+    }
+
+    .status.watch {
+      background: #edf0f2;
+      color: var(--blue);
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 14px;
+      border-left: 4px solid var(--gold);
+      background: #fbf7ee;
+      color: var(--muted);
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @page {
+      size: letter;
+      margin: 0.55in;
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      main {
+        width: auto;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        box-shadow: none;
+      }
+
+      h2 {
+        break-after: avoid;
+      }
+
+      .card,
+      .meta-card,
+      tr {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="kicker">Sip Studies research artifact</p>
+    <h1>Competitive Checklist Report for Beverage Education and Entertainment</h1>
+    <p class="deck">
+      Prepared May 26, 2026. Scope: review the current Sip Studies repo and website surfaces, compare against wine, beer, spirits,
+      cocktail, media, app, and trade-education competitors, identify advantages and gaps, and record the first implementation changes made from the research.
+    </p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <strong>Repo reviewed</strong>
+        <span>C:\codebase\sip_studies\actual\Sip-Studies</span>
+      </div>
+      <div class="meta-card">
+        <strong>Validation</strong>
+        <span>npm run build passed</span>
+      </div>
+      <div class="meta-card">
+        <strong>Team model</strong>
+        <span>3 sub-agents plus local review</span>
+      </div>
+      <div class="meta-card">
+        <strong>Research caveat</strong>
+        <span>Pricing, course catalogs, and gated content can change</span>
+      </div>
+    </div>
+
+    <h2>Executive Read</h2>
+    <div class="summary-grid">
+      <div class="card">
+        <strong>Position</strong>
+        <p>Sip Studies is not just a wine-course site. It is a broad beverage-learning workspace with academy missions, games, quiz workflows, terminology, maps, tasting tools, news, podcasts, events, avatars, account progress, Supabase auth, and Stripe billing.</p>
+      </div>
+      <div class="card">
+        <strong>Main advantage</strong>
+        <p>The site combines learning, practice, source-backed reference, entertainment, and operational tools in one product. Most competitors dominate one lane, such as credentials, media, maps, scanning, or bartender operations.</p>
+      </div>
+      <div class="card">
+        <strong>Main weakness</strong>
+        <p>Competitors make trust and next action clearer. WSET/CMS/Cicerone sell credentials, GuildSomm sells pro authority, Vivino sells instant utility, and SOMM TV sells premium entertainment. Sip Studies must keep turning breadth into guided paths.</p>
+      </div>
+    </div>
+
+    <h2>What Sip Studies Has That Is a Market Advantage</h2>
+    <div class="check-grid">
+      <div class="card">
+        <h3>Product Breadth</h3>
+        <ul class="checklist done">
+          <li>Learn, Taste, and Connect workspace architecture.</li>
+          <li>Sip Academy mission ladder with realms, XP, streaks, mastery, mentor voices, and local progress.</li>
+          <li>Sip Studios game with winery, brewery, and distillery learning spaces.</li>
+          <li>Beverage Quiz with CMS, WSET, SWE, and Cicerone-style filters.</li>
+          <li>Tasting journal, flavor wheel, flavor note capture, and PDF-oriented tasting outputs.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Defensible Content</h3>
+        <ul class="checklist done">
+          <li>Sipopedia terms include references, MLA citations, source notes, and source-link structures.</li>
+          <li>Wine maps have source metadata and download/source panels.</li>
+          <li>Daily Sip has a generator, editorial standard, and source-attributed beverage-market briefings.</li>
+          <li>Terminology automation has audit and import scripts rather than ad hoc copy editing.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Commercial Foundation</h3>
+        <ul class="checklist done">
+          <li>Starter, Pro, and Founding Cohort plan routing exists.</li>
+          <li>Supabase auth and subscription-state logic exist.</li>
+          <li>Stripe checkout and billing webhook functions exist.</li>
+          <li>Account dashboard carries progress, avatar, plan, billing, and route recovery concepts.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>What Sip Studies Shares With the Market</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Market Standard</th>
+          <th>Sip Studies Evidence</th>
+          <th>Competitor Pattern</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Structured learning paths</td>
+          <td>Academy realms, category sprint paths, route previews, quiz filters, and new role-based lobby paths.</td>
+          <td>WSET levels, CMS levels, Cicerone levels, Wine Scholar Guild regional programs.</td>
+        </tr>
+        <tr>
+          <td>Tasting language and practice</td>
+          <td>Flavor wheel, tasting journal, blind scoring, quiz notes, Sipopedia application fields.</td>
+          <td>WSET SAT, CMS deductive tasting, GuildSomm study materials, Cicerone flavor training.</td>
+        </tr>
+        <tr>
+          <td>Maps and visual learning</td>
+          <td>Sip Maps, Regions, map source registry, downloadable map assets.</td>
+          <td>Wine Folly maps, Wine Scholar Guild regional maps, ViniGeo-style interactive map standards.</td>
+        </tr>
+        <tr>
+          <td>Editorial and current context</td>
+          <td>Daily Sip, Beverage News, Flavor Blog, AI Winecast, AI News, short-form cut packs.</td>
+          <td>VinePair, SevenFifty Daily, Wine Enthusiast, GuildSomm articles and podcasts.</td>
+        </tr>
+        <tr>
+          <td>Community and cohorts</td>
+          <td>Tasting Groups cloud-sync MVP, Somm Events, Founding Cohort plan.</td>
+          <td>GuildSomm forums/events, course-provider cohorts, SOMM TV events, social creator comments.</td>
+        </tr>
+        <tr>
+          <td>Gamification</td>
+          <td>Academy XP/streaks, game checkpoints, equipment mastery, avatar dashboard, achievements.</td>
+          <td>Untappd badges, quiz apps, Duolingo-style learning loops, Diageo menu game.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>What Sip Studies Lacks Compared With Competition</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Gap</th>
+          <th>Competitive Pressure</th>
+          <th>Current Status</th>
+          <th>Recommended Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Official credential pathway clarity</td>
+          <td>WSET, CMS, Cicerone, Wine Scholar Guild, and Wine Enthusiast Academy win because the user knows the credential, level, exam, time, cost, and proof.</td>
+          <td><span class="status partial">Partially addressed</span></td>
+          <td>Added a dedicated Credential Prep Desk with WSET-style, CMS-style, Cicerone-style, BarSmarts-style, and regional-scholar study paths, official source links, non-affiliation notes, print action, weekly loops, route-specific study actions, level-specific syllabus bridge blocks, focused per-level prep planners, local provider/exam-window/cost/hour capture, provider URL capture, official source checked-date fields, listed-cost/materials-cost fields, freshness warnings, downloadable credential prep plans, and downloadable official enrollment verification packets. Study Sheets now include active-sheet markdown downloads, instructor-branded packet downloads, and a print-to-PDF packet export. Added reusable source panels inside quiz and Academy learning surfaces. Remaining gap: live official-provider enrollment integration, automated live cost sync, and formal exam-provider alignment.</td>
+        </tr>
+        <tr>
+          <td>Beer and spirits parity</td>
+          <td>Cicerone owns beer authority; Diageo, BarSmarts, A Bar Above, and MasterClass make spirits/cocktail training feel direct and practical.</td>
+          <td><span class="status partial">Partially addressed</span></td>
+          <td>Added one-click Beverage Quiz drill presets and a Sip Academy category sprint layer for beer, spirits, and bartender service, with direct handoff into focused quiz drills. Upgraded those Academy sprints into interactive beer, spirits, and bar lesson arcs with module checkpoints, saved local progress, capstone prompts, quiz handoffs, and downloadable arc packets. Added official benchmark source panels plus Cicerone, WSET Spirits, and BarSmarts-style syllabus bridge blocks. Added a scored Service Roleplay Lab for sommelier, beer, bar, and recovery scenarios with coaching notes, saved local attempts, and study-route handoffs. Added a Cocktail Technique Lab inside Bev Recipes that scores method, ice/service, dilution, and finish against each selected cocktail, saves local attempts, and exports mentor review packets. Added an Account Dashboard Instructor Review Queue that aggregates saved roleplay attempts, cocktail technique attempts, and Academy category arc checkpoints into downloadable review packets and study-support request handoffs. Added a Support Office Hours Desk that packages review goals, practical artifacts, response targets, agenda downloads, calendar holds, and support-ready review requests, then added a shared support SLA layer with due-soon/overdue visibility and admin triage export. Remaining gap: staffed live expert capacity and formal practical sign-off.</td>
+        </tr>
+        <tr>
+          <td>Persistent community</td>
+          <td>GuildSomm, course providers, creator platforms, and SOMM TV benefit from live events, forums, comments, cohorts, and member identity.</td>
+          <td><span class="status partial">Partially addressed</span></td>
+          <td>Added Supabase-backed Tasting Groups tables, RLS policies, cloud group creation for signed-in hosts, membership request persistence, event RSVP tables, host event publishing, local RSVP fallback, host approval UI, persistent threaded posts, host moderation controls, dashboard reminder records, member profile cards, event calendar exports, email invite drafts, and a local group presence pulse. Added cohort handoff exports with host-ready cohort digests, notification copy, public roster HTML pages, and local Account Dashboard cohort activity snapshots that package member goals, upcoming meetups, reminder state, discussion prompts, and presence signals into learner follow-up. Remaining gap: true realtime notifications, automated email/SMS delivery, and cross-device live discussion presence.</td>
+        </tr>
+        <tr>
+          <td>Mobile utility</td>
+          <td>Vivino, Delectable, Hello Vino, Winary, and related apps win by scanning labels/menus, saving ratings, managing cellar data, and recommending pairings.</td>
+          <td><span class="status partial">Partially addressed</span></td>
+          <td>Added a Taste-lane Cellar Scanner with label/menu OCR, pasted text analysis, local cellar records, cloud-ready Supabase cellar records, cellar quantity/rating fields, route-specific study links, pairing prompts, and Account Dashboard signals. Added front/back/shelf-tag mobile capture targets, appended OCR passes, metadata readiness scoring, drink-window prompts, external lookup handoffs, downloadable bottle metadata briefs, and a local Tasting Feedback Coach with evidence scoring, observation-first guardrails, mentor-style prompts, journal handoff, and downloadable feedback packets. Remaining gap: licensed external wine database matching, verified live market prices, public bottle metadata ingestion, and live model or expert-calibrated tasting feedback.</td>
+        </tr>
+        <tr>
+          <td>Premium video and creator layer</td>
+          <td>SOMM TV and MasterClass sell bingeable expert entertainment; YouTube/social creators win search, personality, and short-form discovery.</td>
+          <td><span class="status partial">Partially addressed</span></td>
+          <td>Added reusable media cut packs for AI Winecast episode pages and Daily Sip report pages, including hook, lesson beats, caption, runtime, transcript seed, copyable caption, downloadable transcript files, SRT caption files, and YouTube Shorts, Instagram Reels, and TikTok export handoffs. Added an AI Winecast watch queue with local saved episodes, starter sequence, direct episode launch, and transcript archive blocks beside episode detail pages. Added a production-board layer with readiness scoring, thumbnail-frame planning, shot cards, teleprompter copy, production-board downloads, teleprompter exports, and CSV shot lists. Remaining gap: recorded trailer assets, actual audio/video rendering, and complete human-edited transcripts.</td>
+        </tr>
+        <tr>
+          <td>Support center and enterprise route</td>
+          <td>WSET business/custom course lanes, course-provider help centers, and Provi/SevenFifty trade resources make buyer/support needs explicit.</td>
+          <td><span class="status partial">Partially addressed</span></td>
+          <td>Added a public Support &amp; Teams route with FAQ, enrollment help, billing guidance, study remediation routing, manager-ready sprint options, a local weekly assignment planner that syncs to Account Dashboard, Supabase-backed support request intake from Support, Checkout, and Account Dashboard, an admin support inbox for triage/status updates, cloud-backed team accounts with member-email assignment visibility, rate-limited support request creation with honeypot fields, manager analytics for assignment completion, open work, overdue work, linked accounts, and an Office Hours Desk for agenda packets, calendar holds, artifact selection, and review-request submission. Added response-target SLA cards in Support, per-request due status, admin due-soon/overdue counts, lane-specific triage notes, downloadable support triage digests, and a Live Handoff Desk that packages chat/callback/email context into downloadable transcripts and support queue requests. Remaining gap: actually staffed live chat/phone coverage, expert-review labor capacity, and deeper enterprise account ownership.</td>
+        </tr>
+        <tr>
+          <td>Unified progress and remediation</td>
+          <td>Modern learning systems show weak topics, next actions, assignments, completion state, and durable learner history.</td>
+          <td><span class="status partial">Partially addressed</span></td>
+          <td>Beverage Quiz attempts now feed weak-topic retakes, account-dashboard progress, review questions, and source-linked study routes. Added a Unified Learning Queue in Account Dashboard that ranks next actions from Quiz, Academy, equipment mastery, Cellar Scanner, tasting notes, event signals, team assignments, and saved cohort activity. Added a Learner Reminder Center that turns queue items, support requests, office-hours holds, practical-review packets, team assignments, and Tasting Group cohort snapshots into dated follow-up with calendar and digest exports. Added a Cohort Activity Inbox in Account Dashboard plus a shared local tasting archive so Flavors and Tasting Journal read and write the same browser notes while preserving legacy notes from both surfaces. Remaining gap: cloud-synced reminder history, true push/email/SMS notifications, automatic cloud cohort-feed sync, and cloud merge of tasting archives.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Competitor Review</h2>
+    <div class="competitor-grid">
+      <div class="card">
+        <h3>WSET</h3>
+        <p>WSET offers a globally recognized ladder across wine, spirits, sake, and beer, with provider networks, levels, online learning, SAT tasting language, and business/custom-course lanes.</p>
+        <p><strong>Sip response:</strong> keep certification prep as a visible route, but position as independent study support unless formal approval exists.</p>
+      </div>
+      <div class="card">
+        <h3>Court of Master Sommeliers</h3>
+        <p>CMS centers prestige, service, theory, practical hospitality, deductive tasting, sequence, and credential verification.</p>
+        <p><strong>Sip response:</strong> strengthen timed service drills, blind tasting logic, roleplay, and table-side language.</p>
+      </div>
+      <div class="card">
+        <h3>Cicerone</h3>
+        <p>Cicerone owns beer professional proof with Certified Beer Server through Master Cicerone, learning products, flavor training, support, directories, and group training.</p>
+        <p><strong>Sip response:</strong> build beer-specific training depth, off-flavor drills, draught systems, and public progress badges.</p>
+      </div>
+      <div class="card">
+        <h3>GuildSomm</h3>
+        <p>GuildSomm combines member community, expert content, classes, events, videos, podcasts, forums, and professional credibility.</p>
+        <p><strong>Sip response:</strong> make source panels and community durable, not just UI prototypes.</p>
+      </div>
+      <div class="card">
+        <h3>Wine Folly and Wine Scholar Guild</h3>
+        <p>Wine Folly wins approachable visuals, maps, courses, and consumer confidence. Wine Scholar Guild wins regional depth, study hours, maps, online modules, quizzes, flashcards, and exam proof.</p>
+        <p><strong>Sip response:</strong> productize maps, sheets, printable study plans, and regional study modules.</p>
+      </div>
+      <div class="card">
+        <h3>BarSmarts, Diageo Bar Academy, A Bar Above</h3>
+        <p>These competitors make bartender education operational: service, product knowledge, recipes, bar management, menu profitability, creativity, and practical certification.</p>
+        <p><strong>Sip response:</strong> build bartender and team lanes around pre-shift reps, specs, guest language, and menu/business decisions.</p>
+      </div>
+      <div class="card">
+        <h3>VinePair, SevenFifty Daily, Wine Enthusiast</h3>
+        <p>Media and trade competitors win cadence, SEO, reviews, ratings, buying intent, career/trade reports, and industry context.</p>
+        <p><strong>Sip response:</strong> make Daily Sip searchable, route-linked, audio/video-ready, and useful for staff education.</p>
+      </div>
+      <div class="card">
+        <h3>SOMM TV, MasterClass, Vivino, App/Game Competitors</h3>
+        <p>SOMM TV and MasterClass win premium entertainment. Vivino and similar apps win instant utility with scanning, ratings, pairings, cellar tracking, and recommendations.</p>
+        <p><strong>Sip response:</strong> add episodic learning and mobile utility without giving up source-backed education.</p>
+      </div>
+    </div>
+
+    <h2>Implemented During This Review</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Change</th>
+          <th>Files</th>
+          <th>Market Problem Addressed</th>
+          <th>Validation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Expanded the home pathfinder from four roles to seven roles: New Learner, Certification Prep, Beer Pro, Spirits Pro, Bartender, Working Pro, and Team Lead.</td>
+          <td>src/components/MarketingHome.tsx</td>
+          <td>Competitors segment by credential, beverage category, job role, and team need. Sip Studies now makes these paths visible earlier.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added per-profile training stacks showing the first three actions a learner should take.</td>
+          <td>src/components/MarketingHome.tsx, src/styles.css</td>
+          <td>Modern learning products reduce friction by showing the next action, not just a feature menu.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a public competitive gap board explaining how the site is responding to credential, beer/spirits, bar-operations, and entertainment/community gaps.</td>
+          <td>src/components/MarketingHome.tsx, src/styles.css</td>
+          <td>Turns research findings into visible product language and concrete routes.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added adaptive quiz remediation: saved attempts, weak-topic aggregation, focused retakes, review questions, and account-dashboard quiz progress.</td>
+          <td>src/components/BeverageQuiz.tsx, src/components/AccountDashboard.tsx, src/lib/quizProgress.ts, src/styles.css</td>
+          <td>Addresses the largest student-support gap: competitors and modern learning products keep weak topics, next actions, and progress visible after practice.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added first-class Beverage Quiz drill presets for beer, draught quality, beer off-flavors, spirits category logic, and bartender service practice.</td>
+          <td>src/components/BeverageQuiz.tsx, src/styles.css</td>
+          <td>Moves beer, spirits, and bartender tracks from homepage positioning into actual practice controls, addressing Cicerone, WSET spirits, Diageo, BarSmarts, and A Bar Above pressure.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added Sip Academy category sprint cards for beer, spirits, and bartender service, each with module outcomes, proof points, and direct links to matching quiz presets.</td>
+          <td>src/lib/categoryTrainingSprints.ts, src/components/CategoryTrainingSprints.tsx, src/components/SipAcademyWineLessons.tsx, src/components/BeverageQuiz.tsx, src/styles.css</td>
+          <td>Moves category parity into the Academy learning flow so beer and spirits learners see lesson paths before they enter recall practice.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added reusable learning source panels to Beverage Quiz presets, quiz explanations, Sip Academy lesson briefings, Academy feedback, and category sprint cards.</td>
+          <td>src/lib/learningSources.ts, src/components/LearningSourcePanel.tsx, src/components/BeverageQuiz.tsx, src/components/CategoryTrainingSprints.tsx, src/components/SipAcademyWineLessons.tsx, src/styles.css</td>
+          <td>Closes the trust gap where credential competitors make their syllabi, sources, and study expectations explicit at the point of learning.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a Unified Learning Queue to Account Dashboard that ranks next actions across quiz misses, Academy progress, equipment mastery, cellar scans, tasting notes, event signals, and team assignments.</td>
+          <td>src/lib/learningQueue.ts, src/components/AccountDashboard.tsx, src/styles.css</td>
+          <td>Addresses the modern learning-platform gap where students expect one durable list of what to do next instead of disconnected module cards.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a Learner Reminder Center to Account Dashboard that consolidates learning queue items, support requests, office-hours holds, practical-review packets, and team assignments into dated follow-up cards with downloadable calendar and markdown digest exports.</td>
+          <td>src/lib/learnerReminders.ts, src/components/AccountDashboard.tsx, src/styles.css</td>
+          <td>Addresses the follow-up gap where course platforms, GuildSomm events/forums, WSET online classrooms, Diageo webinars, and Cicerone lesson catalogs keep learners oriented with dated coursework, review moments, and progress prompts.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Merged local tasting note storage for Flavors and Tasting Journal into one shared archive with legacy-key migration, event-driven dashboard refresh, and preservation of Flavors-specific image and wheel fields when Journal writes back.</td>
+          <td>src/lib/tastingJournal.ts, src/components/Flavors.tsx, src/components/TastingJournal.tsx, src/components/AccountDashboard.tsx</td>
+          <td>Closes the disconnected tasting-history gap: notes made in one tasting surface now feed the other surface and Account Dashboard instead of splitting learner history.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Linked quiz weak topics and missed review questions to Sipopedia searches plus relevant app routes such as Flavor Wheel, regions, cocktails, resources, and Sip Game.</td>
+          <td>src/lib/quizProgress.ts, src/components/BeverageQuiz.tsx, src/components/AccountDashboard.tsx, src/styles.css</td>
+          <td>Moves remediation from a generic retake button toward sourced, route-specific study support.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a public Support &amp; Teams desk with support routing, FAQ, billing/access guidance, study help, and manager-ready staff-training sprints.</td>
+          <td>src/components/SupportCenter.tsx, src/App.tsx, src/lib/siteMap.ts, src/lib/headerMenu.ts, src/components/PublicFooter.tsx, src/components/PricingPage.tsx, src/components/MarketingHome.tsx, src/styles.css</td>
+          <td>Addresses the buyer/support gap where credential providers, course platforms, and trade tools make help, business training, and team use cases easy to find.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added persisted support request intake for Support Center, assisted checkout enrollment, billing help, cancellation, data export, and data deletion actions, with local fallback and admin-manage RLS.</td>
+          <td>supabase/migrations/20260526161602_support_requests.sql, src/lib/supportRequests.ts, src/components/SupportCenter.tsx, src/components/CheckoutPage.tsx, src/components/AccountDashboard.tsx, src/styles.css</td>
+          <td>Moves support from visible guidance and mailto fallback into durable request capture that can become an in-app queue for enrollment, billing, privacy, and team-training follow-up.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added an Account Dashboard admin support inbox with open/urgent/team counts, cloud request loading, request metadata, and admin-only status updates for new, triaged, in-progress, and closed tickets.</td>
+          <td>src/lib/supportRequests.ts, src/components/AccountDashboard.tsx, src/styles.css, supabase/migrations/20260526161602_support_requests.sql</td>
+          <td>Closes the first operational support gap after request capture: admins can now see and triage the queue instead of collecting requests with no workflow surface.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Moved support request creation behind a Supabase RPC with per-contact hourly rate limiting, removed direct public insert bypass, added local cooldown handling, and added honeypot fields to public intake and assisted checkout forms.</td>
+          <td>supabase/migrations/20260526170437_support_request_rate_limit.sql, src/lib/supportRequests.ts, src/components/SupportCenter.tsx, src/components/CheckoutPage.tsx, src/components/AccountDashboard.tsx, src/styles.css</td>
+          <td>Addresses the public-support spam gap introduced by anonymous inquiry capture, while preserving local fallback and admin triage.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a public Credential Prep Desk with independent WSET-style, CMS-style, Cicerone-style, BarSmarts-style, and regional-scholar study loops, source links, non-affiliation notes, print checklist action, and route-specific next steps.</td>
+          <td>src/components/StudyPaths.tsx, src/App.tsx, src/lib/siteMap.ts, src/lib/headerMenu.ts, src/components/PublicFooter.tsx, src/components/PricingPage.tsx, src/components/MarketingHome.tsx, src/components/SupportCenter.tsx, src/styles.css</td>
+          <td>Addresses the credential clarity gap where official programs win by making levels, proof, preparation requirements, and learner paths explicit.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a printable Study Sheets workspace with map recall, global region, wine style, beer service, floor service, and classic cocktail spec sheets, plus print/copy actions and route handoffs.</td>
+          <td>src/lib/studySheets.ts, src/components/StudySheets.tsx, src/App.tsx, src/lib/workspaceNavigation.ts, src/components/StudyPaths.tsx, src/styles.css</td>
+          <td>Closes the printable study-sheet gap and gives credential, service, and team learners one-page drills that competitors often package as downloadable prep resources.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added Study Sheets packet exports with active-sheet markdown downloads, a full instructor-branded markdown packet, and a print-to-PDF packet window for all sheets.</td>
+          <td>src/components/StudySheets.tsx</td>
+          <td>Moves printable sheets from single-page copy/print into reusable instructor and offline prep packets.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added focused per-level credential prep planners with local provider, exam-window, cost/budget, weekly-hours, official-handoff, note capture, and downloadable prep-plan markdown exports.</td>
+          <td>src/components/StudyPaths.tsx, src/styles.css</td>
+          <td>Addresses the credential competitor gap where learners need provider choice, enrollment timing, cost planning, and per-level readiness tracking beside official handoff links.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added official enrollment verification packets to the Credential Prep Desk with provider URL, official source checked date, listed course/exam cost, materials/travel/tasting-kit cost, freshness status, and a pre-payment verification checklist.</td>
+          <td>src/components/StudyPaths.tsx, src/styles.css</td>
+          <td>Reduces the credential clarity gap where official providers win on current enrollment dates, fees, policy language, credential wording, and proof rules.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a Cocktail Technique Lab inside Bev Recipes with method, ice/service, dilution, and finish scoring, local saved attempts, benchmark cues, and downloadable mentor review packets.</td>
+          <td>src/components/Cocktails.tsx, src/styles.css</td>
+          <td>Addresses the bartender-training gap where competitors teach practical technique decisions, not just recipe lookup.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Upgraded Sip Academy beer, spirits, and bar category sprints into interactive lesson arcs with step checkpoints, saved local progress, capstone prompts, quiz handoffs, and downloadable mentor packets.</td>
+          <td>src/lib/categoryTrainingSprints.ts, src/components/CategoryTrainingSprints.tsx, src/styles.css</td>
+          <td>Closes the full category-lesson-arc gap where Cicerone, WSET Spirits, BarSmarts, and trade academies make beer/spirits training feel structured instead of merely filtered.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added an Account Dashboard Instructor Review Queue that reads saved Service Roleplay, Cocktail Technique, and Academy category arc artifacts, summarizes review readiness, downloads a practical-review packet, and creates a study-support request for instructor follow-up.</td>
+          <td>src/lib/practicalReview.ts, src/components/AccountDashboard.tsx, src/styles.css</td>
+          <td>Addresses the practical-feedback gap where credential and bartender-training competitors make tasting, service, demonstration, or instructor review part of the learning journey.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a Support Office Hours Desk that lets learners choose a review focus, select practical artifacts, set a preferred review hold, download an agenda, download a calendar file, and submit the same agenda as a support-ready review request.</td>
+          <td>src/lib/officeHours.ts, src/components/SupportCenter.tsx, src/styles.css</td>
+          <td>Responds to WSET/Napa-style tutor support and live-webinar pressure by making expert review requests structured, calendar-ready, and tied to saved Sip Studies practice evidence instead of a generic contact form.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a support SLA layer with learner-facing response targets, recent request due status, admin due-soon/overdue counts, lane-specific triage guidance, and downloadable support triage digests.</td>
+          <td>src/lib/supportSla.ts, src/components/SupportCenter.tsx, src/components/AccountDashboard.tsx, src/styles.css</td>
+          <td>Reduces the tutor-support and help-center gap where WSET online learning, Napa Valley Wine Academy, and modern course providers make help feel staffed, time-bound, and operationally accountable.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a Support Live Handoff Desk with chat, callback, and email modes; readiness scoring; callback phone and availability capture; transcript notes; downloadable handoff packets; and one-click save into the existing cloud/local support request queue.</td>
+          <td>src/lib/liveSupportDesk.ts, src/components/SupportCenter.tsx, src/styles.css</td>
+          <td>Reduces the live-support gap by turning would-be chat or phone context into an operational queue handoff while preserving the caveat that Sip Studies still needs actual staffed real-time coverage.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a scored Service Roleplay Lab with sommelier bottle recovery, beer freshness, Martini translation, and low-ABV pacing scenarios, including response scoring, coaching notes, local saved attempts, and route handoffs.</td>
+          <td>src/lib/serviceRoleplay.ts, src/components/ServiceRoleplayLab.tsx, src/App.tsx, src/lib/workspaceNavigation.ts, src/components/StudyPaths.tsx, src/lib/credentialSyllabi.ts, src/lib/studySheets.ts, src/styles.css</td>
+          <td>Closes the practical service-roleplay gap where sommelier, Cicerone-style, and bartender education competitors train learners on live guest decisions instead of only static recall.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added downloadable media export packs for AI Winecast and Daily Sip, including markdown transcript files, SRT caption seeds, copyable captions, and channel-specific YouTube Shorts, Instagram Reels, and TikTok handoff files.</td>
+          <td>src/lib/mediaCutPack.ts, src/components/MediaCutPack.tsx, src/styles.css</td>
+          <td>Moves the short-form media layer from on-screen planning into offline creator files that can be downloaded per episode or report.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added production boards to every reusable media cut pack, including readiness score, thumbnail-frame plan, shot cards, teleprompter pass, production-board markdown export, teleprompter text export, and spreadsheet-ready shot-list CSV.</td>
+          <td>src/lib/mediaCutPack.ts, src/components/MediaCutPack.tsx, src/styles.css</td>
+          <td>Reduces the SOMM TV, MasterClass, YouTube Shorts, Reels, and TikTok gap by turning Winecast and Daily Sip from caption packs into recordable production briefs.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added level-specific syllabus bridge blocks for WSET Level 2 Wines, WSET Level 1 Spirits, CMS Introductory Sommelier, Certified Beer Server, BarSmarts practical service, and regional scholar map study.</td>
+          <td>src/lib/credentialSyllabi.ts, src/components/StudyPaths.tsx, src/styles.css</td>
+          <td>Moves credential prep from broad path labels into actionable public-requirement checklists, Sip route drills, readiness checks, and official-provider handoff links.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a persistent manager assignment planner for team training sprints, including local plan storage, weekly route ownership, completion toggles, and Account Dashboard visibility.</td>
+          <td>src/lib/teamPlanner.ts, src/components/SupportCenter.tsx, src/components/AccountDashboard.tsx, src/styles.css</td>
+          <td>Moves the team-training surface from a static sales path toward operational staff education, matching the way course providers and bar academies give managers concrete training execution steps.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added cloud-backed team training accounts with manager-owned plans, member email invites, shared assignment rows, RLS-protected manager/member visibility, cloud save from Support Center, and Account Dashboard cloud plan sync.</td>
+          <td>supabase/migrations/20260526165014_team_training_accounts.sql, src/lib/teamPlanner.ts, src/components/SupportCenter.tsx, src/components/AccountDashboard.tsx, src/styles.css</td>
+          <td>Addresses the cross-account manager assignment gap: team plans can now move beyond one device and become shared training account data for managers and invited staff.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added manager analytics to Account Dashboard, rolling up linked team plans into completion rate, open assignment count, overdue work, linked accounts, and next-risk assignment cards.</td>
+          <td>src/components/AccountDashboard.tsx, src/styles.css</td>
+          <td>Turns cloud team plans into a manager-facing operating view instead of just a list of assignments, closing the basic analytics gap for staff training.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Turned Tasting Groups into a persistent cohort MVP with Supabase tables, RLS policies, signed-in cloud group creation, membership request inserts, sync-status UI, and local preview fallback.</td>
+          <td>supabase/migrations/20260526133904_create_tasting_groups_persistence.sql, src/lib/tastingGroups.ts, src/components/TastingGroups.tsx, src/styles.css</td>
+          <td>Addresses the persistent community gap where competitors benefit from member identity, group continuity, and forum/event participation instead of one-session prototype state.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added Tasting Group event RSVP infrastructure and host workflow: cloud event cards, RSVP rows, RLS policies, host event publishing, local RSVP fallback, and host-visible membership approval.</td>
+          <td>supabase/migrations/20260526153707_tasting_group_event_rsvps.sql, src/lib/tastingGroups.ts, src/components/TastingGroups.tsx, src/styles.css</td>
+          <td>Moves cohorts closer to GuildSomm/course-provider community expectations by giving groups actual event operations and member approval, not just discovery cards.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added persistent Tasting Group threaded posts with one-level replies, post types, host moderation statuses, cloud sync, local preview posts, and private RLS helper functions for host/member posting rules.</td>
+          <td>supabase/migrations/20260526172400_tasting_group_posts.sql, src/lib/tastingGroups.ts, src/components/TastingGroups.tsx, src/styles.css</td>
+          <td>Closes the biggest forum/community gap by giving cohorts durable discussion objects and moderation workflow instead of a static feed preview.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added Tasting Group member cards and event reminder planning, including cloud-backed member profile rows, per-user reminder rows, RLS helper functions, local preview fallback, visible reminder buttons, and profile-card UI.</td>
+          <td>supabase/migrations/20260526175146_tasting_group_profiles_reminders.sql, src/lib/tastingGroups.ts, src/components/TastingGroups.tsx, src/styles.css</td>
+          <td>Moves cohorts closer to live learning communities by giving members visible identity, goals, credentials, availability, and saved event reminder intent.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added Tasting Group event calendar exports, email invite drafts, and a local presence pulse so hosts can move RSVPs into calendar/email workflows and members can see active group viewers.</td>
+          <td>src/components/TastingGroups.tsx, src/styles.css</td>
+          <td>Addresses the community gap where live event platforms and member communities keep events shareable, reminder-ready, and visibly active instead of static.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added Tasting Group cohort handoff exports: markdown cohort digest, plain-text notification copy, and public roster HTML page with member cards, upcoming meetups, thread prompts, reminder state, and presence signals.</td>
+          <td>src/lib/tastingGroupHandoffs.ts, src/components/TastingGroups.tsx, src/styles.css</td>
+          <td>Moves cohorts closer to GuildSomm, course-provider, and Discord-style community expectations by making member identity, activity, reminders, and public/shareable group context portable outside the app.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added local cohort activity dashboard merge: Tasting Groups can send a cohort snapshot into Account Dashboard, where it becomes a Cohort Activity Inbox, contributes to Connect progress, enters the Unified Learning Queue, appears in the Learner Reminder Center, and exports as a cohort inbox digest.</td>
+          <td>src/lib/cohortActivity.ts, src/lib/learningQueue.ts, src/lib/learnerReminders.ts, src/components/TastingGroups.tsx, src/components/AccountDashboard.tsx, src/styles.css</td>
+          <td>Closes the local cohort activity merging gap by making community work visible beside study remediation while preserving the caveat that realtime cross-device notifications still need cloud automation.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a Cellar Scanner in the Taste lane with OCR/paste analysis, local cellar records, study-route recommendations, quantity/rating tracking, and Account Dashboard cellar signals.</td>
+          <td>src/components/CellarScanner.tsx, src/lib/cellarScanner.ts, src/App.tsx, src/lib/workspaceNavigation.ts, src/components/AccountDashboard.tsx, src/components/MarketingHome.tsx, src/styles.css</td>
+          <td>Addresses the mobile utility gap where wine apps win with scan-to-identify, cellar memory, ratings, pairings, and collection context.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added mobile scanner polish and metadata readiness: front/back/shelf capture targets append OCR into one label record, the scanner scores metadata completeness, produces a drink-window prompt, links to external lookup handoffs, and downloads a markdown bottle metadata brief.</td>
+          <td>src/lib/cellarScanner.ts, src/components/CellarScanner.tsx, src/styles.css</td>
+          <td>Responds to Vivino, Delectable, and InVintory pressure around instant label recognition, ratings/reviews, market context, cellar location, drink windows, and bottle metadata without pretending Sip Studies owns a licensed wine database yet.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added a Cellar Scanner Tasting Feedback Coach with appearance, aroma, palate, structure, finish, fault, conclusion, and service-intent inputs; readiness scoring; observation-first calibration guardrails; coaching prompts; journal handoff; and downloadable mentor-review packets.</td>
+          <td>src/lib/cellarScanner.ts, src/components/CellarScanner.tsx, src/styles.css</td>
+          <td>Improves the mobile utility and tasting-feedback gap against Vivino, Delectable, Hello Vino, and InVintory by turning a scan into guided tasting evidence instead of only inventory, lookup, or ratings context.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added cloud-ready Cellar Scanner persistence with owner-only Supabase records, RLS policies, signed-in cloud save, cloud quantity sync, and local fallback when auth or Supabase is unavailable.</td>
+          <td>supabase/migrations/20260526155230_cellar_scan_records.sql, src/lib/cellarScanner.ts, src/components/CellarScanner.tsx, src/styles.css</td>
+          <td>Moves scanner utility closer to cellar-management competitors by letting scan records become durable account data instead of device-only inventory.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added reusable short-form lesson cut packs to AI Winecast and Daily Sip so each episode or briefing can ship with a hook, runtime, lesson beats, caption, and transcript seed.</td>
+          <td>src/lib/mediaCutPack.ts, src/components/MediaCutPack.tsx, src/components/AiWinecast.tsx, src/components/FlavorBlog.tsx, src/styles.css</td>
+          <td>Addresses the creator/media gap where SOMM TV, MasterClass, YouTube, and social platforms package lessons into repeatable video, trailer, transcript, and caption workflows.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+        <tr>
+          <td>Added an AI Winecast watch queue with local saved episodes, a starter watch sequence, per-card save controls, detail-page save/remove control, and transcript archive blocks for clip and study handoff.</td>
+          <td>src/components/AiWinecast.tsx, src/styles.css</td>
+          <td>Moves the Winecast archive closer to bingeable entertainment products by giving students a queue, next episode action, and episode-adjacent transcript structure instead of disconnected cards.</td>
+          <td><span class="status">Build passed</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Next Implementation Checklist</h2>
+    <div class="check-grid">
+      <div class="card">
+        <h3>Student Support Loop</h3>
+        <ul class="checklist">
+          <li>Persist quiz attempts and incorrect-answer review. Completed locally for Beverage Quiz.</li>
+          <li>Show weak-topic retake CTA in Account Dashboard. Completed as a dashboard quiz-remediation card.</li>
+          <li>Link weak terms to Sipopedia and route-specific resources. Completed for Beverage Quiz weak topics and missed-question review.</li>
+          <li>Merge current learning signals into one next-action queue. Completed locally in Account Dashboard as a Unified Learning Queue plus a Learner Reminder Center with calendar and digest exports; Tasting Group cohort activity can now be sent into the same dashboard and reminder loop. Still needs cloud-synced reminder history, push/email/SMS notifications, and automatic cloud cohort feeds.</li>
+          <li>Merge Tasting Journal and Flavors guest/member storage. Completed locally through a shared tasting archive with legacy migration and Account Dashboard refresh; still needs cloud archive merge across signed-in devices.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Credential And Category Tracks</h3>
+        <ul class="checklist">
+          <li>Add independent WSET/CMS/Cicerone study-path pages with non-affiliation caveats. Completed as a public Credential Prep Desk with level-specific syllabus bridge blocks, focused per-level prep planners, provider URL/source checked-date/listed-cost/materials-cost capture, freshness warnings, downloadable prep-plan exports, and downloadable official enrollment verification packets; still needs live official-provider enrollment sync, automated live cost sync, and formal provider alignment.</li>
+          <li>Promote beer, spirits, and bartender tracks from lobby language into actual practice filters. Completed in Beverage Quiz as one-click drill presets, in Sip Academy as interactive beer/spirits/bar lesson arcs with saved checkpoint progress and mentor packet exports, in Service Roleplay Lab as scored guest scenarios, in Bev Recipes as a Cocktail Technique Lab with saved attempts and mentor review exports, in Account Dashboard as an Instructor Review Queue with downloadable packets and support handoff, and in Support as an Office Hours Desk with review agendas, calendar holds, support-ready review requests, response-target SLA visibility, and admin triage exports; still needs staffed live expert feedback and formal practical sign-off.</li>
+          <li>Add source panels to quiz explanations and lessons. Completed with reusable source panels across Beverage Quiz and Sip Academy.</li>
+          <li>Create printable study sheets for maps, styles, service, and classic specs. Completed as a Study Sheets workspace with print/copy actions, active-sheet markdown downloads, instructor-branded packet downloads, print-to-PDF packet export, and route handoffs.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Market Utility And Revenue</h3>
+        <ul class="checklist">
+          <li>Add support/FAQ and enterprise/team route. Completed as a public Support &amp; Teams desk with persisted and rate-limited support request intake, assisted checkout capture, account billing/privacy requests, local and cloud team assignment planning, invited-member visibility, an admin triage inbox, manager analytics, office-hours review agenda/calendar/request tooling, response-target SLA cards, due-soon/overdue admin counts, triage digest exports, and a Live Handoff Desk for chat/callback/email transcript packaging; still needs actual staffed live chat/phone coverage, expert-review capacity, and richer enterprise ownership.</li>
+          <li>Turn Tasting Groups into persistent Supabase-backed cohorts. Completed as a cloud group, membership-request, event RSVP, host approval, threaded feed, host moderation, dashboard reminder, member-card MVP, calendar export, email draft, local presence pulse, cohort digest export, notification copy export, public roster HTML export, and local Account Dashboard cohort activity inbox; still needs true realtime updates, automated email/SMS reminder delivery, and cross-device live presence.</li>
+          <li>Prototype label/menu scanner and cellar/journal recommendations. Completed as a local and cloud-ready Cellar Scanner with front/back/shelf camera capture targets, appended OCR, metadata readiness scoring, drink-window prompts, external lookup handoffs, downloadable bottle metadata briefs, and a local Tasting Feedback Coach with mentor-review packet exports; still needs licensed external wine database matching, verified live market prices, public bottle metadata ingestion, and live model or expert-calibrated tasting feedback.</li>
+          <li>Package Daily Sip and Winecast into short video/audio/social lesson cuts. Completed as reusable cut-pack UI, an AI Winecast watch queue, transcript-archive blocks, copyable captions, downloadable transcript files, SRT captions, YouTube Shorts, Instagram Reels, and TikTok handoff exports, production-board readiness scoring, thumbnail-frame plans, teleprompter copy, markdown production briefs, teleprompter exports, and shot-list CSVs; still needs rendered media assets and complete edited transcripts.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Source Notes</h2>
+    <p class="small">Sources were accessed on May 26-27, 2026 unless otherwise noted. Public pages can change by geography, login state, promotion, catalog updates, or age gate.</p>
+    <div class="source-grid">
+      <div class="card">
+        <strong>Credential and professional education</strong>
+        <ul>
+          <li><a href="https://www.wsetglobal.com/qualifications/">WSET Qualifications</a></li>
+          <li><a href="https://www.wsetglobal.com/where-to-study/">WSET Where to Study</a></li>
+          <li><a href="https://www.wsetglobal.com/qualifications/online-learning">WSET Online Learning</a></li>
+          <li><a href="https://www.wsetglobal.com/qualifications/wset-level-2-award-in-wines/">WSET Level 2 Award in Wines</a></li>
+          <li><a href="https://www.wsetglobal.com/qualifications/wset-beer-qualifications/">WSET Beer Qualifications</a></li>
+          <li><a href="https://www.wsetglobal.com/qualifications/wset-spirits-qualifications/">WSET Spirits Qualifications</a></li>
+          <li><a href="https://www.wsetglobal.com/qualifications/wset-level-1-award-in-spirits/">WSET Level 1 Award in Spirits</a></li>
+          <li><a href="https://www.mastersommeliers.org/certification/">Court of Master Sommeliers Americas Certification</a></li>
+          <li><a href="https://www.mastersommeliers.org/certification/courses/">CMS Americas Courses</a></li>
+          <li><a href="https://www.mastersommeliers.org/certification/online-courses/online-introductory-sommelier-course/">CMS Americas Online Introductory Sommelier Course</a></li>
+          <li><a href="https://www.mastersommeliers.org/resources/resource-library/">CMS Americas Resource Library</a></li>
+          <li><a href="https://www.cicerone.org/us-en/home">Cicerone Certification Program</a></li>
+          <li><a href="https://www.cicerone.org/us-en/certifications">Cicerone Certification Levels</a></li>
+          <li><a href="https://www.cicerone.org/us-en/certifications/certified-beer-server">Cicerone Certified Beer Server</a></li>
+          <li><a href="https://www.cicerone.org/us-en/certifications/certified-cicerone">Cicerone Certified Cicerone</a></li>
+          <li><a href="https://learn.cicerone.org/collections">Cicerone Learning Catalog</a></li>
+          <li><a href="https://societyofwineeducators.org/education-certifications/">Society of Wine Educators Education &amp; Certification</a></li>
+          <li><a href="https://www.guildsomm.com/about_us/who-we-are">GuildSomm Who We Are</a></li>
+          <li><a href="https://www.guildsomm.com/">GuildSomm International</a></li>
+          <li><a href="https://www.guildsomm.com/public_content/features/b/announcements">GuildSomm Announcements</a></li>
+          <li><a href="https://events.guildsomm.com/WineChampsOnlineQuiz">GuildSomm Wine Champs Online Quiz</a></li>
+          <li><a href="https://www.winescholarguild.com/certifications">Wine Scholar Guild Certifications</a></li>
+          <li><a href="https://www.winescholarguild.com/administration-2/enroll-in-a-course">Wine Scholar Guild Enroll in a Course</a></li>
+          <li><a href="https://www.winescholarguild.com/certifications/scholar-programs/spanish-wine-scholar">Wine Scholar Guild Spanish Wine Scholar</a></li>
+          <li><a href="https://napavalleywineacademy.com/pages/online-wine-academy">Napa Valley Wine Academy Online Wine Academy</a></li>
+          <li><a href="https://napavalleywineacademy.com/">Napa Valley Wine Academy</a></li>
+          <li><a href="https://napavalleywineacademy.com/products/wset-level-1-award-in-wines-online-course">Napa Valley Wine Academy WSET Level 1 Online Course</a></li>
+          <li><a href="https://help.napavalleywineacademy.com/en-US">Napa Valley Wine Academy Help Center</a></li>
+          <li><a href="https://wineenthusiastacademy.com/">Wine Enthusiast Academy</a></li>
+        </ul>
+      </div>
+      <div class="card">
+        <strong>Consumer, bar, media, streaming, and utility</strong>
+        <ul>
+          <li><a href="https://winefolly.com/">Wine Folly</a></li>
+          <li><a href="https://www.masterclass.com/classes/lynnette-marrero-and-ryan-chetiyawardana-teach-mixology">MasterClass Mixology</a></li>
+          <li><a href="https://www.barsmarts.com/">BarSmarts</a></li>
+          <li><a href="https://www.diageobaracademy.com/en-us/home/face-to-face-training">Diageo Bar Academy Face-to-Face Training</a></li>
+          <li><a href="https://www.diageobaracademy.com/en-us/home/online-training-and-e-learning">Diageo Bar Academy Online Training</a></li>
+          <li><a href="https://www.diageobaracademy.com/en-us/home/masterclass-webinars">Diageo Bar Academy Masterclass Webinars</a></li>
+          <li><a href="https://learn.abarabove.com/">A Bar Above Training Courses</a></li>
+          <li><a href="https://vinepair.com/">VinePair</a></li>
+          <li><a href="https://www.provi.com/provi-sevenfifty">Provi and SevenFifty Daily</a></li>
+          <li><a href="https://www.sommtv.com/">SOMM TV</a></li>
+          <li><a href="https://support.google.com/youtube/answer/10059070">YouTube Help: Get started creating YouTube Shorts</a></li>
+          <li><a href="https://support.tiktok.com/en/using-tiktok/creating-videos/auto-captions">TikTok Help: Auto captions</a></li>
+          <li><a href="https://docs.discord.com/developers/communities/overview">Discord Community Servers Overview</a></li>
+          <li><a href="https://support.discord.com/hc/en-us/articles/4409494125719-Scheduled-Events">Discord Scheduled Events</a></li>
+          <li><a href="https://support.discord.com/hc/en-us/articles/360032008192-Announcement-Channels-">Discord Announcement Channels</a></li>
+          <li><a href="https://support.discord.com/hc/en-us/articles/360043913591-Community-Server-Welcome-Screen">Discord Community Server Welcome Screen</a></li>
+          <li><a href="https://www.vivino.com/en/app">Vivino App</a></li>
+          <li><a href="https://apps.apple.com/us/app/vivino-drink-the-right-wine/id414461255">Vivino App Store Listing</a></li>
+          <li><a href="https://apps.apple.com/us/app/delectable-scan-rate-wine/id512106648">Delectable App Store Listing</a></li>
+          <li><a href="https://www.hellovino.com/wine-mobile">Hello Vino Mobile App</a></li>
+          <li><a href="https://winary.app/">Winary App</a></li>
+          <li><a href="https://invintory.com/">InVintory</a></li>
+          <li><a href="https://www.wine-searcher.com/">Wine-Searcher</a></li>
+        </ul>
+      </div>
+      <div class="card">
+        <strong>Implementation references</strong>
+        <ul>
+          <li><a href="https://supabase.com/docs/guides/database/postgres/row-level-security">Supabase Row Level Security</a></li>
+          <li><a href="https://supabase.com/docs/reference/javascript/insert">Supabase JavaScript Insert Data</a></li>
+          <li><a href="https://supabase.com/docs/reference/javascript/select">Supabase JavaScript Fetch Data</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Bottom line:</strong> Sip Studies has enough surface area to compete as a beverage-learning operating system, but it must keep converting that breadth into guided tracks, durable progress, credible source panels, persistent community, media packaging, and category-specific utility. This review started that conversion at the lobby, quiz loop, Academy category layer, support surface, credential-planning layer, team execution layer, cohort layer, creator layer, and mobile utility layer: the homepage now names more learner paths, Beverage Quiz now turns weak topics into retakes, study routes, and source-backed explanations, beer/spirits/bartender learners now get one-click drill presets, interactive Academy category lesson arcs with saved checkpoints and downloadable mentor packets, official benchmark links, printable Study Sheets with instructor and PDF packet exports, a scored Service Roleplay Lab for practical guest scenarios, a Cocktail Technique Lab with saved method/ice/dilution/finish attempts and mentor review exports, and an Account Dashboard Instructor Review Queue that turns saved practical artifacts into downloadable packets and study-support handoffs, Account Dashboard now has a Unified Learning Queue that ranks cross-module next actions plus a Learner Reminder Center that turns queue items, office-hours holds, support requests, team assignments, practical-review packets, and saved Tasting Group cohort snapshots into dated calendar/digest exports, Flavors and Tasting Journal now share one local tasting archive, the public site has a Support &amp; Teams desk plus persisted and rate-limited support request intake across Support, Checkout, and Account Dashboard, Support now adds an Office Hours Desk for review agendas, practical artifact selection, calendar holds, support-ready expert-review requests, response-target SLA visibility, and a Live Handoff Desk for chat, callback, email, transcript, and phone-context packets, admins now get an Account Dashboard support inbox for triage, ticket status updates, due-soon/overdue SLA risk, lane-specific triage notes, and downloadable triage digests, managers can save local or cloud-backed team plans with invited-member assignment visibility and analytics, credential-minded learners get an independent prep desk with level-specific syllabus bridge blocks, focused per-level provider/cost planners, source checked-date and cost capture, freshness warnings, official enrollment verification packets, prep-plan exports, and official handoffs, Tasting Groups now has Supabase-backed group creation, membership requests, event RSVPs, host event publishing, approval controls, threaded posts, replies, moderation status controls, member profile cards, event reminder records, calendar exports, email invite drafts, a local presence pulse, cohort digest exports, notification-copy exports, public roster HTML pages, and a local Account Dashboard Cohort Activity Inbox handoff, AI Winecast and Daily Sip now produce short-form cut packs with downloadable transcript, SRT, channel handoff files, production boards, thumbnail-frame plans, teleprompter passes, and shot-list CSVs, AI Winecast now has a local watch queue and transcript archive layer, and the Taste lane now has a Cellar Scanner for label/menu capture, front/back/shelf OCR passes, metadata readiness scoring, external lookup handoffs, downloadable bottle briefs, local and cloud-ready cellar memory, study-route recommendations, and a Tasting Feedback Coach that converts observed appearance, aroma, palate, structure, finish, fault, conclusion, and service intent into scoring, prompts, journal handoff, and review packets.
+    </div>
+  </main>
+</body>
+</html>

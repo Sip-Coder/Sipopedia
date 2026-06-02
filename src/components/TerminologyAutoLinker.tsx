@@ -69,12 +69,12 @@ const SKIPPED_SELECTOR = [
   ".workspace-command-deck",
   ".workspace-module-grid",
   ".workspace-section-rail",
-  ".workspace-house-rail",
   ".terminology-autolink"
 ].join(",");
 
 const PROSE_SELECTOR = "p,li,dd,blockquote,figcaption,td";
 const AUTOLINK_DENYLIST = new Set(["when"]);
+const AUTOLINK_TARGET_LIMIT = 1200;
 
 let preparedTermsPromise: Promise<PreparedTerm[]> | null = null;
 
@@ -126,7 +126,7 @@ function prepareTerms(targets: TerminologyLinkTarget[]) {
 }
 
 function loadPreparedTerms() {
-  preparedTermsPromise ??= listTerminologyLinkTargets().then(prepareTerms);
+  preparedTermsPromise ??= listTerminologyLinkTargets(AUTOLINK_TARGET_LIMIT).then(prepareTerms);
   return preparedTermsPromise;
 }
 

@@ -1,0 +1,272 @@
+{
+  "id": "daily-sip-2026-05-19",
+  "slug": "daily-sip",
+  "title": "Daily Sip: Beverage Market Briefing for May 19, 2026",
+  "subtitle": "An in-depth Flavor Blog overview of the top 20 beverage industry articles across wine, beer, spirits, coffee, tea, regulation, and adjacent market signals.",
+  "generatedAt": "2026-05-19T12:00:00.000Z",
+  "headerImageUrl": "/daily-sip/daily-sip-2026-05-19-header.png",
+  "sourceCount": 13,
+  "articleCount": 20,
+  "editorialStandard": "daily-sip-avant-garde-v2-2026-05",
+  "coverage": [
+    "Wine",
+    "Beer",
+    "Spirits",
+    "Coffee",
+    "Regulation",
+    "Market"
+  ],
+  "executiveSummary": [
+    "Daily Sip scanned 13 beverage sources and selected 20 stories with clear source attribution, concrete trade relevance, and limited hype.",
+    "Today's strongest signals sit in Wine, Coffee, Spirits, Market, Regulation. The leading source trail begins with The Drinks Business, Daily Coffee News, VinePair.",
+    "Editorial stance: launches, awards, investments, and claims are treated as signals, not endorsements. The test is what may change for price, access, labor, compliance, training, or guest language."
+  ],
+  "marketThemes": [
+    {
+      "title": "Rules rewrite the shelf",
+      "body": "2 ranked stories sit here, led by The Spirits Business, Alcohol and Tobacco Tax and Trade Bureau. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Demand splits into smaller occasions",
+      "body": "12 ranked stories sit here, led by Daily Coffee News, VinePair, The Drinks Business, The Spirits Business. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Supply sets the tempo",
+      "body": "1 ranked story sits here, led by Specialty Coffee Association. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Capital moves the room",
+      "body": "1 ranked story sits here, led by The Drinks Business. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    }
+  ],
+  "watchlist": [
+    "Watch whether Wine, Coffee, Spirits repeat across the next two scans before calling them trends.",
+    "Check primary sources before changing menu, shelf, pricing, or compliance language.",
+    "Separate product launches and awards from independent evidence of demand.",
+    "Flag single-source, disputed, or promotional claims for human review before amplifying them."
+  ],
+  "articles": [
+    {
+      "rank": 1,
+      "title": "Olivier Goudet acquires Wine-Searcher",
+      "sourceName": "The Drinks Business",
+      "category": "Wine",
+      "publishedAt": "2026-05-19T10:25:41.000Z",
+      "url": "https://www.thedrinksbusiness.com/2026/05/olivier-goudet-acquires-wine-searcher/",
+      "summary": "The Drinks Business reports: Olivier Goudet acquires Wine-Searcher. Capital is the signal: ownership, funding, or distribution shifts can change who gets reach and negotiating power.",
+      "whyItMatters": "Capital movement can reshape distribution leverage, category visibility, and the room smaller producers have to compete.",
+      "marketImpact": "distribution gains, portfolio changes, retail/menu placement, and whether smaller competitors lose visibility."
+    },
+    {
+      "rank": 2,
+      "title": "Bordeaux 2025: some additional tasting notes",
+      "sourceName": "The Drinks Business",
+      "category": "Wine",
+      "publishedAt": "2026-05-19T11:13:23.000Z",
+      "url": "https://www.thedrinksbusiness.com/2026/05/bordeaux-2025-some-additional-tasting-notes/",
+      "summary": "The Drinks Business reports: Bordeaux 2025: some additional tasting notes. Context: db's Bordeaux correspondent catches up with a few Bordeaux en primeur wines that missed the main appellation profiles but deserve a mention. Category signal: watch whether this wine story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the wine signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 3,
+      "title": "U.S. Grocery Coffee Prices Hit All-Time Average High in April",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-05-15T16:14:11.000Z",
+      "url": "https://dailycoffeenews.com/2026/05/15/u-s-grocery-coffee-prices-hit-all-time-average-high-in-april/",
+      "summary": "Daily Coffee News reports: U.S. Grocery Coffee Prices Hit All-Time Average High in April. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 4,
+      "title": "The Cocktail Ingredients You're Overpaying For - and What Bartenders Use Instead",
+      "sourceName": "VinePair",
+      "category": "Spirits",
+      "publishedAt": "2026-05-19T15:30:20.000Z",
+      "url": "https://vinepair.com/articles/expensive-cocktail-ingredients-substitutes/",
+      "summary": "VinePair reports: The Cocktail Ingredients You're Overpaying For - and What Bartenders Use Instead. Context: We all know the economy currently stinks. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 5,
+      "title": "We Asked 15 Bartenders: What's the Most Underrated Bourbon? (2026)",
+      "sourceName": "VinePair",
+      "category": "Spirits",
+      "publishedAt": "2026-05-19T13:55:59.000Z",
+      "url": "https://vinepair.com/articles/wa-bartenders-underrated-bourbon-2026/",
+      "summary": "VinePair reports: We Asked 15 Bartenders: What's the Most Underrated Bourbon? (2026). Context: Bourbon is a massive spirits category. Category signal: watch whether this spirits story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the spirits signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 6,
+      "title": "Why drinks brands with thoughtful design gain traction in travel retail",
+      "sourceName": "The Drinks Business",
+      "category": "Market",
+      "publishedAt": "2026-05-19T09:04:24.000Z",
+      "url": "https://www.thedrinksbusiness.com/2026/05/why-drinks-brands-with-thoughtful-design-gain-traction-in-travel-retail/",
+      "summary": "The Drinks Business reports: Why drinks brands with thoughtful design gain traction in travel retail. Context: While travellers wait for flights not everyone has an inclination to shop. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 7,
+      "title": "TFWA Asia Pacific draws nearly 3,000 visitors",
+      "sourceName": "The Spirits Business",
+      "category": "Regulation",
+      "publishedAt": "2026-05-19T11:14:20.000Z",
+      "url": "https://www.thespiritsbusiness.com/2026/05/tfwa-asia-pacific-draws-nearly-3000-visitors/",
+      "summary": "The Spirits Business reports: TFWA Asia Pacific draws nearly 3,000 visitors. Regulatory pressure is the signal: labels, warnings, taxes, or trade rules may alter cost, access, or compliance work.",
+      "whyItMatters": "Follow the operational burden first: producers, importers, retailers, or restaurants may need to adjust before customers see the change.",
+      "marketImpact": "compliance timelines, label language, import friction, and whether operators need new staff talking points."
+    },
+    {
+      "rank": 8,
+      "title": "SB meets... Seiji Susuki, Choya Umeshu",
+      "sourceName": "The Spirits Business",
+      "category": "Spirits",
+      "publishedAt": "2026-05-19T10:55:55.000Z",
+      "url": "https://www.thespiritsbusiness.com/2026/05/sb-meets-seiji-susuki-choya-umeshu/",
+      "summary": "The Spirits Business reports: SB meets... Seiji Susuki, Choya Umeshu. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 9,
+      "title": "SMWS owner sees 20% membership boost",
+      "sourceName": "The Spirits Business",
+      "category": "Spirits",
+      "publishedAt": "2026-05-19T10:15:37.000Z",
+      "url": "https://www.thespiritsbusiness.com/2026/05/smws-owner-sees-20-membership-boost/",
+      "summary": "The Spirits Business reports: SMWS owner sees 20% membership boost. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 10,
+      "title": "TTB Newsletter for May 15 2026",
+      "sourceName": "Alcohol and Tobacco Tax and Trade Bureau",
+      "category": "Regulation",
+      "publishedAt": "2026-05-15T07:00:00.000Z",
+      "url": "https://content.govdelivery.com/accounts/USTTB/bulletins/41770aa",
+      "summary": "Alcohol and Tobacco Tax and Trade Bureau reports: TTB Newsletter for May 15 2026. Context: Latest regulatory or market update from Alcohol and Tobacco Tax and Trade Bureau. Regulatory pressure is the signal: labels, warnings, taxes, or trade rules may alter cost, access, or compliance work.",
+      "whyItMatters": "Follow the operational burden first: producers, importers, retailers, or restaurants may need to adjust before customers see the change.",
+      "marketImpact": "compliance timelines, label language, import friction, and whether operators need new staff talking points."
+    },
+    {
+      "rank": 11,
+      "title": "Craft Beer's Vibe Shift, Quantified",
+      "sourceName": "Brewers Association",
+      "category": "Beer",
+      "publishedAt": "2026-05-11T22:33:51.000Z",
+      "url": "https://www.brewersassociation.org/insights/craft-beers-vibe-shift-quantified/",
+      "summary": "Brewers Association reports: Craft Beer's Vibe Shift, Quantified. Context: After years of difficult headlines, the craft beer industry entered 2026 with something it has missed: better vibes. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 12,
+      "title": "ARARAT Nairi Armenian Brandy Aged 20 Years: Premium Product, Characteristics, and Tasting Features",
+      "sourceName": "The Beer Connoisseur",
+      "category": "Beer",
+      "publishedAt": "2026-05-15T22:44:14.000Z",
+      "url": "https://beerconnoisseur.com/ararat-nairi-armenian-brandy-aged-20-years/",
+      "summary": "The Beer Connoisseur reports: ARARAT Nairi Armenian Brandy Aged 20 Years: Premium Product, Characteristics, and Tasting Features. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 13,
+      "title": "With LYTT Electric Coolers, Boston Beer Co. Is Running Out of Bright Ideas",
+      "sourceName": "VinePair",
+      "category": "Beer",
+      "publishedAt": "2026-05-15T07:01:26.000Z",
+      "url": "https://vinepair.com/articles/hop-take-boston-beer-co-lytt-release/",
+      "summary": "VinePair reports: With LYTT Electric Coolers, Boston Beer Co. Is Running Out of Bright Ideas. Context: They say imitation is the highest form of flattery. Format is the signal: the launch or category move tests whether a new occasion can become repeat demand.",
+      "whyItMatters": "New formats deserve attention when they reveal a repeatable use case, not just a launch cycle.",
+      "marketImpact": "repeat purchase, margin, occasion fit, and whether the format survives after launch attention fades."
+    },
+    {
+      "rank": 14,
+      "title": "A Look Inside American Drinking Places",
+      "sourceName": "Brewers Association",
+      "category": "Beer",
+      "publishedAt": "2026-05-13T22:10:59.000Z",
+      "url": "https://www.brewersassociation.org/insights/a-look-inside-american-drinking-places/",
+      "summary": "Brewers Association reports: A Look Inside American Drinking Places. Context: What's happening inside today's drinking place, and what does it mean for craft beer? Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 15,
+      "title": "Bitburger Launches Limited-Edition \"Soccer Edition 2026\" Premium Pilsner Cans Celebrating Global Soccer Fans",
+      "sourceName": "The Beer Connoisseur",
+      "category": "Beer",
+      "publishedAt": "2026-05-13T18:25:30.000Z",
+      "url": "https://beerconnoisseur.com/bitburger-soccer-edition-2026-premium-pilsner/",
+      "summary": "The Beer Connoisseur reports: Bitburger Launches Limited-Edition \"Soccer Edition 2026\" Premium Pilsner Cans Celebrating Global Soccer Fans. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 16,
+      "title": "New SCA Equitable Value Distribution Report",
+      "sourceName": "Specialty Coffee Association",
+      "category": "Coffee",
+      "publishedAt": "2026-05-13T03:00:14.000Z",
+      "url": "https://sca.coffee/sca-news/2026/5/12/sca-report-equitable-value-distribution",
+      "summary": "Specialty Coffee Association reports: New SCA Equitable Value Distribution Report. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 17,
+      "title": "Coffee, Carbon and Biodiversity: Rethinking Sustainability Initiatives for Shared Value | 25, Issue 25",
+      "sourceName": "Specialty Coffee Association",
+      "category": "Coffee",
+      "publishedAt": "2026-04-29T11:14:27.000Z",
+      "url": "https://sca.coffee/sca-news/25/issue-25-business-carbon-and-biodiversity",
+      "summary": "Specialty Coffee Association reports: Coffee, Carbon and Biodiversity: Rethinking Sustainability Initiatives for Shared Value | 25, Issue 25. Supply is the signal: weather, harvest, inventory, or logistics pressure may show up later as price or availability changes.",
+      "whyItMatters": "Supply pressure matters before it becomes obvious: buyers may need alternatives, flexible pricing, or clearer substitution language.",
+      "marketImpact": "allocation changes, substitute products, by-the-glass pricing, and how transparently buyers explain scarcity."
+    },
+    {
+      "rank": 18,
+      "title": "12 Whiskies For Your Memorial Day Weekend Gathering",
+      "sourceName": "Whisky Advocate",
+      "category": "Spirits",
+      "publishedAt": "2026-05-19T17:35:00.000Z",
+      "url": "https://whiskyadvocate.com/memorial-day-whiskeys",
+      "summary": "Whisky Advocate reports: 12 Whiskies For Your Memorial Day Weekend Gathering. Context: Neat, on the rocks, or in a refreshing cocktail, these whiskeys are ideal for kicking off summer this Memorial Day weekend. Category signal: watch whether this spirits story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the spirits signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 19,
+      "title": "Ecotact Introduces TraceIQ for Green Coffee Shipment Tracking",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-05-19T17:16:01.000Z",
+      "url": "https://dailycoffeenews.com/2026/05/19/ecotact-introduces-traceiq-for-green-coffee-shipment-tracking/",
+      "summary": "Daily Coffee News reports: Ecotact Introduces TraceIQ for Green Coffee Shipment Tracking. Context: India-based packaging and storage company Ecotact has launched the Trace IQ, a real-time environmental and location monitoring device for green coffee in transit. Category signal: watch whether this coffee story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the coffee signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 20,
+      "title": "Honduras Coffee Report: Production Rising to Highest Level in Years",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-05-19T14:21:29.000Z",
+      "url": "https://dailycoffeenews.com/2026/05/19/honduras-coffee-report-production-rising-to-highest-level-in-years/",
+      "summary": "Daily Coffee News reports: Honduras Coffee Report: Production Rising to Highest Level in Years. People are the signal: training, labor, and education stories often change how teams explain the category on the floor.",
+      "whyItMatters": "Education and labor stories change the human layer: training, service confidence, hiring, and how teams talk about drinks.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    }
+  ],
+  "headerImagePrompt": "Use case: photorealistic-natural\nAsset type: wide website article header image\nPrimary request: Create a realistic editorial photo for Daily Sip daily-sip-2026-05-19, covering the full beverage market rather than only the lead story.\nLead story cue: Wine - Olivier Goudet acquires Wine-Searcher.\nSupporting beverage topics to represent subtly: Wine: Bordeaux 2025: some additional tasting notes; Coffee: U.S. Grocery Coffee Prices Hit All-Time Average High in April; Spirits: The Cocktail Ingredients You're Overpaying For - and What Bartenders Use Instead; Spirits: We Asked 15 Bartenders: What's the Most Underrated Bourbon? (2026); Market: Why drinks brands with thoughtful design gain traction in travel retail.\nCoverage mix: Wine, Beer, Spirits, Coffee, Regulation, Market.\nSubject: a source-attributed, unbiased beverage industry briefing across wine, beer, spirits, coffee, tea, regulation, supply, pricing, and consumer-demand signals.\nComposition direction: hospitality back-office scene with menus, inventory clipboard, pricing charts, and a balanced spread of wine, beer, spirits, coffee, and tea cues.\nScene/backdrop: avant-garde newsroom meets beverage trade desk, refined but restrained, varied category cues, subtle financial research materials, and no single drink category dominating the frame.\nComposition/framing: wide 16:9 landscape crop, visually distinct from other Daily Sip headers, balanced foreground objects, usable dark negative space near the top for page overlay if needed.\nLighting/mood: natural window light mixed with polished editorial contrast, sophisticated and current.\nConstraints: no readable text, no logos, no brand labels, no people, no watermark, no exact replication of any source photo."
+}
+

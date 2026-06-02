@@ -444,6 +444,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                 <tr>
                   <th>Page</th>
                   <th>Room</th>
+                  <th>Section</th>
                   <th>Route</th>
                   <th>Status</th>
                   <th>Preview</th>
@@ -474,8 +475,8 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                             </button>
                           ))}
                         </div>
-                        <small>{page.section}</small>
                       </td>
+                      <td><small>{page.section}</small></td>
                       <td><code>{page.route}</code></td>
                       <td>
                         <div className="site-map-status-toggle" role="group" aria-label={`${page.label} visibility`}>

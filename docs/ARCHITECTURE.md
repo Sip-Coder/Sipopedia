@@ -55,7 +55,7 @@ src/lib/
 ## Routing Contract
 
 - New workspace pages must be represented in the `WorkspacePage` type.
-- New nav tiles must be added to `workspaceNavItems`.
+- New workspace destinations must be added to `src/lib/workspaceNavigation.ts`; `App.tsx`, `siteMap.ts`, and paywall lane previews consume that registry.
 - Hash aliases belong in `normalizeWorkspacePage`.
 - Deep routes that share a top-level nav tile should normalize to a typed route family, as `regions/*` and `grapes/*` do.
 
@@ -95,10 +95,22 @@ OPENAI_API_KEY
 ANTHROPIC_API_KEY
 GOOGLE_AI_API_KEY
 BILLING_WEBHOOK_SECRET
+STRIPE_SECRET_KEY
+STRIPE_PRICE_ID_PRO
+STRIPE_PRICE_ID_FOUNDING
+STRIPE_WEBHOOK_SECRET
 SUPABASE_SERVICE_ROLE_KEY
 ```
 
 Supabase Edge Functions should own provider key usage. Frontend code should call Edge Functions or public-safe Supabase APIs only.
+
+Commerce flow:
+
+1. Frontend checkout calls `create-checkout-session`.
+2. The Edge Function verifies the signed-in Supabase user and creates a Stripe Checkout Session from server-side Price IDs.
+3. Stripe redirects back to `#success` or `#cancel` with the preserved plan/source/next route.
+4. Stripe sends `checkout.session.completed`, `checkout.session.async_payment_succeeded`, and `customer.subscription.*` events to `billing-webhook`.
+5. `billing-webhook` verifies `Stripe-Signature` with `STRIPE_WEBHOOK_SECRET`, keeps legacy internal HMAC support via `BILLING_WEBHOOK_SECRET`, and upserts `customer_subscriptions`.
 
 ## Feature Boundaries
 

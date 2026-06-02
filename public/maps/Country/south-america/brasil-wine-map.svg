@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2100" height="1400" viewBox="0 0 2100 1400" role="img" aria-label="Brasil Wine Map">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#04131f"/>
+      <stop offset="0.48" stop-color="#082d33"/>
+      <stop offset="1" stop-color="#171f25"/>
+    </linearGradient>
+    <radialGradient id="glowGold" cx="20%" cy="16%" r="70%">
+      <stop offset="0" stop-color="#edd4a8" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#edd4a8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowCyan" cx="60%" cy="45%" r="70%">
+      <stop offset="0" stop-color="#48e5dc" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#48e5dc" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="land" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0ce"/>
+      <stop offset="0.44" stop-color="#c99a22"/>
+      <stop offset="1" stop-color="#3dd7ca"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="28" stdDeviation="26" flood-color="#000816" flood-opacity="0.52"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#48e5dc" flood-opacity="0.22"/>
+    </filter>
+    <style>
+      .frame { fill: none; stroke: rgba(159, 218, 245, 0.32); stroke-width: 2; }
+      .grid { stroke: rgba(159, 218, 245, 0.14); stroke-width: 1; }
+      .micro { fill: rgba(217, 247, 255, 0.64); font: 800 19px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 8px; text-transform: uppercase; }
+      .title { fill: #fff0ce; font: 900 66px 'Trebuchet MS', Arial, sans-serif; letter-spacing: -2px; }
+      .subtitle { fill: rgba(217, 247, 255, 0.78); font: 800 25px 'Trebuchet MS', Arial, sans-serif; }
+      .land-core { fill: url(#land); stroke: #fff0ce; stroke-width: 3; stroke-linejoin: round; filter: url(#softShadow); }
+      .land-line { fill: none; stroke: rgba(4, 13, 24, 0.72); stroke-width: 10; opacity: 0.55; stroke-linejoin: round; }
+      .contour { fill: none; stroke: rgba(237, 212, 168, 0.16); stroke-width: 3; stroke-linecap: round; }
+      .region-panel { fill: rgba(5, 18, 28, 0.72); stroke: rgba(159, 218, 245, 0.28); stroke-width: 2; }
+      .region-heading { fill: #fff0ce; font: 900 34px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 5px; text-transform: uppercase; }
+      .region-subheading { fill: rgba(217, 247, 255, 0.68); font: 700 22px 'Trebuchet MS', Arial, sans-serif; }
+      .region-row rect { fill: rgba(4, 19, 31, 0.82); stroke: rgba(159, 218, 245, 0.38); stroke-width: 1.6; }
+      .region-row circle { fill: rgba(237, 212, 168, 0.95); }
+      .region-number { fill: #04131f; font: 900 18px 'Trebuchet MS', Arial, sans-serif; }
+      .region-name { fill: #fff0ce; font: 900 31px 'Trebuchet MS', Arial, sans-serif; }
+      .badge { fill: rgba(7, 35, 48, 0.88); stroke: rgba(237, 212, 168, 0.48); stroke-width: 1.5; }
+      .badge-text { fill: #edd4a8; font: 900 18px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 3px; text-transform: uppercase; }
+      .footer { fill: rgba(217, 247, 255, 0.58); font: 700 18px 'Trebuchet MS', Arial, sans-serif; }
+    </style>
+  </defs>
+  <rect width="2100" height="1400" fill="url(#bg)"/>
+  <rect width="2100" height="1400" fill="url(#glowGold)"/>
+  <rect width="2100" height="1400" fill="url(#glowCyan)"/>
+  <line class="grid" x1="120" y1="0" x2="120" y2="1400"/><line class="grid" x1="240" y1="0" x2="240" y2="1400"/><line class="grid" x1="360" y1="0" x2="360" y2="1400"/><line class="grid" x1="480" y1="0" x2="480" y2="1400"/><line class="grid" x1="600" y1="0" x2="600" y2="1400"/><line class="grid" x1="720" y1="0" x2="720" y2="1400"/><line class="grid" x1="840" y1="0" x2="840" y2="1400"/><line class="grid" x1="960" y1="0" x2="960" y2="1400"/><line class="grid" x1="1080" y1="0" x2="1080" y2="1400"/><line class="grid" x1="1200" y1="0" x2="1200" y2="1400"/><line class="grid" x1="1320" y1="0" x2="1320" y2="1400"/><line class="grid" x1="1440" y1="0" x2="1440" y2="1400"/><line class="grid" x1="1560" y1="0" x2="1560" y2="1400"/><line class="grid" x1="1680" y1="0" x2="1680" y2="1400"/><line class="grid" x1="1800" y1="0" x2="1800" y2="1400"/>
+  <line class="grid" x1="0" y1="180" x2="2100" y2="180"/><line class="grid" x1="0" y1="300" x2="2100" y2="300"/><line class="grid" x1="0" y1="420" x2="2100" y2="420"/><line class="grid" x1="0" y1="540" x2="2100" y2="540"/><line class="grid" x1="0" y1="660" x2="2100" y2="660"/><line class="grid" x1="0" y1="780" x2="2100" y2="780"/><line class="grid" x1="0" y1="900" x2="2100" y2="900"/><line class="grid" x1="0" y1="1020" x2="2100" y2="1020"/>
+  <rect x="34" y="34" width="2032" height="1332" rx="42" class="frame"/>
+  <text x="80" y="108" class="micro">Sip Studios Maps / Country Study Plate</text>
+  <text x="80" y="185" class="title">Brasil Wine Map</text>
+  <text x="84" y="232" class="subtitle">South America / 5 study regions / Wine geography</text>
+  <g opacity="0.9">
+    <path class="contour" d="M134 345 C 390 273, 670 365, 922 320 S 1170 268, 1250 334"/><path class="contour" d="M134 386 C 390 314, 670 472, 922 394 S 1170 342, 1250 408"/><path class="contour" d="M134 491 C 390 419, 670 515, 922 468 S 1170 416, 1250 482"/><path class="contour" d="M134 532 C 390 460, 670 622, 922 542 S 1170 490, 1250 556"/><path class="contour" d="M134 637 C 390 565, 670 665, 922 616 S 1170 564, 1250 630"/><path class="contour" d="M134 678 C 390 606, 670 772, 922 690 S 1170 638, 1250 704"/><path class="contour" d="M134 783 C 390 711, 670 815, 922 764 S 1170 712, 1250 778"/><path class="contour" d="M134 824 C 390 752, 670 922, 922 838 S 1170 786, 1250 852"/>
+    <path class="land-line" d="M704.06,849.00L700.14,840.89L706.38,834.13L698.14,824.41L686.94,816.49L672.20,807.29L666.92,807.74L652.57,796.67L643.30,798.21L662.35,778.71L678.51,764.81L688.10,758.95L700.14,751.10L700.46,739.64L693.25,731.40L686.17,734.17L688.94,725.93L690.93,717.43L690.93,709.58L685.78,707.01L680.38,709.32L675.10,708.68L673.43,703.14L672.07,690.08L669.37,685.76L659.78,681.90L653.86,684.73L638.80,681.97L639.70,662.53L635.51,654.61L639.95,651.65L638.60,643.48L642.53,637.23L645.10,625.97L641.69,617.08L633.90,613.03L632.36,607.43L634.48,599.13L607.00,598.55L601.53,581.88L605.71,581.62L605.52,575.44L602.69,571.32L602.11,563.02L593.80,558.77L584.79,558.96L578.87,554.78L569.15,551.94L563.55,546.60L547.52,544.22L532.01,531.41L533.17,521.82L531.43,516.35L532.91,505.60L514.25,508.05L506.65,513.39L494.16,519.18L490.94,523.56L483.61,523.88L472.99,522.66L464.88,525.10L458.44,523.49L459.34,501.74L447.62,510.17L435.01,509.78L429.60,502.19L420.08,501.35L423.17,495.17L415.18,486.48L409.26,473.61L413.00,470.97L413.00,464.92L421.62,460.80L420.20,453.08L423.87,448.12L424.90,441.43L441.25,431.71L452.97,428.94L454.83,426.81L467.77,427.46L474.21,388.26L474.53,382.08L472.34,373.84L465.97,368.63L466.03,358.26L474.08,355.88L476.98,357.36L477.43,351.89L469.06,350.41L468.87,341.46L496.74,341.79L501.44,336.83L505.43,341.40L508.26,349.83L510.96,348.09L518.82,355.62L529.95,354.72L532.72,350.35L543.34,347.00L549.26,344.62L550.87,338.57L561.10,334.51L560.33,331.49L548.23,330.26L546.24,321.25L546.81,311.66L540.38,307.99L543.08,306.64L553.70,308.51L565.03,312.05L569.15,308.70L579.45,306.45L595.41,301.11L600.69,295.63L598.76,291.58L606.23,291.00L609.57,294.28L607.71,300.53L612.66,302.71L615.88,309.34L611.89,314.43L609.64,326.60L613.31,333.80L614.34,340.43L623.15,347.13L630.17,347.84L631.72,345.07L636.29,344.42L642.79,341.91L647.42,338.12L655.34,339.34L658.75,338.82L666.54,339.98L667.83,337.09L665.44,334.19L666.92,330.07L672.65,331.36L679.41,329.88L687.59,332.90L693.83,335.86L698.27,332.00L701.49,332.58L703.42,336.64L710.24,335.61L715.78,330.20L720.16,319.64L728.59,306.51L733.48,305.87L737.02,313.79L745.00,338.76L752.73,341.14L753.05,350.99L742.36,362.83L746.80,367.15L772.04,369.33L772.55,383.69L783.43,374.29L801.39,379.44L825.20,388.19L832.16,396.56L829.84,404.48L846.51,400.04L874.32,407.63L895.69,407.12L916.80,418.90L935.08,434.93L946.15,439.04L958.32,439.62L963.53,444.13L968.36,462.35L970.74,471.04L965.07,494.66L957.74,503.99L937.65,523.88L928.51,540.10L917.89,552.52L914.35,552.78L910.36,563.27L911.39,590.11L907.40,612.13L905.86,621.59L901.35,627.19L898.78,646.31L884.29,664.97L881.85,679.78L870.26,685.96L866.91,694.58L851.40,694.52L828.87,699.99L818.83,706.36L802.80,710.55L785.94,721.94L773.84,736.10L771.78,746.78L774.10,754.70L771.52,769.12L768.24,776.14L758.20,783.99L742.36,809.22L729.81,820.55L720.03,827.24L713.53,840.83L704.06,849.00Z"/>
+    <path class="land-core" d="M704.06,849.00L700.14,840.89L706.38,834.13L698.14,824.41L686.94,816.49L672.20,807.29L666.92,807.74L652.57,796.67L643.30,798.21L662.35,778.71L678.51,764.81L688.10,758.95L700.14,751.10L700.46,739.64L693.25,731.40L686.17,734.17L688.94,725.93L690.93,717.43L690.93,709.58L685.78,707.01L680.38,709.32L675.10,708.68L673.43,703.14L672.07,690.08L669.37,685.76L659.78,681.90L653.86,684.73L638.80,681.97L639.70,662.53L635.51,654.61L639.95,651.65L638.60,643.48L642.53,637.23L645.10,625.97L641.69,617.08L633.90,613.03L632.36,607.43L634.48,599.13L607.00,598.55L601.53,581.88L605.71,581.62L605.52,575.44L602.69,571.32L602.11,563.02L593.80,558.77L584.79,558.96L578.87,554.78L569.15,551.94L563.55,546.60L547.52,544.22L532.01,531.41L533.17,521.82L531.43,516.35L532.91,505.60L514.25,508.05L506.65,513.39L494.16,519.18L490.94,523.56L483.61,523.88L472.99,522.66L464.88,525.10L458.44,523.49L459.34,501.74L447.62,510.17L435.01,509.78L429.60,502.19L420.08,501.35L423.17,495.17L415.18,486.48L409.26,473.61L413.00,470.97L413.00,464.92L421.62,460.80L420.20,453.08L423.87,448.12L424.90,441.43L441.25,431.71L452.97,428.94L454.83,426.81L467.77,427.46L474.21,388.26L474.53,382.08L472.34,373.84L465.97,368.63L466.03,358.26L474.08,355.88L476.98,357.36L477.43,351.89L469.06,350.41L468.87,341.46L496.74,341.79L501.44,336.83L505.43,341.40L508.26,349.83L510.96,348.09L518.82,355.62L529.95,354.72L532.72,350.35L543.34,347.00L549.26,344.62L550.87,338.57L561.10,334.51L560.33,331.49L548.23,330.26L546.24,321.25L546.81,311.66L540.38,307.99L543.08,306.64L553.70,308.51L565.03,312.05L569.15,308.70L579.45,306.45L595.41,301.11L600.69,295.63L598.76,291.58L606.23,291.00L609.57,294.28L607.71,300.53L612.66,302.71L615.88,309.34L611.89,314.43L609.64,326.60L613.31,333.80L614.34,340.43L623.15,347.13L630.17,347.84L631.72,345.07L636.29,344.42L642.79,341.91L647.42,338.12L655.34,339.34L658.75,338.82L666.54,339.98L667.83,337.09L665.44,334.19L666.92,330.07L672.65,331.36L679.41,329.88L687.59,332.90L693.83,335.86L698.27,332.00L701.49,332.58L703.42,336.64L710.24,335.61L715.78,330.20L720.16,319.64L728.59,306.51L733.48,305.87L737.02,313.79L745.00,338.76L752.73,341.14L753.05,350.99L742.36,362.83L746.80,367.15L772.04,369.33L772.55,383.69L783.43,374.29L801.39,379.44L825.20,388.19L832.16,396.56L829.84,404.48L846.51,400.04L874.32,407.63L895.69,407.12L916.80,418.90L935.08,434.93L946.15,439.04L958.32,439.62L963.53,444.13L968.36,462.35L970.74,471.04L965.07,494.66L957.74,503.99L937.65,523.88L928.51,540.10L917.89,552.52L914.35,552.78L910.36,563.27L911.39,590.11L907.40,612.13L905.86,621.59L901.35,627.19L898.78,646.31L884.29,664.97L881.85,679.78L870.26,685.96L866.91,694.58L851.40,694.52L828.87,699.99L818.83,706.36L802.80,710.55L785.94,721.94L773.84,736.10L771.78,746.78L774.10,754.70L771.52,769.12L768.24,776.14L758.20,783.99L742.36,809.22L729.81,820.55L720.03,827.24L713.53,840.83L704.06,849.00Z" fill-rule="evenodd"/>
+  </g>
+  <rect x="1370" y="305" width="610" height="132" rx="24" class="badge"/>
+  <text x="1410" y="358" class="badge-text">Brasil / atlas outline</text>
+  <text x="1410" y="398" class="footer">Primary atlas outline fitted for country-scale study.</text>
+  <rect x="88" y="940" width="1924" height="382" rx="30" class="region-panel"/>
+  <text x="132" y="998" class="region-heading">Study Region Index</text>
+  <text x="132" y="1335" class="footer">Showing 5 of 5 study regions. Internal wine-region borders require an authoritative GIS layer before drawing.</text>
+  
+      <g class="region-row" transform="translate(135 1038)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">1</text>
+        <text x="54" y="28" class="region-name">Brasil Northern Corridor</text>
+      </g>
+      <g class="region-row" transform="translate(1045 1038)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">2</text>
+        <text x="54" y="28" class="region-name">Brasil Central Highlands</text>
+      </g>
+      <g class="region-row" transform="translate(135 1086)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">3</text>
+        <text x="54" y="28" class="region-name">Brasil River Valley Belt</text>
+      </g>
+      <g class="region-row" transform="translate(1045 1086)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">4</text>
+        <text x="54" y="28" class="region-name">Brasil Coastal Influence Zone</text>
+      </g>
+      <g class="region-row" transform="translate(135 1134)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">5</text>
+        <text x="54" y="28" class="region-name">Brasil Heritage District</text>
+      </g>
+</svg>

@@ -18,8 +18,49 @@ if (!fs.existsSync(absInput)) {
   process.exit(1);
 }
 
+function decodeHtmlEntities(value) {
+  const namedEntities = {
+    amp: "&",
+    apos: "'",
+    gt: ">",
+    lt: "<",
+    nbsp: " ",
+    quot: "\""
+  };
+
+  return value.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, entity) => {
+    if (entity.startsWith("#x")) {
+      return String.fromCodePoint(Number.parseInt(entity.slice(2), 16));
+    }
+
+    if (entity.startsWith("#")) {
+      return String.fromCodePoint(Number.parseInt(entity.slice(1), 10));
+    }
+
+    return namedEntities[entity.toLowerCase()] ?? match;
+  });
+}
+
+function htmlToText(value) {
+  return decodeHtmlEntities(
+    value
+      .replace(/<script[\s\S]*?<\/script>/gi, "")
+      .replace(/<style[\s\S]*?<\/style>/gi, "")
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<li[^>]*>/gi, "- ")
+      .replace(/<\/(h[1-6]|p|div|tr|li|ul|ol|table|thead|tbody|section|main)>/gi, "\n")
+      .replace(/<\/t[dh]>/gi, " | ")
+      .replace(/<[^>]+>/g, "")
+  )
+    .split("\n")
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter((line, index, lines) => line.length > 0 || lines[index - 1]?.length > 0)
+    .join("\n");
+}
+
 const raw = fs.readFileSync(absInput, "utf8").replace(/\r/g, "");
-const sourceLines = raw.split("\n");
+const source = path.extname(absInput).toLowerCase() === ".html" ? htmlToText(raw) : raw;
+const sourceLines = source.split("\n");
 
 const pageWidth = 612;
 const pageHeight = 792;

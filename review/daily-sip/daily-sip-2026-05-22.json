@@ -1,0 +1,272 @@
+{
+  "id": "daily-sip-2026-05-22",
+  "slug": "daily-sip",
+  "title": "Daily Sip: Beverage Market Briefing for May 22, 2026",
+  "subtitle": "An in-depth Flavor Blog overview of the top 20 beverage industry articles across wine, beer, spirits, coffee, tea, regulation, and adjacent market signals.",
+  "generatedAt": "2026-05-22T12:00:00.000Z",
+  "headerImageUrl": "/daily-sip/daily-sip-2026-05-22-header.png",
+  "sourceCount": 13,
+  "articleCount": 20,
+  "editorialStandard": "daily-sip-avant-garde-v2-2026-05",
+  "coverage": [
+    "Wine",
+    "Beer",
+    "Spirits",
+    "Coffee",
+    "Regulation",
+    "Market"
+  ],
+  "executiveSummary": [
+    "Daily Sip scanned 13 beverage sources and selected 20 stories with clear source attribution, concrete trade relevance, and limited hype.",
+    "Today's strongest signals sit in Spirits, Market, Wine, Beer, Coffee. The leading source trail begins with The Drinks Business, The Spirits Business, VinePair.",
+    "Editorial stance: launches, awards, investments, and claims are treated as signals, not endorsements. The test is what may change for price, access, labor, compliance, training, or guest language."
+  ],
+  "marketThemes": [
+    {
+      "title": "Rules rewrite the shelf",
+      "body": "3 ranked stories sit here, led by VinePair, Alcohol and Tobacco Tax and Trade Bureau. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Demand splits into smaller occasions",
+      "body": "11 ranked stories sit here, led by The Drinks Business, The Spirits Business, VinePair. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Supply sets the tempo",
+      "body": "1 ranked story sits here, led by Daily Coffee News. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Capital moves the room",
+      "body": "2 ranked stories sit here, led by Brewers Association, Daily Coffee News. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    }
+  ],
+  "watchlist": [
+    "Watch whether Spirits, Market, Wine repeat across the next two scans before calling them trends.",
+    "Check primary sources before changing menu, shelf, pricing, or compliance language.",
+    "Separate product launches and awards from independent evidence of demand.",
+    "Flag single-source, disputed, or promotional claims for human review before amplifying them."
+  ],
+  "articles": [
+    {
+      "rank": 1,
+      "title": "From cellar to floor: how training drives wine sales",
+      "sourceName": "The Drinks Business",
+      "category": "Spirits",
+      "publishedAt": "2026-05-22T08:19:00.000Z",
+      "url": "https://www.thedrinksbusiness.com/2026/05/from-cellar-to-floor-how-training-drives-wine-sales/",
+      "summary": "The Drinks Business reports: From cellar to floor: how training drives wine sales. Context: Informed by years supplying the UK trade, Unity Beers, Wines and Spirits (part of Bidfood) explores the importance of training staff on upselling, cost and storage. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 2,
+      "title": "Tanglin Gin bets on experiences to fuel growth",
+      "sourceName": "The Spirits Business",
+      "category": "Spirits",
+      "publishedAt": "2026-05-22T10:21:17.000Z",
+      "url": "https://www.thespiritsbusiness.com/2026/05/tanglin-gin-bets-on-experiences-to-fuel-growth/",
+      "summary": "The Spirits Business reports: Tanglin Gin bets on experiences to fuel growth. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 3,
+      "title": "The U.S. Is One Step Closer to Legalizing Home Distilling. Here's Everything You Need to Know.",
+      "sourceName": "VinePair",
+      "category": "Market",
+      "publishedAt": "2026-05-21T15:30:29.000Z",
+      "url": "https://vinepair.com/articles/home-distilling-tips-to-know/",
+      "summary": "VinePair reports: The U.S. Is One Step Closer to Legalizing Home Distilling. Here's Everything You Need to Know.. Context: Bootleggers may not be getting the boot much longer. Regulatory pressure is the signal: labels, warnings, taxes, or trade rules may alter cost, access, or compliance work.",
+      "whyItMatters": "Follow the operational burden first: producers, importers, retailers, or restaurants may need to adjust before customers see the change.",
+      "marketImpact": "compliance timelines, label language, import friction, and whether operators need new staff talking points."
+    },
+    {
+      "rank": 4,
+      "title": "London Wine Fair records strongest show since Covid",
+      "sourceName": "The Drinks Business",
+      "category": "Wine",
+      "publishedAt": "2026-05-22T10:29:49.000Z",
+      "url": "https://www.thedrinksbusiness.com/2026/05/london-wine-fair-records-strongest-show-since-covid/",
+      "summary": "The Drinks Business reports: London Wine Fair records strongest show since Covid. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 5,
+      "title": "The Final Brew: How the Abrupt Discontinuation of Schlitz Rocked Chicago Bartenders",
+      "sourceName": "VinePair",
+      "category": "Market",
+      "publishedAt": "2026-05-21T16:00:51.000Z",
+      "url": "https://vinepair.com/articles/pabst-schlitz-discontinuation-chicago-bartenders/",
+      "summary": "VinePair reports: The Final Brew: How the Abrupt Discontinuation of Schlitz Rocked Chicago Bartenders. Context: It seemed a Tuesday like any other for Adam Jevne back in mid-February. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 6,
+      "title": "DropWorks more than doubles revenue",
+      "sourceName": "The Spirits Business",
+      "category": "Spirits",
+      "publishedAt": "2026-05-22T11:31:48.000Z",
+      "url": "https://www.thespiritsbusiness.com/2026/05/dropworks-more-than-doubles-revenue/",
+      "summary": "The Spirits Business reports: DropWorks more than doubles revenue. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 7,
+      "title": "Champagne's future lies in innovation, says De Saint-Gall",
+      "sourceName": "The Drinks Business",
+      "category": "Wine",
+      "publishedAt": "2026-05-22T11:12:16.000Z",
+      "url": "https://www.thedrinksbusiness.com/2026/05/champagnes-future-lies-in-innovation-says-de-saint-gall/",
+      "summary": "The Drinks Business reports: Champagne's future lies in innovation, says De Saint-Gall. Context: The post Champagne's future lies in innovation, says De Saint-Gall appeared first on The Drinks Business . Format is the signal: the launch or category move tests whether a new occasion can become repeat demand.",
+      "whyItMatters": "New formats deserve attention when they reveal a repeatable use case, not just a launch cycle.",
+      "marketImpact": "repeat purchase, margin, occasion fit, and whether the format survives after launch attention fades."
+    },
+    {
+      "rank": 8,
+      "title": "Depremiumisation hits US spirits sales",
+      "sourceName": "The Spirits Business",
+      "category": "Spirits",
+      "publishedAt": "2026-05-22T10:13:30.000Z",
+      "url": "https://www.thespiritsbusiness.com/2026/05/depremiumisation-hits-us-spirits-sales/",
+      "summary": "The Spirits Business reports: Depremiumisation hits US spirits sales. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 9,
+      "title": "Reflections on Aging",
+      "sourceName": "Brewers Association",
+      "category": "Beer",
+      "publishedAt": "2026-05-22T18:51:27.000Z",
+      "url": "https://www.brewersassociation.org/insights/reflections-on-aging/",
+      "summary": "Brewers Association reports: Reflections on Aging. Context: A quick look at aging in craft beer, exploring brewery survival rates, closure trends, and how brewery age varies by type. Capital is the signal: ownership, funding, or distribution shifts can change who gets reach and negotiating power.",
+      "whyItMatters": "Capital movement can reshape distribution leverage, category visibility, and the room smaller producers have to compete.",
+      "marketImpact": "distribution gains, portfolio changes, retail/menu placement, and whether smaller competitors lose visibility."
+    },
+    {
+      "rank": 10,
+      "title": "Mexico Coffee Report: Production Rises Slightly with More Robusta",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-05-22T15:28:31.000Z",
+      "url": "https://dailycoffeenews.com/2026/05/22/mexico-coffee-report-production-rises-slightly-with-more-robusta/",
+      "summary": "Daily Coffee News reports: Mexico Coffee Report: Production Rises Slightly with More Robusta. Capital is the signal: ownership, funding, or distribution shifts can change who gets reach and negotiating power.",
+      "whyItMatters": "Capital movement can reshape distribution leverage, category visibility, and the room smaller producers have to compete.",
+      "marketImpact": "distribution gains, portfolio changes, retail/menu placement, and whether smaller competitors lose visibility."
+    },
+    {
+      "rank": 11,
+      "title": "Researchers Propose 'Libex' Hybrid as Climate Change Accelerates",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-05-21T14:13:19.000Z",
+      "url": "https://dailycoffeenews.com/2026/05/21/researchers-propose-libex-hybrid-as-climate-change-accelerates/",
+      "summary": "Daily Coffee News reports: Researchers Propose 'Libex' Hybrid as Climate Change Accelerates. Supply is the signal: weather, harvest, inventory, or logistics pressure may show up later as price or availability changes.",
+      "whyItMatters": "Supply pressure matters before it becomes obvious: buyers may need alternatives, flexible pricing, or clearer substitution language.",
+      "marketImpact": "allocation changes, substitute products, by-the-glass pricing, and how transparently buyers explain scarcity."
+    },
+    {
+      "rank": 12,
+      "title": "Saint James Iced Tea Half & Half",
+      "sourceName": "Beverage Industry Tea and Coffee",
+      "category": "Coffee",
+      "publishedAt": "2026-05-22T04:00:00.000Z",
+      "url": "https://www.bevindustry.com/articles/98390-saint-james-iced-tea-half-and-half",
+      "summary": "Beverage Industry Tea and Coffee reports: Saint James Iced Tea Half & Half. Context: Saint James Iced Tea is kicking off summer with the launch of Half & Half, a new flavor that blends brewed organic black tea with classic lemonade. Format is the signal: the launch or category move tests whether a new occasion can become repeat demand.",
+      "whyItMatters": "New formats deserve attention when they reveal a repeatable use case, not just a launch cycle.",
+      "marketImpact": "repeat purchase, margin, occasion fit, and whether the format survives after launch attention fades."
+    },
+    {
+      "rank": 13,
+      "title": "TTB Newsletter for May 15 2026",
+      "sourceName": "Alcohol and Tobacco Tax and Trade Bureau",
+      "category": "Regulation",
+      "publishedAt": "2026-05-15T07:00:00.000Z",
+      "url": "https://content.govdelivery.com/accounts/USTTB/bulletins/41770aa",
+      "summary": "Alcohol and Tobacco Tax and Trade Bureau reports: TTB Newsletter for May 15 2026. Context: Latest regulatory or market update from Alcohol and Tobacco Tax and Trade Bureau. Regulatory pressure is the signal: labels, warnings, taxes, or trade rules may alter cost, access, or compliance work.",
+      "whyItMatters": "Follow the operational burden first: producers, importers, retailers, or restaurants may need to adjust before customers see the change.",
+      "marketImpact": "compliance timelines, label language, import friction, and whether operators need new staff talking points."
+    },
+    {
+      "rank": 14,
+      "title": "Craft Beer's Vibe Shift, Quantified",
+      "sourceName": "Brewers Association",
+      "category": "Beer",
+      "publishedAt": "2026-05-11T22:33:51.000Z",
+      "url": "https://www.brewersassociation.org/insights/craft-beers-vibe-shift-quantified/",
+      "summary": "Brewers Association reports: Craft Beer's Vibe Shift, Quantified. Context: After years of difficult headlines, the craft beer industry entered 2026 with something it has missed: better vibes. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 15,
+      "title": "Venturi Nitro Cold Brew",
+      "sourceName": "Beverage Industry Tea and Coffee",
+      "category": "Coffee",
+      "publishedAt": "2026-05-20T04:00:00.000Z",
+      "url": "https://www.bevindustry.com/articles/98388-venturi-nitro-cold-brew",
+      "summary": "Beverage Industry Tea and Coffee reports: Venturi Nitro Cold Brew. Context: Venturi Bold Brew entered the ready-to-drink market with the launch of Venturi Nitro Cold Brew. Format is the signal: the launch or category move tests whether a new occasion can become repeat demand.",
+      "whyItMatters": "New formats deserve attention when they reveal a repeatable use case, not just a launch cycle.",
+      "marketImpact": "repeat purchase, margin, occasion fit, and whether the format survives after launch attention fades."
+    },
+    {
+      "rank": 16,
+      "title": "Cosori Shakes Up Automated Home Pourovers with the Juni Brewer",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-05-21T14:09:33.000Z",
+      "url": "https://dailycoffeenews.com/2026/05/21/cosori-shakes-up-automated-home-pourovers-with-the-juni-brewer/",
+      "summary": "Daily Coffee News reports: Cosori Shakes Up Automated Home Pourovers with the Juni Brewer. People are the signal: training, labor, and education stories often change how teams explain the category on the floor.",
+      "whyItMatters": "Education and labor stories change the human layer: training, service confidence, hiring, and how teams talk about drinks.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 17,
+      "title": "12 Bartenders Pick Their Favorite Bourbons Under $50",
+      "sourceName": "Whisky Advocate",
+      "category": "Spirits",
+      "publishedAt": "2026-05-21T12:57:10.000Z",
+      "url": "https://whiskyadvocate.com/bartenders-bourbon-recommendations-under-50-dollars",
+      "summary": "Whisky Advocate reports: 12 Bartenders Pick Their Favorite Bourbons Under $50. Context: Twelve bartenders reveal their favorite bourbons. People are the signal: training, labor, and education stories often change how teams explain the category on the floor.",
+      "whyItMatters": "Education and labor stories change the human layer: training, service confidence, hiring, and how teams talk about drinks.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 18,
+      "title": "A Look Inside American Drinking Places",
+      "sourceName": "Brewers Association",
+      "category": "Beer",
+      "publishedAt": "2026-05-13T22:10:59.000Z",
+      "url": "https://www.brewersassociation.org/insights/a-look-inside-american-drinking-places/",
+      "summary": "Brewers Association reports: A Look Inside American Drinking Places. Context: What's happening inside today's drinking place, and what does it mean for craft beer? Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 19,
+      "title": "7 Things You Should Know About St. Agrestis, the Brand Behind the Rapidly Growing Phony Negroni",
+      "sourceName": "VinePair",
+      "category": "Market",
+      "publishedAt": "2026-05-22T13:55:53.000Z",
+      "url": "https://vinepair.com/articles/ntk-st-agrestis/",
+      "summary": "VinePair reports: 7 Things You Should Know About St. Agrestis, the Brand Behind the Rapidly Growing Phony Negroni. Context: It's the same old trope: A trendy start-up in Brooklyn capitalizes on an of-the-moment fad with hopes of making it big before unceremoniously falling flat. Category signal: watch whether this market story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the market signal visible without turning a single article into a verdict.",
+      "marketImpact": "customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 20,
+      "title": "TTB Newsletter for May 1 2026",
+      "sourceName": "Alcohol and Tobacco Tax and Trade Bureau",
+      "category": "Regulation",
+      "publishedAt": "2026-05-01T07:00:00.000Z",
+      "url": "https://content.govdelivery.com/accounts/USTTB/bulletins/41570a2",
+      "summary": "Alcohol and Tobacco Tax and Trade Bureau reports: TTB Newsletter for May 1 2026. Context: Latest regulatory or market update from Alcohol and Tobacco Tax and Trade Bureau. Regulatory pressure is the signal: labels, warnings, taxes, or trade rules may alter cost, access, or compliance work.",
+      "whyItMatters": "Follow the operational burden first: producers, importers, retailers, or restaurants may need to adjust before customers see the change.",
+      "marketImpact": "compliance timelines, label language, import friction, and whether operators need new staff talking points."
+    }
+  ],
+  "headerImagePrompt": "Use case: photorealistic-natural\nAsset type: wide website article header image\nPrimary request: Create a realistic editorial photo for Daily Sip daily-sip-2026-05-22, covering the full beverage market rather than only the lead story.\nLead story cue: Spirits - From cellar to floor: how training drives wine sales.\nSupporting beverage topics to represent subtly: Spirits: Tanglin Gin bets on experiences to fuel growth; Market: The U.S. Is One Step Closer to Legalizing Home Distilling. Here's Everything You Need to Know.; Wine: London Wine Fair records strongest show since Covid; Market: The Final Brew: How the Abrupt Discontinuation of Schlitz Rocked Chicago Bartenders; Spirits: DropWorks more than doubles revenue.\nCoverage mix: Wine, Beer, Spirits, Coffee, Regulation, Market.\nSubject: a source-attributed, unbiased beverage industry briefing across wine, beer, spirits, coffee, tea, regulation, supply, pricing, and consumer-demand signals.\nComposition direction: beverage lab and tasting bench with coffee beans, tea leaves, hops, corks, grain, glassware, unlabeled bottles, and simple charts suggesting category comparison.\nScene/backdrop: avant-garde newsroom meets beverage trade desk, refined but restrained, varied category cues, subtle financial research materials, and no single drink category dominating the frame.\nComposition/framing: wide 16:9 landscape crop, visually distinct from other Daily Sip headers, balanced foreground objects, usable dark negative space near the top for page overlay if needed.\nLighting/mood: natural window light mixed with polished editorial contrast, sophisticated and current.\nConstraints: no readable text, no logos, no brand labels, no people, no watermark, no exact replication of any source photo."
+}
+

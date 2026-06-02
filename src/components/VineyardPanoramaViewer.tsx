@@ -1,5 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import { LinearFilter, SRGBColorSpace } from "three/src/constants.js";
+import { PerspectiveCamera } from "three/src/cameras/PerspectiveCamera.js";
+import { TextureLoader } from "three/src/loaders/TextureLoader.js";
+import { MeshBasicMaterial } from "three/src/materials/MeshBasicMaterial.js";
+import { MathUtils } from "three/src/math/MathUtils.js";
+import { Vector3 } from "three/src/math/Vector3.js";
+import { Mesh } from "three/src/objects/Mesh.js";
+import { SphereGeometry } from "three/src/geometries/SphereGeometry.js";
+import { WebGLRenderer } from "three/src/renderers/WebGLRenderer.js";
+import { Scene } from "three/src/scenes/Scene.js";
 
 export type VineyardPanoramaScene = {
   id: string;
@@ -14,22 +23,25 @@ export type VineyardPanoramaScene = {
 
 type VineyardPanoramaViewerProps = {
   scenes: VineyardPanoramaScene[];
+  kicker?: string;
+  subjectLabel?: string;
 };
 
 const FOV_DEFAULT = 62;
 const FOV_MIN = 34;
 const FOV_MAX = 82;
-const AUTO_ROTATE_DEGREES_PER_FRAME = THREE.MathUtils.radToDeg(0.0017);
+const AUTO_ROTATE_DEGREES_PER_FRAME = MathUtils.radToDeg(0.0017);
 const INTERACTION_PAUSE_MS = 10000;
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
-export function VineyardPanoramaViewer({ scenes }: VineyardPanoramaViewerProps) {
+export function VineyardPanoramaViewer({ scenes, kicker = "360 Terroir View", subjectLabel = "vineyard" }: VineyardPanoramaViewerProps) {
   const [activeSceneId, setActiveSceneId] = useState(scenes[0]?.id ?? "");
   const [webglFailed, setWebglFailed] = useState(false);
   const activeScene = scenes.find((scene) => scene.id === activeSceneId) ?? scenes[0];
+  const hasMultipleCountries = new Set(scenes.map((scene) => scene.country)).size > 1;
   const wrapRef = useRef<HTMLDivElement>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const cameraRef = useRef<PerspectiveCamera | null>(null);
   const lonRef = useRef(0);
   const latRef = useRef(0);
   const pauseUntilRef = useRef(0);
@@ -51,9 +63,9 @@ export function VineyardPanoramaViewer({ scenes }: VineyardPanoramaViewerProps) 
     };
 
     const { width, height } = getSize();
-    let renderer: THREE.WebGLRenderer | null = null;
+    let renderer: WebGLRenderer | null = null;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer = new WebGLRenderer({ antialias: true, alpha: true });
     } catch {
       setWebglFailed(true);
       return;
@@ -66,27 +78,27 @@ export function VineyardPanoramaViewer({ scenes }: VineyardPanoramaViewerProps) 
     }
 
     setWebglFailed(false);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.outputColorSpace = SRGBColorSpace;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(width, height);
     renderer.setClearColor(0x000000, 0);
     wrap.appendChild(renderer.domElement);
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(FOV_DEFAULT, width / height, 0.1, 1100);
+    const scene = new Scene();
+    const camera = new PerspectiveCamera(FOV_DEFAULT, width / height, 0.1, 1100);
     cameraRef.current = camera;
 
-    const geometry = new THREE.SphereGeometry(500, 96, 56);
+    const geometry = new SphereGeometry(500, 96, 56);
     geometry.scale(-1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const sphere = new THREE.Mesh(geometry, material);
+    const material = new MeshBasicMaterial({ color: 0xffffff });
+    const sphere = new Mesh(geometry, material);
     scene.add(sphere);
 
-    const textureLoader = new THREE.TextureLoader();
+    const textureLoader = new TextureLoader();
     const texture = textureLoader.load(activeScene.imageSrc);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
+    texture.colorSpace = SRGBColorSpace;
+    texture.minFilter = LinearFilter;
+    texture.magFilter = LinearFilter;
     material.map = texture;
     material.needsUpdate = true;
 
@@ -121,9 +133,9 @@ export function VineyardPanoramaViewer({ scenes }: VineyardPanoramaViewerProps) 
     };
 
     const updateLookAt = () => {
-      const phi = THREE.MathUtils.degToRad(90 - latRef.current);
-      const theta = THREE.MathUtils.degToRad(lonRef.current);
-      const target = new THREE.Vector3(
+      const phi = MathUtils.degToRad(90 - latRef.current);
+      const theta = MathUtils.degToRad(lonRef.current);
+      const target = new Vector3(
         500 * Math.sin(phi) * Math.cos(theta),
         500 * Math.cos(phi),
         500 * Math.sin(phi) * Math.sin(theta)
@@ -278,9 +290,9 @@ export function VineyardPanoramaViewer({ scenes }: VineyardPanoramaViewerProps) 
   };
 
   return (
-    <section className="vineyard-panorama-panel" aria-label={`${activeScene.title} 360 vineyard viewer`}>
+    <section className="vineyard-panorama-panel" aria-label={`${activeScene.title} 360 ${subjectLabel} viewer`}>
       <div className="vineyard-panorama-copy">
-        <p className="sip-maps-kicker">360 Terroir View</p>
+        <p className="sip-maps-kicker">{kicker}</p>
         <h3>{activeScene.title}</h3>
         <p>{activeScene.copy}</p>
         <div className="vineyard-panorama-tags">
@@ -293,7 +305,7 @@ export function VineyardPanoramaViewer({ scenes }: VineyardPanoramaViewerProps) 
       </div>
 
       {scenes.length > 1 ? (
-        <div className="vineyard-panorama-scenes" aria-label="Vineyard scenes">
+        <div className="vineyard-panorama-scenes" aria-label={`${subjectLabel} scenes`}>
           {scenes.map((scene) => (
             <button
               key={scene.id}
@@ -304,7 +316,7 @@ export function VineyardPanoramaViewer({ scenes }: VineyardPanoramaViewerProps) 
                 setActiveSceneId(scene.id);
               }}
             >
-              {scene.country}
+              {hasMultipleCountries ? scene.country : scene.region}
             </button>
           ))}
         </div>
@@ -330,7 +342,7 @@ export function VineyardPanoramaViewer({ scenes }: VineyardPanoramaViewerProps) 
         ) : (
           <div ref={wrapRef} className="vineyard-panorama-canvas" />
         )}
-        <div className="vineyard-panorama-hint">Drag to pan · Pinch or wheel to zoom · Reset recenters the vineyard</div>
+        <div className="vineyard-panorama-hint">Drag to pan · Pinch or wheel to zoom · Reset recenters the {subjectLabel}</div>
       </div>
     </section>
   );

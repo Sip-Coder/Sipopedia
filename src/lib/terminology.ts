@@ -10,6 +10,10 @@ export type TerminologySummary = {
   infographic_url: string | null;
 };
 
+export type TerminologyCommandResult = TerminologySummary & {
+  rank_score: number;
+};
+
 export type TerminologyDetail = {
   id: string;
   term: string;
@@ -134,8 +138,9 @@ export async function listTerminologyPage(input: {
   pageSize: number;
   topImportant?: boolean;
   includeUnpublished?: boolean;
+  withInfographicOnly?: boolean;
 }): Promise<TerminologyPage> {
-  const { bucket, query, page, pageSize, topImportant = false, includeUnpublished = false } = input;
+  const { bucket, query, page, pageSize, topImportant = false, includeUnpublished = false, withInfographicOnly = false } = input;
 
   const trimmedQuery = query.trim();
   const topAllByLetter = topImportant && bucket === "ALL";
@@ -186,6 +191,10 @@ export async function listTerminologyPage(input: {
     request = request.eq("sort_group", bucket);
   }
 
+  if (withInfographicOnly) {
+    request = request.not("infographic_url", "is", null).neq("infographic_url", "");
+  }
+
   if (topAllByLetter) {
     const letterQueries = letterBuckets.map((letter) => {
       let letterRequest = client
@@ -197,6 +206,10 @@ export async function listTerminologyPage(input: {
 
       if (!includeUnpublished) {
         letterRequest = letterRequest.eq("is_published", true);
+      }
+
+      if (withInfographicOnly) {
+        letterRequest = letterRequest.not("infographic_url", "is", null).neq("infographic_url", "");
       }
 
       if (trimmedQuery.length > 0) {
@@ -242,7 +255,62 @@ export async function listTerminologyPage(input: {
   };
 }
 
-export async function listTerminologyLinkTargets(): Promise<TerminologyLinkTarget[]> {
+export async function searchTerminologyCommandResults(query: string, limit = 10): Promise<TerminologyCommandResult[]> {
+  const trimmedQuery = query.trim();
+  if (trimmedQuery.length < 2) return [];
+
+  const normalizedQuery = trimmedQuery.toLowerCase();
+  if (!supabase) {
+    return fallbackRows
+      .filter((row) => row.is_published !== false)
+      .map((row) => ({
+        id: row.id,
+        term: row.term,
+        sort_group: row.sort_group,
+        meaning: row.meaning,
+        infographic_url: row.infographic_url,
+        rank_score: row.term.toLowerCase() === normalizedQuery ? 100 : row.term.toLowerCase().startsWith(normalizedQuery) ? 80 : row.term.toLowerCase().includes(normalizedQuery) ? 50 : 0
+      }))
+      .filter((row) => row.rank_score > 0)
+      .sort((left, right) => right.rank_score - left.rank_score || left.term.localeCompare(right.term))
+      .slice(0, limit);
+  }
+
+  const { data, error } = await supabase
+    .from("terminology_entries")
+    .select("id,term,sort_group,meaning,infographic_url")
+    .eq("is_published", true)
+    .ilike("term", `%${trimmedQuery.replace(/[%_]/g, "")}%`)
+    .order("importance_score", { ascending: false })
+    .order("normalized_term", { ascending: true })
+    .limit(Math.max(limit * 4, 20));
+
+  if (error) {
+    throw new Error(mapTerminologyError(error.message));
+  }
+
+  return ((data ?? []) as TerminologySummary[])
+    .map((row) => {
+      const term = row.term.toLowerCase();
+      const meaning = row.meaning.toLowerCase();
+      const rank_score =
+        term === normalizedQuery
+          ? 100
+          : term.startsWith(normalizedQuery)
+            ? 85
+            : term.includes(normalizedQuery)
+              ? 70
+              : meaning.includes(normalizedQuery)
+                ? 35
+                : 0;
+      return { ...row, rank_score };
+    })
+    .filter((row) => row.rank_score > 0)
+    .sort((left, right) => right.rank_score - left.rank_score || left.term.localeCompare(right.term))
+    .slice(0, limit);
+}
+
+export async function listTerminologyLinkTargets(maxRows = 1200): Promise<TerminologyLinkTarget[]> {
   if (!supabase) {
     return fallbackRows
       .filter((row) => row.is_published !== false)
@@ -256,7 +324,7 @@ export async function listTerminologyLinkTargets(): Promise<TerminologyLinkTarge
   const pageSize = 1000;
   let from = 0;
 
-  while (from < 10000) {
+  while (from < maxRows) {
     const { data, error } = await supabase
       .from("terminology_entries")
       .select("id,term")

@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2100" height="1400" viewBox="0 0 2100 1400" role="img" aria-label="Crimea Wine Map">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#04131f"/>
+      <stop offset="0.48" stop-color="#082d33"/>
+      <stop offset="1" stop-color="#171f25"/>
+    </linearGradient>
+    <radialGradient id="glowGold" cx="20%" cy="16%" r="70%">
+      <stop offset="0" stop-color="#edd4a8" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#edd4a8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowCyan" cx="60%" cy="45%" r="70%">
+      <stop offset="0" stop-color="#48e5dc" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#48e5dc" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="land" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0ce"/>
+      <stop offset="0.44" stop-color="#c99a22"/>
+      <stop offset="1" stop-color="#3dd7ca"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="28" stdDeviation="26" flood-color="#000816" flood-opacity="0.52"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#48e5dc" flood-opacity="0.22"/>
+    </filter>
+    <style>
+      .frame { fill: none; stroke: rgba(159, 218, 245, 0.32); stroke-width: 2; }
+      .grid { stroke: rgba(159, 218, 245, 0.14); stroke-width: 1; }
+      .micro { fill: rgba(217, 247, 255, 0.64); font: 800 19px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 8px; text-transform: uppercase; }
+      .title { fill: #fff0ce; font: 900 66px 'Trebuchet MS', Arial, sans-serif; letter-spacing: -2px; }
+      .subtitle { fill: rgba(217, 247, 255, 0.78); font: 800 25px 'Trebuchet MS', Arial, sans-serif; }
+      .land-core { fill: url(#land); stroke: #fff0ce; stroke-width: 3; stroke-linejoin: round; filter: url(#softShadow); }
+      .land-line { fill: none; stroke: rgba(4, 13, 24, 0.72); stroke-width: 10; opacity: 0.55; stroke-linejoin: round; }
+      .contour { fill: none; stroke: rgba(237, 212, 168, 0.16); stroke-width: 3; stroke-linecap: round; }
+      .region-panel { fill: rgba(5, 18, 28, 0.72); stroke: rgba(159, 218, 245, 0.28); stroke-width: 2; }
+      .region-heading { fill: #fff0ce; font: 900 34px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 5px; text-transform: uppercase; }
+      .region-subheading { fill: rgba(217, 247, 255, 0.68); font: 700 22px 'Trebuchet MS', Arial, sans-serif; }
+      .region-row rect { fill: rgba(4, 19, 31, 0.82); stroke: rgba(159, 218, 245, 0.38); stroke-width: 1.6; }
+      .region-row circle { fill: rgba(237, 212, 168, 0.95); }
+      .region-number { fill: #04131f; font: 900 18px 'Trebuchet MS', Arial, sans-serif; }
+      .region-name { fill: #fff0ce; font: 900 31px 'Trebuchet MS', Arial, sans-serif; }
+      .badge { fill: rgba(7, 35, 48, 0.88); stroke: rgba(237, 212, 168, 0.48); stroke-width: 1.5; }
+      .badge-text { fill: #edd4a8; font: 900 18px 'Trebuchet MS', Arial, sans-serif; letter-spacing: 3px; text-transform: uppercase; }
+      .footer { fill: rgba(217, 247, 255, 0.58); font: 700 18px 'Trebuchet MS', Arial, sans-serif; }
+    </style>
+  </defs>
+  <rect width="2100" height="1400" fill="url(#bg)"/>
+  <rect width="2100" height="1400" fill="url(#glowGold)"/>
+  <rect width="2100" height="1400" fill="url(#glowCyan)"/>
+  <line class="grid" x1="120" y1="0" x2="120" y2="1400"/><line class="grid" x1="240" y1="0" x2="240" y2="1400"/><line class="grid" x1="360" y1="0" x2="360" y2="1400"/><line class="grid" x1="480" y1="0" x2="480" y2="1400"/><line class="grid" x1="600" y1="0" x2="600" y2="1400"/><line class="grid" x1="720" y1="0" x2="720" y2="1400"/><line class="grid" x1="840" y1="0" x2="840" y2="1400"/><line class="grid" x1="960" y1="0" x2="960" y2="1400"/><line class="grid" x1="1080" y1="0" x2="1080" y2="1400"/><line class="grid" x1="1200" y1="0" x2="1200" y2="1400"/><line class="grid" x1="1320" y1="0" x2="1320" y2="1400"/><line class="grid" x1="1440" y1="0" x2="1440" y2="1400"/><line class="grid" x1="1560" y1="0" x2="1560" y2="1400"/><line class="grid" x1="1680" y1="0" x2="1680" y2="1400"/><line class="grid" x1="1800" y1="0" x2="1800" y2="1400"/>
+  <line class="grid" x1="0" y1="180" x2="2100" y2="180"/><line class="grid" x1="0" y1="300" x2="2100" y2="300"/><line class="grid" x1="0" y1="420" x2="2100" y2="420"/><line class="grid" x1="0" y1="540" x2="2100" y2="540"/><line class="grid" x1="0" y1="660" x2="2100" y2="660"/><line class="grid" x1="0" y1="780" x2="2100" y2="780"/><line class="grid" x1="0" y1="900" x2="2100" y2="900"/><line class="grid" x1="0" y1="1020" x2="2100" y2="1020"/>
+  <rect x="34" y="34" width="2032" height="1332" rx="42" class="frame"/>
+  <text x="80" y="108" class="micro">Sip Studios Maps / Country Study Plate</text>
+  <text x="80" y="185" class="title">Crimea Wine Map</text>
+  <text x="84" y="232" class="subtitle">Asia / 5 study regions / Wine geography</text>
+  <g opacity="0.9">
+    <path class="contour" d="M134 333 C 390 261, 670 377, 922 320 S 1170 268, 1250 334"/><path class="contour" d="M134 374 C 390 302, 670 484, 922 394 S 1170 342, 1250 408"/><path class="contour" d="M134 479 C 390 407, 670 527, 922 468 S 1170 416, 1250 482"/><path class="contour" d="M134 520 C 390 448, 670 634, 922 542 S 1170 490, 1250 556"/><path class="contour" d="M134 625 C 390 553, 670 677, 922 616 S 1170 564, 1250 630"/><path class="contour" d="M134 666 C 390 594, 670 784, 922 690 S 1170 638, 1250 704"/><path class="contour" d="M134 771 C 390 699, 670 827, 922 764 S 1170 712, 1250 778"/><path class="contour" d="M134 812 C 390 740, 670 934, 922 838 S 1170 786, 1250 852"/>
+    <path class="land-line" d="M730.86,379.29L752.53,381.64L767.14,368.33L784.64,371.46L844.68,365.72L882.01,398.61L867.39,410.36L872.09,428.37L918.56,431.24L939.19,456.31L937.88,467.79L1011.50,488.16L1055.88,478.76L1091.91,506.17L1125.59,505.39L1211.22,524.44L1212.00,541.41L1188.24,571.70L1201.30,603.81L1192.16,623.13L1136.03,627.30L1106.01,643.49L1104.18,669.34L1057.71,674.03L1019.07,692.83L964.77,695.70L914.91,717.37L917.78,748.44L909.16,746.61L901.59,735.12L883.06,733.04L841.55,720.50L826.41,734.86L818.57,728.60L728.25,713.98L724.33,692.31L670.55,699.36L649.14,731.21L604.24,774.28L577.87,764.36L550.46,773.76L524.62,763.06L539.23,756.53L549.42,736.69L565.34,718.15L561.16,707.97L573.17,703.27L578.92,711.11L613.12,712.93L628.52,708.76L617.82,702.75L621.73,694.14L601.37,679.26L593.01,655.24L572.13,645.58L576.31,626.00L550.20,610.33L526.18,608.25L483.37,590.23L444.73,595.71L431.15,604.33L406.35,604.33L391.99,617.91L349.18,623.39L329.34,632.53L302.45,618.43L265.12,617.91L229.35,611.64L204.29,624.17L200.37,608.51L168.00,592.58L179.49,569.35L195.41,554.21L207.94,557.60L193.06,531.49L245.80,483.20L274.51,476.41L280.78,460.22L251.54,409.58L279.47,407.49L311.06,391.56L355.97,390.26L414.71,394.96L479.45,408.79L525.14,409.84L547.07,418.45L568.74,408.27L583.88,421.85L636.09,418.97L659.32,424.72L662.98,395.48L680.73,382.69L730.86,379.29Z"/>
+    <path class="land-core" d="M730.86,379.29L752.53,381.64L767.14,368.33L784.64,371.46L844.68,365.72L882.01,398.61L867.39,410.36L872.09,428.37L918.56,431.24L939.19,456.31L937.88,467.79L1011.50,488.16L1055.88,478.76L1091.91,506.17L1125.59,505.39L1211.22,524.44L1212.00,541.41L1188.24,571.70L1201.30,603.81L1192.16,623.13L1136.03,627.30L1106.01,643.49L1104.18,669.34L1057.71,674.03L1019.07,692.83L964.77,695.70L914.91,717.37L917.78,748.44L909.16,746.61L901.59,735.12L883.06,733.04L841.55,720.50L826.41,734.86L818.57,728.60L728.25,713.98L724.33,692.31L670.55,699.36L649.14,731.21L604.24,774.28L577.87,764.36L550.46,773.76L524.62,763.06L539.23,756.53L549.42,736.69L565.34,718.15L561.16,707.97L573.17,703.27L578.92,711.11L613.12,712.93L628.52,708.76L617.82,702.75L621.73,694.14L601.37,679.26L593.01,655.24L572.13,645.58L576.31,626.00L550.20,610.33L526.18,608.25L483.37,590.23L444.73,595.71L431.15,604.33L406.35,604.33L391.99,617.91L349.18,623.39L329.34,632.53L302.45,618.43L265.12,617.91L229.35,611.64L204.29,624.17L200.37,608.51L168.00,592.58L179.49,569.35L195.41,554.21L207.94,557.60L193.06,531.49L245.80,483.20L274.51,476.41L280.78,460.22L251.54,409.58L279.47,407.49L311.06,391.56L355.97,390.26L414.71,394.96L479.45,408.79L525.14,409.84L547.07,418.45L568.74,408.27L583.88,421.85L636.09,418.97L659.32,424.72L662.98,395.48L680.73,382.69L730.86,379.29Z" fill-rule="evenodd"/>
+  </g>
+  <rect x="1370" y="305" width="610" height="132" rx="24" class="badge"/>
+  <text x="1410" y="358" class="badge-text">Crimea / atlas outline</text>
+  <text x="1410" y="398" class="footer">Primary atlas outline fitted for country-scale study.</text>
+  <rect x="88" y="940" width="1924" height="382" rx="30" class="region-panel"/>
+  <text x="132" y="998" class="region-heading">Study Region Index</text>
+  <text x="132" y="1335" class="footer">Showing 5 of 5 study regions. Internal wine-region borders require an authoritative GIS layer before drawing.</text>
+  
+      <g class="region-row" transform="translate(135 1038)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">1</text>
+        <text x="54" y="28" class="region-name">Crimea Northern Corridor</text>
+      </g>
+      <g class="region-row" transform="translate(1045 1038)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">2</text>
+        <text x="54" y="28" class="region-name">Crimea Central Highlands</text>
+      </g>
+      <g class="region-row" transform="translate(135 1086)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">3</text>
+        <text x="54" y="28" class="region-name">Crimea River Valley Belt</text>
+      </g>
+      <g class="region-row" transform="translate(1045 1086)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">4</text>
+        <text x="54" y="28" class="region-name">Crimea Coastal Influence Zone</text>
+      </g>
+      <g class="region-row" transform="translate(135 1134)">
+        <rect width="850" height="40" rx="13"/>
+        <circle cx="26" cy="20" r="15"/>
+        <text x="26" y="27" text-anchor="middle" class="region-number">5</text>
+        <text x="54" y="28" class="region-name">Crimea Heritage District</text>
+      </g>
+</svg>

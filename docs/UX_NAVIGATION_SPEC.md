@@ -1,5 +1,31 @@
 # UX and Navigation Spec
 
+## 2026 Navigation Direction
+
+Sip Studies navigation should behave like a compact learning cockpit, not a full-screen directory.
+
+Current strategy:
+
+- Keep the primary paths visible for novices: Lobby, pricing, enrollment/login, Launch Pad, and the active study lanes.
+- Keep expert acceleration available through Search: `Ctrl/Cmd + K`, query, arrow selection, and Enter activation.
+- Avoid returning to hidden-only navigation as the primary model. Hidden menus are useful for overflow, but the main learning routes need visible anchors.
+- Make locked/public states explicit. A public user should understand what is available now and what requires login or enrollment without being thrown into a dead-end paywall.
+- Treat mobile as constrained, not second-class. The same mental model should fit the viewport rather than becoming a separate menu system.
+
+Research anchors:
+
+- Nielsen Norman Group style guidance favors visible or partially visible navigation over hidden-only navigation for discoverability and task success.
+- Awwwards and Godly references support bolder navigation treatments, but Sip Studies should borrow the intentionality, motion, and hierarchy rather than copying novelty at the cost of clarity.
+- WCAG 2.2 navigation expectations require keyboard access, visible focus, and hidden regions that do not contain reachable controls.
+
+Reference URLs:
+
+- https://www.awwwards.com/inspiration/experimental-navigation-gallery
+- https://godly.website/
+- https://godly.design/
+- https://www.thewcag.com/examples/navigation
+- https://www.wuhcag.com/focus-visible/
+
 ## Route Navigation
 
 The app uses hash routes. Workspace routes live under `#app/*`.
@@ -20,6 +46,37 @@ Primary examples:
 
 `#app/cocktails` is the technical route for the user-facing **Bev Recipes** tab.
 
+## Onboarding Intent
+
+Public acquisition routes should preserve user intent instead of sending every CTA to a generic checkout state.
+
+Supported intent query fields:
+
+- `plan`: `starter`, `pro`, or `founding`.
+- `source`: the CTA surface that produced the intent, such as `home-hero`, `pricing`, `paywall`, `footer`, or `powerful-point`.
+- `next`: the route the user was trying to reach before login, pricing, or checkout.
+
+Current rules:
+
+- Pricing initializes the selected card from `plan`.
+- Pricing CTAs route to `checkout?plan=...&source=pricing` for paid plans.
+- Checkout initializes the selected paid plan from `plan`.
+- Checkout includes `plan`, `source`, and `next` in hosted checkout URL params and assisted enrollment email copy.
+- Paywall CTAs preserve the blocked destination in `next`.
+- Public CTAs should use `buildOnboardingRoute(...)`; do not add new blind `onNavigate("checkout")` acquisition links.
+
+## Locked-State Preview
+
+Locked routes should behave like guided access checkpoints, not dead ends.
+
+Current rules:
+
+- The paywall must show the attempted destination from `next` or the blocked route.
+- The paywall must explain current access state using Launch Pad / public preview language.
+- The paywall must preview the Learn, Taste, and Connect lanes before asking for payment.
+- Compare Plans and Start Enrollment must preserve the blocked route in `next`.
+- Starter Preview cards must use Learn, Taste, Connect, and Enrollment labels; do not reintroduce House Brand labels.
+
 ## Workspace Navigation
 
 Workspace nav is organized into:
@@ -34,6 +91,51 @@ Each nav item should have:
 - short signal text
 - stable route id
 - active state
+
+Current Mission Control behavior:
+
+- The workspace menu is `Sip Studies Mission Control`.
+- The active destination appears in the status card.
+- Learn, Taste, and Connect are always visible as lane buttons.
+- The active lane exposes a horizontal module rail when modules are available.
+- Public users see locked lane messaging instead of empty module rails.
+- Lobby links remain visible as a secondary band.
+- Primary actions remain visible: Search, Launch Pad, Log In or Dashboard/Log Out depending on auth state.
+
+Public destination search behavior:
+
+- The public header menu is a compact `Choose destination` search surface, not a full-page menu.
+- The visible destination list remains auth-specific; search, keyboard hints, and route badges are utilities, not extra destinations.
+- `Ctrl K` opens the public destination menu when the public header is present.
+- Opening the menu focuses the destination search field.
+- `ArrowUp` and `ArrowDown` move the active search result.
+- `Enter` opens the active result.
+- `Escape` closes the menu and returns focus to `Choose destination`.
+- Filtering must search destination labels, details, badges, and keyword aliases.
+- Empty results must keep the menu open and offer a recovery hint.
+
+Auth-specific lobby rules:
+
+- Logged-out lobby menu:
+  - Choose Destination
+  - Lobby Home
+  - Plan & Pricing
+  - Enroll Now
+  - Log In
+- Logged-in lobby menu:
+  - Choose Destination
+  - Lobby Home
+  - Plan & Pricing
+  - Launch Pad
+  - Account Dashboard
+  - Log Out
+
+Naming rules:
+
+- Use `Launch Pad`, not `Launch Deck`.
+- Use `Log In` and `Log Out` in navigation surfaces.
+- Use `Dashboard` only where space is constrained and the surrounding context is clearly account-related.
+- Do not reintroduce `House Brands` as a global navigation surface.
 
 ## Grapes & Grains Navigation
 
@@ -114,13 +216,13 @@ Resources preserve selected view state in local storage so reloads return to the
 
 ## Global Keyboard Navigation Hierarchy (Site-Wide)
 
-The workspace now uses a strict keyboard hierarchy so navigation intent is consistent everywhere.
+The workspace uses a strict keyboard hierarchy so navigation intent is consistent everywhere.
 
-- `Alt + ArrowLeft/ArrowRight`: switch **Brand**
-- `Ctrl + Shift + ArrowLeft/ArrowRight`: switch **Section**
-- `Shift + ArrowLeft/ArrowRight`: switch **Module** within active section
+- `Ctrl/Cmd + K`: open **Search**
+- `Shift + ArrowLeft/ArrowRight`: switch **Section**
+- `Ctrl + ArrowLeft/ArrowRight`: switch **Module** within active section
 - `ArrowLeft/ArrowRight`: switch **Page-Level Features**
-- `Ctrl + ArrowLeft/ArrowRight`: switch **SubPage/SubMenu Features**
+- `Ctrl + Shift + ArrowLeft/ArrowRight`: switch **SubPage/SubMenu Features**
 - `Escape`: return to **Starter Preview** (`/#app/starter`)
 
 Notes:
@@ -130,13 +232,19 @@ Notes:
   - `sipstudies:navigate-page-feature`
   - `sipstudies:navigate-subfeature`
 
-## Hover Menu Keyboard Hints
+## Search Palette
 
-The floating command menu should display compact right-justified keyboard hints:
+Search is for expert navigation, not a replacement for visible navigation.
 
-- Brand: `Alt + <- ->`
-- Section: `Ctrl+Shift + <- ->`
-- Module: `Shift + <- ->`
+Requirements:
+
+- Opens with `Ctrl/Cmd + K`.
+- Closes with `Escape` or outside click.
+- Search includes available lobby actions, available account actions, and visible modules.
+- ArrowUp and ArrowDown move the active search result.
+- Home and End jump within results.
+- Enter activates the selected result.
+- Hidden search palettes must not leave focusable controls in the tab order.
 
 ## UI Copy Rules
 

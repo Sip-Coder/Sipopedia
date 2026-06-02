@@ -3,11 +3,13 @@ import fs from "node:fs";
 import path from "node:path";
 
 const repoRoot = process.cwd();
+const skipDirs = new Set([".git", "node_modules", "dist", ".codex-runlogs"]);
+const maxScanBytes = 8 * 1024 * 1024;
 
 function listRepoFiles(dir, out = []) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
-    if (entry.name === ".git" || entry.name === "node_modules" || entry.name === "dist") continue;
+    if (skipDirs.has(entry.name)) continue;
     const abs = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       listRepoFiles(abs, out);
@@ -74,6 +76,12 @@ function isAllowedMatch(matchText) {
   return false;
 }
 
+function shouldSkipFile(absFile) {
+  const stat = fs.statSync(absFile);
+  if (!stat.isFile()) return true;
+  return stat.size > maxScanBytes;
+}
+
 function checkSensitivePath(file, mode) {
   const normalized = file.replace(/\\/g, "/");
   if (mode === "staged" && normalized === ".env") return "Do not commit .env files.";
@@ -100,6 +108,7 @@ function main() {
 
     const absFile = path.join(repoRoot, relFile);
     if (!fs.existsSync(absFile)) continue;
+    if (shouldSkipFile(absFile)) continue;
     const raw = fs.readFileSync(absFile);
     if (!isLikelyText(raw)) continue;
     const text = raw.toString("utf8");
