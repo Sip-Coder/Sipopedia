@@ -40,6 +40,31 @@ import {
   shouldShowInPublicNav
 } from "./lib/siteMap";
 
+// After a new deployment the hashed chunk filenames change. Any user whose
+// browser cached the old index.html will try to fetch an old chunk URL that
+// no longer exists (404). lazyWithRetry detects that failure, reloads the
+// page once to pick up the fresh index.html, then the correct chunks load.
+const CHUNK_RELOAD_KEY = "chunkReloadedAt";
+function withChunkRetry<T>(factory: () => Promise<{ default: T }>): () => Promise<{ default: T }> {
+  return () =>
+    factory().catch((err: unknown) => {
+      const msg = err instanceof Error ? err.message : String(err);
+      const isChunkError =
+        msg.includes("Failed to fetch") ||
+        msg.includes("dynamically imported module") ||
+        msg.includes("Loading chunk") ||
+        msg.includes("Importing a module script failed");
+      if (isChunkError) {
+        const last = Number(sessionStorage.getItem(CHUNK_RELOAD_KEY) ?? 0);
+        if (Date.now() - last > 15_000) {
+          sessionStorage.setItem(CHUNK_RELOAD_KEY, String(Date.now()));
+          window.location.reload();
+        }
+      }
+      throw err;
+    });
+}
+
 const loadSipAcademyWineLessons = () => import("./components/SipAcademyWineLessons");
 const loadSipStudiosGame = () => import("./components/SipStudiosGame");
 const loadFlavorWheel = () => import("./components/FlavorWheel");
@@ -63,30 +88,30 @@ const loadSommEvents = () => import("./components/SommEvents");
 const loadAiNews = () => import("./components/AiNews");
 const loadAiWinecast = () => import("./components/AiWinecast");
 
-const SipAcademyWineLessons = lazy(() =>
-  loadSipAcademyWineLessons().then((module) => ({ default: module.SipAcademyWineLessons }))
-);
-const SipStudiosGame = lazy(() => loadSipStudiosGame().then((module) => ({ default: module.SipStudiosGame })));
-const FlavorWheel = lazy(() => loadFlavorWheel().then((module) => ({ default: module.FlavorWheel })));
-const CellarScanner = lazy(() => loadCellarScanner().then((module) => ({ default: module.CellarScanner })));
-const BeverageQuiz = lazy(() => loadBeverageQuiz().then((module) => ({ default: module.BeverageQuiz })));
-const StudySheets = lazy(() => loadStudySheets().then((module) => ({ default: module.StudySheets })));
-const ServiceRoleplayLab = lazy(() => loadServiceRoleplayLab().then((module) => ({ default: module.ServiceRoleplayLab })));
-const BeverageNews = lazy(() => loadBeverageNews().then((module) => ({ default: module.BeverageNews })));
-const Terminology = lazy(() => loadTerminology().then((module) => ({ default: module.Terminology })));
-const TerminologyAdmin = lazy(() => loadTerminologyAdmin().then((module) => ({ default: module.TerminologyAdmin })));
-const TastingJournal = lazy(() => loadTastingJournal().then((module) => ({ default: module.TastingJournal })));
-const Flavors = lazy(() => loadFlavors().then((module) => ({ default: module.Flavors })));
-const TastingGroups = lazy(() => loadTastingGroups().then((module) => ({ default: module.TastingGroups })));
-const FlavorBlog = lazy(() => loadFlavorBlog().then((module) => ({ default: module.FlavorBlog })));
-const Regions = lazy(() => loadRegions().then((module) => ({ default: module.Regions })));
-const SipMaps = lazy(() => loadSipMaps().then((module) => ({ default: module.SipMaps })));
-const Grapes = lazy(() => loadGrapes().then((module) => ({ default: module.Grapes })));
-const Cocktails = lazy(() => loadCocktails().then((module) => ({ default: module.Cocktails })));
-const WineResources = lazy(() => loadWineResources().then((module) => ({ default: module.WineResources })));
-const SommEvents = lazy(() => loadSommEvents().then((module) => ({ default: module.SommEvents })));
-const AiNews = lazy(() => loadAiNews().then((module) => ({ default: module.AiNews })));
-const AiWinecast = lazy(() => loadAiWinecast().then((module) => ({ default: module.AiWinecast })));
+const SipAcademyWineLessons = lazy(withChunkRetry(() =>
+  loadSipAcademyWineLessons().then((m) => ({ default: m.SipAcademyWineLessons }))
+));
+const SipStudiosGame = lazy(withChunkRetry(() => loadSipStudiosGame().then((m) => ({ default: m.SipStudiosGame }))));
+const FlavorWheel = lazy(withChunkRetry(() => loadFlavorWheel().then((m) => ({ default: m.FlavorWheel }))));
+const CellarScanner = lazy(withChunkRetry(() => loadCellarScanner().then((m) => ({ default: m.CellarScanner }))));
+const BeverageQuiz = lazy(withChunkRetry(() => loadBeverageQuiz().then((m) => ({ default: m.BeverageQuiz }))));
+const StudySheets = lazy(withChunkRetry(() => loadStudySheets().then((m) => ({ default: m.StudySheets }))));
+const ServiceRoleplayLab = lazy(withChunkRetry(() => loadServiceRoleplayLab().then((m) => ({ default: m.ServiceRoleplayLab }))));
+const BeverageNews = lazy(withChunkRetry(() => loadBeverageNews().then((m) => ({ default: m.BeverageNews }))));
+const Terminology = lazy(withChunkRetry(() => loadTerminology().then((m) => ({ default: m.Terminology }))));
+const TerminologyAdmin = lazy(withChunkRetry(() => loadTerminologyAdmin().then((m) => ({ default: m.TerminologyAdmin }))));
+const TastingJournal = lazy(withChunkRetry(() => loadTastingJournal().then((m) => ({ default: m.TastingJournal }))));
+const Flavors = lazy(withChunkRetry(() => loadFlavors().then((m) => ({ default: m.Flavors }))));
+const TastingGroups = lazy(withChunkRetry(() => loadTastingGroups().then((m) => ({ default: m.TastingGroups }))));
+const FlavorBlog = lazy(withChunkRetry(() => loadFlavorBlog().then((m) => ({ default: m.FlavorBlog }))));
+const Regions = lazy(withChunkRetry(() => loadRegions().then((m) => ({ default: m.Regions }))));
+const SipMaps = lazy(withChunkRetry(() => loadSipMaps().then((m) => ({ default: m.SipMaps }))));
+const Grapes = lazy(withChunkRetry(() => loadGrapes().then((m) => ({ default: m.Grapes }))));
+const Cocktails = lazy(withChunkRetry(() => loadCocktails().then((m) => ({ default: m.Cocktails }))));
+const WineResources = lazy(withChunkRetry(() => loadWineResources().then((m) => ({ default: m.WineResources }))));
+const SommEvents = lazy(withChunkRetry(() => loadSommEvents().then((m) => ({ default: m.SommEvents }))));
+const AiNews = lazy(withChunkRetry(() => loadAiNews().then((m) => ({ default: m.AiNews }))));
+const AiWinecast = lazy(withChunkRetry(() => loadAiWinecast().then((m) => ({ default: m.AiWinecast }))));
 
 type RegionsPage = "regions" | `regions/${string}`;
 type GrapesPage = "grapes" | `grapes/${string}`;
