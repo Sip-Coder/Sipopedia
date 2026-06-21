@@ -751,7 +751,7 @@ const RAW_INGREDIENT_FACILITIES: Facility[] = [
         y: 27,
         w: 20,
         h: 20,
-        image: "/game/checkpoint-scenes/winery-vine-training-aria-v1.png"
+        image: "/game/checkpoint-scenes/raw-ingredients-winery-vine-training-v3.png"
       },
       {
         id: "canopy",
@@ -763,7 +763,7 @@ const RAW_INGREDIENT_FACILITIES: Facility[] = [
         y: 37,
         w: 18,
         h: 22,
-        image: "/game/checkpoint-scenes/winery-canopy-management-aria-v1.png"
+        image: "/game/checkpoint-scenes/raw-ingredients-winery-canopy-v3.png"
       },
       {
         id: "harvest-pick",
@@ -775,7 +775,7 @@ const RAW_INGREDIENT_FACILITIES: Facility[] = [
         y: 52,
         w: 20,
         h: 18,
-        image: "/game/checkpoint-scenes/winery-harvest-pick-aria-v1.png"
+        image: "/game/checkpoint-scenes/raw-ingredients-winery-harvest-pick-v3.png"
       }
     ],
     challenge: "Learn how vine training, canopy work, and harvest timing shape wine before fermentation starts."

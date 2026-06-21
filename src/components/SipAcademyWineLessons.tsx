@@ -1577,6 +1577,24 @@ function dateStamp(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
+function readLocalStorageItem(key: string): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeLocalStorageItem(key: string, value: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // Progress should not crash the academy route if browser storage is blocked.
+  }
+}
+
 function defaultProgress(): AcademyProgress {
   const lessons: Record<string, LessonProgress> = {};
   LESSONS.forEach((lesson) => {
@@ -1807,9 +1825,9 @@ function buildLessonBriefing(lesson: Lesson): LessonBriefing {
 }
 
 export function SipAcademyWineLessons() {
-  const [progress, setProgress] = useState<AcademyProgress>(() => parseProgress(window.localStorage.getItem(STORAGE_KEY)));
+  const [progress, setProgress] = useState<AcademyProgress>(() => parseProgress(readLocalStorageItem(STORAGE_KEY)));
   const [voiceMode, setVoiceMode] = useState<MentorVoiceMode>(() => {
-    const stored = window.localStorage.getItem(VOICE_MODE_KEY);
+    const stored = readLocalStorageItem(VOICE_MODE_KEY);
     return stored === "classic" || stored === "tactical" || stored === "story" ? stored : "classic";
   });
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
@@ -1848,11 +1866,11 @@ export function SipAcademyWineLessons() {
   const activeExercise = activeLesson && lessonPhase === "quiz" ? activeLesson.exercises[exerciseIndex] ?? null : null;
 
   useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    writeLocalStorageItem(STORAGE_KEY, JSON.stringify(progress));
   }, [progress]);
 
   useEffect(() => {
-    window.localStorage.setItem(VOICE_MODE_KEY, voiceMode);
+    writeLocalStorageItem(VOICE_MODE_KEY, voiceMode);
   }, [voiceMode]);
 
   useEffect(() => {

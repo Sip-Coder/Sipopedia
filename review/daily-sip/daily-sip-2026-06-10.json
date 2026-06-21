@@ -1,0 +1,270 @@
+{
+  "id": "daily-sip-2026-06-10",
+  "slug": "daily-sip",
+  "title": "Daily Sip: Beverage Market Briefing for June 10, 2026",
+  "subtitle": "An in-depth Flavor Blog overview of the top 20 beverage industry articles across wine, beer, spirits, coffee, tea, regulation, and adjacent market signals.",
+  "generatedAt": "2026-06-10T20:08:53.480Z",
+  "headerImageUrl": "/daily-sip/daily-sip-2026-06-10-header.png",
+  "sourceCount": 13,
+  "articleCount": 20,
+  "editorialStandard": "daily-sip-avant-garde-v2-2026-05",
+  "coverage": [
+    "Wine",
+    "Beer",
+    "Spirits",
+    "Coffee",
+    "Regulation"
+  ],
+  "executiveSummary": [
+    "Daily Sip scanned 13 beverage sources and selected 20 stories with clear source attribution, concrete trade relevance, and limited hype.",
+    "Today's strongest signals sit in Beer, Spirits, Wine, Coffee, Regulation. The leading source trail begins with The Drinks Business, Brewers Association, VinePair.",
+    "Editorial stance: launches, awards, investments, and claims are treated as signals, not endorsements. The test is what may change for price, access, labor, compliance, training, or guest language."
+  ],
+  "marketThemes": [
+    {
+      "title": "Rules rewrite the shelf",
+      "body": "4 ranked stories sit here, led by Brewers Association, Alcohol and Tobacco Tax and Trade Bureau. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Demand splits into smaller occasions",
+      "body": "9 ranked stories sit here, led by The Drinks Business, Beverage Industry Tea and Coffee. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Supply sets the tempo",
+      "body": "1 ranked story sits here, led by VinePair. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    },
+    {
+      "title": "Capital moves the room",
+      "body": "1 ranked story sits here, led by Brewers Association. Treat the pattern as a signal, not a conclusion; test it against price, availability, compliance, shelf space, menus, and staff language."
+    }
+  ],
+  "watchlist": [
+    "Watch whether Beer, Spirits, Wine repeat across the next two scans before calling them trends.",
+    "Check primary sources before changing menu, shelf, pricing, or compliance language.",
+    "Separate product launches and awards from independent evidence of demand.",
+    "Flag single-source, disputed, or promotional claims for human review before amplifying them."
+  ],
+  "articles": [
+    {
+      "rank": 1,
+      "title": "What's next for Impossibrew?",
+      "sourceName": "The Drinks Business",
+      "category": "Beer",
+      "publishedAt": "2026-06-10T10:32:04.000Z",
+      "url": "https://www.thedrinksbusiness.com/2026/06/whats-next-for-impossibrew/",
+      "summary": "The Drinks Business reports: What's next for Impossibrew?. Context: Functional alcohol-free British beer brand Impossibrew has revealed its public return to Crowdcube in a bid to fund wider retail expansion. Format is the signal: the launch or category move tests whether a new occasion can become repeat demand.",
+      "whyItMatters": "New formats deserve attention when they reveal a repeatable use case, not just a launch cycle.",
+      "marketImpact": "Repeat purchase, margin, occasion fit, and whether the format survives after launch attention fades."
+    },
+    {
+      "rank": 2,
+      "title": "US RTD cocktails surge as category nears 80m cases",
+      "sourceName": "The Drinks Business",
+      "category": "Spirits",
+      "publishedAt": "2026-06-10T09:54:47.000Z",
+      "url": "https://www.thedrinksbusiness.com/2026/06/us-rtd-cocktails-surge-as-category-nears-80m-cases/",
+      "summary": "The Drinks Business reports: US RTD cocktails surge as category nears 80m cases. Context: Spirit-based ready-to-drink cocktails added more than 10 million cases in the US last year, according to new figures from Impact Databank. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "Whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 3,
+      "title": "New Forced-Labor Tariffs Could Hit Imported Hops, Malts, and Equipment",
+      "sourceName": "Brewers Association",
+      "category": "Beer",
+      "publishedAt": "2026-06-10T18:53:49.000Z",
+      "url": "https://www.brewersassociation.org/government-affairs-updates/new-forced-labor-tariffs-could-hit-imported-hops-malts-and-equipment/",
+      "summary": "Brewers Association reports: New Forced-Labor Tariffs Could Hit Imported Hops, Malts, and Equipment. Context: Brewers may see additional tariffs on imported goods, excluding aluminum, steel, and duty-free Canadian barley and barley malt. Regulatory pressure is the signal: labels, warnings, taxes, or trade rules may alter cost, access, or compliance work.",
+      "whyItMatters": "Follow the operational burden first: producers, importers, retailers, or restaurants may need to adjust before customers see the change.",
+      "marketImpact": "Compliance timelines, label language, import friction, and whether operators need new staff talking points."
+    },
+    {
+      "rank": 4,
+      "title": "Meet Xinomavro, Greece's Coolest Cool-Climate Red Wine from PDO Amyndeon ( )",
+      "sourceName": "VinePair",
+      "category": "Wine",
+      "publishedAt": "2026-06-09T13:30:15.000Z",
+      "url": "https://vinepair.com/articles/meet-xinomavro-alpha-estate/",
+      "summary": "VinePair reports: Meet Xinomavro, Greece's Coolest Cool-Climate Red Wine from PDO Amyndeon ( ). Supply is the signal: weather, harvest, inventory, or logistics pressure may show up later as price or availability changes.",
+      "whyItMatters": "Supply pressure matters before it becomes obvious: buyers may need alternatives, flexible pricing, or clearer substitution language.",
+      "marketImpact": "Allocation changes, substitute products, by-the-glass pricing, and how transparently buyers explain scarcity."
+    },
+    {
+      "rank": 5,
+      "title": "What's driving the surge in fine white wine trading?",
+      "sourceName": "The Drinks Business",
+      "category": "Wine",
+      "publishedAt": "2026-06-10T09:10:21.000Z",
+      "url": "https://www.thedrinksbusiness.com/2026/06/whats-driving-the-surge-in-fine-white-wine-trading/",
+      "summary": "The Drinks Business reports: What's driving the surge in fine white wine trading?. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "Whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 6,
+      "title": "CHEERS Act Reintroduced in Senate and House",
+      "sourceName": "Brewers Association",
+      "category": "Beer",
+      "publishedAt": "2026-06-10T18:21:43.000Z",
+      "url": "https://www.brewersassociation.org/government-affairs-updates/cheers-act-reintroduced-in-senate-and-house/",
+      "summary": "Brewers Association reports: CHEERS Act Reintroduced in Senate and House. Context: Bipartisan legislation aimed at helping bars, restaurants, and taprooms invest in draft beer equipment was reintroduced in the Senate. Regulatory pressure is the signal: labels, warnings, taxes, or trade rules may alter cost, access, or compliance work.",
+      "whyItMatters": "Follow the operational burden first: producers, importers, retailers, or restaurants may need to adjust before customers see the change.",
+      "marketImpact": "Compliance timelines, label language, import friction, and whether operators need new staff talking points."
+    },
+    {
+      "rank": 7,
+      "title": "Health and wellness remain central to tea, RTD tea market growth",
+      "sourceName": "Beverage Industry Tea and Coffee",
+      "category": "Coffee",
+      "publishedAt": "2026-06-02T04:00:00.000Z",
+      "url": "https://www.bevindustry.com/articles/98438-health-and-wellness-remain-central-to-tea-rtd-tea-market-growth",
+      "summary": "Beverage Industry Tea and Coffee reports: Health and wellness remain central to tea, RTD tea market growth. Context: When it comes to the tea and RTD tea market, experts highlight that the category's growth is fueled by the consumer desire for healthy beverage options. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "Whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 8,
+      "title": "Top 10 biggest-selling vodka Brand Champions 2026",
+      "sourceName": "The Spirits Business",
+      "category": "Spirits",
+      "publishedAt": "2026-06-10T11:51:19.000Z",
+      "url": "https://www.thespiritsbusiness.com/2026/06/top-10-biggest-selling-vodka-brand-champions-2026/",
+      "summary": "The Spirits Business reports: Top 10 biggest-selling vodka Brand Champions 2026. Demand is the signal: pricing, volume, and consumer behavior indicate where the market is spending, hesitating, or trading across tiers.",
+      "whyItMatters": "Demand data is useful when it shows whether guests are trading up, trading down, or simply moving to a different occasion.",
+      "marketImpact": "Whether the numbers shift actual buying, shelf space, menu design, training time, or promotion strategy."
+    },
+    {
+      "rank": 9,
+      "title": "Mother Root is UK's fastest-growing drinks company",
+      "sourceName": "The Spirits Business",
+      "category": "Spirits",
+      "publishedAt": "2026-06-10T08:38:03.000Z",
+      "url": "https://www.thespiritsbusiness.com/2026/06/mother-root-is-uks-fastest-growing-drinks-company/",
+      "summary": "The Spirits Business reports: Mother Root is UK's fastest-growing drinks company. Format is the signal: the launch or category move tests whether a new occasion can become repeat demand.",
+      "whyItMatters": "New formats deserve attention when they reveal a repeatable use case, not just a launch cycle.",
+      "marketImpact": "Repeat purchase, margin, occasion fit, and whether the format survives after launch attention fades."
+    },
+    {
+      "rank": 10,
+      "title": "7 Things You Should Know About LALO Tequila, the Fast-Growing Brand With a Focus on Blanco",
+      "sourceName": "VinePair",
+      "category": "Spirits",
+      "publishedAt": "2026-06-05T13:55:14.000Z",
+      "url": "https://vinepair.com/articles/ntk-lalo-tequila/",
+      "summary": "VinePair reports: 7 Things You Should Know About LALO Tequila, the Fast-Growing Brand With a Focus on Blanco. Context: Tequila has been enjoying somewhat of a heyday in the U.S. of late. Category signal: watch whether this spirits story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the spirits signal visible without turning a single article into a verdict.",
+      "marketImpact": "Customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 11,
+      "title": "Lavazza Launches Tabli Brewer with Plastic-Free Coffee Tablets",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-06-10T18:06:46.000Z",
+      "url": "https://dailycoffeenews.com/2026/06/10/lavazza-launches-tabli-brewer-with-plastic-free-coffee-tablets/",
+      "summary": "Daily Coffee News reports: Lavazza Launches Tabli Brewer with Plastic-Free Coffee Tablets. People are the signal: training, labor, and education stories often change how teams explain the category on the floor.",
+      "whyItMatters": "Education and labor stories change the human layer: training, service confidence, hiring, and how teams talk about drinks.",
+      "marketImpact": "Customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 12,
+      "title": "SCA Launches Master of Specialty Coffee Program",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-06-09T13:46:54.000Z",
+      "url": "https://dailycoffeenews.com/2026/06/09/sca-launches-master-of-specialty-coffee-program/",
+      "summary": "Daily Coffee News reports: SCA Launches Master of Specialty Coffee Program. People are the signal: training, labor, and education stories often change how teams explain the category on the floor.",
+      "whyItMatters": "Education and labor stories change the human layer: training, service confidence, hiring, and how teams talk about drinks.",
+      "marketImpact": "Customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 13,
+      "title": "Does Kevin Warsh Like Craft Beer?",
+      "sourceName": "Brewers Association",
+      "category": "Beer",
+      "publishedAt": "2026-06-05T21:04:56.000Z",
+      "url": "https://www.brewersassociation.org/insights/does-kevin-warsh-like-craft-beer/",
+      "summary": "Brewers Association reports: Does Kevin Warsh Like Craft Beer?. Capital is the signal: ownership, funding, or distribution shifts can change who gets reach and negotiating power.",
+      "whyItMatters": "Capital movement can reshape distribution leverage, category visibility, and the room smaller producers have to compete.",
+      "marketImpact": "Distribution gains, portfolio changes, retail/menu placement, and whether smaller competitors lose visibility."
+    },
+    {
+      "rank": 14,
+      "title": "Weekly Coffee News: A 'Clean Craft' Assurance + Tanzania Project Launch",
+      "sourceName": "Daily Coffee News",
+      "category": "Coffee",
+      "publishedAt": "2026-06-05T12:18:43.000Z",
+      "url": "https://dailycoffeenews.com/2026/06/05/weekly-coffee-news-a-clean-craft-assurance-new-in-manual-immersion-brewing/",
+      "summary": "Daily Coffee News reports: Weekly Coffee News: A 'Clean Craft' Assurance + Tanzania Project Launch. Context: Welcome to DCN's Weekly Coffee News! Format is the signal: the launch or category move tests whether a new occasion can become repeat demand.",
+      "whyItMatters": "New formats deserve attention when they reveal a repeatable use case, not just a launch cycle.",
+      "marketImpact": "Repeat purchase, margin, occasion fit, and whether the format survives after launch attention fades."
+    },
+    {
+      "rank": 15,
+      "title": "teapigs herbal teas",
+      "sourceName": "Beverage Industry Tea and Coffee",
+      "category": "Coffee",
+      "publishedAt": "2026-06-05T04:00:00.000Z",
+      "url": "https://www.bevindustry.com/articles/98411-teapigs-herbal-teas",
+      "summary": "Beverage Industry Tea and Coffee reports: teapigs herbal teas. Context: teapigs announced the launch of four new herbal tea blends: Ginger & Manuka Honey, Strawberry & Juniper, Chamomile Lullaby and Pumpkin Spice Chai. Format is the signal: the launch or category move tests whether a new occasion can become repeat demand.",
+      "whyItMatters": "New formats deserve attention when they reveal a repeatable use case, not just a launch cycle.",
+      "marketImpact": "Repeat purchase, margin, occasion fit, and whether the format survives after launch attention fades."
+    },
+    {
+      "rank": 16,
+      "title": "The Evolution of Non-Alcoholic Craft Beer: From a Necessary Compromise to a Fine Art",
+      "sourceName": "The Beer Connoisseur",
+      "category": "Beer",
+      "publishedAt": "2026-06-04T16:58:38.000Z",
+      "url": "https://beerconnoisseur.com/evolution-of-non-alcoholic-craft-beer/",
+      "summary": "The Beer Connoisseur reports: The Evolution of Non-Alcoholic Craft Beer: From a Necessary Compromise to a Fine Art. Format is the signal: the launch or category move tests whether a new occasion can become repeat demand.",
+      "whyItMatters": "New formats deserve attention when they reveal a repeatable use case, not just a launch cycle.",
+      "marketImpact": "Repeat purchase, margin, occasion fit, and whether the format survives after launch attention fades."
+    },
+    {
+      "rank": 17,
+      "title": "When It Gets Hot Outside, Drink Like They Do in Tulum",
+      "sourceName": "VinePair",
+      "category": "Spirits",
+      "publishedAt": "2026-06-10T16:00:37.000Z",
+      "url": "https://vinepair.com/articles/tulum-summer-cocktail-culture/",
+      "summary": "VinePair reports: When It Gets Hot Outside, Drink Like They Do in Tulum. Category signal: watch whether this spirits story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the spirits signal visible without turning a single article into a verdict.",
+      "marketImpact": "Customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 18,
+      "title": "TTB Newsletter for May 29 2026",
+      "sourceName": "Alcohol and Tobacco Tax and Trade Bureau",
+      "category": "Regulation",
+      "publishedAt": "2026-05-29T07:00:00.000Z",
+      "url": "https://content.govdelivery.com/accounts/USTTB/bulletins/4198029",
+      "summary": "Alcohol and Tobacco Tax and Trade Bureau reports: TTB Newsletter for May 29 2026. Context: Latest regulatory or market update from Alcohol and Tobacco Tax and Trade Bureau. Regulatory pressure is the signal: labels, warnings, taxes, or trade rules may alter cost, access, or compliance work.",
+      "whyItMatters": "Follow the operational burden first: producers, importers, retailers, or restaurants may need to adjust before customers see the change.",
+      "marketImpact": "Compliance timelines, label language, import friction, and whether operators need new staff talking points."
+    },
+    {
+      "rank": 19,
+      "title": "How Cooking Agave Impacts a Tequila's Flavor",
+      "sourceName": "Whisky Advocate",
+      "category": "Spirits",
+      "publishedAt": "2026-06-10T17:35:44.000Z",
+      "url": "https://whiskyadvocate.com/how-agave-is-cooked-to-make-tequila",
+      "summary": "Whisky Advocate reports: How Cooking Agave Impacts a Tequila's Flavor. Context: How a distiller cooks agave has a significant impact on a tequila's flavor. Category signal: watch whether this spirits story changes buying, training, menu language, or customer questions.",
+      "whyItMatters": "It keeps the spirits signal visible without turning a single article into a verdict.",
+      "marketImpact": "Customer questions, category training needs, and whether the signal repeats across independent sources."
+    },
+    {
+      "rank": 20,
+      "title": "TTB Newsletter for May 22 2026",
+      "sourceName": "Alcohol and Tobacco Tax and Trade Bureau",
+      "category": "Regulation",
+      "publishedAt": "2026-05-22T07:00:00.000Z",
+      "url": "https://content.govdelivery.com/accounts/USTTB/bulletins/4188b83",
+      "summary": "Alcohol and Tobacco Tax and Trade Bureau reports: TTB Newsletter for May 22 2026. Context: Latest regulatory or market update from Alcohol and Tobacco Tax and Trade Bureau. Regulatory pressure is the signal: labels, warnings, taxes, or trade rules may alter cost, access, or compliance work.",
+      "whyItMatters": "Follow the operational burden first: producers, importers, retailers, or restaurants may need to adjust before customers see the change.",
+      "marketImpact": "Compliance timelines, label language, import friction, and whether operators need new staff talking points."
+    }
+  ],
+  "headerImagePrompt": "Use case: photorealistic-natural\nAsset type: wide website article header image\nPrimary request: Create a realistic editorial photo for Daily Sip daily-sip-2026-06-10, covering the full beverage market rather than only the lead story.\nLead story cue: Beer - What's next for Impossibrew?.\nSupporting beverage topics to represent subtly: Spirits: US RTD cocktails surge as category nears 80m cases; Beer: New Forced-Labor Tariffs Could Hit Imported Hops, Malts, and Equipment; Wine: Meet Xinomavro, Greece's Coolest Cool-Climate Red Wine from PDO Amyndeon ( ); Wine: What's driving the surge in fine white wine trading?; Beer: CHEERS Act Reintroduced in Senate and House.\nCoverage mix: Wine, Beer, Spirits, Coffee, Regulation.\nSubject: a source-attributed, unbiased beverage industry briefing across wine, beer, spirits, coffee, tea, regulation, supply, pricing, and consumer-demand signals.\nComposition direction: beverage lab and tasting bench with coffee beans, tea leaves, hops, corks, grain, glassware, unlabeled bottles, and simple charts suggesting category comparison.\nScene/backdrop: avant-garde newsroom meets beverage trade desk, refined but restrained, varied category cues, subtle financial research materials, and no single drink category dominating the frame.\nComposition/framing: wide 16:9 landscape crop, visually distinct from other Daily Sip headers, balanced foreground objects, usable dark negative space near the top for page overlay if needed.\nLighting/mood: natural window light mixed with polished editorial contrast, sophisticated and current.\nConstraints: no readable text, no logos, no brand labels, no people, no watermark, no exact replication of any source photo."
+}

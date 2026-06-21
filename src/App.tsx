@@ -1,4 +1,14 @@
-import { Suspense, lazy, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentType,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode
+} from "react";
 import mainLogo from "./assets/brand/sip-studies-main-logo-opt.webp";
 import wordmark from "./assets/brand/wordmark-ruthligos-opt.webp";
 import welcomeToSipStudies from "./assets/brand/welcome-to-sip-studies.png";
@@ -63,30 +73,72 @@ const loadSommEvents = () => import("./components/SommEvents");
 const loadAiNews = () => import("./components/AiNews");
 const loadAiWinecast = () => import("./components/AiWinecast");
 
-const SipAcademyWineLessons = lazy(() =>
+function isChunkLoadError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error ?? "");
+  return /Failed to fetch dynamically imported module|Importing a module script failed|Loading chunk|ChunkLoadError/i.test(message);
+}
+
+function safeSessionStorageGet(key: string): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeSessionStorageSet(key: string, value: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.setItem(key, value);
+  } catch {
+    // Ignore storage failures; the original import error will surface.
+  }
+}
+
+function lazyRoute<TComponent extends ComponentType<any>>(
+  routeId: string,
+  importer: () => Promise<{ default: TComponent }>
+) {
+  return lazy(async (): Promise<{ default: TComponent }> => {
+    try {
+      return await importer();
+    } catch (error) {
+      const reloadKey = `sipstudies:lazy-reload:${routeId}`;
+      if (isChunkLoadError(error) && safeSessionStorageGet(reloadKey) !== "1" && typeof window !== "undefined") {
+        safeSessionStorageSet(reloadKey, "1");
+        window.location.reload();
+        return new Promise<{ default: TComponent }>(() => undefined);
+      }
+      throw error;
+    }
+  });
+}
+
+const SipAcademyWineLessons = lazyRoute("sip-academy", () =>
   loadSipAcademyWineLessons().then((module) => ({ default: module.SipAcademyWineLessons }))
 );
-const SipStudiosGame = lazy(() => loadSipStudiosGame().then((module) => ({ default: module.SipStudiosGame })));
-const FlavorWheel = lazy(() => loadFlavorWheel().then((module) => ({ default: module.FlavorWheel })));
-const CellarScanner = lazy(() => loadCellarScanner().then((module) => ({ default: module.CellarScanner })));
-const BeverageQuiz = lazy(() => loadBeverageQuiz().then((module) => ({ default: module.BeverageQuiz })));
-const StudySheets = lazy(() => loadStudySheets().then((module) => ({ default: module.StudySheets })));
-const ServiceRoleplayLab = lazy(() => loadServiceRoleplayLab().then((module) => ({ default: module.ServiceRoleplayLab })));
-const BeverageNews = lazy(() => loadBeverageNews().then((module) => ({ default: module.BeverageNews })));
-const Terminology = lazy(() => loadTerminology().then((module) => ({ default: module.Terminology })));
-const TerminologyAdmin = lazy(() => loadTerminologyAdmin().then((module) => ({ default: module.TerminologyAdmin })));
-const TastingJournal = lazy(() => loadTastingJournal().then((module) => ({ default: module.TastingJournal })));
-const Flavors = lazy(() => loadFlavors().then((module) => ({ default: module.Flavors })));
-const TastingGroups = lazy(() => loadTastingGroups().then((module) => ({ default: module.TastingGroups })));
-const FlavorBlog = lazy(() => loadFlavorBlog().then((module) => ({ default: module.FlavorBlog })));
-const Regions = lazy(() => loadRegions().then((module) => ({ default: module.Regions })));
-const SipMaps = lazy(() => loadSipMaps().then((module) => ({ default: module.SipMaps })));
-const Grapes = lazy(() => loadGrapes().then((module) => ({ default: module.Grapes })));
-const Cocktails = lazy(() => loadCocktails().then((module) => ({ default: module.Cocktails })));
-const WineResources = lazy(() => loadWineResources().then((module) => ({ default: module.WineResources })));
-const SommEvents = lazy(() => loadSommEvents().then((module) => ({ default: module.SommEvents })));
-const AiNews = lazy(() => loadAiNews().then((module) => ({ default: module.AiNews })));
-const AiWinecast = lazy(() => loadAiWinecast().then((module) => ({ default: module.AiWinecast })));
+const SipStudiosGame = lazyRoute("sip-game", () => loadSipStudiosGame().then((module) => ({ default: module.SipStudiosGame })));
+const FlavorWheel = lazyRoute("flavor-wheel", () => loadFlavorWheel().then((module) => ({ default: module.FlavorWheel })));
+const CellarScanner = lazyRoute("cellar-scanner", () => loadCellarScanner().then((module) => ({ default: module.CellarScanner })));
+const BeverageQuiz = lazyRoute("beverage-quiz", () => loadBeverageQuiz().then((module) => ({ default: module.BeverageQuiz })));
+const StudySheets = lazyRoute("study-sheets", () => loadStudySheets().then((module) => ({ default: module.StudySheets })));
+const ServiceRoleplayLab = lazyRoute("service-roleplay", () => loadServiceRoleplayLab().then((module) => ({ default: module.ServiceRoleplayLab })));
+const BeverageNews = lazyRoute("beverage-news", () => loadBeverageNews().then((module) => ({ default: module.BeverageNews })));
+const Terminology = lazyRoute("sipopedia", () => loadTerminology().then((module) => ({ default: module.Terminology })));
+const TerminologyAdmin = lazyRoute("admin-terminology", () => loadTerminologyAdmin().then((module) => ({ default: module.TerminologyAdmin })));
+const TastingJournal = lazyRoute("tasting-journal", () => loadTastingJournal().then((module) => ({ default: module.TastingJournal })));
+const Flavors = lazyRoute("flavors", () => loadFlavors().then((module) => ({ default: module.Flavors })));
+const TastingGroups = lazyRoute("tasting-groups", () => loadTastingGroups().then((module) => ({ default: module.TastingGroups })));
+const FlavorBlog = lazyRoute("flavor-blog", () => loadFlavorBlog().then((module) => ({ default: module.FlavorBlog })));
+const Regions = lazyRoute("regions", () => loadRegions().then((module) => ({ default: module.Regions })));
+const SipMaps = lazyRoute("maps", () => loadSipMaps().then((module) => ({ default: module.SipMaps })));
+const Grapes = lazyRoute("grapes", () => loadGrapes().then((module) => ({ default: module.Grapes })));
+const Cocktails = lazyRoute("cocktails", () => loadCocktails().then((module) => ({ default: module.Cocktails })));
+const WineResources = lazyRoute("resources", () => loadWineResources().then((module) => ({ default: module.WineResources })));
+const SommEvents = lazyRoute("somm-events", () => loadSommEvents().then((module) => ({ default: module.SommEvents })));
+const AiNews = lazyRoute("ai-news", () => loadAiNews().then((module) => ({ default: module.AiNews })));
+const AiWinecast = lazyRoute("ai-winecast", () => loadAiWinecast().then((module) => ({ default: module.AiWinecast })));
 
 type RegionsPage = "regions" | `regions/${string}`;
 type GrapesPage = "grapes" | `grapes/${string}`;
