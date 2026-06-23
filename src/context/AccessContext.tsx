@@ -46,6 +46,40 @@ type AccessContextValue = {
 };
 
 const AccessContext = createContext<AccessContextValue | undefined>(undefined);
+const LOCAL_PREVIEW_ACCESS_STORAGE_KEY = "sipstudies:local-preview-access";
+const LOCAL_PREVIEW_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+
+const localPreviewProfile: AccessProfile = {
+  id: "local-preview-admin",
+  displayName: "Local Preview Admin",
+  role: "admin",
+  createdAt: null
+};
+
+const localPreviewSubscription: AccessSubscription = {
+  id: "local-preview-subscription",
+  provider: "local-preview",
+  providerCustomerId: null,
+  providerSubscriptionId: null,
+  planCode: "local-preview-admin",
+  status: "active",
+  currentPeriodEnd: null,
+  cancelAtPeriodEnd: false
+};
+
+function isLocalPreviewHost(): boolean {
+  if (typeof window === "undefined") return false;
+  return LOCAL_PREVIEW_HOSTS.has(window.location.hostname);
+}
+
+function readLocalPreviewAccess(): boolean {
+  if (!isLocalPreviewHost()) return false;
+  try {
+    return window.localStorage.getItem(LOCAL_PREVIEW_ACCESS_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
 
 function tierFromRole(role: AccessRole): AccessTier {
   if (role === "admin") return "admin";
@@ -91,6 +125,7 @@ export function AccessProvider({ children }: PropsWithChildren) {
   const [subscription, setSubscription] = useState<AccessSubscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [localPreviewAccess, setLocalPreviewAccess] = useState(() => readLocalPreviewAccess());
 
   const normalizeSubscription = (record: SubscriptionRecord | null): AccessSubscription | null => {
     if (!record) return null;
@@ -116,6 +151,14 @@ export function AccessProvider({ children }: PropsWithChildren) {
   };
 
   const refreshProfile = async () => {
+    if (localPreviewAccess) {
+      setProfile(localPreviewProfile);
+      setSubscription(localPreviewSubscription);
+      setErrorMessage(null);
+      setLoading(false);
+      return;
+    }
+
     if (!isConfigured || !supabase || !user) {
       setProfile(null);
       setSubscription(null);
@@ -163,10 +206,30 @@ export function AccessProvider({ children }: PropsWithChildren) {
   };
 
   useEffect(() => {
+    const refreshLocalPreviewAccess = () => setLocalPreviewAccess(readLocalPreviewAccess());
+    window.addEventListener("storage", refreshLocalPreviewAccess);
+    window.addEventListener("sipstudies:local-preview-access-changed", refreshLocalPreviewAccess);
+    return () => {
+      window.removeEventListener("storage", refreshLocalPreviewAccess);
+      window.removeEventListener("sipstudies:local-preview-access-changed", refreshLocalPreviewAccess);
+    };
+  }, []);
+
+  useEffect(() => {
     let active = true;
 
     if (authLoading) {
       setLoading(true);
+      return () => {
+        active = false;
+      };
+    }
+
+    if (localPreviewAccess) {
+      setProfile(localPreviewProfile);
+      setSubscription(localPreviewSubscription);
+      setErrorMessage(null);
+      setLoading(false);
       return () => {
         active = false;
       };
@@ -235,16 +298,17 @@ export function AccessProvider({ children }: PropsWithChildren) {
     return () => {
       active = false;
     };
-  }, [authLoading, isConfigured, user]);
+  }, [authLoading, isConfigured, localPreviewAccess, user]);
 
   const tier = useMemo<AccessTier>(() => {
+    if (localPreviewAccess) return "admin";
     if (!user) return "public";
     if (isPrivilegedAdminEmail(user.email)) return "admin";
     if (profile?.role === "admin") return "admin";
     if (isSubscriptionPaid(subscription)) return tierFromPlanCode(subscription?.planCode);
     if (!profile) return "starter";
     return tierFromRole(profile.role);
-  }, [profile, subscription, user]);
+  }, [localPreviewAccess, profile, subscription, user]);
 
   const value = useMemo<AccessContextValue>(
     () => ({

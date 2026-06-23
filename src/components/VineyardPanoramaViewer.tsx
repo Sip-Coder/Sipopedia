@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { LinearFilter, SRGBColorSpace } from "three/src/constants.js";
-import { PerspectiveCamera } from "three/src/cameras/PerspectiveCamera.js";
-import { TextureLoader } from "three/src/loaders/TextureLoader.js";
-import { MeshBasicMaterial } from "three/src/materials/MeshBasicMaterial.js";
-import { MathUtils } from "three/src/math/MathUtils.js";
-import { Vector3 } from "three/src/math/Vector3.js";
-import { Mesh } from "three/src/objects/Mesh.js";
-import { SphereGeometry } from "three/src/geometries/SphereGeometry.js";
-import { WebGLRenderer } from "three/src/renderers/WebGLRenderer.js";
-import { Scene } from "three/src/scenes/Scene.js";
+import {
+  LinearFilter,
+  MathUtils,
+  Mesh,
+  MeshBasicMaterial,
+  PerspectiveCamera,
+  Scene,
+  SphereGeometry,
+  SRGBColorSpace,
+  TextureLoader,
+  Vector3,
+  WebGLRenderer
+} from "three";
 
 export type VineyardPanoramaScene = {
   id: string;

@@ -12,18 +12,10 @@ export default defineConfig({
           includeDependenciesRecursively: false,
           groups: [
             {
-              name: "three-renderer",
-              test: /node_modules[\\/]three[\\/]src[\\/]renderers[\\/]/,
+              name: "vendor-three",
+              test: /node_modules[\\/]three[\\/]/,
               minSize: 0,
-              maxSize: 240000,
               priority: 50
-            },
-            {
-              name: "three-core",
-              test: /node_modules[\\/]three[\\/]src[\\/]/,
-              minSize: 0,
-              maxSize: 240000,
-              priority: 40
             },
             {
               name: "vendor-react",

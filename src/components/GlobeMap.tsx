@@ -1,20 +1,24 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { BackSide, FrontSide, SRGBColorSpace } from "three/src/constants.js";
-import { PerspectiveCamera } from "three/src/cameras/PerspectiveCamera.js";
-import { BufferAttribute } from "three/src/core/BufferAttribute.js";
-import { BufferGeometry } from "three/src/core/BufferGeometry.js";
-import { Raycaster } from "three/src/core/Raycaster.js";
-import { SphereGeometry } from "three/src/geometries/SphereGeometry.js";
-import { MeshBasicMaterial } from "three/src/materials/MeshBasicMaterial.js";
-import { Vector2 } from "three/src/math/Vector2.js";
-import { Vector3 } from "three/src/math/Vector3.js";
-import { Mesh } from "three/src/objects/Mesh.js";
-import { Object3D } from "three/src/core/Object3D.js";
-import { Points } from "three/src/objects/Points.js";
-import { PointsMaterial } from "three/src/materials/PointsMaterial.js";
-import { WebGLRenderer } from "three/src/renderers/WebGLRenderer.js";
-import { Scene } from "three/src/scenes/Scene.js";
-import { CanvasTexture } from "three/src/textures/CanvasTexture.js";
+import {
+  BackSide,
+  BufferAttribute,
+  BufferGeometry,
+  CanvasTexture,
+  FrontSide,
+  Mesh,
+  MeshBasicMaterial,
+  Object3D,
+  PerspectiveCamera,
+  Points,
+  PointsMaterial,
+  Raycaster,
+  Scene,
+  SphereGeometry,
+  SRGBColorSpace,
+  Vector2,
+  Vector3,
+  WebGLRenderer
+} from "three";
 
 const GLOBE_R = 1;
 const GLOBE_ROTATION_Y_DEFAULT = 0.4;
