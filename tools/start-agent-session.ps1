@@ -37,19 +37,19 @@ $lanes = [ordered]@{
     Path = Normalize-PathForCompare "C:\codebase\sipopedia-codex"
     Branch = "work/codex"
     PR = "https://github.com/Sip-Coder/Sipopedia/pull/2"
-    ReadFirst = @("AGENTS.md", "CODEX_WORKSPACE.md", "docs/CODEX_SIPOPEDIA_HANDOFF.md")
+    ReadFirst = @("AGENTS.md", "docs/TEAM_WORKFLOW.md", "CODEX_WORKSPACE.md", "docs/CODEX_SIPOPEDIA_HANDOFF.md")
   }
   OpenClaw = [ordered]@{
     Path = Normalize-PathForCompare "C:\codebase\sipopedia-openclaw"
     Branch = "work/openclaw"
     PR = "https://github.com/Sip-Coder/Sipopedia/pull/1"
-    ReadFirst = @("AGENTS.md", "OPENCLAW_WORKSPACE.md", "docs/OPENCLAW_SIPOPEDIA_HANDOFF.md")
+    ReadFirst = @("AGENTS.md", "docs/TEAM_WORKFLOW.md", "OPENCLAW_WORKSPACE.md", "docs/OPENCLAW_SIPOPEDIA_HANDOFF.md")
   }
   Main = [ordered]@{
     Path = Normalize-PathForCompare "C:\codebase\sipopedia"
     Branch = "main"
     PR = "main/reference checkout"
-    ReadFirst = @("AGENTS.md")
+    ReadFirst = @("AGENTS.md", "docs/TEAM_WORKFLOW.md")
   }
 }
 
