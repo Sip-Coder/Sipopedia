@@ -42,6 +42,25 @@ powershell -File .\tools\agent-handoff.ps1 -Recipient OpenClaw -From Codex -Summ
 
 If GitHub CLI is authenticated, add `-Post` to either command to publish the ping to the target lane PR.
 
+When `-Post` is not used, or when `gh` is unavailable or unauthenticated, the handoff is saved under:
+
+```text
+C:\codebase\team-outbox
+```
+
+Inspect queued messages:
+
+```powershell
+C:\codebase\tools\sipopedia-control.ps1 -Mode Outbox
+powershell -File .\tools\team-outbox.ps1 -Mode List
+```
+
+After GitHub CLI authentication is available, post all queued PR messages:
+
+```powershell
+powershell -File .\tools\team-outbox.ps1 -Mode Post -All
+```
+
 ## Message Rules
 
 - State the recipient, sender, timestamp, repo lane, branch, and PR.
