@@ -41,7 +41,7 @@ try {
 
   git status --short --branch
   Write-Host ""
-  Write-Host "Local delta against origin/$Branch:"
+  Write-Host ("Local delta against origin/{0}:" -f $Branch)
   git diff --stat "origin/$Branch..HEAD" 2>$null
 
   Write-Host ""
