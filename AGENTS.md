@@ -9,9 +9,9 @@
 - Before Git commands on the Windows VM, run `. C:\codebase\tools\git-env.ps1` so portable Git, Git LFS, and GitHub CLI are on PATH.
 - Start each work session with `powershell -File .\tools\start-agent-session.ps1 -Agent Codex` or `powershell -File .\tools\start-agent-session.ps1 -Agent OpenClaw`; use `C:\codebase\tools\sipopedia-team-status.ps1` when coordinating across lanes.
 - For an operator view across both lanes, run `powershell -File .\tools\team-control.ps1 -Mode All`.
-- From outside a Sipopedia worktree, run `C:\codebase\tools\sipopedia-control.ps1 -Mode Status|Next|Auth|Ping`; use `-Mode Ping -To OpenClaw -From Codex -Summary "..."` or the matching target/source agents for bot-style pings.
+- From outside a Sipopedia worktree, run `C:\codebase\tools\sipopedia-control.ps1 -Mode Status|Next|Auth|Outbox|Ping`; use `-Mode Ping -To OpenClaw -From Codex -Summary "..."` or the matching target/source agents for bot-style pings.
 - If the host wrapper is missing or stale, run `powershell -File .\tools\install-host-control.ps1` from either agent worktree.
-- For bot-style cross-agent pings, read `docs/AGENT_HANDOFF_PROTOCOL.md` and prefer `C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To OpenClaw -From Codex -Summary "..."`; use the target PR when Telegram is unavailable.
+- For bot-style cross-agent pings, read `docs/AGENT_HANDOFF_PROTOCOL.md` and prefer `C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To OpenClaw -From Codex -Summary "..."`; when GitHub/Telegram posting is unavailable, queued messages are saved under `C:\codebase\team-outbox` and visible with `-Mode Outbox`.
 - Before editing paths another agent might touch, run `powershell -File .\tools\claim-agent-work.ps1 -Agent Codex -Action Claim -Summary "..." -Paths "path1","path2"` or the OpenClaw equivalent, then post the generated claim to the lane PR. See `docs/TEAM_WORKFLOW.md`.
 - For GitHub/Replit/deployment loading issues, read `docs/DEPLOYMENT_READINESS.md` and run `powershell -File .\tools\check-deployment-readiness.ps1`; add `-RunValidation -RunSmoke` before reporting a release-ready state.
 - If OpenClaw cannot see `C:\codebase`, clone `https://github.com/Sip-Coder/Sipopedia.git` into an OpenClaw-visible `sipopedia-openclaw` folder and switch to `work/openclaw`.
