@@ -7,7 +7,7 @@
 - Main/reference checkout: `C:\codebase\sipopedia` on branch `main`; do not use it as a shared edit lane unless the user explicitly asks.
 - Do not use `Application Demo` for Sipopedia website work. That folder is reference-only for the user's `/me` resume/application context.
 - Before Git commands on the Windows VM, run `. C:\codebase\tools\git-env.ps1` so portable Git, Git LFS, and GitHub CLI are on PATH.
-- Start each work session with `git status --short --branch`, `git lfs status`, and `C:\codebase\tools\sipopedia-team-status.ps1`.
+- Start each work session with `powershell -File .\tools\start-agent-session.ps1 -Agent Codex` or `powershell -File .\tools\start-agent-session.ps1 -Agent OpenClaw`; use `C:\codebase\tools\sipopedia-team-status.ps1` when coordinating across lanes.
 - If OpenClaw cannot see `C:\codebase`, clone `https://github.com/Sip-Coder/Sipopedia.git` into an OpenClaw-visible `sipopedia-openclaw` folder and switch to `work/openclaw`.
 - Keep Codex and OpenClaw edits isolated by branch/worktree. Coordinate cross-agent changes in the PR comments before touching another agent's lane.
 
