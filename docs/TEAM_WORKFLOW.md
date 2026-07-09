@@ -73,6 +73,14 @@ For a combined lane, auth, and next-action view, run:
 powershell -File .\tools\team-control.ps1 -Mode All
 ```
 
+From outside a Sipopedia worktree, use the host wrapper:
+
+```powershell
+C:\codebase\tools\sipopedia-control.ps1 -Mode Status
+C:\codebase\tools\sipopedia-control.ps1 -Mode Next
+C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -Agent Codex -Summary "Coordinate before touching shared route files." -Paths "src\App.tsx","scripts\smoke-routes.mjs"
+```
+
 Use `-Mode Status` for a shorter lane summary, `-Mode Next` for recommended next commands, `-Mode Auth` for GitHub auth checks, and `-Mode Ping -Agent Codex|OpenClaw|Both -Summary "..."` to generate bot-style pings through `tools\agent-handoff.ps1`.
 
 ## Claim Work Before Editing
