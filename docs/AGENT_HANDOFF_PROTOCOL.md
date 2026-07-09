@@ -22,7 +22,13 @@ Codex cannot send Telegram messages from this VM unless a Telegram connector, lo
 
 ## Generate A Bot-Style Ping
 
-From any Sipopedia worktree:
+Preferred from anywhere on the Windows VM:
+
+```powershell
+C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To OpenClaw -From Codex -Summary "Use C:\codebase\sipopedia-openclaw for Sipopedia edits. Application Demo is not the repo."
+```
+
+Lower-level form from any Sipopedia worktree:
 
 ```powershell
 powershell -File .\tools\agent-handoff.ps1 -Recipient OpenClaw -From Codex -Summary "Use C:\codebase\sipopedia-openclaw for Sipopedia edits. Application Demo is not the repo."
@@ -34,7 +40,7 @@ With paths:
 powershell -File .\tools\agent-handoff.ps1 -Recipient OpenClaw -From Codex -Summary "Audit missing pages" -Paths "src\App.tsx","src\components"
 ```
 
-If GitHub CLI is authenticated, add `-Post` to publish the ping to the target lane PR.
+If GitHub CLI is authenticated, add `-Post` to either command to publish the ping to the target lane PR.
 
 ## Message Rules
 
