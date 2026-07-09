@@ -38,6 +38,8 @@ $lanes = [ordered]@{
   }
 }
 
+$script:GitHubAuthed = $false
+
 function Get-Targets {
   if ($Agent -eq "Both") {
     return @("Codex", "OpenClaw")
@@ -56,7 +58,8 @@ function Write-ToolStatus {
   if (Get-Command gh -ErrorAction SilentlyContinue) {
     gh --version | Select-Object -First 1
     $authStatus = gh auth status 2>&1
-    if ($LASTEXITCODE -eq 0) {
+    $script:GitHubAuthed = $LASTEXITCODE -eq 0
+    if ($script:GitHubAuthed) {
       $authStatus | ForEach-Object { Write-Host $_ }
     } else {
       Write-Host "gh auth: not logged in"
@@ -79,7 +82,10 @@ function Get-LaneState {
     CurrentBranch = ""
     StatusLine = ""
     DirtyCount = $null
+    Behind = $null
+    Ahead = $null
     DeltaStat = @()
+    DeltaNames = @()
   }
 
   if (-not $state.Exists) {
@@ -90,7 +96,16 @@ function Get-LaneState {
   $state.StatusLine = (git -C $lane.Workspace status --short --branch 2>$null | Select-Object -First 1)
   $porcelain = @(git -C $lane.Workspace status --porcelain 2>$null)
   $state.DirtyCount = $porcelain.Count
+  $aheadBehind = (git -C $lane.Workspace rev-list --left-right --count "origin/$($lane.Branch)...HEAD" 2>$null)
+  if ($LASTEXITCODE -eq 0 -and $aheadBehind) {
+    $parts = $aheadBehind.Trim() -split "\s+"
+    if ($parts.Count -eq 2) {
+      $state.Behind = [int]$parts[0]
+      $state.Ahead = [int]$parts[1]
+    }
+  }
   $state.DeltaStat = @(git -C $lane.Workspace diff --stat "origin/$($lane.Branch)..HEAD" 2>$null)
+  $state.DeltaNames = @(git -C $lane.Workspace diff --name-only "origin/$($lane.Branch)..HEAD" 2>$null)
   return $state
 }
 
@@ -117,6 +132,9 @@ function Write-LaneStatus {
   }
 
   Write-Host ("Status:    {0}" -f $state.StatusLine)
+  if ($null -ne $state.Ahead -and $null -ne $state.Behind) {
+    Write-Host ("Graph:     ahead {0}, behind {1}" -f $state.Ahead, $state.Behind)
+  }
   if ($state.CurrentBranch -ne $lane.Branch) {
     Write-Warning ("Wrong branch: {0}; expected {1}." -f $state.CurrentBranch, $lane.Branch)
   }
@@ -131,8 +149,13 @@ function Write-LaneStatus {
   Write-Host "Local delta against origin:"
   if ($state.DeltaStat.Count -gt 0) {
     $state.DeltaStat | ForEach-Object { Write-Host $_ }
+    Write-Host "Changed paths:"
+    $state.DeltaNames | ForEach-Object { Write-Host ("  {0}" -f $_) }
   } else {
     Write-Host "  none"
+    if (($state.Ahead -as [int]) -gt 0) {
+      Write-Host "  note: branch is ahead only by local merge/history commits; no content delta against origin."
+    }
   }
 }
 
@@ -150,10 +173,20 @@ function Write-NextActions {
 
     Write-Host ("- Start with: cd {0}; powershell -File .\tools\start-agent-session.ps1 -Agent {1} -Strict" -f $lane.Workspace, $name)
     Write-Host "- Check push readiness: powershell -File .\tools\check-github-auth.ps1"
-    if ($state.DeltaStat.Count -gt 0) {
-      Write-Host "- Local commits differ from origin; review the delta, claim shared paths, then push after gh auth."
+    if ($state.DeltaNames.Count -gt 0) {
+      Write-Host ("- Content delta against origin: {0}" -f ($state.DeltaNames -join ", "))
+      if (-not $script:GitHubAuthed) {
+        Write-Host "- gh is not authenticated. Interactive owner step before push:"
+        Write-Host "  powershell -File .\tools\check-github-auth.ps1 -Login -SetupGit"
+        Write-Host "  powershell -File .\tools\check-github-auth.ps1 -Push"
+      } else {
+        Write-Host "- gh is authenticated; claim shared paths, then push when ready."
+      }
     } else {
       Write-Host "- No local commit delta against origin."
+      if (($state.Ahead -as [int]) -gt 0) {
+        Write-Host "- Ahead count is local merge/history only; do not push it just to preserve local sync commits."
+      }
     }
     if ($state.DirtyCount -gt 0) {
       Write-Host "- There are uncommitted working tree changes; inspect before starting new work."
