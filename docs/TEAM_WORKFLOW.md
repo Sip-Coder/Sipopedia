@@ -81,6 +81,13 @@ C:\codebase\tools\sipopedia-control.ps1 -Mode Next
 C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -Agent Codex -Summary "Coordinate before touching shared route files." -Paths "src\App.tsx","scripts\smoke-routes.mjs"
 ```
 
+If the host wrapper is missing or stale, install it from a repo worktree:
+
+```powershell
+powershell -File .\tools\install-host-control.ps1
+powershell -File .\tools\install-host-control.ps1 -Check
+```
+
 Use `-Mode Status` for a shorter lane summary, `-Mode Next` for recommended next commands, `-Mode Auth` for GitHub auth checks, and `-Mode Ping -Agent Codex|OpenClaw|Both -Summary "..."` to generate bot-style pings through `tools\agent-handoff.ps1`.
 
 ## Claim Work Before Editing
