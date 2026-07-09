@@ -9,6 +9,7 @@
 - Before Git commands on the Windows VM, run `. C:\codebase\tools\git-env.ps1` so portable Git, Git LFS, and GitHub CLI are on PATH.
 - Start each work session with `powershell -File .\tools\start-agent-session.ps1 -Agent Codex` or `powershell -File .\tools\start-agent-session.ps1 -Agent OpenClaw`; use `C:\codebase\tools\sipopedia-team-status.ps1` when coordinating across lanes.
 - For an operator view across both lanes, run `powershell -File .\tools\team-control.ps1 -Mode All`.
+- From outside a Sipopedia worktree, run `C:\codebase\tools\sipopedia-control.ps1 -Mode Status|Next|Auth|Ping`; it delegates to the repo-local team control script.
 - For bot-style cross-agent pings, read `docs/AGENT_HANDOFF_PROTOCOL.md` and run `powershell -File .\tools\agent-handoff.ps1 -Recipient OpenClaw -From Codex -Summary "..."`; use the target PR when Telegram is unavailable.
 - Before editing paths another agent might touch, run `powershell -File .\tools\claim-agent-work.ps1 -Agent Codex -Action Claim -Summary "..." -Paths "path1","path2"` or the OpenClaw equivalent, then post the generated claim to the lane PR. See `docs/TEAM_WORKFLOW.md`.
 - For GitHub/Replit/deployment loading issues, read `docs/DEPLOYMENT_READINESS.md` and run `powershell -File .\tools\check-deployment-readiness.ps1`; add `-RunValidation -RunSmoke` before reporting a release-ready state.
