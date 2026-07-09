@@ -26,6 +26,20 @@ Use only the command for the current agent. The guard checks folder, branch, ori
 
 Read `docs/VALIDATION_TRIAGE_SNAPSHOT.md` before debugging missing pages, deployment issues, or design regressions. It records the latest known build, audit, and route smoke status plus the current coverage limits.
 
+## Deployment Readiness
+
+For GitHub/Replit/deployment loading issues, read `docs/DEPLOYMENT_READINESS.md` and run:
+
+```powershell
+powershell -File .\tools\check-deployment-readiness.ps1
+```
+
+Before reporting a release-ready deployment state, run:
+
+```powershell
+powershell -File .\tools\check-deployment-readiness.ps1 -RunValidation -RunSmoke
+```
+
 ## Claim Work Before Editing
 
 Before editing files that another agent could also touch, create a PR comment claim:
