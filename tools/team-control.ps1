@@ -6,6 +6,10 @@ param(
   [string]$Summary = "",
   [Alias("Paths")]
   [string[]]$ControlPaths = @(),
+  [ValidateSet("Auto", "Codex", "OpenClaw", "Both")]
+  [string]$To = "Auto",
+  [ValidateSet("Auto", "Codex", "OpenClaw", "User")]
+  [string]$From = "Auto",
   [switch]$Post,
   [switch]$Fetch
 )
@@ -45,6 +49,43 @@ function Get-Targets {
     return @("Codex", "OpenClaw")
   }
   return @($Agent)
+}
+
+function Get-PingRecipients {
+  if ($To -eq "Auto") {
+    return Get-Targets
+  }
+  if ($To -eq "Both") {
+    return @("Codex", "OpenClaw")
+  }
+  return @($To)
+}
+
+function Resolve-PingSender {
+  param(
+    [string]$Recipient,
+    [string]$LegacySender
+  )
+
+  if ($From -ne "Auto") {
+    return $From
+  }
+
+  if ($To -eq "Auto") {
+    return $LegacySender
+  }
+
+  if ($Agent -ne "Both") {
+    return $Agent
+  }
+
+  if ($Recipient -eq "OpenClaw") {
+    return "Codex"
+  }
+  if ($Recipient -eq "Codex") {
+    return "OpenClaw"
+  }
+  return "User"
 }
 
 function Write-ToolStatus {
@@ -191,7 +232,8 @@ function Write-NextActions {
     if ($state.DirtyCount -gt 0) {
       Write-Host "- There are uncommitted working tree changes; inspect before starting new work."
     }
-    Write-Host "- For a bot-style ping: powershell -File .\tools\agent-handoff.ps1 -Recipient $($lane.HandoffRecipient) -From $name -Summary ""<message>"""
+    Write-Host "- Ping this lane: C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To $name -Summary ""<message>"""
+    Write-Host "- Ping the other lane from this agent: powershell -File .\tools\agent-handoff.ps1 -Recipient $($lane.HandoffRecipient) -From $name -Summary ""<message>"""
   }
 }
 
@@ -219,11 +261,18 @@ function Invoke-Ping {
     throw "Mode Ping requires -Summary."
   }
 
-  $targets = Get-Targets
-  foreach ($name in $targets) {
-    $lane = $lanes[$name]
+  foreach ($target in Get-PingRecipients) {
+    if ($To -eq "Auto") {
+      $senderName = $target
+      $recipient = $lanes[$target].HandoffRecipient
+    } else {
+      $senderName = Resolve-PingSender -Recipient $target -LegacySender $Agent
+      $recipient = $target
+    }
+
+    $lane = $lanes[$recipient]
     if (-not (Test-Path -LiteralPath $lane.Workspace)) {
-      Write-Warning ("Skipping {0}; workspace missing: {1}" -f $name, $lane.Workspace)
+      Write-Warning ("Skipping {0}; workspace missing: {1}" -f $recipient, $lane.Workspace)
       continue
     }
 
@@ -233,8 +282,8 @@ function Invoke-Ping {
         "-NoProfile",
         "-ExecutionPolicy", "Bypass",
         "-File", ".\tools\agent-handoff.ps1",
-        "-Recipient", $lane.HandoffRecipient,
-        "-From", $name,
+        "-Recipient", $recipient,
+        "-From", $senderName,
         "-Summary", $Summary
       )
       if ($ControlPaths.Count -gt 0) {
