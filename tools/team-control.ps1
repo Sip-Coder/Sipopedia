@@ -239,7 +239,7 @@ function Invoke-Ping {
       )
       if ($ControlPaths.Count -gt 0) {
         $args += "-Paths"
-        $args += $ControlPaths
+        $args += ($ControlPaths -join ",")
       }
       if ($Post) {
         $args += "-Post"
