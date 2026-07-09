@@ -185,6 +185,12 @@ if ($LASTEXITCODE -eq 0) {
   Write-Host "Not logged in. Run gh auth login from an interactive shell."
 }
 
+Write-Host ""
+Write-Host "Team control:"
+Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Status"
+Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Next"
+Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Auth"
+
 foreach ($worktree in $worktrees) {
   Write-Host ""
   Write-Host ("== {0}: {1} ==" -f $worktree.Name, $worktree.Path)
@@ -221,12 +227,20 @@ if (-not (Test-Path -LiteralPath $repoPath)) {
 if ($LASTEXITCODE -ne 0) { throw "git fetch failed with exit code $LASTEXITCODE" }
 
 $branches = & $git -C $repoPath branch --list "work/openclaw"
+$remoteBranch = & $git -C $repoPath branch -r --list "origin/work/openclaw"
 if ($branches) {
   & $git -C $repoPath switch "work/openclaw"
+} elseif ($remoteBranch) {
+  & $git -C $repoPath switch --track -c "work/openclaw" "origin/work/openclaw"
 } else {
   & $git -C $repoPath switch -c "work/openclaw" origin/main
 }
 if ($LASTEXITCODE -ne 0) { throw "could not switch to work/openclaw" }
+
+if ($remoteBranch) {
+  & $git -C $repoPath branch --set-upstream-to "origin/work/openclaw" "work/openclaw"
+  if ($LASTEXITCODE -ne 0) { throw "could not set upstream to origin/work/openclaw" }
+}
 
 & $git -C $repoPath lfs install --local
 if ($LASTEXITCODE -ne 0) { throw "git lfs install failed with exit code $LASTEXITCODE" }
