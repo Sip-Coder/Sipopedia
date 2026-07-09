@@ -1,5 +1,5 @@
 param(
-  [ValidateSet("Status", "Next", "Ping", "Auth", "All")]
+  [ValidateSet("Status", "Next", "Ping", "Auth", "Outbox", "All")]
   [string]$Mode = "Status",
   [ValidateSet("Codex", "OpenClaw", "Both")]
   [string]$Agent = "Both",
@@ -234,6 +234,7 @@ function Write-NextActions {
     }
     Write-Host "- Ping this lane: C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To $name -Summary ""<message>"""
     Write-Host "- Ping the other lane from this agent: powershell -File .\tools\agent-handoff.ps1 -Recipient $($lane.HandoffRecipient) -From $name -Summary ""<message>"""
+    Write-Host "- Review queued pings/claims: C:\codebase\tools\sipopedia-control.ps1 -Mode Outbox"
   }
 }
 
@@ -254,6 +255,22 @@ function Invoke-AuthChecks {
       Pop-Location
     }
   }
+}
+
+function Write-OutboxStatus {
+  $outboxScript = Join-Path $Root "sipopedia-codex\tools\team-outbox.ps1"
+  if (-not (Test-Path -LiteralPath $outboxScript)) {
+    $outboxScript = Join-Path $Root "sipopedia-openclaw\tools\team-outbox.ps1"
+  }
+
+  Write-Host ""
+  Write-Host "== Team outbox =="
+  if (-not (Test-Path -LiteralPath $outboxScript)) {
+    Write-Warning "team-outbox.ps1 is missing from both agent lanes."
+    return
+  }
+
+  powershell -NoProfile -ExecutionPolicy Bypass -File $outboxScript -Mode List
 }
 
 function Invoke-Ping {
@@ -319,6 +336,10 @@ if ($Mode -eq "Next" -or $Mode -eq "All") {
 
 if ($Mode -eq "Auth" -or $Mode -eq "All") {
   Invoke-AuthChecks
+}
+
+if ($Mode -eq "Outbox" -or $Mode -eq "All") {
+  Write-OutboxStatus
 }
 
 if ($Mode -eq "Ping") {
