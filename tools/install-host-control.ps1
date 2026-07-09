@@ -14,6 +14,10 @@ param(
   [string]$Summary = "",
   [Alias("Paths")]
   [string[]]$ControlPaths = @(),
+  [ValidateSet("Auto", "Codex", "OpenClaw", "Both")]
+  [string]$To = "Auto",
+  [ValidateSet("Auto", "Codex", "OpenClaw", "User")]
+  [string]$From = "Auto",
   [switch]$Post,
   [switch]$Fetch
 )
@@ -68,6 +72,12 @@ if ($Summary) {
 }
 if ($ControlPaths.Count -gt 0) {
   $params.ControlPaths = $ControlPaths
+}
+if ($To -ne "Auto") {
+  $params.To = $To
+}
+if ($From -ne "Auto") {
+  $params.From = $From
 }
 if ($Post) {
   $params.Post = $true
