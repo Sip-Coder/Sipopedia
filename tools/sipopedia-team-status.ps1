@@ -25,6 +25,13 @@ if (Get-Command gh -ErrorAction SilentlyContinue) {
   Write-Host "gh is not on PATH. Run C:\codebase\tools\git-env.ps1 if available."
 }
 
+Write-Host ""
+Write-Host "Team control:"
+Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Status"
+Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Next"
+Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Auth"
+Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To OpenClaw -From Codex -Summary ""<message>"""
+
 foreach ($worktree in $worktrees) {
   Write-Host ""
   Write-Host ("== {0}: {1} ==" -f $worktree.Name, $worktree.Path)
