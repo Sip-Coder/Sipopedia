@@ -63,6 +63,12 @@ When the user asks to ping another bot or agent, read `docs/AGENT_HANDOFF_PROTOC
 powershell -File .\tools\agent-handoff.ps1 -Recipient OpenClaw -From Codex -Summary "Use C:\codebase\sipopedia-openclaw for Sipopedia edits. Application Demo is not the repo."
 ```
 
+From anywhere on the Windows VM, prefer the explicit target form:
+
+```powershell
+C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To OpenClaw -From Codex -Summary "Use C:\codebase\sipopedia-openclaw for Sipopedia edits. Application Demo is not the repo."
+```
+
 If Telegram is not available from the current runtime, post the generated message to the target lane PR or paste it into the user's Telegram thread.
 
 ## Team Control
@@ -78,7 +84,7 @@ From outside a Sipopedia worktree, use the host wrapper:
 ```powershell
 C:\codebase\tools\sipopedia-control.ps1 -Mode Status
 C:\codebase\tools\sipopedia-control.ps1 -Mode Next
-C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -Agent Codex -Summary "Coordinate before touching shared route files." -Paths "src\App.tsx","scripts\smoke-routes.mjs"
+C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To OpenClaw -From Codex -Summary "Coordinate before touching shared route files." -Paths "src\App.tsx","scripts\smoke-routes.mjs"
 ```
 
 If the host wrapper is missing or stale, install it from a repo worktree:
@@ -88,7 +94,7 @@ powershell -File .\tools\install-host-control.ps1
 powershell -File .\tools\install-host-control.ps1 -Check
 ```
 
-Use `-Mode Status` for a shorter lane summary, `-Mode Next` for recommended next commands, `-Mode Auth` for GitHub auth checks, and `-Mode Ping -Agent Codex|OpenClaw|Both -Summary "..."` to generate bot-style pings through `tools\agent-handoff.ps1`.
+Use `-Mode Status` for a shorter lane summary, `-Mode Next` for recommended next commands, `-Mode Auth` for GitHub auth checks, and `-Mode Ping -To Codex|OpenClaw|Both -From Codex|OpenClaw|User -Summary "..."` to generate bot-style pings through `tools\agent-handoff.ps1`. The older `-Mode Ping -Agent Codex|OpenClaw|Both` form still works as a sender-based shorthand.
 
 ## Claim Work Before Editing
 
