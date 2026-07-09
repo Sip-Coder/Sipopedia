@@ -1,5 +1,16 @@
 # Repository Guidelines
 
+## Multi-Agent Workspace Defaults
+- All active Sipopedia work on this Windows VM stays under `C:\codebase`.
+- Codex edit lane: `C:\codebase\sipopedia-codex` on branch `work/codex`, coordinated in PR #2.
+- OpenClaw edit lane: `C:\codebase\sipopedia-openclaw` on branch `work/openclaw`, coordinated in PR #1.
+- Main/reference checkout: `C:\codebase\sipopedia` on branch `main`; do not use it as a shared edit lane unless the user explicitly asks.
+- Do not use `Application Demo` for Sipopedia website work. That folder is reference-only for the user's `/me` resume/application context.
+- Before Git commands on the Windows VM, run `. C:\codebase\tools\git-env.ps1` so portable Git, Git LFS, and GitHub CLI are on PATH.
+- Start each work session with `git status --short --branch`, `git lfs status`, and `C:\codebase\tools\sipopedia-team-status.ps1`.
+- If OpenClaw cannot see `C:\codebase`, clone `https://github.com/Sip-Coder/Sipopedia.git` into an OpenClaw-visible `sipopedia-openclaw` folder and switch to `work/openclaw`.
+- Keep Codex and OpenClaw edits isolated by branch/worktree. Coordinate cross-agent changes in the PR comments before touching another agent's lane.
+
 ## Project Structure & Module Organization
 - `src/`: React + TypeScript frontend (`App.tsx`, `components/`, `lib/`, `data/`, `context/`, `assets/`).
 - `public/`: static assets (icons, maps, flavor thumbnails, academy media).
