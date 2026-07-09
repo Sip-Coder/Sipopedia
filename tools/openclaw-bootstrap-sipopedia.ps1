@@ -76,15 +76,141 @@ function Enable-PortableGit {
   return $gitExe
 }
 
+function Enable-PortableGitHubCli {
+  param([string]$RootDir)
+
+  $toolsDir = Join-Path $RootDir "tools"
+  $ghDir = Join-Path $toolsDir "gh"
+  $ghBin = Join-Path $ghDir "bin"
+  $ghExe = Join-Path $ghBin "gh.exe"
+
+  New-Item -ItemType Directory -Path $toolsDir -Force | Out-Null
+
+  if (-not (Test-Path -LiteralPath $ghExe)) {
+    $workDir = Join-Path $toolsDir (".install-gh-" + [guid]::NewGuid().ToString("N"))
+    New-Item -ItemType Directory -Path $workDir | Out-Null
+
+    try {
+      $ghAsset = Get-GitHubReleaseAsset -Repo "cli/cli" -AssetPattern "^gh_.*_windows_amd64\.zip$"
+      $ghZip = Join-Path $workDir $ghAsset.name
+      $extractDir = Join-Path $workDir "extract"
+
+      Invoke-WebRequest -Uri $ghAsset.browser_download_url -OutFile $ghZip -Headers @{ "User-Agent" = "sipopedia-openclaw-bootstrap" }
+      New-Item -ItemType Directory -Path $extractDir -Force | Out-Null
+      Expand-Archive -LiteralPath $ghZip -DestinationPath $extractDir -Force
+
+      $extractedGh = Get-ChildItem -LiteralPath $extractDir -Recurse -Filter "gh.exe" | Select-Object -First 1
+      if (-not $extractedGh) {
+        throw "Could not find gh.exe after extracting GitHub CLI."
+      }
+
+      New-Item -ItemType Directory -Path $ghBin -Force | Out-Null
+      Copy-Item -LiteralPath $extractedGh.FullName -Destination $ghExe -Force
+    } finally {
+      if (Test-Path -LiteralPath $workDir) {
+        Remove-Item -LiteralPath $workDir -Recurse -Force
+      }
+    }
+  }
+
+  $env:Path = $ghBin + ";" + $env:Path
+  return $ghExe
+}
+
+function Write-TeamHelperScripts {
+  param([string]$RootDir)
+
+  $toolsDir = Join-Path $RootDir "tools"
+  $gitEnvPs1 = Join-Path $toolsDir "git-env.ps1"
+  $gitEnvCmd = Join-Path $toolsDir "git-env.cmd"
+  $statusScript = Join-Path $toolsDir "sipopedia-team-status.ps1"
+
+  @'
+$GitRoot = Join-Path $PSScriptRoot "mingit"
+$GitCmd = Join-Path $GitRoot "cmd"
+$GitBin = Join-Path $GitRoot "mingw64\bin"
+$GhBin = Join-Path $PSScriptRoot "gh\bin"
+
+if (-not (Test-Path -LiteralPath (Join-Path $GitCmd "git.exe"))) {
+  throw "Portable Git was not found at $GitCmd"
+}
+
+$paths = @($GitCmd, $GitBin)
+if (Test-Path -LiteralPath (Join-Path $GhBin "gh.exe")) {
+  $paths += $GhBin
+}
+
+$env:Path = ($paths + $env:Path) -join ";"
+Write-Host "Portable Git tooling enabled for this PowerShell session:"
+git --version
+git lfs version
+if (Get-Command gh -ErrorAction SilentlyContinue) {
+  gh --version | Select-Object -First 1
+}
+'@ | Set-Content -LiteralPath $gitEnvPs1 -Encoding ASCII
+
+  @'
+@echo off
+set "GIT_ROOT=%~dp0mingit"
+set "GH_BIN=%~dp0gh\bin"
+if exist "%GH_BIN%\gh.exe" (
+  set "PATH=%GIT_ROOT%\cmd;%GIT_ROOT%\mingw64\bin;%GH_BIN%;%PATH%"
+) else (
+  set "PATH=%GIT_ROOT%\cmd;%GIT_ROOT%\mingw64\bin;%PATH%"
+)
+echo Portable Git tooling enabled for this cmd.exe session:
+git --version
+git lfs version
+where gh >nul 2>nul && gh --version
+'@ | Set-Content -LiteralPath $gitEnvCmd -Encoding ASCII
+
+  @'
+$ErrorActionPreference = "Continue"
+
+$ToolRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+. (Join-Path $ToolRoot "git-env.ps1")
+
+$worktrees = @(
+  @{ Name = "main/reference"; Path = "C:\codebase\sipopedia" },
+  @{ Name = "codex"; Path = "C:\codebase\sipopedia-codex" },
+  @{ Name = "openclaw"; Path = "C:\codebase\sipopedia-openclaw" }
+)
+
+Write-Host ""
+Write-Host "GitHub CLI auth:"
+$authStatus = gh auth status 2>&1
+if ($LASTEXITCODE -eq 0) {
+  $authStatus | ForEach-Object { Write-Host $_ }
+} else {
+  Write-Host "Not logged in. Run gh auth login from an interactive shell."
+}
+
+foreach ($worktree in $worktrees) {
+  Write-Host ""
+  Write-Host ("== {0}: {1} ==" -f $worktree.Name, $worktree.Path)
+  if (-not (Test-Path -LiteralPath $worktree.Path)) {
+    Write-Host "Missing"
+    continue
+  }
+
+  git -C $worktree.Path status --short --branch
+  git -C $worktree.Path lfs status
+}
+'@ | Set-Content -LiteralPath $statusScript -Encoding ASCII
+}
+
 $root = [System.IO.Path]::GetFullPath($BaseDir)
 New-Item -ItemType Directory -Path $root -Force | Out-Null
 
 $git = Enable-PortableGit -RootDir $root
+$gh = Enable-PortableGitHubCli -RootDir $root
+Write-TeamHelperScripts -RootDir $root
 $repoPath = Join-Path $root $WorkspaceName
 
 Write-Host "Using base directory: $root"
 & $git --version
 & $git lfs version
+& $gh --version
 
 if (-not (Test-Path -LiteralPath $repoPath)) {
   & $git clone $RepoUrl $repoPath
@@ -116,3 +242,6 @@ Write-Host "Sipopedia OpenClaw workspace is ready:"
 Write-Host $repoPath
 & $git -C $repoPath status --short --branch
 & $git -C $repoPath remote -v
+Write-Host ""
+Write-Host "Team status helper:"
+Write-Host (Join-Path $root "tools\sipopedia-team-status.ps1")
