@@ -55,6 +55,16 @@ powershell -File .\tools\check-github-auth.ps1 -Login -SetupGit
 powershell -File .\tools\check-github-auth.ps1 -Push
 ```
 
+## Agent Handoff Pings
+
+When the user asks to ping another bot or agent, read `docs/AGENT_HANDOFF_PROTOCOL.md` and generate the message with:
+
+```powershell
+powershell -File .\tools\agent-handoff.ps1 -Recipient OpenClaw -From Codex -Summary "Use C:\codebase\sipopedia-openclaw for Sipopedia edits. Application Demo is not the repo."
+```
+
+If Telegram is not available from the current runtime, post the generated message to the target lane PR or paste it into the user's Telegram thread.
+
 ## Claim Work Before Editing
 
 Before editing files that another agent could also touch, create a PR comment claim:
