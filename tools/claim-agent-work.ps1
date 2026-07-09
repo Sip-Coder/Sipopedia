@@ -5,7 +5,8 @@ param(
   [string]$Action = "Claim",
   [Parameter(Mandatory = $true)]
   [string]$Summary,
-  [string[]]$Paths = @(),
+  [Alias("Paths")]
+  [string[]]$ClaimPaths = @(),
   [switch]$Post
 )
 
@@ -52,8 +53,8 @@ $workspace = $targetLane.Value.Workspace
 $timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 
 $pathLines = @()
-if ($Paths.Count -gt 0) {
-  $pathLines = $Paths | ForEach-Object { "- $_" }
+if ($ClaimPaths.Count -gt 0) {
+  $pathLines = $ClaimPaths | ForEach-Object { "- $_" }
 } else {
   $pathLines = @("- not specified")
 }
