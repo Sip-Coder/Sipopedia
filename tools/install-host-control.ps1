@@ -7,7 +7,7 @@ $ErrorActionPreference = "Stop"
 
 $content = @'
 param(
-  [ValidateSet("Status", "Next", "Ping", "Auth", "All", "BootstrapOpenClaw")]
+  [ValidateSet("Status", "Next", "Ping", "Auth", "Outbox", "All", "BootstrapOpenClaw")]
   [string]$Mode = "Status",
   [ValidateSet("Codex", "OpenClaw", "Both")]
   [string]$Agent = "Both",
