@@ -40,6 +40,21 @@ Before reporting a release-ready deployment state, run:
 powershell -File .\tools\check-deployment-readiness.ps1 -RunValidation -RunSmoke
 ```
 
+## GitHub Auth And Pushes
+
+For local push readiness, read `docs/GITHUB_AUTH_AND_PUSH.md` and run:
+
+```powershell
+powershell -File .\tools\check-github-auth.ps1
+```
+
+Login and push require an interactive shell:
+
+```powershell
+powershell -File .\tools\check-github-auth.ps1 -Login -SetupGit
+powershell -File .\tools\check-github-auth.ps1 -Push
+```
+
 ## Claim Work Before Editing
 
 Before editing files that another agent could also touch, create a PR comment claim:
