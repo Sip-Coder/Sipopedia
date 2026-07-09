@@ -22,6 +22,10 @@ powershell -File .\tools\start-agent-session.ps1 -Agent OpenClaw -Strict
 
 Use only the command for the current agent. The guard checks folder, branch, origin, Git LFS status, GitHub auth state, and which handoff files to read.
 
+## Current Validation Snapshot
+
+Read `docs/VALIDATION_TRIAGE_SNAPSHOT.md` before debugging missing pages, deployment issues, or design regressions. It records the latest known build, audit, and route smoke status plus the current coverage limits.
+
 ## Claim Work Before Editing
 
 Before editing files that another agent could also touch, create a PR comment claim:
