@@ -84,6 +84,7 @@ From outside a Sipopedia worktree, use the host wrapper:
 ```powershell
 C:\codebase\tools\sipopedia-control.ps1 -Mode Status
 C:\codebase\tools\sipopedia-control.ps1 -Mode Next
+C:\codebase\tools\sipopedia-control.ps1 -Mode Outbox
 C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To OpenClaw -From Codex -Summary "Coordinate before touching shared route files." -Paths "src\App.tsx","scripts\smoke-routes.mjs"
 ```
 
@@ -94,7 +95,7 @@ powershell -File .\tools\install-host-control.ps1
 powershell -File .\tools\install-host-control.ps1 -Check
 ```
 
-Use `-Mode Status` for a shorter lane summary, `-Mode Next` for recommended next commands, `-Mode Auth` for GitHub auth checks, and `-Mode Ping -To Codex|OpenClaw|Both -From Codex|OpenClaw|User -Summary "..."` to generate bot-style pings through `tools\agent-handoff.ps1`. The older `-Mode Ping -Agent Codex|OpenClaw|Both` form still works as a sender-based shorthand.
+Use `-Mode Status` for a shorter lane summary, `-Mode Next` for recommended next commands, `-Mode Auth` for GitHub auth checks, `-Mode Outbox` for queued messages, and `-Mode Ping -To Codex|OpenClaw|Both -From Codex|OpenClaw|User -Summary "..."` to generate bot-style pings through `tools\agent-handoff.ps1`. The older `-Mode Ping -Agent Codex|OpenClaw|Both` form still works as a sender-based shorthand.
 
 ## Claim Work Before Editing
 
@@ -105,7 +106,7 @@ powershell -File .\tools\claim-agent-work.ps1 -Agent Codex -Action Claim -Summar
 powershell -File .\tools\claim-agent-work.ps1 -Agent OpenClaw -Action Claim -Summary "Audit missing pages" -Paths "src/App.tsx","src/components"
 ```
 
-The helper prints a standardized PR comment. If GitHub CLI is authenticated, add `-Post` to post it automatically. If not, paste the printed message into the correct PR.
+The helper prints a standardized PR comment. If GitHub CLI is authenticated, add `-Post` to post it automatically. If not, the message is saved under `C:\codebase\team-outbox`; inspect with `C:\codebase\tools\sipopedia-control.ps1 -Mode Outbox` and post later with `powershell -File .\tools\team-outbox.ps1 -Mode Post -All`.
 
 Use `-Action Update` when scope changes. Use `-Action Release` when the work is done or abandoned.
 
