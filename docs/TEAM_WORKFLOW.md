@@ -65,6 +65,16 @@ powershell -File .\tools\agent-handoff.ps1 -Recipient OpenClaw -From Codex -Summ
 
 If Telegram is not available from the current runtime, post the generated message to the target lane PR or paste it into the user's Telegram thread.
 
+## Team Control
+
+For a combined lane, auth, and next-action view, run:
+
+```powershell
+powershell -File .\tools\team-control.ps1 -Mode All
+```
+
+Use `-Mode Status` for a shorter lane summary, `-Mode Next` for recommended next commands, `-Mode Auth` for GitHub auth checks, and `-Mode Ping -Agent Codex|OpenClaw|Both -Summary "..."` to generate bot-style pings through `tools\agent-handoff.ps1`.
+
 ## Claim Work Before Editing
 
 Before editing files that another agent could also touch, create a PR comment claim:
