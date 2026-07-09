@@ -6,6 +6,15 @@ param(
 
 $ErrorActionPreference = "Continue"
 
+$BootstrapGitEnv = "C:\codebase\tools\git-env.ps1"
+if (Test-Path -LiteralPath $BootstrapGitEnv) {
+  . $BootstrapGitEnv
+}
+
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+  throw "git is not on PATH. On the Windows VM, run: . C:\codebase\tools\git-env.ps1"
+}
+
 $repoRootRaw = git rev-parse --show-toplevel 2>$null
 if ($LASTEXITCODE -ne 0 -or -not $repoRootRaw) {
   throw "Run this from inside the Sipopedia Git checkout."
