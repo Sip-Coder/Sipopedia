@@ -44,7 +44,8 @@ powershell -File .\tools\check-deployment-readiness.ps1 -RunValidation -RunSmoke
 
 For local push readiness, read `docs/GITHUB_AUTH_AND_PUSH.md` and run:
 
-```powershell -File .\tools\check-github-auth.ps1
+```powershell
+powershell -File .\tools\check-github-auth.ps1
 ```
 
 Login and push require an interactive shell:
@@ -96,7 +97,8 @@ C:\codebase\tools\sipopedia-control.ps1 -Mode Telegram -Group Sipopedia -Account
 
 If the host wrapper is missing or stale, install it from a repo worktree:
 
-```powershell -File .\tools\install-host-control.ps1
+```powershell
+powershell -File .\tools\install-host-control.ps1
 powershell -File .\tools\install-host-control.ps1 -Check
 ```
 
@@ -130,7 +132,8 @@ npm run smoke:routes
 
 For broader validation when time allows, run:
 
-```powershell -File .\validators\validate-website.ps1
+```powershell
+powershell -File .\validators\validate-website.ps1
 ```
 
 For terminology changes, run:
