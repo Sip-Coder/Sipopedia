@@ -233,6 +233,7 @@ function Write-NextActions {
       Write-Host "- There are uncommitted working tree changes; inspect before starting new work."
     }
     Write-Host "- Ping this lane: C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To $name -Summary ""<message>"""
+    Write-Host "- Live Telegram ping: C:\codebase\tools\sipopedia-control.ps1 -Mode Telegram -Group Sipopedia -Account clawdius -Summary ""<message>"""
     Write-Host "- Ping the other lane from this agent: powershell -File .\tools\agent-handoff.ps1 -Recipient $($lane.HandoffRecipient) -From $name -Summary ""<message>"""
     Write-Host "- Review queued pings/claims: C:\codebase\tools\sipopedia-control.ps1 -Mode Outbox"
   }

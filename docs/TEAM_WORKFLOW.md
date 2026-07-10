@@ -44,8 +44,7 @@ powershell -File .\tools\check-deployment-readiness.ps1 -RunValidation -RunSmoke
 
 For local push readiness, read `docs/GITHUB_AUTH_AND_PUSH.md` and run:
 
-```powershell
-powershell -File .\tools\check-github-auth.ps1
+```powershell -File .\tools\check-github-auth.ps1
 ```
 
 Login and push require an interactive shell:
@@ -69,7 +68,13 @@ From anywhere on the Windows VM, prefer the explicit target form:
 C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To OpenClaw -From Codex -Summary "Use C:\codebase\sipopedia-openclaw for Sipopedia edits. Application Demo is not the repo."
 ```
 
-If Telegram is not available from the current runtime, post the generated message to the target lane PR or paste it into the user's Telegram thread.
+For actual Telegram delivery through the running Windows OpenClaw guest and Clawdius account:
+
+```powershell
+C:\codebase\tools\sipopedia-control.ps1 -Mode Telegram -Group Sipopedia -Account clawdius -Summary "Use C:\codebase\sipopedia-openclaw for Sipopedia edits. Application Demo is not the repo."
+```
+
+If Telegram is not available from the current runtime, post the generated message to the target lane PR or leave it in `C:\codebase\team-outbox`.
 
 ## Team Control
 
@@ -86,16 +91,16 @@ C:\codebase\tools\sipopedia-control.ps1 -Mode Status
 C:\codebase\tools\sipopedia-control.ps1 -Mode Next
 C:\codebase\tools\sipopedia-control.ps1 -Mode Outbox
 C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To OpenClaw -From Codex -Summary "Coordinate before touching shared route files." -Paths "src\App.tsx","scripts\smoke-routes.mjs"
+C:\codebase\tools\sipopedia-control.ps1 -Mode Telegram -Group Sipopedia -Account clawdius -Summary "Coordinate before touching shared route files." -Paths "src\App.tsx","scripts\smoke-routes.mjs"
 ```
 
 If the host wrapper is missing or stale, install it from a repo worktree:
 
-```powershell
-powershell -File .\tools\install-host-control.ps1
+```powershell -File .\tools\install-host-control.ps1
 powershell -File .\tools\install-host-control.ps1 -Check
 ```
 
-Use `-Mode Status` for a shorter lane summary, `-Mode Next` for recommended next commands, `-Mode Auth` for GitHub auth checks, `-Mode Outbox` for queued messages, and `-Mode Ping -To Codex|OpenClaw|Both -From Codex|OpenClaw|User -Summary "..."` to generate bot-style pings through `tools\agent-handoff.ps1`. The older `-Mode Ping -Agent Codex|OpenClaw|Both` form still works as a sender-based shorthand.
+Use `-Mode Status` for a shorter lane summary, `-Mode Next` for recommended next commands, `-Mode Auth` for GitHub auth checks, `-Mode Outbox` for queued messages, `-Mode Ping -To Codex|OpenClaw|Both -From Codex|OpenClaw|User -Summary "..."` to generate bot-style pings through `tools\agent-handoff.ps1`, and `-Mode Telegram -Group Sipopedia -Account clawdius -Summary "..."` for live Telegram delivery. The older `-Mode Ping -Agent Codex|OpenClaw|Both` form still works as a sender-based shorthand.
 
 ## Claim Work Before Editing
 
@@ -125,8 +130,7 @@ npm run smoke:routes
 
 For broader validation when time allows, run:
 
-```powershell
-powershell -File .\validators\validate-website.ps1
+```powershell -File .\validators\validate-website.ps1
 ```
 
 For terminology changes, run:

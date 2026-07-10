@@ -32,6 +32,7 @@ Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Next"
 Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Auth"
 Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Outbox"
 Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Ping -To OpenClaw -From Codex -Summary ""<message>"""
+Write-Host "  C:\codebase\tools\sipopedia-control.ps1 -Mode Telegram -Group Sipopedia -Account clawdius -Summary ""<message>"""
 
 foreach ($worktree in $worktrees) {
   Write-Host ""

@@ -1,129 +1,70 @@
 param(
   [string]$TargetPath = "C:\codebase\tools\sipopedia-control.ps1",
+  [string]$TelegramTargetPath = "C:\codebase\tools\sipopedia-telegram-ping.ps1",
   [switch]$Check
 )
 
 $ErrorActionPreference = "Stop"
-
-$content = @'
-param(
-  [ValidateSet("Status", "Next", "Ping", "Auth", "Outbox", "All", "BootstrapOpenClaw")]
-  [string]$Mode = "Status",
-  [ValidateSet("Codex", "OpenClaw", "Both")]
-  [string]$Agent = "Both",
-  [string]$Summary = "",
-  [Alias("Paths")]
-  [string[]]$ControlPaths = @(),
-  [ValidateSet("Auto", "Codex", "OpenClaw", "Both")]
-  [string]$To = "Auto",
-  [ValidateSet("Auto", "Codex", "OpenClaw", "User")]
-  [string]$From = "Auto",
-  [switch]$Post,
-  [switch]$Fetch
-)
-
-$ErrorActionPreference = "Stop"
-
-$ToolRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$GitEnv = Join-Path $ToolRoot "git-env.ps1"
-if (Test-Path -LiteralPath $GitEnv) {
-  . $GitEnv
-}
-
-$root = "C:\codebase"
-$codexControl = Join-Path $root "sipopedia-codex\tools\team-control.ps1"
-$openClawControl = Join-Path $root "sipopedia-openclaw\tools\team-control.ps1"
-$bootstrapOpenClaw = Join-Path $ToolRoot "openclaw-bootstrap-sipopedia.ps1"
-
-if ($Mode -eq "BootstrapOpenClaw") {
-  if (-not (Test-Path -LiteralPath $bootstrapOpenClaw)) {
-    throw "OpenClaw bootstrap script not found: $bootstrapOpenClaw"
-  }
-
-  & $bootstrapOpenClaw
-  if ($LASTEXITCODE -ne 0) {
-    throw "OpenClaw bootstrap failed."
-  }
-}
-
-$teamControl = $null
-if (Test-Path -LiteralPath $codexControl) {
-  $teamControl = $codexControl
-} elseif (Test-Path -LiteralPath $openClawControl) {
-  $teamControl = $openClawControl
-}
-
-if (-not $teamControl) {
-  throw "Could not find repo-local team-control.ps1. Expected $codexControl or $openClawControl."
-}
-
-$teamMode = $Mode
-if ($Mode -eq "BootstrapOpenClaw") {
-  $teamMode = "Status"
-  $Agent = "OpenClaw"
-}
-
-$params = @{
-  Mode = $teamMode
-  Agent = $Agent
-}
-if ($Summary) {
-  $params.Summary = $Summary
-}
-if ($ControlPaths.Count -gt 0) {
-  $params.ControlPaths = $ControlPaths
-}
-if ($To -ne "Auto") {
-  $params.To = $To
-}
-if ($From -ne "Auto") {
-  $params.From = $From
-}
-if ($Post) {
-  $params.Post = $true
-}
-if ($Fetch) {
-  $params.Fetch = $true
-}
-
-Write-Host ""
-Write-Host ("Delegating to repo-local team control: {0}" -f $teamControl)
-& $teamControl @params
-'@
-
-$targetDir = Split-Path -Parent $TargetPath
-if (-not (Test-Path -LiteralPath $targetDir)) {
-  if ($Check) {
-    Write-Host ("Missing target directory: {0}" -f $targetDir)
-    exit 1
-  }
-  New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
-}
 
 function Normalize-Content {
   param([string]$Value)
   return ($Value -replace "`r`n", "`n").TrimEnd("`n")
 }
 
-$normalizedExpected = Normalize-Content $content
-$exists = Test-Path -LiteralPath $TargetPath
-if ($exists) {
-  $current = Normalize-Content (Get-Content -LiteralPath $TargetPath -Raw)
-  if ($current -eq $normalizedExpected) {
-    Write-Host ("Host control wrapper is current: {0}" -f $TargetPath)
-    exit 0
+$templates = @(
+  @{
+    Label = "Host control wrapper"
+    Source = Join-Path $PSScriptRoot "host-sipopedia-control.ps1"
+    Target = $TargetPath
+  },
+  @{
+    Label = "Telegram ping helper"
+    Source = Join-Path $PSScriptRoot "host-sipopedia-telegram-ping.ps1"
+    Target = $TelegramTargetPath
+  }
+)
+
+$hasMismatch = $false
+
+foreach ($template in $templates) {
+  if (-not (Test-Path -LiteralPath $template.Source)) {
+    throw ("Missing template for {0}: {1}" -f $template.Label, $template.Source)
   }
 
-  if ($Check) {
-    Write-Host ("Host control wrapper differs: {0}" -f $TargetPath)
-    exit 2
+  $targetDir = Split-Path -Parent $template.Target
+  if (-not (Test-Path -LiteralPath $targetDir)) {
+    if ($Check) {
+      Write-Host ("Missing target directory for {0}: {1}" -f $template.Label, $targetDir)
+      $hasMismatch = $true
+      continue
+    }
+    New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
   }
+
+  $expected = Get-Content -LiteralPath $template.Source -Raw
+  $exists = Test-Path -LiteralPath $template.Target
+  if ($exists) {
+    $current = Get-Content -LiteralPath $template.Target -Raw
+    if ((Normalize-Content $current) -eq (Normalize-Content $expected)) {
+      Write-Host ("{0} is current: {1}" -f $template.Label, $template.Target)
+      continue
+    }
+
+    if ($Check) {
+      Write-Host ("{0} differs: {1}" -f $template.Label, $template.Target)
+      $hasMismatch = $true
+      continue
+    }
+  } elseif ($Check) {
+    Write-Host ("{0} is missing: {1}" -f $template.Label, $template.Target)
+    $hasMismatch = $true
+    continue
+  }
+
+  Set-Content -LiteralPath $template.Target -Value $expected -Encoding UTF8
+  Write-Host ("Installed {0}: {1}" -f $template.Label, $template.Target)
 }
 
-if ($Check) {
-  Write-Host ("Host control wrapper is missing: {0}" -f $TargetPath)
-  exit 1
+if ($Check -and $hasMismatch) {
+  exit 2
 }
-
-Set-Content -LiteralPath $TargetPath -Value $content -Encoding UTF8
-Write-Host ("Installed host control wrapper: {0}" -f $TargetPath)
