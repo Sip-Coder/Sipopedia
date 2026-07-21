@@ -7,7 +7,7 @@ localPort = 5000
 externalPort = 80
 
 [deployment]
-build = ["npm", "run", "build"]
+build = ["sh", "-c", "SIP_STUDIES_DEPLOYMENT_BUILD=1 npm run build:replit"]
 deploymentTarget = "autoscale"
 publicDir = "dist"
 run = ["npm", "run", "preview"]
