@@ -34,6 +34,24 @@ Website validation:
 powershell -File .\validators\validate-website.ps1 -SkipInstall
 ```
 
+## Distribution and Replit Deployment
+
+The canonical release path is:
+
+```text
+backup/local mirror -> GitHub main -> Replit project sync -> Publish -> sipopedia.com
+```
+
+Hydrate a fresh local mirror before validation:
+
+```bash
+git lfs pull
+npm ci
+npm run build
+```
+
+Replit uses the `build:replit` command configured in `.replit`. That command runs only in a disposable deployment snapshot: it removes source dumps, generated review/output folders, and archived infographics that are not referenced by the website, then creates `dist` with every live asset still under `public`. The local mirror and GitHub history retain the complete asset archive. Use `npm run build` for normal local builds; `npm run build:replit -- --dry-run` only previews the deployment-prune list.
+
 ## Environment
 
 Create `.env` from `.env.example`.
