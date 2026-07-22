@@ -165,7 +165,11 @@ function killProcessTree(child) {
     spawnSync("taskkill.exe", ["/pid", String(child.pid), "/t", "/f"], { stdio: "ignore" });
     return;
   }
-  child.kill();
+  try {
+    process.kill(-child.pid, "SIGTERM");
+  } catch {
+    child.kill("SIGTERM");
+  }
 }
 
 function killChromeProfileProcesses(userDataDir) {
@@ -347,6 +351,8 @@ async function navigateAndCheck(client, sessionId, baseUrl, route, routeTimeoutM
     } else if (message.method === "Network.loadingFailed") {
       const request = routeEvents.requestUrls.get(params.requestId);
       const requestUrl = request?.url ?? "";
+      const requestWasCancelled = params.canceled === true || params.errorText === "net::ERR_ABORTED";
+      if (requestWasCancelled) return;
       if (requestUrl && isSameOriginResource(baseUrl, requestUrl) && !requestUrl.endsWith(".map")) {
         routeEvents.failedRequests.push(`${params.errorText ?? "failed"} ${requestUrl}`);
       }
@@ -404,6 +410,7 @@ async function main() {
       {
         cwd: repoRoot,
         stdio: ["ignore", "pipe", "pipe"],
+        detached: process.platform !== "win32",
         windowsHide: true
       }
     );
@@ -431,6 +438,7 @@ async function main() {
 
   const chrome = spawn(chromePath, chromeArgs, {
     stdio: ["ignore", "ignore", "ignore"],
+    detached: process.platform !== "win32",
     windowsHide: true
   });
   startedProcesses.push(chrome);
