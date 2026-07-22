@@ -38,7 +38,7 @@ begin
 
   return v_request_count <= p_max_requests;
 end;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.create_support_request(p_user_id uuid, p_lane_id text, p_contact_name text, p_contact_email text, p_team_name text, p_team_size integer, p_plan_interest text, p_urgency text, p_subject text, p_message text, p_source_route text)
  RETURNS support_requests
@@ -59,7 +59,7 @@ AS $function$
     p_message,
     p_source_route
   );
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.is_admin()
  RETURNS boolean
@@ -68,7 +68,7 @@ CREATE OR REPLACE FUNCTION public.is_admin()
  SET search_path TO 'private', 'public'
 AS $function$
   select private.current_user_is_admin();
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.set_timestamp_updated_at()
  RETURNS trigger
@@ -79,7 +79,7 @@ begin
   new.updated_at = now();
   return new;
 end;
-$function$
+$function$;
 
 revoke all on table public."api_rate_limits" from anon, authenticated;
 grant all on table public."api_rate_limits" to service_role;
