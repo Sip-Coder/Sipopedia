@@ -42,7 +42,7 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
       <header className="section-header pricing-hero">
         <CosmicSky className="pricing-sky" stars={20} meteors={5} />
         <p className="checkout-eyebrow">Plan Routing</p>
-        <h2>Choose the access level for the room you meant to open.</h2>
+        <h1>Choose the access level for the room you meant to open.</h1>
         <p>Pricing keeps your selected plan, entry source, and next destination attached through checkout.</p>
         <div className="pricing-intent-ribbon" aria-label="Pricing intent context">
           <span>
