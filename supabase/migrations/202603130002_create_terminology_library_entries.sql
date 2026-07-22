@@ -48,3 +48,7 @@ create policy "service role manages terminology library"
   for all
   using (auth.role() = 'service_role')
   with check (auth.role() = 'service_role');
+
+revoke all on table public.terminology_library_entries from anon, authenticated;
+grant select on table public.terminology_library_entries to anon, authenticated;
+grant all on table public.terminology_library_entries to service_role;
