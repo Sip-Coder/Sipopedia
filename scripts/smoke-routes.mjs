@@ -96,6 +96,11 @@ function normalizeBaseUrl(rawUrl) {
 function findChromePath() {
   const candidates = [
     process.env.CHROME_PATH,
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
     "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
     "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
@@ -391,8 +396,8 @@ async function main() {
 
   if (!baseUrl) {
     baseUrl = `http://127.0.0.1:${options.port}`;
-    const previewCommand = npmInvocation(["run", "preview", "--", "--host", "127.0.0.1", "--port", String(options.port)]);
-    console.log(`Starting production preview at ${baseUrl}`);
+    const previewCommand = npmInvocation(["run", "start", "--", "--host", "127.0.0.1", "--port", String(options.port)]);
+    console.log(`Starting production server at ${baseUrl}`);
     const preview = spawn(
       previewCommand.command,
       previewCommand.args,
@@ -406,7 +411,7 @@ async function main() {
     preview.stdout.on("data", (chunk) => process.stdout.write(chunk));
     preview.stderr.on("data", (chunk) => process.stderr.write(chunk));
     await waitForHttp(baseUrl);
-    console.log("Production preview is responding.");
+    console.log("Production server is responding.");
   }
 
   const chromePath = findChromePath();

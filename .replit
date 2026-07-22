@@ -1,4 +1,4 @@
-modules = ["nodejs-20"]
+modules = ["nodejs-22"]
 [agent]
 expertMode = true
 
@@ -10,7 +10,7 @@ externalPort = 80
 build = ["sh", "-c", "SIP_STUDIES_DEPLOYMENT_BUILD=1 npm run build:replit"]
 deploymentTarget = "autoscale"
 publicDir = "dist"
-run = ["npm", "run", "preview"]
+run = ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "5000"]
 
 [workflows]
 runButton = "Project"

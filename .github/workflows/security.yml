@@ -8,15 +8,16 @@ on:
 
 jobs:
   security:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install
@@ -26,7 +27,24 @@ jobs:
         run: npm run security:secrets
 
       - name: Dependency Audit
-        run: npm audit --omit=dev --audit-level=high
+        run: npm audit --audit-level=high
+
+      - name: Replit Build Plan
+        run: npm run build:replit -- --dry-run
+
+      - name: LFS Hydration Probe
+        run: |
+          probe="public/game/sprites/Character_Studio/features/frames/freckles/freckles-feature-02.png"
+          git -c "lfs.storage=$RUNNER_TEMP/sipopedia-lfs-probe" lfs pull --include="$probe" origin
+          node scripts/lfs-pointer-guard.mjs "$probe"
 
       - name: Build
         run: npm run build
+
+      - name: Critical Asset Guard
+        run: npm run assets:check
+
+      - name: Route Smoke
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: npm run smoke:routes
