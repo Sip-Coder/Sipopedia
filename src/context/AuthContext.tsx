@@ -25,13 +25,14 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 const LOCAL_AUTH_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 const PRODUCTION_AUTH_HOSTS = new Set(["sipopedia.com", "www.sipopedia.com"]);
+const AUTH_SESSION_TIMEOUT_MS = 5_000;
 
 function mapAuthError(message: string): string {
   if (message.includes("Unsupported provider") || message.includes("provider is not enabled")) {
-    return "Google login is disabled in Supabase. Enable Google under Authentication > Providers, then retry.";
+    return "Google login is temporarily unavailable. Please try again later.";
   }
   if (message.includes("redirect_uri_mismatch") || message.includes("redirect URI") || message.includes("redirect_uri")) {
-    return "OAuth redirect URL not authorised. Add this site's URL to your Supabase project's Redirect URLs under Authentication → URL Configuration.";
+    return "Login could not return to this site. Please contact support and try again later.";
   }
   return message;
 }
@@ -153,9 +154,21 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     (async () => {
       const callbackError = await finalizeAuthFromUrl();
-      const { data, error } = await supabase.auth.getSession();
+      const sessionResult = await Promise.race([
+        supabase.auth.getSession().then((result) => ({ kind: "session" as const, result })),
+        new Promise<{ kind: "timeout" }>((resolve) => {
+          window.setTimeout(() => resolve({ kind: "timeout" }), AUTH_SESSION_TIMEOUT_MS);
+        })
+      ]);
 
       if (!mounted) return;
+      if (sessionResult.kind === "timeout") {
+        if (callbackError) setErrorMessage(mapAuthError(callbackError));
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = sessionResult.result;
 
       if (callbackError) {
         setErrorMessage(mapAuthError(callbackError));
@@ -222,7 +235,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const signInWithGoogle = async () => {
     if (!supabase) {
-      setErrorMessage("Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.");
+      setErrorMessage("Account access is temporarily unavailable. Please try again later.");
       return;
     }
 
@@ -262,7 +275,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const signInWithMagicLink = async (email: string) => {
     if (!supabase) {
-      setErrorMessage("Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.");
+      setErrorMessage("Account access is temporarily unavailable. Please try again later.");
       return;
     }
 
@@ -280,7 +293,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     });
 
     if (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(mapAuthError(error.message));
       return;
     }
     setErrorMessage(`Magic link sent to ${normalizedEmail}. Check your inbox.`);
@@ -292,7 +305,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
     const { error } = await supabase.auth.signOut();
     if (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(mapAuthError(error.message));
     } else {
       setErrorMessage(null);
     }
