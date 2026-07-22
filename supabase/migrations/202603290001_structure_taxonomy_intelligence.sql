@@ -39,7 +39,8 @@ create index if not exists idx_taxonomy_learning_memory_created_at
 create or replace function public.set_timestamp_updated_at()
 returns trigger
 language plpgsql
-as $$
+set search_path = ''
+as $
 begin
   new.updated_at = now();
   return new;
@@ -50,3 +51,27 @@ drop trigger if exists tr_beverage_taxonomy_graph_updated_at on public.beverage_
 create trigger tr_beverage_taxonomy_graph_updated_at
 before update on public.beverage_taxonomy_graph
 for each row execute procedure public.set_timestamp_updated_at();
+
+alter table public.beverage_taxonomy_graph enable row level security;
+alter table public.taxonomy_learning_memory enable row level security;
+
+drop policy if exists "service role manages beverage taxonomy graph" on public.beverage_taxonomy_graph;
+create policy "service role manages beverage taxonomy graph"
+  on public.beverage_taxonomy_graph
+  for all
+  to service_role
+  using (true)
+  with check (true);
+
+drop policy if exists "service role manages taxonomy learning memory" on public.taxonomy_learning_memory;
+create policy "service role manages taxonomy learning memory"
+  on public.taxonomy_learning_memory
+  for all
+  to service_role
+  using (true)
+  with check (true);
+
+revoke all on table public.beverage_taxonomy_graph from anon, authenticated;
+revoke all on table public.taxonomy_learning_memory from anon, authenticated;
+grant all on table public.beverage_taxonomy_graph to service_role;
+grant all on table public.taxonomy_learning_memory to service_role;
