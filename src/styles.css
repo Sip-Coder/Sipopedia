@@ -1790,6 +1790,7 @@ select option:checked {
   gap: 0.35rem;
 }
 
+.section-header h1,
 .section-header h2 {
   font-size: clamp(1.4rem, 2vw, 2rem);
 }
@@ -14171,7 +14172,7 @@ select option:checked {
   padding: clamp(1.1rem, 3vw, 2rem);
 }
 
-.pricing-hero h2 {
+.pricing-hero h1 {
   max-width: 820px;
   color: #fff1d1;
   font-size: clamp(2rem, 5vw, 4rem);
@@ -14284,9 +14285,11 @@ select option:checked {
 }
 
 .pricing-support-bridge h3,
+.study-paths-page h1,
 .study-paths-page h2,
 .study-paths-page h3,
 .study-paths-page h4,
+.support-center-page h1,
 .support-center-page h2,
 .support-center-page h3,
 .support-center-page h4 {
@@ -14321,7 +14324,7 @@ select option:checked {
   padding: clamp(1.2rem, 3vw, 2rem);
 }
 
-.study-paths-hero h2 {
+.study-paths-hero h1 {
   max-width: 850px;
   font-size: clamp(2rem, 4.6vw, 3.9rem);
   letter-spacing: -0.055em;
@@ -15622,7 +15625,7 @@ select option:checked {
   padding: clamp(1.2rem, 3vw, 2rem);
 }
 
-.support-hero h2 {
+.support-hero h1 {
   max-width: 820px;
   font-size: clamp(2rem, 4.6vw, 3.9rem);
   letter-spacing: -0.055em;
@@ -16635,7 +16638,7 @@ select option:checked {
   box-shadow: 0 24px 70px rgba(0, 8, 18, 0.28);
 }
 
-.checkout-hero h2 {
+.checkout-hero h1 {
   max-width: 760px;
   color: #fff1d1;
   font-size: clamp(2rem, 5vw, 4.2rem);
@@ -17820,7 +17823,7 @@ select option:checked {
   .support-route-tabs {
     border-right: 0;
     border-bottom: 1px solid rgba(159, 218, 245, 0.18);
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .pricing-support-bridge {
@@ -18039,10 +18042,10 @@ select option:checked {
   color: #c4d6e2;
 }
 
-.checkout-page .section-header h2,
-.pricing-page .section-header h2,
-.policy-page .section-header h2,
-.paywall-panel .section-header h2,
+.checkout-page .section-header h1,
+.pricing-page .section-header h1,
+.policy-page .section-header h1,
+.paywall-panel .section-header h1,
 .admin-console .section-header h2 {
   color: #f1ddb0;
 }
@@ -18179,7 +18182,7 @@ select option:checked {
     padding: 1rem;
   }
 
-  .checkout-hero h2 {
+  .checkout-hero h1 {
     font-size: clamp(1.8rem, 12vw, 3rem);
   }
 
@@ -18252,7 +18255,7 @@ select option:checked {
   color: #f2c877;
 }
 
-.starter-demo-header h2 {
+.starter-demo-header h1 {
   margin: 0;
   color: #f2e3c5;
 }
@@ -20813,7 +20816,7 @@ select option:checked {
   margin-bottom: 0.85rem;
 }
 
-.account-dashboard .section-header h2 {
+.account-dashboard .section-header h1 {
   color: #fff1d1;
 }
 
@@ -21656,7 +21659,7 @@ select option:checked {
   gap: 1rem;
 }
 
-.avatar-creator-hero h2 {
+.avatar-creator-hero h1 {
   color: #fff1d1;
   font-size: clamp(1.55rem, 3vw, 2.6rem);
   letter-spacing: 0;
@@ -21664,7 +21667,7 @@ select option:checked {
 
 .avatar-creator-hero p {
   max-width: 70ch;
-  color: rgba(217, 247, 255, 0.82);
+  color: rgba(217, 247, 255, 0.9);
 }
 
 .avatar-creator-actions {
@@ -27110,6 +27113,14 @@ select option:checked {
 
 .powerful-point-hero {
   margin: 0;
+}
+
+.powerful-point-hero h1 {
+  color: #fff1d1;
+}
+
+.powerful-point-hero > p:not(.nav-overline) {
+  color: #def3ff;
 }
 
 .powerful-point-grid {
