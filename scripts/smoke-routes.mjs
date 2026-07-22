@@ -1,8 +1,6 @@
 import { spawn, spawnSync } from "node:child_process";
-import { once } from "node:events";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
-import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 
@@ -128,17 +126,6 @@ function npmInvocation(args) {
   };
 }
 
-async function getFreePort() {
-  const server = net.createServer();
-  server.listen(0, "127.0.0.1");
-  await once(server, "listening");
-  const address = server.address();
-  const port = typeof address === "object" && address ? address.port : 0;
-  server.close();
-  await once(server, "close");
-  return port;
-}
-
 async function waitForHttp(url, timeoutMs = 20000) {
   const deadline = Date.now() + timeoutMs;
   let lastError = null;
@@ -153,6 +140,39 @@ async function waitForHttp(url, timeoutMs = 20000) {
     await sleep(250);
   }
   throw new Error(`Timed out waiting for ${url}: ${lastError?.message ?? "no response"}`);
+}
+
+async function waitForDevToolsPort(userDataDir, chrome, chromeState, timeoutMs = 60000) {
+  const activePortPath = path.join(userDataDir, "DevToolsActivePort");
+  const deadline = Date.now() + timeoutMs;
+  let lastError = null;
+
+  while (Date.now() < deadline) {
+    if (chromeState.launchError) {
+      throw new Error(`Chrome failed to launch: ${chromeState.launchError.message}`);
+    }
+    if (chrome.exitCode !== null || chrome.signalCode !== null) {
+      const reason = chrome.exitCode !== null ? `code ${chrome.exitCode}` : `signal ${chrome.signalCode}`;
+      const stderr = chromeState.stderr.trim();
+      throw new Error(`Chrome exited with ${reason} before DevTools was ready${stderr ? `:\n${stderr}` : "."}`);
+    }
+
+    try {
+      const [portLine] = fs.readFileSync(activePortPath, "utf8").trim().split(/\r?\n/);
+      const port = Number.parseInt(portLine, 10);
+      if (Number.isInteger(port) && port > 0 && port <= 65535) return port;
+      lastError = new Error(`invalid DevTools port ${JSON.stringify(portLine)}`);
+    } catch (error) {
+      if (error?.code !== "ENOENT") lastError = error;
+    }
+
+    await sleep(250);
+  }
+
+  const stderr = chromeState.stderr.trim();
+  throw new Error(
+    `Timed out waiting for Chrome DevTools port${lastError ? `: ${lastError.message}` : ""}${stderr ? `\nChrome stderr:\n${stderr}` : ""}`
+  );
 }
 
 function sleep(ms) {
@@ -422,11 +442,10 @@ async function main() {
   }
 
   const chromePath = findChromePath();
-  const remotePort = await getFreePort();
   const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "sipstudies-smoke-chrome-"));
-  console.log(`Starting Chrome DevTools on port ${remotePort}`);
+  console.log("Starting Chrome DevTools with an OS-assigned port");
   const chromeArgs = [
-    `--remote-debugging-port=${remotePort}`,
+    "--remote-debugging-port=0",
     `--user-data-dir=${userDataDir}`,
     "--no-first-run",
     "--no-default-browser-check",
@@ -437,13 +456,22 @@ async function main() {
   if (!options.headed) chromeArgs.push("--headless=new");
 
   const chrome = spawn(chromePath, chromeArgs, {
-    stdio: ["ignore", "ignore", "ignore"],
+    stdio: ["ignore", "ignore", "pipe"],
     detached: process.platform !== "win32",
     windowsHide: true
+  });
+  const chromeState = { launchError: null, stderr: "" };
+  chrome.on("error", (error) => {
+    chromeState.launchError = error;
+  });
+  chrome.stderr.on("data", (chunk) => {
+    chromeState.stderr = `${chromeState.stderr}${chunk}`.slice(-8000);
   });
   startedProcesses.push(chrome);
 
   try {
+    const remotePort = await waitForDevToolsPort(userDataDir, chrome, chromeState);
+    console.log(`Chrome DevTools selected port ${remotePort}`);
     const version = await waitForHttp(`http://127.0.0.1:${remotePort}/json/version`);
     const versionPayload = await version.json();
     const client = new CdpClient(versionPayload.webSocketDebuggerUrl);
