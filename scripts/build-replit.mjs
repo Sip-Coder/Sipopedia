@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { assertNoLfsPointers } from "./lfs-pointer-guard.mjs";
+import { assertNoLfsPointers, findLfsPointers } from "./lfs-pointer-guard.mjs";
 
 const dryRun = process.argv.includes("--dry-run");
 const deploymentMarker = process.env.SIP_STUDIES_DEPLOYMENT_BUILD;
@@ -26,18 +26,8 @@ if (!dryRun && process.platform === "win32") {
   process.exit(1);
 }
 
-if (!dryRun && !process.env[lfsTokenVariable]) {
-  console.error(
-    `Missing required Replit deployment secret ${lfsTokenVariable}; ` +
-      "GitHub LFS assets cannot be hydrated without it."
-  );
-  process.exit(1);
-}
-
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(scriptDirectory, "..");
-const runtimeLfsInclude = "public/**";
-const runtimeLfsExclude = "public/infographics/DNU - Archived -Infographics/**";
 const lfsConcurrentTransfers = 16;
 const recursiveRemoveOptions = {
   recursive: true,
@@ -118,12 +108,13 @@ for (const relativePath of removablePaths) {
 if (dryRun) {
   console.log("");
   console.log("Runtime Git LFS hydration:");
-  console.log(`- include: ${runtimeLfsInclude}`);
-  console.log(`- exclude: ${runtimeLfsExclude}`);
+  console.log("- scan: public/ after the pre-build prune");
+  console.log("- include: exact remaining Git LFS pointer paths only");
+  console.log("- cache: reuse the deployment snapshot's default .git/lfs store");
   console.log(`- authentication: Replit secret ${lfsTokenVariable} via temporary askpass`);
   console.log(`- concurrent transfers: ${lfsConcurrentTransfers}`);
   console.log("- progress: forced for non-interactive deployment logs");
-  console.log(`- temporary storage: ${path.join(os.tmpdir(), "sipopedia-runtime-lfs-*")}`);
+  console.log(`- temporary authentication helper: ${path.join(os.tmpdir(), "sipopedia-runtime-lfs-*")}`);
   console.log("");
   console.log("Post-build cleanup:");
   for (const relativePath of postBuildRemovablePaths) {
@@ -134,49 +125,76 @@ if (dryRun) {
 }
 
 async function buildDeployment() {
-  const temporaryLfsStorage = await mkdtemp(path.join(os.tmpdir(), "sipopedia-runtime-lfs-"));
-  const temporaryAskPass = path.join(temporaryLfsStorage, "git-askpass.sh");
+  const publicRoot = path.join(repositoryRoot, "public");
+  const lfsToken = process.env[lfsTokenVariable];
+  let temporaryLfsDirectory = null;
+
+  delete process.env[lfsTokenVariable];
 
   try {
-    await writeFile(temporaryAskPass, askPassScript, {
-      encoding: "utf8",
-      mode: 0o700
-    });
+    const pointerPaths = await findLfsPointers([publicRoot]);
 
-    console.log("Hydrating runtime Git LFS assets before the Vite build.");
-    const lfsEnvironment = {
-      ...process.env,
-      GIT_ASKPASS: temporaryAskPass,
-      GIT_TERMINAL_PROMPT: "0",
-      GIT_LFS_FORCE_PROGRESS: "1",
-      GIT_TRACE: "0",
-      GIT_TRACE_CURL: "0",
-      GIT_CURL_VERBOSE: "0"
-    };
-    delete process.env[lfsTokenVariable];
+    if (pointerPaths.length === 0) {
+      console.log("Runtime public assets are already hydrated; skipping Git LFS pull.");
+    } else {
+      if (!lfsToken) {
+        console.error(
+          `Missing required Replit deployment secret ${lfsTokenVariable}; ` +
+            `${pointerPaths.length} Git LFS pointer file(s) still require hydration.`
+        );
+        return 1;
+      }
 
-    let lfsExitCode;
-    try {
-      lfsExitCode = await runCommand("git", [
-        "-c",
-        "credential.helper=",
-        "-c",
-        `lfs.concurrenttransfers=${lfsConcurrentTransfers}`,
-        "-c",
-        `lfs.storage=${temporaryLfsStorage}`,
-        "lfs",
-        "pull",
-        `--include=${runtimeLfsInclude}`,
-        `--exclude=${runtimeLfsExclude}`,
-        "origin"
-      ], lfsEnvironment);
-    } finally {
-      delete lfsEnvironment[lfsTokenVariable];
-    }
+      const exactPointerIncludes = pointerPaths
+        .map((pointerPath) => path.relative(repositoryRoot, pointerPath).split(path.sep).join("/"))
+        .join(",");
+      temporaryLfsDirectory = await mkdtemp(path.join(os.tmpdir(), "sipopedia-runtime-lfs-"));
+      const temporaryAskPass = path.join(temporaryLfsDirectory, "git-askpass.sh");
 
-    if (lfsExitCode !== 0) {
-      console.error("Git LFS hydration failed; refusing to create a deployment with pointer files.");
-      return lfsExitCode;
+      await writeFile(temporaryAskPass, askPassScript, {
+        encoding: "utf8",
+        mode: 0o700
+      });
+
+      console.log(
+        `Hydrating ${pointerPaths.length} remaining runtime Git LFS pointer file(s) before the Vite build.`
+      );
+      const lfsEnvironment = {
+        ...process.env,
+        [lfsTokenVariable]: lfsToken,
+        GIT_ASKPASS: temporaryAskPass,
+        GIT_TERMINAL_PROMPT: "0",
+        GIT_LFS_FORCE_PROGRESS: "1",
+        GIT_TRACE: "0",
+        GIT_TRACE_CURL: "0",
+        GIT_CURL_VERBOSE: "0"
+      };
+
+      let lfsExitCode;
+      try {
+        lfsExitCode = await runCommand("git", [
+          "-c",
+          "credential.helper=",
+          "-c",
+          `lfs.concurrenttransfers=${lfsConcurrentTransfers}`,
+          "lfs",
+          "pull",
+          `--include=${exactPointerIncludes}`,
+          "--exclude=",
+          "origin"
+        ], lfsEnvironment);
+      } finally {
+        delete lfsEnvironment[lfsTokenVariable];
+      }
+
+      if (lfsExitCode !== 0) {
+        console.error("Git LFS hydration failed; refusing to create a deployment with pointer files.");
+        return lfsExitCode;
+      }
+
+      await assertNoLfsPointers([publicRoot], {
+        displayRoot: repositoryRoot
+      });
     }
 
     const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
@@ -198,7 +216,9 @@ async function buildDeployment() {
     console.log("Pruning development-only packages from the production runtime.");
     return await runCommand(npmCommand, ["prune", "--omit=dev"]);
   } finally {
-    await rm(temporaryLfsStorage, recursiveRemoveOptions);
+    if (temporaryLfsDirectory) {
+      await rm(temporaryLfsDirectory, recursiveRemoveOptions);
+    }
   }
 }
 
