@@ -38,6 +38,7 @@ const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(scriptDirectory, "..");
 const runtimeLfsInclude = "public/**";
 const runtimeLfsExclude = "public/infographics/DNU - Archived -Infographics/**";
+const lfsConcurrentTransfers = 16;
 const recursiveRemoveOptions = {
   recursive: true,
   force: true,
@@ -120,6 +121,8 @@ if (dryRun) {
   console.log(`- include: ${runtimeLfsInclude}`);
   console.log(`- exclude: ${runtimeLfsExclude}`);
   console.log(`- authentication: Replit secret ${lfsTokenVariable} via temporary askpass`);
+  console.log(`- concurrent transfers: ${lfsConcurrentTransfers}`);
+  console.log("- progress: forced for non-interactive deployment logs");
   console.log(`- temporary storage: ${path.join(os.tmpdir(), "sipopedia-runtime-lfs-*")}`);
   console.log("");
   console.log("Post-build cleanup:");
@@ -145,6 +148,7 @@ async function buildDeployment() {
       ...process.env,
       GIT_ASKPASS: temporaryAskPass,
       GIT_TERMINAL_PROMPT: "0",
+      GIT_LFS_FORCE_PROGRESS: "1",
       GIT_TRACE: "0",
       GIT_TRACE_CURL: "0",
       GIT_CURL_VERBOSE: "0"
@@ -156,6 +160,8 @@ async function buildDeployment() {
       lfsExitCode = await runCommand("git", [
         "-c",
         "credential.helper=",
+        "-c",
+        `lfs.concurrenttransfers=${lfsConcurrentTransfers}`,
         "-c",
         `lfs.storage=${temporaryLfsStorage}`,
         "lfs",
