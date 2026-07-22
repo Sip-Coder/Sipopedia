@@ -49,19 +49,19 @@ async function normalizeFunctionError(error: unknown): Promise<string> {
   }
 
   if (error instanceof FunctionsRelayError) {
-    return "Supabase relay error while calling ai-router. Try again in a moment.";
+    return "The AI service is temporarily unavailable. Please try again in a moment.";
   }
 
   if (error instanceof FunctionsFetchError) {
-    return "Network error calling ai-router. Check internet connection and retry.";
+    return "We couldn't reach the AI service. Check your connection and try again.";
   }
 
-  return "Could not reach ai-router. Please try again.";
+  return "We couldn't reach the AI service. Please try again.";
 }
 
 export async function askAi(input: AskAiInput): Promise<AskAiOutput> {
   if (!supabase) {
-    throw new Error("Supabase is not connected yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.");
+    throw new Error("The AI service is temporarily unavailable. Please try again later.");
   }
 
   const { data, error } = await supabase.functions.invoke<AskAiOutput>("ai-router", {
@@ -72,14 +72,14 @@ export async function askAi(input: AskAiInput): Promise<AskAiOutput> {
     const message = await normalizeFunctionError(error);
 
     if (message.includes("insufficient_quota")) {
-      throw new Error("OpenAI quota exceeded. Add billing or use another provider key in Supabase secrets.");
+      throw new Error("The AI service is currently at capacity. Please try again later.");
     }
 
     throw new Error(message);
   }
 
   if (!data?.text) {
-    throw new Error("AI router returned no text.");
+    throw new Error("The AI service returned an empty response. Please try again.");
   }
 
   return data;
