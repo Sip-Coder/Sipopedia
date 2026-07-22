@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
@@ -9,6 +9,7 @@ import { assertNoLfsPointers } from "./lfs-pointer-guard.mjs";
 const dryRun = process.argv.includes("--dry-run");
 const deploymentMarker = process.env.SIP_STUDIES_DEPLOYMENT_BUILD;
 const replitProjectId = process.env.REPL_ID;
+const lfsTokenVariable = "SIPOPEDIA_GITHUB_LFS_TOKEN";
 
 if (!dryRun && (deploymentMarker !== "1" || !replitProjectId)) {
   console.error(
@@ -21,6 +22,14 @@ if (!dryRun && (deploymentMarker !== "1" || !replitProjectId)) {
 if (!dryRun && process.platform === "win32") {
   console.error(
     "Refusing to prune files on Windows. The Replit deployment build runs in a disposable Linux snapshot."
+  );
+  process.exit(1);
+}
+
+if (!dryRun && !process.env[lfsTokenVariable]) {
+  console.error(
+    `Missing required Replit deployment secret ${lfsTokenVariable}; ` +
+      "GitHub LFS assets cannot be hydrated without it."
   );
   process.exit(1);
 }
@@ -54,12 +63,25 @@ const postBuildRemovablePaths = [
   "public",
   path.join(".git", "lfs", "objects")
 ];
+const askPassScript = `#!/bin/sh
+case "$1" in
+  *Username*github.com*|*username*github.com*)
+    printf '%s\\n' 'x-access-token'
+    ;;
+  *Password*github.com*|*password*github.com*)
+    printf '%s\\n' "$${lfsTokenVariable}"
+    ;;
+  *)
+    exit 1
+    ;;
+esac
+`;
 
-function runCommand(command, args) {
+function runCommand(command, args, environment = process.env) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd: repositoryRoot,
-      env: process.env,
+      env: environment,
       stdio: "inherit"
     });
 
@@ -97,6 +119,7 @@ if (dryRun) {
   console.log("Runtime Git LFS hydration:");
   console.log(`- include: ${runtimeLfsInclude}`);
   console.log(`- exclude: ${runtimeLfsExclude}`);
+  console.log(`- authentication: Replit secret ${lfsTokenVariable} via temporary askpass`);
   console.log(`- temporary storage: ${path.join(os.tmpdir(), "sipopedia-runtime-lfs-*")}`);
   console.log("");
   console.log("Post-build cleanup:");
@@ -109,18 +132,41 @@ if (dryRun) {
 
 async function buildDeployment() {
   const temporaryLfsStorage = await mkdtemp(path.join(os.tmpdir(), "sipopedia-runtime-lfs-"));
+  const temporaryAskPass = path.join(temporaryLfsStorage, "git-askpass.sh");
 
   try {
+    await writeFile(temporaryAskPass, askPassScript, {
+      encoding: "utf8",
+      mode: 0o700
+    });
+
     console.log("Hydrating runtime Git LFS assets before the Vite build.");
-    const lfsExitCode = await runCommand("git", [
-      "-c",
-      `lfs.storage=${temporaryLfsStorage}`,
-      "lfs",
-      "pull",
-      `--include=${runtimeLfsInclude}`,
-      `--exclude=${runtimeLfsExclude}`,
-      "origin"
-    ]);
+    const lfsEnvironment = {
+      ...process.env,
+      GIT_ASKPASS: temporaryAskPass,
+      GIT_TERMINAL_PROMPT: "0",
+      GIT_TRACE: "0",
+      GIT_TRACE_CURL: "0",
+      GIT_CURL_VERBOSE: "0"
+    };
+    delete process.env[lfsTokenVariable];
+
+    let lfsExitCode;
+    try {
+      lfsExitCode = await runCommand("git", [
+        "-c",
+        "credential.helper=",
+        "-c",
+        `lfs.storage=${temporaryLfsStorage}`,
+        "lfs",
+        "pull",
+        `--include=${runtimeLfsInclude}`,
+        `--exclude=${runtimeLfsExclude}`,
+        "origin"
+      ], lfsEnvironment);
+    } finally {
+      delete lfsEnvironment[lfsTokenVariable];
+    }
 
     if (lfsExitCode !== 0) {
       console.error("Git LFS hydration failed; refusing to create a deployment with pointer files.");

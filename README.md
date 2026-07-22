@@ -52,6 +52,8 @@ npm run build
 
 Replit uses Node 22 and the `build:replit` command configured in `.replit`. That command runs only in a disposable deployment snapshot: it removes source dumps, generated review/output folders, archived infographics, and any stale in-project LFS cache; hydrates every remaining `public` Git LFS asset through temporary build storage; creates `dist`; and refuses to deploy if any pointer file reaches the output. After a successful build it removes the duplicate hydrated source copy, temporary LFS objects, and development-only packages. Replit serves the SPA with `sirv`; Vite preview remains a local-only command. The local mirror and GitHub history retain the complete asset archive. Use `npm run build` for normal local builds; `npm run build:replit -- --dry-run` only previews the deployment-prune and cleanup plan.
 
+Add `SIPOPEDIA_GITHUB_LFS_TOKEN` through Replit Secrets and make it available to production deployments. Use a dedicated fine-grained GitHub personal access token restricted to the `Sip-Coder/Sipopedia` repository with read-only Contents permission and a short expiration; rotate or revoke it when it is no longer needed. The deployment build supplies the token only through an environment-backed temporary askpass helper, disables Git credential persistence and interactive fallback, and removes the helper with the temporary LFS storage. Do not put the token in a Git remote URL, repository configuration, or checked-in file.
+
 ## Environment
 
 Create `.env` from `.env.example`.
