@@ -25,3 +25,15 @@ create index if not exists terminology_learning_memory_batch_idx
 create index if not exists terminology_learning_memory_type_idx
   on public.terminology_learning_memory (record_type, beverage_type, created_at desc);
 
+alter table public.terminology_learning_memory enable row level security;
+
+drop policy if exists "service role manages terminology learning memory" on public.terminology_learning_memory;
+create policy "service role manages terminology learning memory"
+  on public.terminology_learning_memory
+  for all
+  to service_role
+  using (true)
+  with check (true);
+
+revoke all on table public.terminology_learning_memory from anon, authenticated;
+grant all on table public.terminology_learning_memory to service_role;
