@@ -57,7 +57,6 @@ const continentOptions: { id: WineMapId; label: string }[] = [
 ];
 
 const ACTIVE_MAP_STORAGE_KEY = "sip-studies-active-map";
-const REGIONAL_MAX_VERSION = 24;
 const REGIONAL_CAROUSEL_INTERVAL_MS = 5000;
 const REGIONAL_INTERACTION_PAUSE_MS = 10000;
 
@@ -68,6 +67,15 @@ const REGIONAL_FOLDER_BY_MAP: Record<WineMapId, string> = {
   asia: "Asia",
   africa: "Africa",
   oceania: "Oceania"
+};
+
+const REGIONAL_MAP_VERSIONS: Record<WineMapId, readonly number[]> = {
+  "north-america": [1],
+  "south-america": [1],
+  europe: [2],
+  asia: [2],
+  africa: [1],
+  oceania: [2]
 };
 
 const countryRegionIndexOverrides: Record<string, CountryRegionIndexRow[]> = {
@@ -91,43 +99,17 @@ function regionalMapUrl(folderName: string, fileName: string): string {
   return `/maps/Regional/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
 }
 
-async function regionalImageExists(url: string, signal: AbortSignal): Promise<boolean> {
-  try {
-    const response = await fetch(url, { method: "HEAD", signal });
-    if (!response.ok) return false;
-    const contentType = (response.headers.get("content-type") ?? "").toLowerCase();
-    return contentType.startsWith("image/") || contentType.includes("octet-stream");
-  } catch {
-    return false;
-  }
-}
-
-async function discoverRegionalMaps(mapId: WineMapId, signal: AbortSignal): Promise<RegionalMapAsset[]> {
+function getRegionalMaps(mapId: WineMapId): RegionalMapAsset[] {
   const folderName = REGIONAL_FOLDER_BY_MAP[mapId];
   const continentLabel = continentOptions.find((option) => option.id === mapId)?.label ?? "Regional";
-  const assets: RegionalMapAsset[] = [];
-  let consecutiveMisses = 0;
-
-  for (let version = 1; version <= REGIONAL_MAX_VERSION; version++) {
+  return REGIONAL_MAP_VERSIONS[mapId].map((version) => {
     const fileName = `Wine Map - ${continentLabel} ${version}.0.png`;
-    const src = regionalMapUrl(folderName, fileName);
-    const exists = await regionalImageExists(src, signal);
-
-    if (exists) {
-      assets.push({
-        src,
-        filename: fileName,
-        title: `${continentLabel} Regional Map ${version}`
-      });
-      consecutiveMisses = 0;
-    } else {
-      consecutiveMisses += 1;
-      if (assets.length > 0 && consecutiveMisses >= 2) break;
-      if (assets.length === 0 && version >= 4) break;
-    }
-  }
-
-  return assets;
+    return {
+      src: regionalMapUrl(folderName, fileName),
+      filename: fileName,
+      title: `${continentLabel} Regional Map ${version}`
+    };
+  });
 }
 
 const wineMaps: Record<WineMapId, WineMapData> = {
@@ -449,28 +431,11 @@ export function SipMaps() {
   }, [activeMapId]);
 
   useEffect(() => {
-    const abortController = new AbortController();
-    let isActive = true;
     regionalPauseUntilRef.current = 0;
     setRegionalMapIndex(0);
     setRegionalLoading(true);
-
-    void discoverRegionalMaps(activeMapId, abortController.signal)
-      .then((assets) => {
-        if (!isActive) return;
-        setRegionalMaps(assets);
-        setRegionalLoading(false);
-      })
-      .catch(() => {
-        if (!isActive) return;
-        setRegionalMaps([]);
-        setRegionalLoading(false);
-      });
-
-    return () => {
-      isActive = false;
-      abortController.abort();
-    };
+    setRegionalMaps(getRegionalMaps(activeMapId));
+    setRegionalLoading(false);
   }, [activeMapId]);
 
   useEffect(() => {
