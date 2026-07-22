@@ -376,7 +376,7 @@ export function StudyPaths({ onNavigate }: StudyPathsProps) {
     <section className="study-paths-page">
       <header className="section-header study-paths-hero">
         <p className="checkout-eyebrow">Credential Prep Desk</p>
-        <h2>Independent study paths for beverage credentials and regional mastery.</h2>
+        <h1>Independent study paths for beverage credentials and regional mastery.</h1>
         <p>
           Use official credential bodies for the credential. Use Sip Studies to organize recall, tasting language, maps, service drills, and weak-topic review before and between official courses.
         </p>
