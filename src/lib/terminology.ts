@@ -103,19 +103,19 @@ function mapTerminologyError(message: string): string {
   }
 
   if (lower.includes("invalid api key")) {
-    return "Invalid Supabase API key. Update VITE_SUPABASE_ANON_KEY in .env and restart dev server.";
+    return "Sipopedia terminology is temporarily unavailable. Please try again later.";
   }
 
   if (lower.includes("relation") && lower.includes("terminology_entries")) {
-    return "Terminology table is missing. Run supabase/schema.sql in Supabase SQL Editor.";
+    return "Sipopedia terminology is temporarily unavailable. Please try again later.";
   }
 
   if (lower.includes("permission denied")) {
-    return "Permission denied. Check RLS policies and user role configuration.";
+    return "You do not have permission to complete this terminology action.";
   }
 
   if (lower.includes("infinite recursion") && lower.includes("profiles")) {
-    return "Terminology access is blocked by a recursive Supabase profile policy. Apply the latest RLS migration, then refresh Sipopedia.";
+    return "Sipopedia terminology is temporarily unavailable. Please try again later.";
   }
 
   return message;
@@ -422,7 +422,7 @@ export type TerminologyUpsertInput = {
 
 export async function upsertTerminologyEntry(input: TerminologyUpsertInput): Promise<string> {
   if (!supabase) {
-    throw new Error("Supabase is not configured.");
+    throw new Error("Terminology publishing is temporarily unavailable. Please try again later.");
   }
 
   const referenceLinks = input.reference_links.map((value) => value.trim()).filter(Boolean);
