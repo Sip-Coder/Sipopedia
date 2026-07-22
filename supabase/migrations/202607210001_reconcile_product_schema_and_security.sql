@@ -26,7 +26,7 @@ AS $function$
     from public.profiles p
     where p.id = (select auth.uid()) and p.role = 'admin'
   );
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION private.current_user_owns_team_training_account(team_account_id uuid)
  RETURNS boolean
@@ -40,7 +40,7 @@ AS $function$
     where teams.id = team_account_id
       and teams.owner_user_id = (select auth.uid())
   );
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION private.current_user_can_read_team_training_account(team_account_id uuid)
  RETURNS boolean
@@ -64,7 +64,7 @@ AS $function$
         or lower(memberships.member_email) = lower(coalesce((select auth.jwt() ->> 'email'), ''))
       )
   );
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION private.current_user_hosts_tasting_group(tasting_group_id uuid)
  RETURNS boolean
@@ -78,7 +78,7 @@ AS $function$
     where groups.id = tasting_group_id
       and groups.host_user_id = (select auth.uid())
   );
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION private.current_user_can_post_to_tasting_group(tasting_group_id uuid)
  RETURNS boolean
@@ -94,7 +94,7 @@ AS $function$
       and memberships.user_id = (select auth.uid())
       and memberships.status = 'active'
   );
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION private.current_user_can_read_tasting_group_profiles(tasting_group_id uuid)
  RETURNS boolean
@@ -110,7 +110,7 @@ AS $function$
       and memberships.user_id = (select auth.uid())
       and memberships.status = 'active'
   );
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION private.current_user_can_submit_tasting_group_profile(tasting_group_id uuid, profile_user_id uuid)
  RETURNS boolean
@@ -129,7 +129,7 @@ AS $function$
         and memberships.status in ('requested', 'active')
     )
   );
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION private.current_user_hosts_tasting_group_event(tasting_event_id uuid)
  RETURNS boolean
@@ -143,7 +143,7 @@ AS $function$
     where events.id = tasting_event_id
       and (select private.current_user_hosts_tasting_group(events.group_id))
   );
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION private.current_user_can_schedule_tasting_group_reminder(tasting_event_id uuid)
  RETURNS boolean
@@ -173,7 +173,7 @@ AS $function$
         )
       )
   );
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION private.create_support_request(p_user_id uuid, p_lane_id text, p_contact_name text, p_contact_email text, p_team_name text, p_team_size integer, p_plan_interest text, p_urgency text, p_subject text, p_message text, p_source_route text)
  RETURNS support_requests
@@ -255,7 +255,7 @@ begin
 
   return v_row;
 end;
-$function$
+$function$;
 
 alter table public."api_rate_limits" enable row level security;
 alter table public."beverage_taxonomy_graph" enable row level security;
