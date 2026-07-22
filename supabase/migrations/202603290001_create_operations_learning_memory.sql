@@ -10,3 +10,16 @@ create table if not exists public.operations_learning_memory (
 
 create index if not exists operations_learning_memory_created_at_idx
   on public.operations_learning_memory (created_at desc);
+
+alter table public.operations_learning_memory enable row level security;
+
+drop policy if exists "service role manages operations learning memory" on public.operations_learning_memory;
+create policy "service role manages operations learning memory"
+  on public.operations_learning_memory
+  for all
+  to service_role
+  using (true)
+  with check (true);
+
+revoke all on table public.operations_learning_memory from anon, authenticated;
+grant all on table public.operations_learning_memory to service_role;
