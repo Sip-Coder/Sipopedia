@@ -29,9 +29,14 @@ const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(scriptDirectory, "..");
 const runtimeLfsInclude = "public/**";
 const runtimeLfsExclude = "public/infographics/DNU - Archived -Infographics/**";
+const recursiveRemoveOptions = {
+  recursive: true,
+  force: true,
+  maxRetries: 8,
+  retryDelay: 250
+};
 const removablePaths = [
   "dist",
-  path.join(".git", "lfs", "objects"),
   "DUMP IN",
   "DUMP-IN",
   "Checkpoint_Img",
@@ -46,7 +51,8 @@ const removablePaths = [
   path.join("public", "infographics", "DNU - Archived -Infographics")
 ];
 const postBuildRemovablePaths = [
-  "public"
+  "public",
+  path.join(".git", "lfs", "objects")
 ];
 
 function runCommand(command, args) {
@@ -82,7 +88,7 @@ console.log(
 for (const relativePath of removablePaths) {
   console.log(`- ${relativePath}`);
   if (!dryRun) {
-    await rm(resolveRepositoryPath(relativePath), { recursive: true, force: true });
+    await rm(resolveRepositoryPath(relativePath), recursiveRemoveOptions);
   }
 }
 
@@ -134,13 +140,13 @@ async function buildDeployment() {
 
     console.log("Removing hydrated source copies from the disposable snapshot.");
     for (const relativePath of postBuildRemovablePaths) {
-      await rm(resolveRepositoryPath(relativePath), { recursive: true, force: true });
+      await rm(resolveRepositoryPath(relativePath), recursiveRemoveOptions);
     }
 
     console.log("Pruning development-only packages from the production runtime.");
     return await runCommand(npmCommand, ["prune", "--omit=dev"]);
   } finally {
-    await rm(temporaryLfsStorage, { recursive: true, force: true });
+    await rm(temporaryLfsStorage, recursiveRemoveOptions);
   }
 }
 
