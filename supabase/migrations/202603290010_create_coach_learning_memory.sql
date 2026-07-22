@@ -39,3 +39,7 @@ create policy "users update own coach learning memory"
   for update
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+revoke all on table public.coach_learning_memory from anon, authenticated;
+grant select, insert, update on table public.coach_learning_memory to authenticated;
+grant all on table public.coach_learning_memory to service_role;
