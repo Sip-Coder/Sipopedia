@@ -54,7 +54,9 @@ const explicitRoutes = [
   "/#app/ai-news",
   "/#app/somm-events",
   "/admin",
-  "/admin/terminology"
+  "/admin/terminology",
+  "/#route-that-does-not-exist",
+  "/route-that-does-not-exist"
 ];
 
 function parseArgs(argv) {
@@ -293,6 +295,7 @@ async function waitForRouteSettled(client, sessionId, route, timeoutMs) {
           hasErrorBoundary: text.includes("Something went wrong"),
           hasWorkspaceLoading: text.includes("Loading workspace...") && text.includes("Preparing your next module."),
           hasPaywall: text.includes("This room is locked, but your route is saved."),
+          hasNotFoundRecovery: text.includes("We couldn't find that page"),
           location: window.location.href
         };
       })()`
@@ -357,6 +360,7 @@ async function navigateAndCheck(client, sessionId, baseUrl, route, routeTimeoutM
     if (state.hasWorkspaceLoading || state.timedOut) failures.push("stuck loading");
     if ((state.rootTextLength ?? 0) <= 80) failures.push("blank or near-blank root");
     if (route.startsWith("/#app/") && route !== "/#app/launch" && state.hasPaywall) failures.push("paywall blocked workspace render");
+    if (route.includes("route-that-does-not-exist") && !state.hasNotFoundRecovery) failures.push("missing not-found recovery");
     if (routeEvents.exceptions.length) failures.push(`runtime exception: ${routeEvents.exceptions[0]}`);
     if (routeEvents.consoleErrors.length) failures.push(`console error: ${routeEvents.consoleErrors[0]}`);
     if (routeEvents.failedRequests.length) failures.push(`failed same-origin request: ${routeEvents.failedRequests[0]}`);
