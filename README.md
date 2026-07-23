@@ -12,7 +12,8 @@ Sip Studies is a React and TypeScript beverage education workspace for wine, bee
 ## Quick Start
 
 ```bash
-npm.cmd install
+npm.cmd ci
+npm.cmd run hooks:install
 npm.cmd run dev
 ```
 
@@ -34,6 +35,51 @@ Website validation:
 powershell -File .\validators\validate-website.ps1 -SkipInstall
 ```
 
+Full release gate:
+
+```bash
+npm.cmd run rgrd:check
+```
+
+This runs the secret-guard regressions, repository secret scan, dependency audit,
+Deno checks for every Supabase Edge Function, the Replit prune preview, the
+production build, critical-asset validation, release-manifest verification, and
+the browser route smoke suite.
+
+## Fresh Windows Backup Mirror
+
+GitHub is the working copy. Keep the Windows checkout as a recoverable mirror at
+`C:\Codebase\actual\Sipopedia`; do not use a separately initialized folder as a
+second source of truth.
+
+```powershell
+New-Item -ItemType Directory -Force C:\Codebase\actual | Out-Null
+Set-Location C:\Codebase\actual
+git lfs install
+git clone https://github.com/Sip-Coder/Sipopedia.git
+Set-Location .\Sipopedia
+git lfs pull
+npm.cmd ci
+npm.cmd run hooks:install
+git remote -v
+git status --short --branch
+```
+
+To refresh the backup after work performed from a phone or Codex Cloud:
+
+```powershell
+Set-Location C:\Codebase\actual\Sipopedia
+git fetch --prune origin
+git switch main
+git pull --ff-only origin main
+git lfs pull
+git status --short --branch
+```
+
+The final status should be clean and `main` should match `origin/main`. Make
+normal changes on a GitHub branch and merge them through a pull request; the
+local mirror is the backup, not an independent release branch.
+
 ## Distribution and Replit Deployment
 
 The canonical release path is:
@@ -50,9 +96,24 @@ npm ci
 npm run build
 ```
 
-Replit uses Node 22 and the `build:replit` command configured in `.replit`. That command runs only in a disposable deployment snapshot: it removes source dumps, generated review/output folders, archived infographics, and any stale in-project LFS cache; hydrates every remaining `public` Git LFS asset through temporary build storage; creates `dist`; and refuses to deploy if any pointer file reaches the output. After a successful build it removes the duplicate hydrated source copy, temporary LFS objects, and development-only packages. Replit serves the SPA with `sirv`; Vite preview remains a local-only command. The local mirror and GitHub history retain the complete asset archive. Use `npm run build` for normal local builds; `npm run build:replit -- --dry-run` only previews the deployment-prune and cleanup plan.
+Replit uses Node 22 and the `build:replit` command configured in `.replit`. That command runs only in a disposable deployment snapshot: it removes source dumps, generated review/output folders, archived infographics, superseded checkpoint art, source map-design files, original map exports, a character-art reference video, and any stale in-project LFS cache; hydrates every remaining `public` Git LFS asset through temporary build storage; creates `dist`; and refuses to deploy if any pointer file reaches the output. After a successful build it removes the duplicate hydrated source copy, temporary LFS objects, and development-only packages. Replit serves the SPA with `sirv`; Vite preview remains a local-only command. The local mirror and GitHub history retain the complete asset archive. Use `npm run build` for normal local builds; `npm run build:replit -- --dry-run` only previews the deployment-prune and cleanup plan.
 
 Add `SIPOPEDIA_GITHUB_LFS_TOKEN` through Replit Secrets and make it available to production deployments. Use a dedicated fine-grained GitHub personal access token restricted to the `Sip-Coder/Sipopedia` repository with read-only Contents permission and a short expiration; rotate or revoke it when it is no longer needed. The deployment build supplies the token only through an environment-backed temporary askpass helper, disables Git credential persistence and interactive fallback, and removes the helper with the temporary LFS storage. Do not put the token in a Git remote URL, repository configuration, or checked-in file.
+
+Replit must deploy the GitHub `main` branch. After each merge, sync the Replit
+workspace with `origin/main`, confirm the workspace has no local source changes,
+and publish. Every build writes `/rgrd.json`; its `repository` and full `commit`
+must match `Sip-Coder/Sipopedia` and the deployed `origin/main` SHA.
+
+```powershell
+$expected = git rev-parse origin/main
+$release = Invoke-RestMethod https://sipopedia.com/rgrd.json
+$release.repository
+$release.commit -eq $expected
+```
+
+Verify the same commit at `https://www.sipopedia.com/rgrd.json` and
+`https://sipopedia-02.replit.app/rgrd.json` before considering a release done.
 
 ## Environment
 
@@ -80,8 +141,14 @@ STRIPE_PRICE_ID_PRO=
 STRIPE_PRICE_ID_FOUNDING=
 STRIPE_WEBHOOK_SECRET=
 APP_URL=
-ALLOWED_ORIGIN=
+ALLOWED_ORIGINS=
 ```
+
+For production, set `APP_URL=https://sipopedia.com`. `ALLOWED_ORIGINS` is a
+comma-separated list of any additional trusted origins; the canonical domain,
+`www`, the Replit deployment domain, and the documented localhost origins are
+already allowlisted in the checkout and AI router functions. Wildcards are not
+accepted by those functions.
 
 Use Stripe Price IDs so the selected plan cannot open the wrong billing product. Pro uses Stripe Checkout in subscription mode; Founding Cohort uses Checkout in payment mode. The function attaches the signed-in Supabase user ID, selected plan, source, and next route to Checkout metadata.
 
@@ -153,10 +220,13 @@ The app runs without Supabase for public/local study surfaces, but auth, profile
 Deploy Edge Functions as needed:
 
 ```bash
-supabase functions deploy ai-router
-supabase functions deploy billing-webhook
-supabase functions deploy create-checkout-session
-supabase functions deploy news-router
+npx supabase link --project-ref ubcsjifoizloilefqgem
+npm run edge:check
+npx supabase functions deploy ai-router
+npx supabase functions deploy billing-webhook
+npx supabase functions deploy create-checkout-session
+npx supabase functions deploy news-router
+npx supabase functions deploy terminology-harvester
 ```
 
 After deploying `billing-webhook`, add the deployed function URL as a Stripe Dashboard webhook endpoint and select:
@@ -171,11 +241,17 @@ customer.subscription.deleted
 
 `billing-webhook` intentionally uses `verify_jwt = false` because Stripe cannot send a Supabase JWT. The endpoint is protected by Stripe's `Stripe-Signature` verification with `STRIPE_WEBHOOK_SECRET`; the older internal `x-billing-webhook-*` HMAC path remains available for trusted server-to-server billing updates.
 
-Apply migrations with the Supabase CLI:
+Check local and linked migration history before applying migrations:
 
 ```bash
+npx supabase migration list --linked
 npx supabase db push
 ```
+
+Do not run `db push` when the local and remote version columns disagree. Repair
+or rebaseline the history first, review the SQL, then apply forward-only
+migrations. Database migrations and Edge Functions are part of the release even
+though the static site itself is hosted by Replit.
 
 ## Terminology Automation
 

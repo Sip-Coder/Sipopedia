@@ -1,4 +1,4 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import "jsr:@supabase/functions-js@2.110.8/edge-runtime.d.ts";
 
 type CheckoutPlanId = "pro" | "founding";
 
@@ -22,7 +22,47 @@ type PlanConfig = {
 };
 
 const STRIPE_API_VERSION = "2026-02-25.clover";
-const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN")?.trim() || "*";
+const CANONICAL_APP_ORIGIN = "https://sipopedia.com";
+const BUILT_IN_ALLOWED_ORIGINS = [
+  CANONICAL_APP_ORIGIN,
+  "https://www.sipopedia.com",
+  "https://sipopedia-02.replit.app",
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:5173"
+] as const;
+
+function normalizeOrigin(value: string): string | null {
+  try {
+    const url = new URL(value.trim());
+    if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+    if (url.username || url.password || url.pathname !== "/" || url.search || url.hash) return null;
+    return url.origin;
+  } catch {
+    return null;
+  }
+}
+
+function configuredAllowedOrigins(): ReadonlySet<string> {
+  const allowed = new Set<string>(BUILT_IN_ALLOWED_ORIGINS);
+  const configured = [Deno.env.get("ALLOWED_ORIGINS"), Deno.env.get("ALLOWED_ORIGIN")]
+    .filter((value): value is string => Boolean(value?.trim()))
+    .flatMap((value) => value.split(","));
+
+  for (const candidate of configured) {
+    const normalized = normalizeOrigin(candidate);
+    if (normalized) {
+      allowed.add(normalized);
+    } else {
+      console.warn("create-checkout-session ignored an invalid configured origin");
+    }
+  }
+
+  return allowed;
+}
+
+const ALLOWED_ORIGINS = configuredAllowedOrigins();
 
 const plans: Record<CheckoutPlanId, PlanConfig> = {
   pro: {
@@ -41,19 +81,33 @@ const plans: Record<CheckoutPlanId, PlanConfig> = {
   }
 };
 
-function corsHeaders() {
-  return {
-    "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-    "Access-Control-Allow-Headers": "authorization,content-type,x-client-info,apikey",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Content-Type": "application/json"
-  };
+function allowedRequestOrigin(request: Request): string | null {
+  const origin = request.headers.get("origin");
+  if (!origin) return null;
+  const normalized = normalizeOrigin(origin);
+  return normalized && ALLOWED_ORIGINS.has(normalized) ? normalized : null;
 }
 
-function json(status: number, body: Record<string, unknown>) {
+function hasDisallowedRequestOrigin(request: Request): boolean {
+  return request.headers.has("origin") && allowedRequestOrigin(request) === null;
+}
+
+function corsHeaders(request: Request): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Access-Control-Allow-Headers": "authorization,content-type,x-client-info,apikey",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Type": "application/json",
+    Vary: "Origin"
+  };
+  const origin = allowedRequestOrigin(request);
+  if (origin) headers["Access-Control-Allow-Origin"] = origin;
+  return headers;
+}
+
+function json(request: Request, status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: corsHeaders()
+    headers: corsHeaders(request)
   });
 }
 
@@ -94,12 +148,18 @@ function appBaseUrl(request: Request): string {
     Deno.env.get("APP_URL")?.trim() ||
     Deno.env.get("SITE_URL")?.trim() ||
     Deno.env.get("PUBLIC_SITE_URL")?.trim();
-  if (configuredUrl) return configuredUrl.replace(/\/+$/, "");
+  if (configuredUrl) {
+    const normalized = normalizeOrigin(configuredUrl);
+    if (!normalized || !ALLOWED_ORIGINS.has(normalized)) {
+      throw new Error("The configured app URL is not in the checkout origin allowlist.");
+    }
+    return normalized;
+  }
 
-  const origin = request.headers.get("origin")?.trim();
-  if (origin) return origin.replace(/\/+$/, "");
+  const origin = allowedRequestOrigin(request);
+  if (origin) return origin;
 
-  return "http://localhost:5173";
+  return CANONICAL_APP_ORIGIN;
 }
 
 function buildReturnUrl(baseUrl: string, route: "success" | "cancel", plan: PlanConfig, source: string, next: string | null) {
@@ -137,7 +197,20 @@ async function createStripeCheckoutSession({
     return { status: 500, body: { error: `Checkout is missing ${plan.priceEnvKey}.` } };
   }
 
-  const baseUrl = appBaseUrl(request);
+  let baseUrl: string;
+  try {
+    baseUrl = appBaseUrl(request);
+  } catch (error) {
+    const requestId = crypto.randomUUID();
+    console.error("create-checkout-session rejected an unsafe return URL configuration", {
+      requestId,
+      error: error instanceof Error ? error.message : String(error)
+    });
+    return {
+      status: 500,
+      body: { error: "Checkout return URL is not configured safely.", requestId }
+    };
+  }
   const metadata = {
     user_id: user.id,
     plan_id: plan.planId,
@@ -216,33 +289,37 @@ async function createStripeCheckoutSession({
 }
 
 Deno.serve(async (request) => {
+  if (hasDisallowedRequestOrigin(request)) {
+    return json(request, 403, { error: "Origin is not allowed." });
+  }
+
   if (request.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders() });
+    return new Response("ok", { headers: corsHeaders(request) });
   }
 
   if (request.method !== "POST") {
-    return json(405, { error: "Method not allowed." });
+    return json(request, 405, { error: "Method not allowed." });
   }
 
   const user = await fetchUser(getBearerToken(request));
   if (!user) {
-    return json(401, { error: "Sign in is required before checkout." });
+    return json(request, 401, { error: "Sign in is required before checkout." });
   }
 
   let payload: CheckoutRequest;
   try {
     payload = (await request.json()) as CheckoutRequest;
   } catch {
-    return json(400, { error: "Invalid JSON body." });
+    return json(request, 400, { error: "Invalid JSON body." });
   }
 
   const plan = plans[payload.planId as CheckoutPlanId];
   if (!plan) {
-    return json(400, { error: "Unsupported checkout plan." });
+    return json(request, 400, { error: "Unsupported checkout plan." });
   }
 
   const source = cleanMetadataValue(payload.source, "checkout");
   const next = payload.next === null || payload.next === undefined ? null : cleanMetadataValue(payload.next, "app/launch");
   const result = await createStripeCheckoutSession({ request, plan, user, source, next });
-  return json(result.status, result.body);
+  return json(request, result.status, result.body);
 });

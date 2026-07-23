@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -48,11 +48,35 @@ const removablePaths = [
   "review",
   "terminology",
   "tmp",
-  path.join("public", "infographics", "DNU - Archived -Infographics")
+  path.join("public", "infographics", "DNU - Archived -Infographics"),
+  path.join("public", "game", "checkpoint-scenes", "archive-v1-v2"),
+  path.join(
+    "public",
+    "game",
+    "sprites",
+    "Character_Studio",
+    "reference",
+    "Duolingo Character Creation.mp4"
+  ),
+  path.join("public", "maps", "AF Files"),
+  path.join("public", "maps", "OG Files")
 ];
 const postBuildRemovablePaths = [
   "public",
   path.join(".git", "lfs", "objects")
+];
+const runtimeIntegrityPaths = [
+  ".replit",
+  "index.html",
+  "package.json",
+  "package-lock.json",
+  "scripts",
+  "src",
+  "supabase/functions",
+  "tsconfig.app.json",
+  "tsconfig.json",
+  "vite.config.ts",
+  "public"
 ];
 const askPassScript = `#!/bin/sh
 case "$1" in
@@ -81,6 +105,37 @@ function runCommand(command, args, environment = process.env) {
   });
 }
 
+function verifyRuntimeSourceMatchesHead() {
+  const diff = spawnSync("git", ["diff", "--quiet", "HEAD", "--", ...runtimeIntegrityPaths], {
+    cwd: repositoryRoot,
+    stdio: "inherit",
+    windowsHide: true
+  });
+  if (diff.status !== 0) {
+    throw new Error(
+      "Refusing to deploy: tracked runtime files differ from HEAD. Sync a clean GitHub main checkout first."
+    );
+  }
+
+  const untracked = spawnSync(
+    "git",
+    ["ls-files", "--others", "--exclude-standard", "--", ...runtimeIntegrityPaths],
+    {
+      cwd: repositoryRoot,
+      encoding: "utf8",
+      windowsHide: true
+    }
+  );
+  if (untracked.status !== 0) {
+    throw new Error("Unable to verify untracked runtime files before deployment.");
+  }
+  if (untracked.stdout.trim()) {
+    throw new Error(
+      `Refusing to deploy untracked runtime files:\n${untracked.stdout.trim()}`
+    );
+  }
+}
+
 function resolveRepositoryPath(relativePath) {
   const target = path.resolve(repositoryRoot, relativePath);
   const repositoryPrefix = `${repositoryRoot}${path.sep}`;
@@ -90,6 +145,10 @@ function resolveRepositoryPath(relativePath) {
   }
 
   return target;
+}
+
+if (!dryRun) {
+  verifyRuntimeSourceMatchesHead();
 }
 
 console.log(

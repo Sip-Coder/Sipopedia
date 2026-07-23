@@ -1,5 +1,7 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import "jsr:@supabase/functions-js@2.110.8/edge-runtime.d.ts";
+import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2.110.8";
+
+type AdminSupabaseClient = SupabaseClient<any>;
 
 type BillingStatus =
   | "trialing"
@@ -203,7 +205,7 @@ function subscriptionCurrentPeriodEnd(subscription: Record<string, unknown>): st
 }
 
 async function existingSubscriptionContext(
-  supabase: ReturnType<typeof createClient>,
+  supabase: AdminSupabaseClient,
   providerSubscriptionId: string
 ): Promise<{ user_id: string | null; plan_code: string | null }> {
   const { data, error } = await supabase
@@ -261,7 +263,7 @@ async function stripeCheckoutSessionPayload(event: StripeEvent): Promise<Webhook
 }
 
 async function stripeSubscriptionPayload(
-  supabase: ReturnType<typeof createClient>,
+  supabase: AdminSupabaseClient,
   event: StripeEvent
 ): Promise<WebhookPayload | null> {
   const subscription = event.data?.object;
@@ -300,7 +302,7 @@ async function stripeSubscriptionPayload(
 }
 
 async function stripeEventPayload(
-  supabase: ReturnType<typeof createClient>,
+  supabase: AdminSupabaseClient,
   event: StripeEvent
 ): Promise<{ payload: WebhookPayload | null; ignored: boolean }> {
   const eventType = stringValue(event.type);
@@ -325,7 +327,7 @@ async function processBillingPayload({
   provider,
   payload
 }: {
-  supabase: ReturnType<typeof createClient>;
+  supabase: AdminSupabaseClient;
   eventId: string;
   provider: string;
   payload: WebhookPayload;
