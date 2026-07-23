@@ -5,6 +5,7 @@ import { workspaceItemsForSection } from "../lib/workspaceNavigation";
 type StarterFeatureDemoProps = {
   onFeatureNavigate?: (route: string) => void;
   cardsAreLinks?: boolean;
+  headingLevel?: 1 | 2;
 };
 
 type DemoFeature = {
@@ -216,7 +217,7 @@ export const starterPreviewFeatures: DemoFeature[] = [
   }
 ];
 
-export function StarterFeatureDemo({ onFeatureNavigate, cardsAreLinks = true }: StarterFeatureDemoProps) {
+export function StarterFeatureDemo({ onFeatureNavigate, cardsAreLinks = true, headingLevel = 2 }: StarterFeatureDemoProps) {
   const [activeTrack, setActiveTrack] = useState<CoreTrack>("Learn");
   const groupedFeatures = useMemo(() => {
     return portalOrder.reduce<Record<CoreTrack, DemoFeature[]>>(
@@ -236,6 +237,7 @@ export function StarterFeatureDemo({ onFeatureNavigate, cardsAreLinks = true }: 
     if (id === "founding-cohort") return buildOnboardingRoute("checkout", { planId: "founding", source: "starter-preview" });
     return `app/${id}`;
   };
+  const HeadingTag = headingLevel === 1 ? "h1" : "h2";
   const headerCopy = cardsAreLinks
     ? "Choose a route below. Starter access previews each module, and paid access unlocks the full workspace."
     : "Scan the live route map below. Starter access is a preview only; full modules unlock with paid access.";
@@ -296,7 +298,7 @@ export function StarterFeatureDemo({ onFeatureNavigate, cardsAreLinks = true }: 
     <section className="starter-demo starter-demo-portals" aria-label="Starter page feature preview">
       <header className="starter-demo-header">
         <p className="starter-demo-kicker">Starter Preview</p>
-        <h2>Choose A Room Before You Choose A Module</h2>
+        <HeadingTag>Choose A Room Before You Choose A Module</HeadingTag>
         <p>{headerCopy}</p>
       </header>
 

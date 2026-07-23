@@ -788,7 +788,7 @@ export function AccountDashboard({ onNavigate }: AccountDashboardProps) {
     return (
       <section className="account-dashboard">
         <header className="section-header">
-          <h2>Account Dashboard</h2>
+          <h1>Account Dashboard</h1>
           <p>Sign in to view progress, billing status, and data controls.</p>
         </header>
         <div className="account-dashboard-actions">
@@ -808,7 +808,7 @@ export function AccountDashboard({ onNavigate }: AccountDashboardProps) {
       <header className="section-header account-hud-hero">
         <div className="section-header-copy">
           <p className="nav-overline">Achievement Command Center</p>
-          <h2>Account Dashboard</h2>
+          <h1>Account Dashboard</h1>
           <p>Live progress telemetry for every Learn, Taste, and Connect module in your Sip Studies workspace.</p>
         </div>
         <div className="account-orbital-readout" style={ringStyle(progressSnapshot.overallProgress)} aria-label={`Overall progress ${progressSnapshot.overallProgress}%`}>

@@ -182,7 +182,8 @@ type PublicRoute =
   | "privacy"
   | "refund"
   | "success"
-  | "cancel";
+  | "cancel"
+  | "not-found";
 type AdminRoute = "admin" | "admin/terminology";
 type AppRoute = PublicRoute | AdminRoute | `app/${WorkspacePage}`;
 type WorkspaceSection = WorkspaceSectionId;
@@ -237,10 +238,14 @@ function normalizeLegacyHash(hash: string): AppRoute {
 
   if (normalizedHash.startsWith("app/")) {
     const page = normalizedHash.slice("app/".length);
-    return `app/${normalizeWorkspacePage(page)}`;
+    const workspacePage = normalizeWorkspacePage(page);
+    if (workspacePage === "starter" && !["starter", "start", "launch", "home"].includes(page)) return "not-found";
+    return `app/${workspacePage}`;
   }
 
-  return `app/${normalizeWorkspacePage(normalizedHash)}`;
+  const workspacePage = normalizeWorkspacePage(normalizedHash);
+  if (workspacePage === "starter" && !["starter", "start", "launch", "home"].includes(normalizedHash)) return "not-found";
+  return `app/${workspacePage}`;
 }
 
 function normalizeWorkspacePage(value: string): WorkspacePage {
@@ -276,6 +281,7 @@ function parseRoute(hashValue?: string): AppRoute {
   const pathname = typeof window !== "undefined" ? window.location.pathname.replace(/\/+$/, "") || "/" : "/";
   if (pathname === "/admin") return "admin";
   if (pathname === "/admin/terminology") return "admin/terminology";
+  if (pathname !== "/") return "not-found";
   const hash = (hashValue ?? window.location.hash.replace(/^#/, "")).trim().split("?")[0];
   return normalizeLegacyHash(hash);
 }
@@ -1327,7 +1333,7 @@ function WorkspaceShell({
         ) : null}
       </nav>
 
-      {isStarterPage ? <StarterFeatureDemo onFeatureNavigate={(route) => navigateFromRoomMenu(route as AppRoute)} /> : null}
+      {isStarterPage ? <StarterFeatureDemo headingLevel={1} onFeatureNavigate={(route) => navigateFromRoomMenu(route as AppRoute)} /> : null}
 
       {isAccountPage ? accountContent : null}
       {!isStarterPage && !isAccountPage ? <Suspense fallback={<AppLoading />}>{renderedPage}</Suspense> : null}
@@ -1476,8 +1482,13 @@ function App() {
   const pricingRecoveryRoute = checkoutRecoveryIntent
     ? buildOnboardingRoute("pricing", { planId: checkoutRecoveryIntent.planId, source: `${route}-recovery`, next: checkoutRecoveryIntent.next })
     : "pricing";
+  const requiresResolvedAccess =
+    route.startsWith("admin") ||
+    route === "account" ||
+    route === "account/avatar" ||
+    (workspacePage !== null && workspacePage !== "starter");
 
-  if (accessLoading) {
+  if (accessLoading && requiresResolvedAccess) {
     return (
       <div className="page page-commercial">
         <AppLoading />
@@ -1491,7 +1502,7 @@ function App() {
         <PublicHeader onNavigate={navigate} route={route} pageStatuses={pageStatuses} />
         <section className="paywall-panel">
           <article className="paywall-card">
-            <h2>Boss Room Locked</h2>
+            <h1>Boss Room Locked</h1>
             <p>Admin privileges are required for this route. Visitor, free, and paid learner accounts stay outside the boss room.</p>
             <div className="paywall-actions">
               <button className="btn btn-primary" onClick={() => navigate("home")}>
@@ -1591,7 +1602,7 @@ function App() {
         <PublicHeader onNavigate={navigate} route={route} pageStatuses={pageStatuses} />
         <section className="paywall-panel">
           <article className="paywall-card">
-            <h2>Page Not Public</h2>
+            <h1>Page Not Public</h1>
             <p>This page is currently staged for editing or turned off.</p>
             <div className="paywall-actions">
               <button className="btn btn-primary" onClick={() => navigate("home")}>
@@ -1622,7 +1633,7 @@ function App() {
       {route === "logout" ? (
         <section className="checkout-page">
           <header className="section-header">
-            <h2>You are signed out</h2>
+            <h1>You are signed out</h1>
             <p>Your session ended and private rooms are closed on this device. Continue in the lobby or sign back in.</p>
           </header>
           <div className="checkout-links">
@@ -1635,13 +1646,29 @@ function App() {
           </div>
         </section>
       ) : null}
+      {route === "not-found" ? (
+        <section className="checkout-page">
+          <header className="section-header">
+            <h1>We couldn't find that page</h1>
+            <p>The address may be outdated or incomplete. Return to the lobby or open the Launch Pad to keep exploring.</p>
+          </header>
+          <div className="checkout-links">
+            <button className="btn btn-primary" onClick={() => navigate("home")}>
+              Lobby Home
+            </button>
+            <button className="btn btn-light" onClick={() => navigate("app/starter")}>
+              Open Launch Pad
+            </button>
+          </div>
+        </section>
+      ) : null}
       {route === "terms" ? <PolicyPage kind="terms" onNavigate={navigateFromString} /> : null}
       {route === "privacy" ? <PolicyPage kind="privacy" onNavigate={navigateFromString} /> : null}
       {route === "refund" ? <PolicyPage kind="refund" onNavigate={navigateFromString} /> : null}
       {route === "success" ? (
         <section className="checkout-page">
           <header className="section-header">
-            <h2>Checkout Complete</h2>
+            <h1>Checkout Complete</h1>
             <p>
               {isPaid || isAdmin
                 ? "Your access is active. The saved room is ready."
@@ -1682,7 +1709,7 @@ function App() {
       {route === "cancel" ? (
         <section className="checkout-page">
           <header className="section-header">
-            <h2>Checkout Canceled</h2>
+            <h1>Checkout Canceled</h1>
             <p>No charge was applied. Your account step and saved destination are still preserved, so you can retry checkout or use assisted enrollment without losing context.</p>
           </header>
           <div className="checkout-links">

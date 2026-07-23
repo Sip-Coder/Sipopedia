@@ -39,7 +39,7 @@ export function PolicyPage({ kind, onNavigate }: PolicyPageProps) {
   return (
     <section className="policy-page">
       <header className="section-header">
-        <h2>{policy.title}</h2>
+        <h1>{policy.title}</h1>
       </header>
       <article className="policy-card">
         {policy.paragraphs.map((paragraph) => (

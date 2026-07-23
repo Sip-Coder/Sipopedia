@@ -3,8 +3,6 @@ public/game/**/*.mp4 filter=lfs diff=lfs merge=lfs -text
 public/beers/*.png filter=lfs diff=lfs merge=lfs -text
 public/wines/*.png filter=lfs diff=lfs merge=lfs -text
 public/sake/**/*.png filter=lfs diff=lfs merge=lfs -text
-public/starter-thumbs/*.png filter=lfs diff=lfs merge=lfs -text
-public/starter-thumbs/*.webp filter=lfs diff=lfs merge=lfs -text
 public/infographics/regeneration/*.png filter=lfs diff=lfs merge=lfs -text
 public/region-assets/**/*.png filter=lfs diff=lfs merge=lfs -text
 public/daily-sip/*.png filter=lfs diff=lfs merge=lfs -text

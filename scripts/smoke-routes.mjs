@@ -1,8 +1,6 @@
 import { spawn, spawnSync } from "node:child_process";
-import { once } from "node:events";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
-import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 
@@ -54,7 +52,9 @@ const explicitRoutes = [
   "/#app/ai-news",
   "/#app/somm-events",
   "/admin",
-  "/admin/terminology"
+  "/admin/terminology",
+  "/#route-that-does-not-exist",
+  "/route-that-does-not-exist"
 ];
 
 function parseArgs(argv) {
@@ -94,6 +94,11 @@ function normalizeBaseUrl(rawUrl) {
 function findChromePath() {
   const candidates = [
     process.env.CHROME_PATH,
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
     "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
     "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
@@ -121,17 +126,6 @@ function npmInvocation(args) {
   };
 }
 
-async function getFreePort() {
-  const server = net.createServer();
-  server.listen(0, "127.0.0.1");
-  await once(server, "listening");
-  const address = server.address();
-  const port = typeof address === "object" && address ? address.port : 0;
-  server.close();
-  await once(server, "close");
-  return port;
-}
-
 async function waitForHttp(url, timeoutMs = 20000) {
   const deadline = Date.now() + timeoutMs;
   let lastError = null;
@@ -148,6 +142,39 @@ async function waitForHttp(url, timeoutMs = 20000) {
   throw new Error(`Timed out waiting for ${url}: ${lastError?.message ?? "no response"}`);
 }
 
+async function waitForDevToolsPort(userDataDir, chrome, chromeState, timeoutMs = 60000) {
+  const activePortPath = path.join(userDataDir, "DevToolsActivePort");
+  const deadline = Date.now() + timeoutMs;
+  let lastError = null;
+
+  while (Date.now() < deadline) {
+    if (chromeState.launchError) {
+      throw new Error(`Chrome failed to launch: ${chromeState.launchError.message}`);
+    }
+    if (chrome.exitCode !== null || chrome.signalCode !== null) {
+      const reason = chrome.exitCode !== null ? `code ${chrome.exitCode}` : `signal ${chrome.signalCode}`;
+      const stderr = chromeState.stderr.trim();
+      throw new Error(`Chrome exited with ${reason} before DevTools was ready${stderr ? `:\n${stderr}` : "."}`);
+    }
+
+    try {
+      const [portLine] = fs.readFileSync(activePortPath, "utf8").trim().split(/\r?\n/);
+      const port = Number.parseInt(portLine, 10);
+      if (Number.isInteger(port) && port > 0 && port <= 65535) return port;
+      lastError = new Error(`invalid DevTools port ${JSON.stringify(portLine)}`);
+    } catch (error) {
+      if (error?.code !== "ENOENT") lastError = error;
+    }
+
+    await sleep(250);
+  }
+
+  const stderr = chromeState.stderr.trim();
+  throw new Error(
+    `Timed out waiting for Chrome DevTools port${lastError ? `: ${lastError.message}` : ""}${stderr ? `\nChrome stderr:\n${stderr}` : ""}`
+  );
+}
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -158,7 +185,11 @@ function killProcessTree(child) {
     spawnSync("taskkill.exe", ["/pid", String(child.pid), "/t", "/f"], { stdio: "ignore" });
     return;
   }
-  child.kill();
+  try {
+    process.kill(-child.pid, "SIGTERM");
+  } catch {
+    child.kill("SIGTERM");
+  }
 }
 
 function killChromeProfileProcesses(userDataDir) {
@@ -293,6 +324,7 @@ async function waitForRouteSettled(client, sessionId, route, timeoutMs) {
           hasErrorBoundary: text.includes("Something went wrong"),
           hasWorkspaceLoading: text.includes("Loading workspace...") && text.includes("Preparing your next module."),
           hasPaywall: text.includes("This room is locked, but your route is saved."),
+          hasNotFoundRecovery: text.includes("We couldn't find that page"),
           location: window.location.href
         };
       })()`
@@ -339,6 +371,8 @@ async function navigateAndCheck(client, sessionId, baseUrl, route, routeTimeoutM
     } else if (message.method === "Network.loadingFailed") {
       const request = routeEvents.requestUrls.get(params.requestId);
       const requestUrl = request?.url ?? "";
+      const requestWasCancelled = params.canceled === true || params.errorText === "net::ERR_ABORTED";
+      if (requestWasCancelled) return;
       if (requestUrl && isSameOriginResource(baseUrl, requestUrl) && !requestUrl.endsWith(".map")) {
         routeEvents.failedRequests.push(`${params.errorText ?? "failed"} ${requestUrl}`);
       }
@@ -357,6 +391,7 @@ async function navigateAndCheck(client, sessionId, baseUrl, route, routeTimeoutM
     if (state.hasWorkspaceLoading || state.timedOut) failures.push("stuck loading");
     if ((state.rootTextLength ?? 0) <= 80) failures.push("blank or near-blank root");
     if (route.startsWith("/#app/") && route !== "/#app/launch" && state.hasPaywall) failures.push("paywall blocked workspace render");
+    if (route.includes("route-that-does-not-exist") && !state.hasNotFoundRecovery) failures.push("missing not-found recovery");
     if (routeEvents.exceptions.length) failures.push(`runtime exception: ${routeEvents.exceptions[0]}`);
     if (routeEvents.consoleErrors.length) failures.push(`console error: ${routeEvents.consoleErrors[0]}`);
     if (routeEvents.failedRequests.length) failures.push(`failed same-origin request: ${routeEvents.failedRequests[0]}`);
@@ -387,14 +422,15 @@ async function main() {
 
   if (!baseUrl) {
     baseUrl = `http://127.0.0.1:${options.port}`;
-    const previewCommand = npmInvocation(["run", "preview", "--", "--host", "127.0.0.1", "--port", String(options.port)]);
-    console.log(`Starting production preview at ${baseUrl}`);
+    const previewCommand = npmInvocation(["run", "start", "--", "--host", "127.0.0.1", "--port", String(options.port)]);
+    console.log(`Starting production server at ${baseUrl}`);
     const preview = spawn(
       previewCommand.command,
       previewCommand.args,
       {
         cwd: repoRoot,
         stdio: ["ignore", "pipe", "pipe"],
+        detached: process.platform !== "win32",
         windowsHide: true
       }
     );
@@ -402,15 +438,14 @@ async function main() {
     preview.stdout.on("data", (chunk) => process.stdout.write(chunk));
     preview.stderr.on("data", (chunk) => process.stderr.write(chunk));
     await waitForHttp(baseUrl);
-    console.log("Production preview is responding.");
+    console.log("Production server is responding.");
   }
 
   const chromePath = findChromePath();
-  const remotePort = await getFreePort();
   const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "sipstudies-smoke-chrome-"));
-  console.log(`Starting Chrome DevTools on port ${remotePort}`);
+  console.log("Starting Chrome DevTools with an OS-assigned port");
   const chromeArgs = [
-    `--remote-debugging-port=${remotePort}`,
+    "--remote-debugging-port=0",
     `--user-data-dir=${userDataDir}`,
     "--no-first-run",
     "--no-default-browser-check",
@@ -421,12 +456,22 @@ async function main() {
   if (!options.headed) chromeArgs.push("--headless=new");
 
   const chrome = spawn(chromePath, chromeArgs, {
-    stdio: ["ignore", "ignore", "ignore"],
+    stdio: ["ignore", "ignore", "pipe"],
+    detached: process.platform !== "win32",
     windowsHide: true
+  });
+  const chromeState = { launchError: null, stderr: "" };
+  chrome.on("error", (error) => {
+    chromeState.launchError = error;
+  });
+  chrome.stderr.on("data", (chunk) => {
+    chromeState.stderr = `${chromeState.stderr}${chunk}`.slice(-8000);
   });
   startedProcesses.push(chrome);
 
   try {
+    const remotePort = await waitForDevToolsPort(userDataDir, chrome, chromeState);
+    console.log(`Chrome DevTools selected port ${remotePort}`);
     const version = await waitForHttp(`http://127.0.0.1:${remotePort}/json/version`);
     const versionPayload = await version.json();
     const client = new CdpClient(versionPayload.webSocketDebuggerUrl);

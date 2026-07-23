@@ -9,7 +9,7 @@ export function PowerfulPoint({ onNavigate }: PowerfulPointProps) {
     <section className="powerful-point-page" aria-label="Powerful Point">
       <header className="section-header powerful-point-hero">
         <p className="nav-overline">Powerful Point</p>
-        <h2>Your Beverage Intelligence Operating System</h2>
+        <h1>Your Beverage Intelligence Operating System</h1>
         <p>
           Sip Studies combines academy instruction, tasting workflows, industry intelligence, and AI support into one connected platform for modern beverage learning.
         </p>

@@ -1,18 +1,18 @@
 import {
   buildDefaultOperationsInput,
   runOperationsOrchestrator
-} from "../../../server/hyperagents/operations/operationsOrchestrator.ts";
+} from "../_shared/hyperagents/operations/operationsOrchestrator.ts";
 import type {
   OperationsEvaluationInput,
   OperationsEvaluationOutput
-} from "../../../server/hyperagents/operations/types.ts";
-import { TerminologyMemoryStore } from "../../../server/hyperagents/terminology/terminologyMemoryStore.ts";
-import { TerminologyOrchestrator } from "../../../server/hyperagents/terminology/terminologyOrchestrator.ts";
+} from "../_shared/hyperagents/operations/types.ts";
+import { TerminologyMemoryStore } from "../_shared/hyperagents/terminology/terminologyMemoryStore.ts";
+import { TerminologyOrchestrator } from "../_shared/hyperagents/terminology/terminologyOrchestrator.ts";
 import type {
   BeverageType,
   TerminologyEntry,
   TerminologyRunBatchInput
-} from "../../../server/hyperagents/terminology/types.ts";
+} from "../_shared/hyperagents/terminology/types.ts";
 
 type Provider = "openai" | "anthropic" | "google";
 
@@ -35,18 +35,63 @@ type TerminologyRunRequest = Partial<TerminologyRunBatchInput>;
 const MAX_PROMPT_LENGTH = 4_000;
 const MAX_SYSTEM_LENGTH = 1_200;
 const FETCH_TIMEOUT_MS = 15_000;
-const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN")?.trim() || "*";
+const DEFAULT_ALLOWED_ORIGINS = [
+  "https://sipopedia.com",
+  "https://www.sipopedia.com",
+  "https://sipopedia-02.replit.app",
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173"
+];
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
-};
+function normalizeOrigin(value: string): string | null {
+  const candidate = value.trim().replace(/\/+$/, "");
+  if (!candidate || candidate === "*") return null;
+  try {
+    const parsed = new URL(candidate);
+    return parsed.protocol === "https:" || parsed.protocol === "http:" ? parsed.origin : null;
+  } catch {
+    return null;
+  }
+}
 
-function json(status: number, body: Record<string, unknown>) {
+const allowedOrigins = new Set(
+  [
+    ...DEFAULT_ALLOWED_ORIGINS,
+    ...(Deno.env.get("ALLOWED_ORIGINS") ?? "").split(","),
+    Deno.env.get("ALLOWED_ORIGIN") ?? ""
+  ]
+    .map(normalizeOrigin)
+    .filter((origin): origin is string => Boolean(origin))
+);
+
+function requestOrigin(request: Request): string | null {
+  const origin = request.headers.get("origin")?.trim();
+  return origin ? normalizeOrigin(origin) : null;
+}
+
+function isAllowedRequestOrigin(request: Request): boolean {
+  const origin = requestOrigin(request);
+  return !origin || allowedOrigins.has(origin);
+}
+
+function corsHeaders(request: Request): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    Vary: "Origin"
+  };
+  const origin = requestOrigin(request);
+  if (origin && allowedOrigins.has(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
+  return headers;
+}
+
+function json(request: Request, status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
+    headers: { ...corsHeaders(request), "Content-Type": "application/json" }
   });
 }
 
@@ -169,6 +214,33 @@ async function consumeRateLimit(userId: string): Promise<boolean> {
   }
 }
 
+async function userHasAdminRole(userId: string): Promise<boolean> {
+  const { supabaseUrl, serviceRoleKey } = getSupabaseServiceConfig();
+  if (!supabaseUrl || !serviceRoleKey) {
+    return false;
+  }
+
+  try {
+    const response = await fetchWithTimeout(
+      `${supabaseUrl}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=role&limit=1`,
+      {
+        method: "GET",
+        headers: {
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`
+        }
+      }
+    );
+    if (!response.ok) {
+      return false;
+    }
+    const rows = (await response.json()) as Array<{ role?: string }>;
+    return rows[0]?.role === "admin";
+  } catch {
+    return false;
+  }
+}
+
 function isOperationsRunPath(pathname: string): boolean {
   return pathname.endsWith("/api/hyper/operations/runEvaluation");
 }
@@ -183,6 +255,15 @@ function isTerminologyRunBatchPath(pathname: string): boolean {
 
 function isTerminologyStatusPath(pathname: string): boolean {
   return pathname.endsWith("/api/hyper/terminology/status");
+}
+
+function isPrivilegedInternalPath(pathname: string): boolean {
+  return (
+    isOperationsRunPath(pathname) ||
+    isOperationsDashboardPath(pathname) ||
+    isTerminologyRunBatchPath(pathname) ||
+    isTerminologyStatusPath(pathname)
+  );
 }
 
 function isBeverageType(value: unknown): value is BeverageType {
@@ -435,28 +516,35 @@ async function callGoogle(prompt: string, system: string): Promise<RouterRespons
 Deno.serve(async (request) => {
   const pathname = new URL(request.url).pathname;
 
+  if (!isAllowedRequestOrigin(request)) {
+    return json(request, 403, { error: "Origin is not allowed." });
+  }
+
   if (request.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders(request) });
   }
 
   try {
     const userId = await verifyAuthenticatedUser(request);
     if (!userId) {
-      return json(401, { error: "Sign in is required to use ai-router." });
+      return json(request, 401, { error: "Sign in is required to use ai-router." });
     }
     if (!(await consumeRateLimit(userId))) {
-      return json(429, { error: "Rate limit exceeded. Please try again shortly." });
+      return json(request, 429, { error: "Rate limit exceeded. Please try again shortly." });
+    }
+    if (isPrivilegedInternalPath(pathname) && !(await userHasAdminRole(userId))) {
+      return json(request, 403, { error: "Admin access is required for this route." });
     }
 
     if (isOperationsRunPath(pathname)) {
       if (request.method !== "POST") {
-        return json(405, { error: "Use POST only." });
+        return json(request, 405, { error: "Use POST only." });
       }
       const body = (await request.json().catch(() => ({}))) as OperationsRunRequest;
       const input = buildOperationsInput(body);
       const output = await runOperationsOrchestrator(input, persistOperationsLearningMemory);
 
-      return json(200, {
+      return json(request, 200, {
         pricingRecommendations: output.pricingRecommendations,
         contentRoiRankings: output.contentRoiRankings,
         funnelBottleneckDetection: output.funnelBottleneckDetection,
@@ -468,7 +556,7 @@ Deno.serve(async (request) => {
 
     if (isOperationsDashboardPath(pathname)) {
       if (request.method !== "GET") {
-        return json(405, { error: "Use GET only." });
+        return json(request, 405, { error: "Use GET only." });
       }
 
       const latestDashboard = await fetchLatestDashboardFromMemory();
@@ -477,7 +565,7 @@ Deno.serve(async (request) => {
           buildDefaultOperationsInput(),
           persistOperationsLearningMemory
         );
-        return json(200, {
+        return json(request, 200, {
           membershipConversionTrends: bootstrapOutput.dashboard.membershipConversionTrends,
           topPerformingContentCategories: bootstrapOutput.dashboard.topPerformingContentCategories,
           engagementScoreIndex: bootstrapOutput.dashboard.engagementScoreIndex,
@@ -485,7 +573,7 @@ Deno.serve(async (request) => {
         });
       }
 
-      return json(200, {
+      return json(request, 200, {
         membershipConversionTrends:
           (latestDashboard.membershipConversionTrends as unknown[]) ?? [],
         topPerformingContentCategories:
@@ -497,13 +585,13 @@ Deno.serve(async (request) => {
 
     if (isTerminologyRunBatchPath(pathname)) {
       if (request.method !== "POST") {
-        return json(405, { error: "Use POST only." });
+        return json(request, 405, { error: "Use POST only." });
       }
 
       const body = (await request.json().catch(() => ({}))) as TerminologyRunRequest;
       const input = buildTerminologyInput(body);
       if (!input) {
-        return json(400, {
+        return json(request, 400, {
           error:
             "Invalid payload. Expected letter, beverageType, and batchSize with valid values."
         });
@@ -511,7 +599,7 @@ Deno.serve(async (request) => {
 
       const orchestrator = createTerminologyOrchestrator();
       const output = await orchestrator.runBatch(input);
-      return json(200, {
+      return json(request, 200, {
         batchId: output.batchId,
         generatedAt: output.generatedAt,
         generatedTerms: output.generatedTerms,
@@ -522,12 +610,12 @@ Deno.serve(async (request) => {
 
     if (isTerminologyStatusPath(pathname)) {
       if (request.method !== "GET") {
-        return json(405, { error: "Use GET only." });
+        return json(request, 405, { error: "Use GET only." });
       }
 
       const orchestrator = createTerminologyOrchestrator();
       const status = await orchestrator.getStatus(50);
-      return json(200, {
+      return json(request, 200, {
         batchHistory: status.batchHistory,
         averageScoreTrend: status.averageScoreTrend,
         duplicateReductionTrend: status.duplicateReductionTrend,
@@ -536,7 +624,7 @@ Deno.serve(async (request) => {
     }
 
     if (request.method !== "POST") {
-      return json(405, { error: "Use POST only." });
+      return json(request, 405, { error: "Use POST only." });
     }
 
     const body = (await request.json().catch(() => ({}))) as RouterRequest;
@@ -546,13 +634,13 @@ Deno.serve(async (request) => {
     const maxTokens = Math.min(Math.max(body.maxTokens ?? 400, 64), 1400);
 
     if (!prompt) {
-      return json(400, { error: "Prompt is required." });
+      return json(request, 400, { error: "Prompt is required." });
     }
     if (prompt.length > MAX_PROMPT_LENGTH) {
-      return json(400, { error: `Prompt is too long. Max ${MAX_PROMPT_LENGTH} characters.` });
+      return json(request, 400, { error: `Prompt is too long. Max ${MAX_PROMPT_LENGTH} characters.` });
     }
     if (system.length > MAX_SYSTEM_LENGTH) {
-      return json(400, { error: `System prompt is too long. Max ${MAX_SYSTEM_LENGTH} characters.` });
+      return json(request, 400, { error: `System prompt is too long. Max ${MAX_SYSTEM_LENGTH} characters.` });
     }
 
     let result: RouterResponse;
@@ -563,13 +651,13 @@ Deno.serve(async (request) => {
     } else if (provider === "google") {
       result = await callGoogle(prompt, system);
     } else {
-      return json(400, { error: "Provider must be openai, anthropic, or google." });
+      return json(request, 400, { error: "Provider must be openai, anthropic, or google." });
     }
 
-    return json(200, result);
+    return json(request, 200, result);
   } catch (error: unknown) {
     const requestId = crypto.randomUUID();
     console.error("ai-router error", { requestId, error });
-    return json(500, { error: "Internal server error.", requestId });
+    return json(request, 500, { error: "Internal server error.", requestId });
   }
 });

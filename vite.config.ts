@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   publicDir: "public",
   build: {
-    sourcemap: "hidden",
+    sourcemap: false,
     rolldownOptions: {
       output: {
         codeSplitting: {

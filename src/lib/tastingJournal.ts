@@ -189,7 +189,7 @@ export function writeLocalTastingNoteItems<T>(items: T[], stripItem?: (item: T) 
 
 async function requireCurrentUserId(): Promise<string> {
   if (!supabase) {
-    throw new Error("Supabase is not configured.");
+    throw new Error("Cloud tasting notes are temporarily unavailable. Your local notes are still available.");
   }
 
   const { data, error } = await supabase.auth.getUser();
@@ -208,13 +208,13 @@ async function requireCurrentUserId(): Promise<string> {
 function mapTastingError(message: string): string {
   const lower = message.toLowerCase();
   if (lower.includes("relation") && lower.includes("tasting_notes")) {
-    return "Tasting notes table is missing. Run Supabase migration or apply schema.sql.";
+    return "Tasting notes are temporarily unavailable. Please try again later.";
   }
   if (lower.includes("permission denied")) {
-    return "Permission denied for tasting notes. Check RLS policies.";
+    return "You do not have permission to access these tasting notes.";
   }
   if (lower.includes("invalid api key")) {
-    return "Invalid Supabase API key. Update VITE_SUPABASE_ANON_KEY in .env and restart dev server.";
+    return "Tasting notes are temporarily unavailable. Please try again later.";
   }
   return message;
 }
@@ -235,7 +235,7 @@ function normalizeRow(row: TastingNoteRecord): TastingNoteRecord {
 
 export async function listTastingNotes(): Promise<TastingNoteRecord[]> {
   if (!supabase) {
-    throw new Error("Supabase is not configured.");
+    throw new Error("Cloud tasting notes are temporarily unavailable. Your local notes are still available.");
   }
 
   const userId = await requireCurrentUserId();
@@ -255,7 +255,7 @@ export async function listTastingNotes(): Promise<TastingNoteRecord[]> {
 
 export async function createTastingNote(input: TastingNoteUpsertInput): Promise<TastingNoteRecord> {
   if (!supabase) {
-    throw new Error("Supabase is not configured.");
+    throw new Error("Cloud tasting notes are temporarily unavailable. Your local notes are still available.");
   }
 
   const userId = await requireCurrentUserId();
@@ -278,7 +278,7 @@ export async function createTastingNote(input: TastingNoteUpsertInput): Promise<
 
 export async function updateTastingNote(noteId: string, input: TastingNoteUpsertInput): Promise<TastingNoteRecord> {
   if (!supabase) {
-    throw new Error("Supabase is not configured.");
+    throw new Error("Cloud tasting notes are temporarily unavailable. Your local notes are still available.");
   }
 
   const userId = await requireCurrentUserId();
@@ -300,7 +300,7 @@ export async function updateTastingNote(noteId: string, input: TastingNoteUpsert
 
 export async function deleteTastingNote(noteId: string): Promise<void> {
   if (!supabase) {
-    throw new Error("Supabase is not configured.");
+    throw new Error("Cloud tasting notes are temporarily unavailable. Your local notes are still available.");
   }
 
   const userId = await requireCurrentUserId();

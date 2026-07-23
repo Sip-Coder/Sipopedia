@@ -8,25 +8,67 @@ on:
 
 jobs:
   security:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 2
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install
         run: npm ci
 
+      - name: Hydrate security-sensitive LFS text
+        run: git lfs pull --include="terminology/*.jsonl,review/terminology/**/*.sql" --exclude=""
+
       - name: Secret Guard
         run: npm run security:secrets
 
+      - name: Changed File and Git LFS Guard
+        shell: bash
+        run: |
+          if git rev-parse HEAD^1 >/dev/null 2>&1; then
+            changed_files="$(git diff --name-only --diff-filter=ACMR HEAD^1 HEAD)"
+          else
+            changed_files="$(git ls-files)"
+          fi
+          STAGED_FILES="$changed_files" npm run security:secrets
+
+      - name: Secret Guard Regression Test
+        run: npm run test:security
+
       - name: Dependency Audit
-        run: npm audit --omit=dev --audit-level=high
+        run: npm audit --audit-level=high
+
+      - name: Edge Function Check
+        run: npm run edge:check
+
+      - name: Replit Build Plan
+        run: npm run build:replit -- --dry-run
+
+      - name: LFS Hydration Probe
+        run: |
+          probe="public/game/sprites/Character_Studio/features/frames/freckles/freckles-feature-02.png"
+          git -c "lfs.storage=$RUNNER_TEMP/sipopedia-lfs-probe" lfs pull --include="$probe" origin
+          node scripts/lfs-pointer-guard.mjs "$probe"
 
       - name: Build
         run: npm run build
+
+      - name: RGRD Manifest Guard
+        run: npm run rgrd:verify -- "$GITHUB_SHA"
+
+      - name: Critical Asset Guard
+        run: npm run assets:check
+
+      - name: Route Smoke
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: npm run smoke:routes

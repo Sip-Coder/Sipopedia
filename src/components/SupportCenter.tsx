@@ -739,7 +739,7 @@ export function SupportCenter({ onNavigate }: SupportCenterProps) {
     <section className="support-center-page">
       <header className="section-header support-hero">
         <p className="checkout-eyebrow">Support + Team Training</p>
-        <h2>Find the fastest path for access, study help, billing, and staff training.</h2>
+        <h1>Find the fastest path for access, study help, billing, and staff training.</h1>
         <p>
           A public operating desk for learners and managers: route the issue, gather the right details, and move into the workspace without guessing where support lives.
         </p>

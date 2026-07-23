@@ -33,7 +33,7 @@ export function AiLab() {
     <section className="lab">
       <div className="section-header">
         <h2>Safe AI test box</h2>
-        <p>Your browser sends text to Supabase Function. Secret keys stay hidden on server side.</p>
+        <p>Your request is handled securely, and service credentials stay protected.</p>
       </div>
 
       <div className="lab-grid">
@@ -52,7 +52,7 @@ export function AiLab() {
             {busy ? "Thinking..." : "Send safely"}
           </button>
 
-          {!isConfigured ? <p className="hint">First connect Supabase in your .env file.</p> : null}
+          {!isConfigured ? <p className="hint">AI tools are temporarily unavailable. Please try again later.</p> : null}
           {isConfigured && !user ? <p className="hint">Sign in to use the AI router securely.</p> : null}
           {error ? <p className="error">{error}</p> : null}
         </div>

@@ -1172,11 +1172,6 @@ function getGeneratedCheckpointImage(levelId: LevelId, facilityId: FacilityId, c
   return `/game/checkpoint-scenes/${levelId}-${facilityId}-${checkpointId}-v3.png`;
 }
 
-function getGeneratedGuideSprite(levelId: LevelId, facilityId: FacilityId, guideId: string): string {
-  const characterId = guideId === "sippy" || guideId === "roma" || guideId === "hummin" ? guideId : "support";
-  return `/game/sprites/characters/generated/${levelId}-${facilityId}-${characterId}-v2.png`;
-}
-
 function getRoomCompletionKey(levelId: LevelId, facilityId: FacilityId): string {
   return `${levelId}:${facilityId}`;
 }
@@ -1543,7 +1538,7 @@ export function SipStudiosGame() {
                   {
                     left: `${guide.x}%`,
                     top: `${guide.y}%`,
-                    "--sprite-sheet": `url(${getGeneratedGuideSprite(level.id, facility.id, guide.id)}), url(${guide.sheet})`,
+                    "--sprite-sheet": `url(${guide.sheet})`,
                     "--sprite-pos": getFramePosition(guide.frame, guide.frames),
                     "--sprite-frames": `${guide.frames * 100}% 100%`,
                     "--sprite-aspect": `${guide.aspect}`,

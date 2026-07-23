@@ -138,7 +138,7 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
       <header className="section-header checkout-hero">
         <CosmicSky className="checkout-sky" stars={16} meteors={4} />
         <p className="checkout-eyebrow">Enrollment Console</p>
-        <h2>Start with the right plan and land in the right room.</h2>
+        <h1>Start with the right plan and land in the right room.</h1>
         <p>Confirm your plan, choose checkout or assisted enrollment, and keep your next step attached.</p>
         <div className="checkout-intent-ribbon" aria-label="Enrollment intent">
           <span>

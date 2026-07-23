@@ -268,7 +268,7 @@ export function AvatarCreator({ onNavigate }: AvatarCreatorProps) {
     return (
       <section className="avatar-creator-page">
         <header className="section-header">
-          <h2>Avatar Creator</h2>
+          <h1>Avatar Creator</h1>
           <p>Log in before creating a saved Sip Studies character.</p>
         </header>
         <button className="btn btn-primary" type="button" onClick={() => onNavigate("login?next=account/avatar")}>
@@ -283,7 +283,7 @@ export function AvatarCreator({ onNavigate }: AvatarCreatorProps) {
       <header className="avatar-creator-hero">
         <div>
           <p className="nav-overline">Beverage Pro Character Studio</p>
-          <h2>Character creation for modern beverage pros.</h2>
+          <h1>Character creation for modern beverage pros.</h1>
           <p>{avatarProfessions.length} career presets, {avatarSpecializations.length} specializations, inclusive identity controls, sensory signatures, and dashboard-ready loadouts.</p>
         </div>
         <div className="avatar-creator-actions">

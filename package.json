@@ -3,13 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "vite",
     "localhost": "start-localhost.cmd",
-    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b && tsc -p tsconfig.server.json",
+    "build": "npm run typecheck && vite build && node scripts/write-rgrd-manifest.mjs",
     "build:replit": "node scripts/build-replit.mjs",
+    "start": "sirv dist --single --quiet",
     "preview": "vite preview --host 0.0.0.0 --port 5000",
     "smoke:routes": "node scripts/smoke-routes.mjs",
+    "assets:check": "node scripts/lfs-pointer-guard.mjs dist/starter-thumbs",
+    "test:security": "node --test scripts/guard-secrets.test.mjs",
+    "edge:check": "npx --yes deno@2.9.3 check --frozen supabase/functions/ai-router/index.ts supabase/functions/billing-webhook/index.ts supabase/functions/create-checkout-session/index.ts supabase/functions/news-router/index.ts supabase/functions/terminology-harvester/index.ts supabase/functions/_shared/hyperagents/terminology/index.ts",
+    "rgrd:verify": "node scripts/verify-rgrd-manifest.mjs dist/rgrd.json",
+    "rgrd:check": "npm run test:security && npm run security:secrets && npm audit --audit-level=high && npm run edge:check && npm run build:replit -- --dry-run && npm run build && npm run assets:check && npm run rgrd:verify && npm run smoke:routes",
     "terms:start": "node scripts/start-terms.js",
     "terms:audit": "node scripts/audit-terms.js",
     "terms:import-jsonl": "node scripts/import-sipopedia-jsonl.js",
@@ -30,6 +40,7 @@
     "openai": "^6.37.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "sirv-cli": "^3.0.1",
     "tesseract.js": "^7.0.0",
     "three": "^0.183.2"
   },
@@ -39,6 +50,6 @@
     "@types/three": "^0.183.1",
     "@vitejs/plugin-react": "^6.0.1",
     "typescript": "^5.7.2",
-    "vite": "^8.0.1"
+    "vite": "^8.1.5"
   }
 }

@@ -45,7 +45,7 @@ export function AuthPanel({ postLoginRoute }: AuthPanelProps) {
   return (
     <section className="auth-panel">
       <div>
-        <h2>Account access</h2>
+        <h1>Account access</h1>
         <p>Sign in to activate your workspace and track your learning profile across modules.</p>
       </div>
       <div className="auth-actions">
@@ -61,8 +61,8 @@ export function AuthPanel({ postLoginRoute }: AuthPanelProps) {
         ) : (
           <div className="auth-login-flow">
             {!showLoginOptions ? (
-              <button className="btn btn-primary" onClick={() => setShowLoginOptions(true)}>
-                Log In
+              <button className="btn btn-primary" disabled={!isConfigured} onClick={() => setShowLoginOptions(true)}>
+                {isConfigured ? "Log In" : "Log In Unavailable"}
               </button>
             ) : (
               <>
@@ -71,11 +71,11 @@ export function AuthPanel({ postLoginRoute }: AuthPanelProps) {
                   Log In with Google
                 </button>
                 {authSettingsLoaded && !googleEnabled ? (
-                  <p className="hint">Google OAuth did not advertise as enabled from Supabase settings. Additional login types can be added after provider setup is reviewed.</p>
+                  <p className="hint">Google login is temporarily unavailable. Please try again later.</p>
                 ) : null}
               </>
             )}
-            {!isConfigured ? <p className="hint">Set Supabase env vars to enable login.</p> : null}
+            {!isConfigured ? <p className="hint" role="status">Account access is temporarily unavailable. Please try again later.</p> : null}
           </div>
         )}
       </div>
