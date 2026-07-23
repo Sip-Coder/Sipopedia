@@ -1,5 +1,3 @@
-import "jsr:@supabase/functions-js@2.110.8/edge-runtime.d.ts";
-
 type CheckoutPlanId = "pro" | "founding";
 
 type CheckoutRequest = {

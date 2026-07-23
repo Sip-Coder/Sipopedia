@@ -1,4 +1,3 @@
-import "jsr:@supabase/functions-js@2.110.8/edge-runtime.d.ts";
 import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2.110.8";
 
 type AdminSupabaseClient = SupabaseClient<any>;
