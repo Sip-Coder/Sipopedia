@@ -6,6 +6,17 @@ type StudySheetsProps = {
 };
 
 const categoryOrder: Array<"all" | StudySheetCategory> = ["all", "maps", "styles", "service", "classic-specs"];
+const STUDY_SHEET_COMPLETION_KEY = "sip-studies-study-sheet-completions-v1";
+
+function readCompletedSheetIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(STUDY_SHEET_COMPLETION_KEY) ?? "[]");
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+  } catch {
+    return [];
+  }
+}
 
 function categoryLabel(category: "all" | StudySheetCategory): string {
   return category === "all" ? "All Sheets" : studySheetCategoryLabels[category];
@@ -136,6 +147,7 @@ export function StudySheets({ onNavigate }: StudySheetsProps) {
   const [activeCategory, setActiveCategory] = useState<"all" | StudySheetCategory>("all");
   const [activeSheetId, setActiveSheetId] = useState(studySheets[0].id);
   const [copyNotice, setCopyNotice] = useState("");
+  const [completedSheetIds, setCompletedSheetIds] = useState<string[]>(() => readCompletedSheetIds());
 
   const visibleSheets = useMemo(
     () => studySheets.filter((sheet) => activeCategory === "all" || sheet.category === activeCategory),
@@ -197,6 +209,15 @@ export function StudySheets({ onNavigate }: StudySheetsProps) {
     setCopyNotice("Packet opened in print dialog for PDF download.");
   };
 
+  const toggleActiveSheetCompletion = () => {
+    const next = completedSheetIds.includes(activeSheet.id)
+      ? completedSheetIds.filter((id) => id !== activeSheet.id)
+      : [...completedSheetIds, activeSheet.id];
+    setCompletedSheetIds(next);
+    window.localStorage.setItem(STUDY_SHEET_COMPLETION_KEY, JSON.stringify(next));
+    setCopyNotice(next.includes(activeSheet.id) ? "Sheet marked complete." : "Sheet returned to practice.");
+  };
+
   return (
     <section className="study-sheets-page">
       <header className="section-header study-sheets-hero">
@@ -206,26 +227,38 @@ export function StudySheets({ onNavigate }: StudySheetsProps) {
           Convert the workspace into printer-ready recall sheets for exam prep, pre-shift coaching, blind tasting, and
           beverage category review.
         </p>
+        <p className="hint">
+          Goal: choose one sheet, complete its drill ladder from memory, check your notes, then open the recommended live
+          workspace.
+        </p>
         <div className="study-sheets-hero-actions">
           <button type="button" className="btn btn-primary" onClick={() => window.print()}>
             Print Active Sheet
           </button>
-          <button type="button" className="btn btn-light" onClick={handleExportPacketPdf}>
-            Export PDF Packet
-          </button>
-          <button type="button" className="btn btn-light" onClick={handleDownloadInstructorPacket}>
-            Download Instructor Packet
-          </button>
-          <button type="button" className="btn btn-light" onClick={handleDownloadActiveSheet}>
-            Download Active Sheet
-          </button>
-          <button type="button" className="btn btn-light" onClick={handleCopySheet}>
-            Copy Active Sheet
-          </button>
-          <button type="button" className="btn btn-light" onClick={() => onNavigate("study-paths")}>
-            Credential Paths
+          <button type="button" className="btn btn-light" onClick={toggleActiveSheetCompletion}>
+            {completedSheetIds.includes(activeSheet.id) ? "Completed - Practice Again" : "Mark Drill Complete"}
           </button>
         </div>
+        <details>
+          <summary>Export, instructor, and credential tools</summary>
+          <div className="study-sheets-hero-actions">
+            <button type="button" className="btn btn-light" onClick={handleExportPacketPdf}>
+              Export PDF Packet
+            </button>
+            <button type="button" className="btn btn-light" onClick={handleDownloadInstructorPacket}>
+              Download Instructor Packet
+            </button>
+            <button type="button" className="btn btn-light" onClick={handleDownloadActiveSheet}>
+              Download Active Sheet
+            </button>
+            <button type="button" className="btn btn-light" onClick={handleCopySheet}>
+              Copy Active Sheet
+            </button>
+            <button type="button" className="btn btn-light" onClick={() => onNavigate("study-paths")}>
+              Credential Paths
+            </button>
+          </div>
+        </details>
         {copyNotice ? <p className="study-sheets-notice">{copyNotice}</p> : null}
       </header>
 
@@ -270,6 +303,7 @@ export function StudySheets({ onNavigate }: StudySheetsProps) {
               <p className="nav-overline">{studySheetCategoryLabels[activeSheet.category]}</p>
               <h3>{activeSheet.title}</h3>
               <p>{activeSheet.subtitle}</p>
+              <small>{completedSheetIds.includes(activeSheet.id) ? "Completed" : "Ready to practice"}</small>
             </div>
             <span>{activeSheet.sourceSignals.join(" / ")}</span>
           </div>

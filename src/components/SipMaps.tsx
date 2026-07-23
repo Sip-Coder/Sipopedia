@@ -574,6 +574,7 @@ export function SipMaps() {
           <p className="sip-maps-kicker">Sip Studios Maps</p>
           <h2>{activeMap.title}</h2>
           <p>{activeMap.brief}</p>
+          <p className="hint">Goal: locate the primary regions, name one climate influence, then verify your answer on the map.</p>
         </div>
         <div className="sip-maps-actions">
           <p className="sip-map-select-label">Select Continent</p>
@@ -659,6 +660,17 @@ export function SipMaps() {
         </aside>
       </div>
 
+      <section className="sip-map-panel-card" aria-label={`${activeMap.label} recall prompt`}>
+        <p className="sip-maps-kicker">Try Before You Browse</p>
+        <h3>Point to three primary regions from memory.</h3>
+        <p>
+          Then explain one geographic or climate feature that shapes the beverage style. Use the callouts above to check
+          your answer before opening the deeper atlas.
+        </p>
+      </section>
+
+      <details className="sip-maps-deep-study">
+        <summary>Deep dive: 360 views, regional downloads, and country plates</summary>
       {activeMap.vineyardScenes && activeMap.vineyardScenes.length > 0 ? (
         <VineyardPanoramaViewer scenes={activeMap.vineyardScenes} />
       ) : null}
@@ -835,6 +847,7 @@ export function SipMaps() {
           </aside>
         </div>
       </section>
+      </details>
     </section>
   );
 }

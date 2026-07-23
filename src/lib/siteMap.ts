@@ -1,4 +1,5 @@
 import { WORKSPACE_NAV_ITEMS, type WorkspaceSectionId } from "./workspaceNavigation";
+import { supabase } from "./supabase";
 
 export type PageRoomAccess = "Lobby" | "Game" | "Boss";
 export type PagePublicationStatus = "public" | "edit" | "off";
@@ -23,6 +24,13 @@ export type PageStatusMap = Record<string, PageAccessConfig>;
 export const PAGE_STATUS_STORAGE_KEY = "sipstudies:page-statuses:v2";
 export const LEGACY_PAGE_STATUS_STORAGE_KEY = "sipstudies:page-statuses:v1";
 export const PAGE_STATUS_EVENT = "sipstudies:page-statuses-changed";
+const SITE_PAGE_STATUS_TABLE = "site_page_statuses";
+
+type SitePageStatusRow = {
+  route: string;
+  room: PageRoomAccess;
+  status: PagePublicationStatus;
+};
 
 const WORKSPACE_SECTION_LABELS: Record<WorkspaceSectionId, string> = {
   learn: "Learn",
@@ -115,8 +123,112 @@ export function readPageStatusMap(): PageStatusMap {
 
 export function writePageStatusMap(statuses: PageStatusMap): void {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(PAGE_STATUS_STORAGE_KEY, JSON.stringify(statuses));
+  try {
+    window.localStorage.setItem(PAGE_STATUS_STORAGE_KEY, JSON.stringify(statuses));
+  } catch {
+    // The shared database remains authoritative when browser storage is unavailable.
+  }
   window.dispatchEvent(new CustomEvent(PAGE_STATUS_EVENT, { detail: statuses }));
+}
+
+function pageStatusMapFromRows(rows: SitePageStatusRow[]): PageStatusMap {
+  const defaults = getDefaultPageStatusMap();
+  return rows.reduce<PageStatusMap>((acc, row) => {
+    const normalized = normalizeAccessConfig(row.route, row);
+    if (normalized) acc[row.route] = normalized;
+    return acc;
+  }, defaults);
+}
+
+export async function fetchPageStatusMap(): Promise<PageStatusMap> {
+  const fallback = readPageStatusMap();
+  if (!supabase) return fallback;
+
+  const { data, error } = await supabase
+    .from(SITE_PAGE_STATUS_TABLE)
+    .select("route,room,status")
+    .order("route");
+
+  if (error) {
+    if (error.code === "42P01" || error.code === "PGRST205") return fallback;
+    throw error;
+  }
+
+  const statuses = pageStatusMapFromRows((data as SitePageStatusRow[] | null) ?? []);
+  writePageStatusMap(statuses);
+  return statuses;
+}
+
+export async function publishPageStatusMap(statuses: PageStatusMap): Promise<PageStatusMap> {
+  if (!supabase) {
+    throw new Error("Shared publishing is unavailable because Supabase is not configured.");
+  }
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Sign in as an administrator before publishing the site map.");
+
+  const { data: currentRows, error: currentRowsError } = await supabase
+    .from(SITE_PAGE_STATUS_TABLE)
+    .select("route,room,status");
+  if (currentRowsError) throw currentRowsError;
+
+  const currentByRoute = new Map(
+    ((currentRows as SitePageStatusRow[] | null) ?? []).map((row) => [row.route, row] as const)
+  );
+  const updatedAt = new Date().toISOString();
+  const rows = SITE_MAP_PAGES.flatMap((page) => {
+    const config = statuses[page.route] ?? { room: page.defaultRoom, status: page.defaultStatus };
+    const current = currentByRoute.get(page.route);
+    if (current?.room === config.room && current.status === config.status) return [];
+    return [{
+      route: page.route,
+      room: config.room,
+      status: config.status,
+      updated_at: updatedAt,
+      updated_by: user.id
+    }];
+  });
+
+  if (rows.length > 0) {
+    const { error } = await supabase.from(SITE_PAGE_STATUS_TABLE).upsert(rows, { onConflict: "route" });
+    if (error) throw error;
+  }
+
+  const published = { ...getDefaultPageStatusMap(), ...statuses };
+  writePageStatusMap(published);
+  return published;
+}
+
+export function subscribeToPageStatusMap(onChange: (statuses: PageStatusMap) => void): () => void {
+  if (!supabase) return () => undefined;
+  const client = supabase;
+  let refreshTimer: number | null = null;
+
+  const channel = client
+    .channel("site-page-statuses")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: SITE_PAGE_STATUS_TABLE
+      },
+      () => {
+        if (refreshTimer !== null) window.clearTimeout(refreshTimer);
+        refreshTimer = window.setTimeout(() => {
+          refreshTimer = null;
+          void fetchPageStatusMap().then(onChange).catch(() => undefined);
+        }, 120);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    if (refreshTimer !== null) window.clearTimeout(refreshTimer);
+    void client.removeChannel(channel);
+  };
 }
 
 export function configForRoute(route: string, statuses: PageStatusMap): PageAccessConfig {

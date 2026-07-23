@@ -371,18 +371,25 @@ export function SommEvents() {
   return (
     <section className="somm-events">
       <div className="section-header">
-        <h2>Somm Support Events</h2>
-        <p>
-          Bio.site-inspired modular event page builder with animated backgrounds, stackable link blocks, and editable
-          social/video/photo channels.
-        </p>
+        <h2>Sommelier Events</h2>
+        <p>Find the next useful event, understand how to prepare, and follow the registration or learning link with confidence.</p>
       </div>
+
+      <article className="journal-card" aria-labelledby="somm-events-student-path">
+        <p className="checkout-eyebrow">Student path</p>
+        <h3 id="somm-events-student-path">Choose → prepare → attend</h3>
+        <ol>
+          <li>Choose one event that supports your current study or service goal.</li>
+          <li>Review the event description and write down the prerequisite or bottle prep.</li>
+          <li>Register through the verified event link, then capture one post-event takeaway.</li>
+        </ol>
+      </article>
 
       <div className="somm-events-shell">
         <article className="somm-events-preview-card">
           <div className="somm-events-preview-head">
-            <strong>Live Event Microsite Preview</strong>
-            <span>{activeTheme.label}</span>
+            <strong>Student Event Guide</strong>
+            <span>{activeBlocks.length} current links</span>
           </div>
 
           <div className="somm-events-preview-screen" style={{ backgroundImage: activeGradient }}>
@@ -446,6 +453,8 @@ export function SommEvents() {
                 )}
               </div>
 
+              <details>
+                <summary>Optional media and social channels</summary>
               <section className="somm-events-media-modules">
                 <h4>Connected Media Modules</h4>
                 {connectedSocials.length ? (
@@ -461,10 +470,13 @@ export function SommEvents() {
                   <p className="somm-events-empty">No media modules active yet.</p>
                 )}
               </section>
+              </details>
             </div>
           </div>
         </article>
 
+        <details>
+          <summary>Advanced host tools: edit the event microsite</summary>
         <aside className="somm-events-builder">
           <div className="somm-events-builder-head">
             <h3>Events Builder</h3>
@@ -635,6 +647,7 @@ export function SommEvents() {
             </div>
           </section>
         </aside>
+        </details>
       </div>
     </section>
   );

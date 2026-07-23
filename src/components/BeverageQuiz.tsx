@@ -769,6 +769,20 @@ export function BeverageQuiz() {
     setActivePresetId(preset.id);
   }, []);
 
+  const startQuickDiagnostic = () => {
+    const diagnosticBank = buildCoreBankForExam("CMS", "all", "all");
+    const next = chooseQuestions(diagnosticBank, 10, "CMS", "all", "all");
+    setExamType("CMS");
+    setExamDivision("all");
+    setExamLevel("all");
+    setTopicId("all");
+    setExamLength(10);
+    setQuestions(next);
+    setAnswers({});
+    setShowAnswers(false);
+    setActivePresetId(null);
+  };
+
   useEffect(() => {
     const applyHashPreset = () => {
       const presetId = readPresetIdFromHash();
@@ -898,6 +912,10 @@ export function BeverageQuiz() {
         <p>
           Exam-mode training bank with targeted weakness practice by certification track and topic domain.
         </p>
+        <p className="hint">Goal: answer first, reveal feedback, save the attempt, then drill the weakest topic.</p>
+        <button type="button" className="btn btn-primary" onClick={startQuickDiagnostic}>
+          Start 10-Question Diagnostic
+        </button>
       </div>
 
       <section className="quiz-preset-panel" aria-labelledby="quiz-preset-title">
@@ -931,6 +949,8 @@ export function BeverageQuiz() {
         </div>
       </section>
 
+      <details className="quiz-customize-controls">
+        <summary>Customize certification, topic, and practice length</summary>
       <div className="quiz-controls">
         <div className="quiz-control-row">
           <label htmlFor="quiz-exam-type">Exam Type</label>
@@ -1048,6 +1068,7 @@ export function BeverageQuiz() {
           ) : null}
         </div>
       </div>
+      </details>
 
       <div className="quiz-meta">
         <p>

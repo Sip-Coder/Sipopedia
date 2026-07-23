@@ -716,6 +716,10 @@ export function AiNews() {
     selectedMediaIds: [],
     selectedResearchIds: []
   });
+  const [professionalLens, setProfessionalLens] = useState<"service" | "training" | "operations" | "marketing">("service");
+  const [briefArticleId, setBriefArticleId] = useState<string | null>(null);
+  const [beverageImpact, setBeverageImpact] = useState("");
+  const [humanCheck, setHumanCheck] = useState("");
 
   useEffect(() => {
     let canceled = false;
@@ -821,6 +825,10 @@ export function AiNews() {
     const start = page * articlesPerPage;
     return capped.slice(start, start + articlesPerPage);
   }, [articlesPerPage, filteredArticles, maxVisibleArticles, page]);
+  const briefArticle = useMemo(
+    () => articles.find((article) => article.id === briefArticleId) ?? null,
+    [articles, briefArticleId]
+  );
 
   const renderPageControls = (position: "top" | "bottom") => (
     <div className="news-page-controls">
@@ -861,14 +869,43 @@ export function AiNews() {
     <section className="news-board">
       <div className="section-header">
         <div>
-          <h2>Ai RnD News</h2>
-          <p>AI article blocks with source filtering across labs, hardware news, podcasts/media, and research.</p>
+          <h2>AI for Beverage Professionals</h2>
+          <p>Translate AI developments into safer, more useful decisions for service, training, operations, and marketing.</p>
         </div>
         <button className="btn btn-light" onClick={() => setRefreshCount((value) => value + 1)} disabled={isLoading}>
           {isLoading ? "Refreshing..." : "Refresh"}
         </button>
       </div>
 
+      <article className="journal-card" aria-labelledby="ai-professional-brief-title">
+        <p className="checkout-eyebrow">Professional lens</p>
+        <div className="journal-tabs" role="tablist" aria-label="Beverage professional lens">
+          {(["service", "training", "operations", "marketing"] as const).map((lens) => (
+            <button
+              key={lens}
+              type="button"
+              role="tab"
+              aria-selected={professionalLens === lens}
+              className={`btn ${professionalLens === lens ? "btn-primary" : "btn-light"}`}
+              onClick={() => setProfessionalLens(lens)}
+            >
+              {lens[0].toUpperCase() + lens.slice(1)}
+            </button>
+          ))}
+        </div>
+        <h3 id="ai-professional-brief-title">{briefArticle ? briefArticle.title : `Choose one story to assess for ${professionalLens}`}</h3>
+        {briefArticle ? (
+          <div className="journal-form-grid">
+            <label className="journal-row">Possible beverage-work impact<textarea rows={2} value={beverageImpact} onChange={(event) => setBeverageImpact(event.target.value)} placeholder={`How could this affect ${professionalLens}?`} /></label>
+            <label className="journal-row">Human check before using it<textarea rows={2} value={humanCheck} onChange={(event) => setHumanCheck(event.target.value)} placeholder="What needs verification, consent, attribution, or expert review?" /></label>
+          </div>
+        ) : (
+          <p>Use the feed to practice judgment, not chase tools: identify one relevant change, one risk, and one small test.</p>
+        )}
+      </article>
+
+      <details>
+        <summary>Filter technical sources</summary>
       <div className="news-filter-group">
         <p className="news-filter-label">Global</p>
         <div className="news-source-strip">
@@ -1009,6 +1046,7 @@ export function AiNews() {
           })}
         </div>
       </div>
+      </details>
 
       {renderPageControls("top")}
       {filteredArticles.length > maxVisibleArticles ? (
@@ -1037,11 +1075,12 @@ export function AiNews() {
                   {article.translatedFrom ? ` | translated from ${article.translatedFrom.toUpperCase()}` : ""}
                 </p>
                 {safeArticleUrl ? (
-                  <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">
-                    Read Article
-                  </a>
+                  <div className="journal-actions">
+                    <button className="btn btn-primary" type="button" onClick={() => { setBriefArticleId(article.id); setBeverageImpact(""); setHumanCheck(""); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Assess for beverage work</button>
+                    <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">Read source</a>
+                  </div>
                 ) : (
-                  <span className="btn btn-light news-link">Invalid article URL</span>
+                  <button className="btn btn-primary" type="button" onClick={() => setBriefArticleId(article.id)}>Assess summary</button>
                 )}
               </article>
             );

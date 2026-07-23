@@ -1,21 +1,36 @@
 import { AuthPanel } from "./AuthPanel";
 import { useAccess } from "../context/AccessContext";
 import { buildOnboardingRoute } from "../lib/onboardingIntent";
-import { buildWorkspaceLanePreviews, workspaceLabelForRoute } from "../lib/workspaceNavigation";
+import { WORKSPACE_NAV_ITEMS, buildWorkspaceLanePreviews, workspaceLabelForRoute } from "../lib/workspaceNavigation";
+import { configForRoute, type PageStatusMap } from "../lib/siteMap";
 
 type PaywallPanelProps = {
   onNavigate: (route: string) => void;
   postLoginRoute?: string;
+  pageStatuses: PageStatusMap;
+  isAdmin?: boolean;
 };
 
-export function PaywallPanel({ onNavigate, postLoginRoute }: PaywallPanelProps) {
+export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: PaywallPanelProps) {
   const { tier, errorMessage, subscription, profile } = useAccess();
-  const paywallLanePreview = buildWorkspaceLanePreviews();
+  const publishedWorkspaceItems = WORKSPACE_NAV_ITEMS.filter((item) => {
+    const config = configForRoute(item.route, pageStatuses);
+    return config.status === "public" && config.room !== "Boss";
+  });
+  const paywallLanePreview = buildWorkspaceLanePreviews(publishedWorkspaceItems);
   const isSignedIn = Boolean(profile);
   const nextRoute = postLoginRoute ?? "app/launch";
   const pricingRoute = buildOnboardingRoute("pricing", { planId: "pro", source: "paywall", next: nextRoute });
   const checkoutRoute = buildOnboardingRoute("checkout", { planId: "pro", source: "paywall", next: nextRoute });
   const nextRouteLabel = workspaceLabelForRoute(nextRoute) ?? nextRoute.replace(/^app\//, "").replace(/-/g, " ");
+  const localPreviewAvailable =
+    typeof window !== "undefined" && ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+
+  const enableLocalPreview = () => {
+    if (!localPreviewAvailable) return;
+    window.localStorage.setItem("sipstudies:local-preview-access", "1");
+    window.dispatchEvent(new Event("sipstudies:local-preview-access-changed"));
+  };
 
   return (
     <section className="paywall-panel">
@@ -51,6 +66,11 @@ export function PaywallPanel({ onNavigate, postLoginRoute }: PaywallPanelProps) 
             </p>
           ) : null}
           <div className="paywall-actions">
+            {localPreviewAvailable ? (
+              <button className="btn btn-light" type="button" onClick={enableLocalPreview}>
+                Enable Local Review
+              </button>
+            ) : null}
             {isSignedIn ? (
               <button className="btn btn-light" onClick={() => onNavigate("app/launch")}>
                 Open Launch Pad

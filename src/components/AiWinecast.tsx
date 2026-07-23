@@ -393,6 +393,8 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
   );
   const activeCutPack = useMemo(() => (activeEpisode ? buildWinecastCutPack(activeEpisode) : null), [activeEpisode]);
   const [savedEpisodeSlugs, setSavedEpisodeSlugs] = useState<string[]>([]);
+  const [episodeRecall, setEpisodeRecall] = useState("");
+  const [episodeApplication, setEpisodeApplication] = useState("");
   const swipeStartXRef = useRef<number | null>(null);
   const swipeStartYRef = useRef<number | null>(null);
   const validSavedEpisodeSlugs = useMemo(
@@ -408,6 +410,11 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
   useEffect(() => {
     setSavedEpisodeSlugs(readWinecastQueue());
   }, []);
+
+  useEffect(() => {
+    setEpisodeRecall("");
+    setEpisodeApplication("");
+  }, [episodeSlug]);
 
   const toggleQueueEpisode = useCallback((slug: string) => {
     setSavedEpisodeSlugs((current) => {
@@ -524,8 +531,30 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
           </div>
         ) : null}
 
-        {activeCutPack ? <MediaCutPackPanel pack={activeCutPack} className="ai-winecast-cut-pack" /> : null}
+        <section className="journal-card" aria-labelledby="winecast-learning-loop-title">
+          <p className="ai-winecast-card-label">Listen → recall → apply</p>
+          <h2 id="winecast-learning-loop-title">Make this episode count</h2>
+          <div className="journal-form-grid">
+            <label className="journal-row">
+              Recall two ideas without replaying
+              <textarea rows={3} value={episodeRecall} onChange={(event) => setEpisodeRecall(event.target.value)} />
+            </label>
+            <label className="journal-row">
+              Apply one idea to a tasting, guest conversation, or study drill
+              <textarea rows={3} value={episodeApplication} onChange={(event) => setEpisodeApplication(event.target.value)} />
+            </label>
+          </div>
+          <div className="journal-actions">
+            <a className="btn btn-primary" href="#app/beverage-quiz">Test the idea</a>
+            <button type="button" className="btn btn-light" onClick={() => toggleQueueEpisode(activeEpisode.slug)}>
+              {isActiveEpisodeSaved ? "Saved for review" : "Save for review"}
+            </button>
+          </div>
+        </section>
 
+        <details>
+          <summary>Transcript, creator cuts, and source archive</summary>
+        {activeCutPack ? <MediaCutPackPanel pack={activeCutPack} className="ai-winecast-cut-pack" /> : null}
         {activeCutPack ? (
           <section className="ai-winecast-transcript-archive" aria-labelledby="winecast-transcript-title">
             <div>
@@ -547,6 +576,7 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
             </div>
           </section>
         ) : null}
+        </details>
 
         <section className="ai-winecast-study-grid" aria-label="Episode study notes">
           <article className="ai-winecast-term-card">
@@ -567,6 +597,8 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
           </article>
         </section>
 
+        <details>
+          <summary>Extended episode notes</summary>
         <section className="ai-winecast-article-sections" aria-label="Episode article sections">
           {activeEpisode.articleSections.map((section) => (
             <article key={section.title} className="ai-winecast-article-section">
@@ -575,6 +607,7 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
             </article>
           ))}
         </section>
+        </details>
 
         <div className="ai-winecast-source-strip">
           <span>Source page scraped from SipStudies.com podcast archive.</span>
@@ -612,6 +645,8 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
         </div>
       </header>
 
+      <details>
+        <summary>About the Winecast archive</summary>
       <section className="ai-winecast-feature">
         <img src={AI_WINECAST_BG} alt="Ai Winecast background artwork" loading="lazy" decoding="async" />
         <div>
@@ -623,6 +658,7 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
           </p>
         </div>
       </section>
+      </details>
 
       <section className="ai-winecast-watch-queue" aria-labelledby="winecast-watch-queue-title">
         <div className="ai-winecast-watch-copy">

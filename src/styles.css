@@ -858,26 +858,60 @@ select option:checked {
   margin-top: 1.3rem;
   padding: 1.25rem;
   border-radius: 20px;
-  border: 1px solid var(--line);
-  background: var(--card);
+  border: 1px solid rgba(159, 218, 245, 0.24);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(237, 212, 168, 0.13), transparent 34%),
+    linear-gradient(145deg, rgba(7, 24, 36, 0.96), rgba(3, 14, 26, 0.98));
   box-shadow: var(--shadow);
   animation: rise-in 750ms ease-out;
+}
+
+.somm-events > .section-header h2,
+.somm-events > .journal-card h3 {
+  color: #fff1d1;
+}
+
+.somm-events > .section-header p,
+.somm-events > .journal-card li {
+  color: rgba(217, 247, 255, 0.86);
+}
+
+.somm-events > .journal-card {
+  border-color: rgba(159, 218, 245, 0.24);
+  background: rgba(6, 24, 36, 0.82);
 }
 
 .somm-events-shell {
   margin-top: 0.9rem;
   display: grid;
   gap: 1rem;
-  grid-template-columns: minmax(340px, 0.95fr) minmax(0, 1.05fr);
+  grid-template-columns: 1fr;
   align-items: start;
 }
 
-.somm-events-preview-card,
+.somm-events-preview-card {
+  border: 1px solid rgba(159, 218, 245, 0.24);
+  border-radius: 16px;
+  background: rgba(4, 15, 26, 0.82);
+  padding: 0.85rem;
+}
+
 .somm-events-builder {
   border: 1px solid #d4d8cf;
   border-radius: 16px;
   background: #fffdfa;
   padding: 0.85rem;
+}
+
+.somm-events-shell > details {
+  border: 1px solid rgba(159, 218, 245, 0.2);
+  border-radius: 14px;
+  background: rgba(4, 15, 26, 0.62);
+  padding: 0.35rem;
+}
+
+.somm-events-shell > details[open] {
+  padding: 0.55rem;
 }
 
 .somm-events-preview-head {
@@ -887,6 +921,7 @@ select option:checked {
   gap: 0.5rem;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
+  color: #fff1d1;
 }
 
 .somm-events-preview-head span {
@@ -903,7 +938,7 @@ select option:checked {
   position: relative;
   border-radius: 14px;
   overflow: hidden;
-  min-height: 700px;
+  min-height: 0;
   border: 1px solid rgba(235, 240, 236, 0.52);
 }
 
@@ -18430,6 +18465,11 @@ select option:checked {
   padding: 0.85rem;
 }
 
+.starter-portal-stage > .starter-demo-cohort,
+.starter-portal-stage > .starter-demo-cohort + .starter-portal-intro {
+  grid-column: 1 / -1;
+}
+
 .starter-demo-cohort > div:first-child {
   align-content: center;
   display: grid;
@@ -18454,6 +18494,58 @@ select option:checked {
 .starter-demo-card-cohort .starter-demo-thumb {
   height: 100%;
   min-height: 220px;
+}
+
+.page-workspace details > summary,
+.page-starter details > summary {
+  border-radius: 10px;
+  color: var(--company-light-blue-font);
+  cursor: pointer;
+  font-weight: 850;
+  outline: none;
+  padding: 0.68rem 0.78rem;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.page-workspace details > summary:hover,
+.page-starter details > summary:hover,
+.page-workspace details > summary:focus-visible,
+.page-starter details > summary:focus-visible,
+.page-workspace details[open] > summary,
+.page-starter details[open] > summary {
+  background: rgba(159, 218, 245, 0.1);
+  color: #fff1d1;
+}
+
+.page-workspace details[open] > summary,
+.page-starter details[open] > summary {
+  margin-bottom: 0.7rem;
+}
+
+button.journal-note-select {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  min-width: 0;
+  text-align: left;
+}
+
+button.journal-note-select:focus-visible,
+.journal-tabs [role="tab"]:focus-visible,
+.starter-portal-button:focus-visible {
+  outline: 3px solid rgba(159, 218, 245, 0.92);
+  outline-offset: 3px;
+}
+
+button.journal-note-row.journal-note-select {
+  width: 100%;
+}
+
+button.journal-note-row.journal-note-select .journal-note-copy {
+  display: grid;
+  gap: 0.25rem;
 }
 
 .starter-demo-grid {

@@ -68,6 +68,8 @@ export function ServiceRoleplayLab({ onNavigate }: ServiceRoleplayLabProps) {
   const [activeCategory, setActiveCategory] = useState<"all" | ServiceRoleplayCategory>("all");
   const [activeScenarioId, setActiveScenarioId] = useState(serviceRoleplayScenarios[0].id);
   const [selectedOptionIds, setSelectedOptionIds] = useState<Record<string, string | undefined>>({});
+  const [responseDrafts, setResponseDrafts] = useState<Record<string, string>>({});
+  const [revealedStepIds, setRevealedStepIds] = useState<Record<string, true>>({});
   const [savedAttempts, setSavedAttempts] = useState<SavedRoleplayAttempt[]>(() => readSavedAttempts());
   const [notice, setNotice] = useState("");
 
@@ -95,12 +97,16 @@ export function ServiceRoleplayLab({ onNavigate }: ServiceRoleplayLabProps) {
     setActiveCategory(category);
     setActiveScenarioId(nextScenario.id);
     setSelectedOptionIds({});
+    setResponseDrafts({});
+    setRevealedStepIds({});
     setNotice("");
   };
 
   const chooseScenario = (scenarioId: string) => {
     setActiveScenarioId(scenarioId);
     setSelectedOptionIds({});
+    setResponseDrafts({});
+    setRevealedStepIds({});
     setNotice("");
   };
 
@@ -150,6 +156,9 @@ export function ServiceRoleplayLab({ onNavigate }: ServiceRoleplayLabProps) {
         <p>
           Turn credential-style service pressure into repeatable reps. Choose responses, get scored coaching, save attempts,
           and jump into the next study route.
+        </p>
+        <p className="hint">
+          Goal → respond in your own words → compare service choices → review coaching → choose the next practice route.
         </p>
         <div className="service-roleplay-hero-actions">
           <button type="button" className="btn btn-primary" onClick={() => onNavigate("app/beverage-quiz?preset=bar-service")}>
@@ -263,23 +272,52 @@ export function ServiceRoleplayLab({ onNavigate }: ServiceRoleplayLabProps) {
                       <strong>Station:</strong> {step.stationCue}
                     </p>
                   </div>
-                  <div className="service-roleplay-options">
-                    {step.options.map((option) => (
+                  <div className="service-roleplay-cues">
+                    <label htmlFor={`roleplay-response-${step.id}`}>
+                      <strong>Try first:</strong> What would you say or do before seeing the choices?
+                    </label>
+                    <textarea
+                      id={`roleplay-response-${step.id}`}
+                      value={responseDrafts[step.id] ?? ""}
+                      onChange={(event) => {
+                        setResponseDrafts((current) => ({ ...current, [step.id]: event.target.value }));
+                        setNotice("");
+                      }}
+                      placeholder="Rehearse a concise guest-facing response..."
+                      rows={3}
+                    />
+                    {!revealedStepIds[step.id] ? (
                       <button
-                        key={option.id}
                         type="button"
-                        className={option.id === selectedOptionId ? "selected" : ""}
-                        aria-pressed={option.id === selectedOptionId}
-                        onClick={() => {
-                          setSelectedOptionIds((current) => ({ ...current, [step.id]: option.id }));
-                          setNotice("");
-                        }}
+                        className="btn btn-light"
+                        disabled={(responseDrafts[step.id]?.trim().length ?? 0) < 12}
+                        onClick={() => setRevealedStepIds((current) => ({ ...current, [step.id]: true }))}
                       >
-                        <span>{option.label}</span>
-                        <strong>{option.response}</strong>
+                        Compare Response Choices
                       </button>
-                    ))}
+                    ) : null}
                   </div>
+                  {revealedStepIds[step.id] ? (
+                    <div className="service-roleplay-options">
+                      {step.options.map((option) => (
+                        <button
+                          key={option.id}
+                          type="button"
+                          className={option.id === selectedOptionId ? "selected" : ""}
+                          aria-pressed={option.id === selectedOptionId}
+                          onClick={() => {
+                            setSelectedOptionIds((current) => ({ ...current, [step.id]: option.id }));
+                            setNotice("");
+                          }}
+                        >
+                          <span>{option.label}</span>
+                          <strong>{option.response}</strong>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="hint">Write at least 12 characters to unlock the comparison choices.</p>
+                  )}
                   {selectedOption ? (
                     <div className={`service-roleplay-feedback score-${selectedOption.score}`}>
                       <span>{selectedOption.score} points</span>
@@ -328,6 +366,8 @@ export function ServiceRoleplayLab({ onNavigate }: ServiceRoleplayLabProps) {
                 className="btn btn-light"
                 onClick={() => {
                   setSelectedOptionIds({});
+                  setResponseDrafts({});
+                  setRevealedStepIds({});
                   setNotice("");
                 }}
               >

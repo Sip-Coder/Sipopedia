@@ -2353,6 +2353,8 @@ export function SipAcademyWineLessons() {
                 <span>Recall check</span>
                 <span>Next unit</span>
               </div>
+              <details className="academy-mentor-details">
+                <summary>Meet your optional study mentors</summary>
               <div className="academy-header-hero-mentors" aria-label="Sip Academy mentors">
                 <button type="button" className={`academy-header-mentor ${guideState.speaker === "sippy" ? "active" : ""}`} onClick={() => setProfileMentorId("sippy")}>
                   <img src={sippyImage} alt="" loading="lazy" decoding="async" />
@@ -2367,6 +2369,7 @@ export function SipAcademyWineLessons() {
                   <span>Hummin</span>
                 </button>
               </div>
+              </details>
             </div>
           </div>
 
@@ -2394,6 +2397,8 @@ export function SipAcademyWineLessons() {
                 Start Focus Sprint
               </button>
             </div>
+            <details className="academy-advanced-controls">
+              <summary>Progress, mentors, and alternate study modes</summary>
             <div className="academy-level-band">
               <div>
                 <strong>{Math.round(combinedCompletionRatio * 100)}%</strong>
@@ -2446,6 +2451,7 @@ export function SipAcademyWineLessons() {
                 </button>
               ))}
             </div>
+            </details>
           </aside>
         </div>
       </header>
@@ -2456,6 +2462,8 @@ export function SipAcademyWineLessons() {
         <div className="academy-learning-flow">
       <CategoryTrainingSprints />
 
+      <details className="academy-cinematic-details">
+        <summary>Explore the current realm cinematic</summary>
       <section className="academy-cinematic" aria-label="Active realm cinematic preview">
         <div className="academy-cinematic-stage">
           <img
@@ -2513,6 +2521,7 @@ export function SipAcademyWineLessons() {
           </div>
         </div>
       </section>
+      </details>
 
       <section className="academy-flow-intro" aria-label="Sip Academy learning flow">
         <div>
@@ -2867,12 +2876,12 @@ export function SipAcademyWineLessons() {
             </div>
           ) : (
             <div className="academy-idle">
-              <h3>Launch Your Next Mission</h3>
-              <p>Pick an unlocked node from the campaign path. Pass at 70% accuracy before hearts run out.</p>
+              <h3>Continue Your Next Lesson</h3>
+              <p>Start the recommended lesson, complete its recall check, and reach 70% accuracy to advance.</p>
               <ul>
-                <li>{LESSONS.length} lessons across {REALMS.length} realms with Scout, Challenge, and Boss missions.</li>
-                <li>Sippy, Roma, and Hummin adapt guidance style in basic adventure, equipment mastery, or story voice.</li>
-                <li>Stack combo bonuses, preserve hearts, and clear bosses to complete each realm.</li>
+                <li>Goal: learn one practical idea in a short, focused session.</li>
+                <li>Try: answer from memory before reading the feedback.</li>
+                <li>Review: use the explanation and sources, then continue to the next lesson.</li>
               </ul>
               <div className="academy-idle-next">
                 <p className="academy-quest-kicker">Recommended Next Mission</p>

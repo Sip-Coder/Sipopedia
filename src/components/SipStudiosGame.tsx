@@ -608,7 +608,7 @@ const ADDITIONAL_LEVELS: GameLevel[] = [
   {
     id: "packaging-distribution",
     number: 5,
-    title: "Packaging and Distribution",
+    title: "Packaging & Quality",
     version: "Level 5",
     summary: "Protect beverage quality through packaging, closure, cold chain, compliance, and shipping.",
     completionTitle: "Level 5 complete",
@@ -634,7 +634,7 @@ const ADDITIONAL_LEVELS: GameLevel[] = [
   {
     id: "retail-training",
     number: 6,
-    title: "Retail Training",
+    title: "Retail Recommendations",
     version: "Level 6",
     summary: "Practice shelf logic, customer discovery, responsible selling, and recommendation flow.",
     completionTitle: "Level 6 complete",
@@ -660,7 +660,7 @@ const ADDITIONAL_LEVELS: GameLevel[] = [
   {
     id: "restaurant-training",
     number: 7,
-    title: "Restaurant Training",
+    title: "Service & Hospitality",
     version: "Level 7",
     summary: "Practice table service, glassware, pacing, guest language, and responsible hospitality.",
     completionTitle: "Level 7 complete",
@@ -686,7 +686,7 @@ const ADDITIONAL_LEVELS: GameLevel[] = [
   {
     id: "classic-food-pairings",
     number: 8,
-    title: "Classic Food Pairings",
+    title: "Pairing Principles",
     version: "Level 8",
     summary: "Practice pairing by weight, acid, fat, protein, spice, sweetness, bitterness, and texture.",
     completionTitle: "Level 8 complete",
@@ -1031,7 +1031,7 @@ const ADVANCED_LEVELS: GameLevel[] = [
   {
     id: "fermentation-distillation",
     number: 3,
-    title: "Fermentation & Distillation Focus",
+    title: "Transformation & Process Control",
     version: "Level 3",
     summary: "Control yeast, conversion, vapor, condensation, and cuts.",
     completionTitle: "Level 3 complete",
@@ -1081,7 +1081,7 @@ const ADVANCED_LEVELS: GameLevel[] = [
   {
     id: "aging-requirements",
     number: 4,
-    title: "Aging Requirements",
+    title: "Maturation & Conditioning",
     version: "Level 4",
     summary: "Learn vessel choice, time, oxygen, temperature, humidity, and maturation risk.",
     completionTitle: "Level 4 complete",
@@ -1110,7 +1110,7 @@ const LEVELS: GameLevel[] = [
   {
     id: "raw-ingredients",
     number: 1,
-    title: "Raw Ingredient Quest",
+    title: "Field to Fermenter",
     version: "Level 1",
     summary: "Grow, train, harvest, and prepare the ingredients before they enter production.",
     completionTitle: "Level 1 complete",
@@ -1120,7 +1120,7 @@ const LEVELS: GameLevel[] = [
   {
     id: "equipment-lab",
     number: 2,
-    title: "Equipment Quest Lab",
+    title: "Equipment & Process",
     version: "Level 2",
     summary: "Move through each production room and identify what every major piece of equipment changes.",
     completionTitle: "Level 2 complete",
@@ -1240,6 +1240,9 @@ export function SipStudiosGame() {
   const [finalCelebrationDismissed, setFinalCelebrationDismissed] = useState<Record<string, true>>({});
   const [showQuickNextLevelCta, setShowQuickNextLevelCta] = useState(false);
   const [visited, setVisited] = useState<Record<string, number>>({});
+  const [mastered, setMastered] = useState<Record<string, true>>({});
+  const [checkpointResponse, setCheckpointResponse] = useState("");
+  const [checkpointResponseNotice, setCheckpointResponseNotice] = useState("");
   const [lineIndex, setLineIndex] = useState(0);
 
   const level = useMemo(() => LEVELS.find((item) => item.id === levelId) ?? LEVELS[0], [levelId]);
@@ -1254,23 +1257,23 @@ export function SipStudiosGame() {
   const activeLine = activeGuide
     ? activeGuide.lines[Math.min(lineIndex, activeGuide.lines.length - 1)]
     : activeCheckpoint?.purpose ?? facility.challenge;
-  const visitedCount = facility.checkpoints.filter((item) => visited[getVisitedKey(level.id, facility.id, item.id)]).length;
-  const roomComplete = visitedCount === facility.checkpoints.length;
-  const progress = Math.min(100, (visitedCount / facility.checkpoints.length) * 100);
-  const levelVisitedCount = level.facilities.reduce(
-    (total, item) => total + item.checkpoints.filter((checkpoint) => visited[getVisitedKey(level.id, item.id, checkpoint.id)]).length,
+  const masteredCount = facility.checkpoints.filter((item) => mastered[getVisitedKey(level.id, facility.id, item.id)]).length;
+  const roomComplete = masteredCount === facility.checkpoints.length;
+  const progress = Math.min(100, (masteredCount / facility.checkpoints.length) * 100);
+  const levelMasteredCount = level.facilities.reduce(
+    (total, item) => total + item.checkpoints.filter((checkpoint) => mastered[getVisitedKey(level.id, item.id, checkpoint.id)]).length,
     0
   );
   const levelCheckpointCount = level.facilities.reduce((total, item) => total + item.checkpoints.length, 0);
-  const levelProgress = Math.min(100, (levelVisitedCount / levelCheckpointCount) * 100);
-  const levelComplete = levelVisitedCount === levelCheckpointCount;
+  const levelProgress = Math.min(100, (levelMasteredCount / levelCheckpointCount) * 100);
+  const levelComplete = levelMasteredCount === levelCheckpointCount;
   const isFinalLevelRoomComplete = level.number === 8 && roomComplete;
   const finalCelebrationKey = getRoomCompletionKey(level.id, facility.id);
   const isFinalLevelCelebration = isFinalLevelRoomComplete && !modalCheckpoint && !roomCompletionModalKey && !finalCelebrationDismissed[finalCelebrationKey];
   const finalLevelCelebration = FINAL_LEVEL_CELEBRATIONS[facility.id];
   const otherFacilities = level.facilities.filter((item) => item.id !== facility.id);
   const nextLevel = LEVELS.find((item) => item.number === level.number + 1) ?? null;
-  const nextCheckpoint = facility.checkpoints.find((item) => !visited[getVisitedKey(level.id, facility.id, item.id)]) ?? null;
+  const nextCheckpoint = facility.checkpoints.find((item) => !mastered[getVisitedKey(level.id, facility.id, item.id)]) ?? null;
 
   const changeLevel = (nextLevelId: LevelId, nextFacilityId: FacilityId = facilityId) => {
     setLevelId(nextLevelId);
@@ -1294,6 +1297,11 @@ export function SipStudiosGame() {
     if (!checkpointModalId) return;
     if (roomCompletionModalKey) setRoomCompletionModalKey(null);
   }, [checkpointModalId, roomCompletionModalKey]);
+
+  useEffect(() => {
+    setCheckpointResponse("");
+    setCheckpointResponseNotice("");
+  }, [checkpointModalId]);
 
   useEffect(() => {
     const step = (ts: number) => {
@@ -1382,10 +1390,9 @@ export function SipStudiosGame() {
     }
   };
 
-  const closeCheckpointModal = () => {
-    const closingCheckpointId = checkpointModalId;
+  const closeCheckpointModal = (masteredCheckpointId?: string) => {
     const roomWillBeComplete = facility.checkpoints.every(
-      (item) => item.id === closingCheckpointId || visited[getVisitedKey(level.id, facility.id, item.id)]
+      (item) => item.id === masteredCheckpointId || mastered[getVisitedKey(level.id, facility.id, item.id)]
     );
 
     setCheckpointModalId(null);
@@ -1395,6 +1402,20 @@ export function SipStudiosGame() {
     setShowQuickNextLevelCta(false);
     if (level.number === 8) return;
     setRoomCompletionModalKey(roomKey);
+  };
+
+  const markCheckpointMastered = () => {
+    if (!modalCheckpoint) return;
+    if (checkpointResponse.trim().length < 24) {
+      setCheckpointResponseNotice("Add a short input → action → output explanation and one warning sign before marking mastery.");
+      return;
+    }
+    const checkpointId = modalCheckpoint.id;
+    setMastered((current) => ({
+      ...current,
+      [getVisitedKey(level.id, facility.id, checkpointId)]: true
+    }));
+    closeCheckpointModal(checkpointId);
   };
 
   const completeLesson = () => {
@@ -1449,8 +1470,8 @@ export function SipStudiosGame() {
             Current version: {level.version} - {level.title}
           </p>
           <p>
-            Move the cup guide through each room, tap mentors and checkpoints, then use the hotspot clues to rehearse
-            process flow.
+            Move the cup guide through each room, study a checkpoint, then explain its input, action, output, and warning
+            sign to earn mastery.
           </p>
         </div>
       </header>
@@ -1508,11 +1529,12 @@ export function SipStudiosGame() {
 
             {facility.checkpoints.map((item) => {
               const seen = Boolean(visited[getVisitedKey(level.id, facility.id, item.id)]);
+              const isMastered = Boolean(mastered[getVisitedKey(level.id, facility.id, item.id)]);
               return (
                 <button
                   key={item.id}
                   type="button"
-                  className={`sip-game-equipment ${activeId === item.id ? "active" : ""} ${seen ? "visited" : ""}`}
+                  className={`sip-game-equipment ${activeId === item.id ? "active" : ""} ${seen ? "visited" : ""} ${isMastered ? "mastered" : ""}`}
                   style={
                     {
                       left: `${item.x}%`,
@@ -1578,14 +1600,14 @@ export function SipStudiosGame() {
 
             <div
               className={`sip-game-master-chip ${showQuickNextLevelCta && roomComplete && !roomCompletionModalKey ? "has-next-cta" : ""}`}
-              aria-label={`${facility.name} mastery ${visitedCount} of ${facility.checkpoints.length}`}
+              aria-label={`${facility.name} mastery ${masteredCount} of ${facility.checkpoints.length}`}
             >
               <strong>{facility.name} Mastery</strong>
-              <span>{pendingId ? "Walking to hotspot..." : `${visitedCount}/${facility.checkpoints.length} checkpoints`}</span>
+              <span>{pendingId ? "Walking to hotspot..." : `${masteredCount}/${facility.checkpoints.length} recall checks`}</span>
               <div className="sip-game-progress">
                 <div style={{ width: `${progress}%` }} />
               </div>
-              <small>{roomComplete ? "Room complete" : `${levelVisitedCount}/${levelCheckpointCount} level checkpoints`}</small>
+              <small>{roomComplete ? "Room complete" : `${levelMasteredCount}/${levelCheckpointCount} level recall checks`}</small>
               {showQuickNextLevelCta && roomComplete && !roomCompletionModalKey ? (
                 <button
                   type="button"
@@ -1654,12 +1676,8 @@ export function SipStudiosGame() {
             aria-modal="true"
             aria-label={`${modalCheckpoint.name} checkpoint briefing`}
             onPointerDown={(event) => event.stopPropagation()}
-            onClick={(event) => {
-              if ((event.target as HTMLElement).closest("button, a")) return;
-              closeCheckpointModal();
-            }}
           >
-            <button type="button" className="sip-game-modal-close" onClick={closeCheckpointModal} aria-label="Close checkpoint briefing">
+            <button type="button" className="sip-game-modal-close" onClick={() => closeCheckpointModal()} aria-label="Close checkpoint briefing">
               x
             </button>
             <div className="sip-game-equipment-portrait">
@@ -1683,6 +1701,25 @@ export function SipStudiosGame() {
                 {modalTeachingNotes.map((note) => (
                   <p key={note}>{note}</p>
                 ))}
+              </div>
+              <div className="sip-game-teaching-notes">
+                <label htmlFor={`checkpoint-response-${modalCheckpoint.id}`}>
+                  <strong>Recall check:</strong> Explain the input → action → output, plus one warning sign, in your own words.
+                </label>
+                <textarea
+                  id={`checkpoint-response-${modalCheckpoint.id}`}
+                  value={checkpointResponse}
+                  onChange={(event) => {
+                    setCheckpointResponse(event.target.value);
+                    setCheckpointResponseNotice("");
+                  }}
+                  rows={4}
+                  placeholder="Input… Action… Output… Warning sign…"
+                />
+                {checkpointResponseNotice ? <p className="hint" role="status">{checkpointResponseNotice}</p> : null}
+                <button type="button" className="btn btn-primary" onClick={markCheckpointMastered}>
+                  Mark Checkpoint Mastered
+                </button>
               </div>
             </div>
           </article>
@@ -1715,7 +1752,7 @@ export function SipStudiosGame() {
             </button>
             <p className="sip-game-dialogue-kicker">{level.completionTitle}</p>
             <h3>{facility.name} mastery complete</h3>
-            <p>You clicked through and reviewed all 3 checkpoints for this room.</p>
+            <p>You studied and explained all 3 checkpoints for this room.</p>
             <div className="sip-game-progress" aria-hidden="true">
               <div style={{ width: `${progress}%` }} />
             </div>

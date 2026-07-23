@@ -114,6 +114,7 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
   const [savingRecord, setSavingRecord] = useState(false);
   const [syncingRecordId, setSyncingRecordId] = useState<string | null>(null);
   const [feedbackDraft, setFeedbackDraft] = useState<CellarTastingFeedbackDraft>(() => emptyCellarTastingFeedbackDraft());
+  const [stage, setStage] = useState<"scan" | "verify" | "next">("scan");
   const studyLinks = useMemo(() => cellarStudyLinksForRecord(draft), [draft]);
   const recommendations = useMemo(() => cellarRecommendationsForRecord(draft), [draft]);
   const metadataProfile = useMemo(() => cellarMetadataProfileForRecord(draft), [draft]);
@@ -208,6 +209,7 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
     }));
     setOcrStatus("done");
     setOcrMessage("Text analyzed. Review the extracted fields before saving.");
+    setStage("verify");
   };
 
   const runOcr = async () => {
@@ -237,6 +239,7 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
       }));
       setOcrStatus("done");
       setOcrMessage(text ? `${captureTargetOptions.find((option) => option.value === captureTarget)?.label ?? "Label"} OCR appended. Capture the next side or review fields before saving.` : "OCR finished but found little text. Try a sharper image or paste text.");
+      setStage("verify");
     } catch {
       setOcrStatus("failed");
       setOcrMessage("OCR could not complete in this browser session. Paste label or menu text and run Analyze Text.");
@@ -250,6 +253,7 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
       setActiveRecordId(nextRecords[0]?.id ?? null);
       setOcrStatus("done");
       setOcrMessage(message);
+      setStage("next");
     };
 
     if (isAuthConfigured && user) {
@@ -263,6 +267,7 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
           setOcrStatus("done");
           setOcrMessage("Saved to cloud cellar. Open the study route or create a tasting note next.");
           setCloudStatus("Cloud cellar sync active.");
+          setStage("next");
         })
         .catch((error: unknown) => {
           saveLocalRecord(`Cloud save failed, so the record is saved locally: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -303,6 +308,7 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
       serviceIntent: current.serviceIntent || record.pairingNeed,
       conclusion: current.conclusion || record.notes
     }));
+    setStage("verify");
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   };
 
@@ -355,18 +361,22 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
   return (
     <section className="cellar-scanner-page">
       <header className="section-header cellar-scanner-hero">
-        <p className="checkout-eyebrow">Mobile Utility Lab</p>
-        <h2>Scan labels, capture cellar context, and turn bottles into study routes.</h2>
-        <p>
-          This is the education-first answer to label-scanning wine apps: extract useful clues, save a local or cloud bottle/menu record, then move directly into terms,
-          maps, tasting notes, quizzes, and pairing practice.
-        </p>
+        <p className="checkout-eyebrow">Three-step bottle workflow</p>
+        <h2>Scan → Verify → Next Action</h2>
+        <p>Capture only what the label can tell you, correct the extracted facts, then choose one useful learning or service action.</p>
       </header>
 
       <p className="cellar-cloud-status">{cloudLoading ? "Syncing..." : cloudStatus}</p>
 
+      <nav className="journal-tabs" aria-label="Cellar Scanner steps">
+        <button type="button" className={`btn ${stage === "scan" ? "btn-primary" : "btn-light"}`} onClick={() => setStage("scan")}>1. Scan</button>
+        <button type="button" className={`btn ${stage === "verify" ? "btn-primary" : "btn-light"}`} onClick={() => setStage("verify")}>2. Verify</button>
+        <button type="button" className={`btn ${stage === "next" ? "btn-primary" : "btn-light"}`} onClick={() => setStage("next")} disabled={!activeRecordId}>3. Next Action</button>
+      </nav>
+
       <div className="cellar-scanner-grid">
-        <article className="cellar-scanner-input-card">
+        {stage === "scan" ? <article className="cellar-scanner-input-card">
+          <p className="nav-overline">Step 1 · Scan or paste</p>
           <div className="cellar-scanner-mode-row">
             {sourceOptions.map((option) => (
               <button key={option.value} type="button" className={draft.sourceType === option.value ? "active" : ""} onClick={() => updateDraft("sourceType", option.value)}>
@@ -415,11 +425,11 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
             </button>
           </div>
           <p className={`cellar-scanner-status status-${ocrStatus}`}>{ocrMessage}</p>
-        </article>
+        </article> : null}
 
-        <article className="cellar-scanner-form-card">
+        {stage === "verify" ? <article className="cellar-scanner-form-card">
           <div className="cellar-scanner-form-head">
-            <p className="nav-overline">Extracted Bottle Card</p>
+            <p className="nav-overline">Step 2 · Verify extracted facts</p>
             <select value={draft.beverageType} onChange={(event) => updateDraft("beverageType", event.target.value as CellarBeverageType)}>
               {beverageOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -457,9 +467,35 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
           <button type="button" className="btn btn-primary" onClick={saveDraft} disabled={savingRecord}>
             {savingRecord ? "Saving..." : user && isAuthConfigured ? "Save Cloud Record" : "Save Cellar Record"}
           </button>
-        </article>
+          <button type="button" className="btn btn-light" onClick={() => setStage("scan")}>Back to scan</button>
+        </article> : null}
       </div>
 
+      {stage === "next" ? (
+        <section className="cellar-scanner-recommendations" aria-labelledby="cellar-recommendations-title">
+          <div>
+            <p className="checkout-eyebrow">Step 3 · Choose one next action</p>
+            <h3 id="cellar-recommendations-title">Turn this bottle into a learning decision</h3>
+            <p>Pick the route that answers your next question. The scan is a starting clue, not a final verdict.</p>
+          </div>
+          <div className="cellar-study-link-grid">
+            {studyLinks.slice(0, 4).map((link) => (
+              <button key={link.label} type="button" onClick={() => onNavigate(link.route)}>
+                <span>{link.label}</span>
+                <strong>{link.detail}</strong>
+              </button>
+            ))}
+          </div>
+          {recommendations[0] ? <p className="hint"><strong>Coach cue:</strong> {recommendations[0]}</p> : null}
+          <div className="cellar-scanner-actions">
+            <button type="button" className="btn btn-primary" onClick={() => onNavigate("app/flavors")}>Start a Tasting Note</button>
+            <button type="button" className="btn btn-light" onClick={() => setStage("scan")}>Scan another</button>
+          </div>
+        </section>
+      ) : null}
+
+      {stage === "next" ? <details>
+        <summary>Advanced bottle metadata and external matching</summary>
       <section className="cellar-metadata-section" aria-labelledby="cellar-metadata-title">
         <div className="cellar-metadata-head">
           <div>
@@ -501,7 +537,10 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
           </article>
         </div>
       </section>
+      </details> : null}
 
+      {stage === "next" ? <details>
+        <summary>Optional tasting feedback coach</summary>
       <section className="cellar-tasting-feedback-section" aria-labelledby="cellar-feedback-title">
         <div className="cellar-tasting-feedback-head">
           <div>
@@ -629,28 +668,10 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
           </button>
         </div>
       </section>
+      </details> : null}
 
-      <section className="cellar-scanner-recommendations" aria-labelledby="cellar-recommendations-title">
-        <div>
-          <p className="checkout-eyebrow">Study Recommendations</p>
-          <h3 id="cellar-recommendations-title">Routes from this label</h3>
-          <p>Use scan output as a study prompt, not a final verdict. Correct the extracted fields, then open the route that answers the next learning question.</p>
-        </div>
-        <div className="cellar-study-link-grid">
-          {studyLinks.map((link) => (
-            <button key={link.label} type="button" onClick={() => onNavigate(link.route)}>
-              <span>{link.label}</span>
-              <strong>{link.detail}</strong>
-            </button>
-          ))}
-        </div>
-        <ul className="cellar-recommendation-list">
-          {recommendations.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </section>
-
+      <details>
+        <summary>Saved cellar records ({records.length})</summary>
       <section className="cellar-records-section" aria-labelledby="cellar-records-title">
         <div className="cellar-records-head">
           <div>
@@ -687,6 +708,7 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
           )}
         </div>
       </section>
+      </details>
     </section>
   );
 }

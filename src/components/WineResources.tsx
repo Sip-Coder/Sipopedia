@@ -717,11 +717,11 @@ export function WineResources() {
       <div className="section-header">
         <div>
           <span className="sip-maps-kicker">Study Resources</span>
-          <h2>Reference Library</h2>
+          <h2>Quick Reference & Recall</h2>
           <p>
-            Starter reference lists for classic exams and quick recall. This page is structured for more regions,
-            producer notes, and citation work as we expand it.
+            Use focused lists for exam recall, then move into a live quiz, map, or recipe page to apply what you remember.
           </p>
+          <p className="hint">Goal: choose one category, recall before revealing, verify, then practice in the linked workspace.</p>
         </div>
       </div>
 
@@ -959,7 +959,8 @@ export function WineResources() {
       ) : null}
 
       <aside className="wine-resource-sources">
-        <h3>{activeRegionLabel} Source Links</h3>
+        <details>
+          <summary>{activeRegionLabel} evidence and source links</summary>
         <div>
           {sourceLinks
             .filter((source) => source.label.toLowerCase().includes(activeRegion === "burgundy" ? "bourgogne" : activeRegion))
@@ -969,6 +970,7 @@ export function WineResources() {
               </a>
             ))}
         </div>
+        </details>
       </aside>
         </>
       ) : null}
