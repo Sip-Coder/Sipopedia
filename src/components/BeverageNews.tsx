@@ -933,6 +933,9 @@ export function BeverageNews() {
     selectedRegulatorIds: []
   });
   const [sourceModes, setSourceModes] = useState<Record<string, SourceLoadMode>>({});
+  const [studyArticleId, setStudyArticleId] = useState<string | null>(null);
+  const [takeaway, setTakeaway] = useState("");
+  const [shiftAction, setShiftAction] = useState("");
 
   useEffect(() => {
     let canceled = false;
@@ -1110,6 +1113,10 @@ export function BeverageNews() {
     const start = page * articlesPerPage;
     return capped.slice(start, start + articlesPerPage);
   }, [articlesPerPage, filteredArticles, maxVisibleArticles, page]);
+  const studyArticle = useMemo(
+    () => articles.find((article) => article.id === studyArticleId) ?? null,
+    [articles, studyArticleId]
+  );
 
   const renderPageControls = (position: "top" | "bottom") => (
     <div className="news-page-controls">
@@ -1151,13 +1158,32 @@ export function BeverageNews() {
       <div className="section-header">
         <div>
           <h2>Beverage News</h2>
-          <p>Latest headlines from select beverage institutions, guilds, regulators, magazines, and our own publication.</p>
+          <p>A short read → reflect → apply briefing for beverage students and working professionals.</p>
         </div>
         <button className="btn btn-light" onClick={() => setRefreshCount((value) => value + 1)} disabled={isLoading}>
           {isLoading ? "Refreshing..." : "Refresh"}
         </button>
       </div>
 
+      <article className="journal-card" aria-labelledby="beverage-news-study-title">
+        <p className="checkout-eyebrow">Today’s learning loop</p>
+        <h3 id="beverage-news-study-title">{studyArticle ? studyArticle.title : "Choose one headline, not the whole feed"}</h3>
+        {studyArticle ? (
+          <>
+            <p>{studyArticle.summary}</p>
+            <div className="journal-form-grid">
+              <label className="journal-row">What changed or surprised you?<textarea rows={2} value={takeaway} onChange={(event) => setTakeaway(event.target.value)} /></label>
+              <label className="journal-row">What will you verify, explain, or do on shift?<textarea rows={2} value={shiftAction} onChange={(event) => setShiftAction(event.target.value)} /></label>
+            </div>
+            <p className="hint">Finish by checking the original source, then turn your note into a question for Quiz, Roleplay Lab, or your tasting group.</p>
+          </>
+        ) : (
+          <p>Scan the first few cards, pick the story most relevant to service, study, or buying, and capture one usable takeaway.</p>
+        )}
+      </article>
+
+      <details>
+        <summary>Filter by publication or institution</summary>
       <div className="news-filter-group">
         <p className="news-filter-label">Blog</p>
         <div className="news-source-strip">
@@ -1318,6 +1344,7 @@ export function BeverageNews() {
           .
         </p>
       ) : null}
+      </details>
 
       {renderPageControls("top")}
       {filteredArticles.length > maxVisibleArticles ? (
@@ -1347,11 +1374,14 @@ export function BeverageNews() {
                   {article.translatedFrom ? ` | translated from ${article.translatedFrom.toUpperCase()}` : ""}
                 </p>
                 {safeArticleUrl ? (
-                  <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">
-                    Read Article
-                  </a>
+                  <div className="journal-actions">
+                    <button className="btn btn-primary" type="button" onClick={() => { setStudyArticleId(article.id); setTakeaway(""); setShiftAction(""); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+                      Study this headline
+                    </button>
+                    <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">Read source</a>
+                  </div>
                 ) : (
-                  <span className="btn btn-light news-link">Invalid article URL</span>
+                  <button className="btn btn-primary" type="button" onClick={() => setStudyArticleId(article.id)}>Study summary</button>
                 )}
               </article>
             );

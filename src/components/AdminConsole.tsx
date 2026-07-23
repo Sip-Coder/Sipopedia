@@ -7,8 +7,9 @@ import {
   type PageStatusMap,
   type PageRoomAccess,
   type PagePublicationStatus,
+  fetchPageStatusMap,
+  publishPageStatusMap,
   readPageStatusMap,
-  writePageStatusMap
 } from "../lib/siteMap";
 
 type AdminConsoleProps = {
@@ -82,6 +83,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const [publishedPageStatuses, setPublishedPageStatuses] = useState<PageStatusMap>(() => readPageStatusMap());
   const [draftPageStatuses, setDraftPageStatuses] = useState<PageStatusMap>(() => readPageStatusMap());
   const [siteMapNotice, setSiteMapNotice] = useState("No staged page visibility changes.");
+  const [siteMapPublishing, setSiteMapPublishing] = useState(false);
   const [connectedPlatforms, setConnectedPlatforms] = useState<Record<SocialPlatformKey, boolean>>(initialConnectedPlatforms);
   const [targetPlatforms, setTargetPlatforms] = useState<Record<SocialPlatformKey, boolean>>(initialConnectedPlatforms);
   const [socialPostTopic, setSocialPostTopic] = useState("");
@@ -131,6 +133,29 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     };
 
     void load();
+    return () => {
+      active = false;
+    };
+  }, [isAdmin]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let active = true;
+    setSiteMapNotice("Loading the published site map...");
+
+    void fetchPageStatusMap()
+      .then((published) => {
+        if (!active) return;
+        setPublishedPageStatuses(published);
+        setDraftPageStatuses(published);
+        setSiteMapNotice("Published site map loaded. No staged page visibility changes.");
+      })
+      .catch((loadError: unknown) => {
+        if (!active) return;
+        const message = loadError instanceof Error ? loadError.message : "Unable to load the published site map.";
+        setSiteMapNotice(`Using the local fallback. ${message}`);
+      });
+
     return () => {
       active = false;
     };
@@ -264,25 +289,36 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     setSiteMapNotice("Page status change staged. Click Publish to apply all edits.");
   };
 
-  const publishSiteMapChanges = () => {
-    writePageStatusMap(draftPageStatuses);
-    setPublishedPageStatuses(draftPageStatuses);
-    setSiteMapNotice("Published page visibility changes for this site instance.");
-    trackEvent("admin_site_map_publish", {
-      pageCount: SITE_MAP_PAGES.length,
-      lobby: siteMapCounts.rooms.Lobby,
-      game: siteMapCounts.rooms.Game,
-      boss: siteMapCounts.rooms.Boss,
-      public: siteMapCounts.statuses.public,
-      edit: siteMapCounts.statuses.edit,
-      off: siteMapCounts.statuses.off
-    });
+  const publishSiteMapChanges = async () => {
+    if (!isAdmin || siteMapPublishing) return;
+    setSiteMapPublishing(true);
+    setSiteMapNotice("Publishing page access for every visitor and device...");
+
+    try {
+      const published = await publishPageStatusMap(draftPageStatuses);
+      setPublishedPageStatuses(published);
+      setDraftPageStatuses(published);
+      setSiteMapNotice("Published globally. Navigation, module counts, previews, and route access are now synchronized.");
+      trackEvent("admin_site_map_publish", {
+        pageCount: SITE_MAP_PAGES.length,
+        lobby: siteMapCounts.rooms.Lobby,
+        game: siteMapCounts.rooms.Game,
+        boss: siteMapCounts.rooms.Boss,
+        public: siteMapCounts.statuses.public,
+        edit: siteMapCounts.statuses.edit,
+        off: siteMapCounts.statuses.off
+      });
+    } catch (publishError) {
+      const message = publishError instanceof Error ? publishError.message : "Unable to publish the site map.";
+      setSiteMapNotice(`Publish failed. ${message}`);
+      setError(message);
+    } finally {
+      setSiteMapPublishing(false);
+    }
   };
 
   const resetSiteMapDraft = () => {
-    const published = readPageStatusMap();
-    setPublishedPageStatuses(published);
-    setDraftPageStatuses(published);
+    setDraftPageStatuses(publishedPageStatuses);
     setSiteMapNotice("Discarded staged changes.");
   };
 
@@ -419,7 +455,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
               <h3>Site Map</h3>
               <p>
                 Assign pages to a room for audience access, then set whether each page is public, edit-only, or off.
-                Published changes update navigation and route access in this site instance.
+                Published changes update navigation, module counts, previews, and route access for every device.
               </p>
             </div>
             <div className="site-map-admin-counts" aria-label="Site map access counts">
@@ -513,11 +549,16 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
           <div className="site-map-publish-bar">
             <p>{siteMapNotice}</p>
             <div className="admin-actions">
-              <button className="btn btn-light" type="button" onClick={resetSiteMapDraft} disabled={!siteMapDirty}>
+              <button className="btn btn-light" type="button" onClick={resetSiteMapDraft} disabled={!siteMapDirty || siteMapPublishing}>
                 Discard Changes
               </button>
-              <button className="btn btn-primary" type="button" onClick={publishSiteMapChanges} disabled={!siteMapDirty}>
-                Publish
+              <button
+                className="btn btn-primary"
+                type="button"
+                onClick={() => void publishSiteMapChanges()}
+                disabled={!siteMapDirty || siteMapPublishing}
+              >
+                {siteMapPublishing ? "Publishing..." : "Publish Globally"}
               </button>
             </div>
           </div>

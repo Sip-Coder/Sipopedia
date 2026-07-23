@@ -2,11 +2,14 @@ import { useState } from "react";
 import { CosmicSky } from "./CosmicSky";
 import { StarterFeatureDemo } from "./StarterFeatureDemo";
 import { buildOnboardingRoute } from "../lib/onboardingIntent";
+import type { PageStatusMap } from "../lib/siteMap";
 
 import welcomeToSipStudies from "../assets/brand/welcome-to-sip-studies.png";
 
 type MarketingHomeProps = {
   onNavigate: (route: string) => void;
+  pageStatuses: PageStatusMap;
+  isAdmin: boolean;
 };
 
 type PathfinderProfile = {
@@ -184,7 +187,7 @@ const marketGapMoves: MarketGapMove[] = [
   }
 ];
 
-export function MarketingHome({ onNavigate }: MarketingHomeProps) {
+export function MarketingHome({ onNavigate, pageStatuses, isAdmin }: MarketingHomeProps) {
   const [activeProfileId, setActiveProfileId] = useState(pathfinderProfiles[0].id);
   const activeProfile = pathfinderProfiles.find((profile) => profile.id === activeProfileId) ?? pathfinderProfiles[0];
 
@@ -327,7 +330,11 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
         </ul>
       </div>
 
-      <StarterFeatureDemo onFeatureNavigate={onNavigate} />
+      <StarterFeatureDemo
+        onFeatureNavigate={onNavigate}
+        pageStatuses={pageStatuses}
+        isAdmin={isAdmin}
+      />
     </section>
   );
 }

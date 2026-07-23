@@ -1026,6 +1026,7 @@ function CocktailTechniqueLab({ item }: { item: BevItem }) {
   });
   const [attempts, setAttempts] = useState<TechniqueAttempt[]>(() => readTechniqueAttempts());
   const [notice, setNotice] = useState("");
+  const [reviewed, setReviewed] = useState(false);
   const groups: TechniqueChoiceGroup[] = ["method", "ice", "dilution", "finish"];
   const answeredCount = groups.filter((group) => selected[group]).length;
   const score = groups.reduce((total, group) => total + (selected[group] === expected[group] ? 1 : 0), 0);
@@ -1034,16 +1035,22 @@ function CocktailTechniqueLab({ item }: { item: BevItem }) {
   useEffect(() => {
     setSelected({ method: "", ice: "", dilution: "", finish: "" });
     setNotice("");
+    setReviewed(false);
   }, [item.id]);
 
   const setChoice = (group: TechniqueChoiceGroup, choiceId: string) => {
     setSelected((current) => ({ ...current, [group]: choiceId }));
     setNotice("");
+    setReviewed(false);
   };
 
   const saveAttempt = () => {
     if (answeredCount < groups.length) {
       setNotice("Choose one option in each technique group before saving.");
+      return;
+    }
+    if (!reviewed) {
+      setNotice("Check the technique before saving the attempt.");
       return;
     }
 
@@ -1062,6 +1069,15 @@ function CocktailTechniqueLab({ item }: { item: BevItem }) {
     setNotice(`Technique attempt saved: ${score}/${groups.length}.`);
   };
 
+  const reviewTechnique = () => {
+    if (answeredCount < groups.length) {
+      setNotice("Choose one option in each technique group before checking your build.");
+      return;
+    }
+    setReviewed(true);
+    setNotice(`Technique checked: ${score}/${groups.length}. Compare each benchmark, then save or retry.`);
+  };
+
   const exportReview = () => {
     downloadMarkdown(`sip-studies-${item.id}-technique-review.md`, buildTechniqueReviewText(item, selected, expected, score));
     setNotice("Mentor review packet downloaded.");
@@ -1076,7 +1092,7 @@ function CocktailTechniqueLab({ item }: { item: BevItem }) {
           <p>Choose method, ice, dilution, and finish for {item.name}. Save the attempt or export it for mentor review.</p>
         </div>
         <div className="cocktail-technique-score">
-          <strong>{score}/{groups.length}</strong>
+          <strong>{reviewed ? `${score}/${groups.length}` : "—"}</strong>
           <span>{answeredCount}/{groups.length} chosen</span>
         </div>
       </div>
@@ -1090,7 +1106,7 @@ function CocktailTechniqueLab({ item }: { item: BevItem }) {
                 <button
                   key={`${group}-${choice.id}`}
                   type="button"
-                  className={`${selected[group] === choice.id ? "active" : ""} ${selected[group] && expected[group] === choice.id ? "benchmark" : ""}`.trim()}
+                  className={`${selected[group] === choice.id ? "active" : ""} ${reviewed && expected[group] === choice.id ? "benchmark" : ""}`.trim()}
                   onClick={() => setChoice(group, choice.id)}
                 >
                   <span>{choice.label}</span>
@@ -1098,7 +1114,7 @@ function CocktailTechniqueLab({ item }: { item: BevItem }) {
                 </button>
               ))}
             </div>
-            <p>Benchmark: {choiceLabel(group, expected[group])}</p>
+            {reviewed ? <p>Benchmark: {choiceLabel(group, expected[group])}</p> : <p>Choose before the benchmark is revealed.</p>}
           </section>
         ))}
       </div>
@@ -1110,7 +1126,7 @@ function CocktailTechniqueLab({ item }: { item: BevItem }) {
         </section>
         <section>
           <strong>Service language</strong>
-          <p>{score === groups.length ? "Ready to explain the technique choice to a guest or evaluator." : "Use the benchmark notes to connect texture, temperature, aroma, and balance before serving."}</p>
+          <p>{!reviewed ? "Commit to all four choices, then check your reasoning." : score === groups.length ? "Ready to explain the technique choice to a guest or evaluator." : "Use the benchmark notes to connect texture, temperature, aroma, and balance before serving."}</p>
         </section>
         <section>
           <strong>Saved attempt</strong>
@@ -1119,7 +1135,10 @@ function CocktailTechniqueLab({ item }: { item: BevItem }) {
       </div>
 
       <div className="cocktail-technique-actions">
-        <button type="button" className="btn btn-primary" onClick={saveAttempt}>
+        <button type="button" className="btn btn-primary" onClick={reviewTechnique}>
+          Check Technique
+        </button>
+        <button type="button" className="btn btn-light" onClick={saveAttempt} disabled={!reviewed}>
           Save Technique Attempt
         </button>
         <button type="button" className="btn btn-light" onClick={exportReview}>
@@ -1132,7 +1151,7 @@ function CocktailTechniqueLab({ item }: { item: BevItem }) {
 }
 
 export function Cocktails() {
-  const [recipeView, setRecipeView] = useState<RecipeView>("ecosystem");
+  const [recipeView, setRecipeView] = useState<RecipeView>("cocktail");
   const [kind, setKind] = useState<BevKind>("cocktail");
   const [wineColor, setWineColor] = useState<WineColor>("red");
   const [activeId, setActiveId] = useState(byKind.cocktail[0].id);
@@ -1302,7 +1321,8 @@ export function Cocktails() {
       <div className="section-header">
         <div className="section-header-copy">
           <h2>Bev Recipes</h2>
-          <p>Search a recipe, then explore nearby relatives by base, build, profile, and family.</p>
+          <p>Start with a usable recipe or style specification, test the technique, then explore related beverages.</p>
+          <p className="hint">Goal → practical spec → technique decision → feedback → related recipe.</p>
         </div>
       </div>
 
@@ -1320,8 +1340,8 @@ export function Cocktails() {
       >
         <div className="commodity-selector-grid bev-recipes-tabs">
           <button type="button" className={recipeView === "ecosystem" ? "active" : ""} onClick={() => setRecipeView("ecosystem")}>
-            <span>Ecosystem</span>
-            <small>Sphere grid atlas</small>
+            <span>Visual Atlas</span>
+            <small>Advanced relationship view</small>
           </button>
           <button type="button" className={recipeView === "wine" ? "active" : ""} onClick={() => selectRecipeKind("wine")}>
             <span>Wine</span>
@@ -1394,7 +1414,8 @@ export function Cocktails() {
       </div>
 
       <div className="cocktail-map-layout">
-        <article className="cocktail-map-card">
+        <details className="cocktail-map-card cocktail-relationship-details">
+          <summary>Explore the relationship map (advanced)</summary>
           <div className="cocktail-map-stage" aria-label={`${activeItem.name} relationship map`}>
             <div className="cocktail-map-ring ring-one" />
             <div className="cocktail-map-ring ring-two" />
@@ -1432,7 +1453,7 @@ export function Cocktails() {
               </aside>
             ) : null}
           </div>
-        </article>
+        </details>
 
         <BevPhoto kind={kind} item={activeItem} />
 

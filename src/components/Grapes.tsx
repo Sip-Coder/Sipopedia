@@ -1318,7 +1318,11 @@ function GrapeIndex({ onNavigate, initialCommodity }: { onNavigate: GrapesProps[
                   ? "Coffee bean references with sensory, processing, and extraction depth."
                   : commodity === "tea"
                     ? "Tea references organized by oxidation and infusion logic."
-                    : "Fruit references mapped across juice, wine, and spirits use cases."}
+                : "Fruit references mapped across juice, wine, and spirits use cases."}
+        </p>
+        <p className="hint">
+          Goal: choose one ingredient, learn its recognition markers, then name a benchmark style before opening advanced
+          relationships.
         </p>
       </header>
 
@@ -1377,9 +1381,11 @@ function GrapeIndex({ onNavigate, initialCommodity }: { onNavigate: GrapesProps[
         ))}
       </div>
 
-      <IngredientRelationshipChart commodity={chartCommodity} nodes={chartNodes} onNavigate={onNavigate} />
+      <details className="grapes-advanced-study">
+        <summary>Advanced relationship chart and curriculum roadmap</summary>
+        <IngredientRelationshipChart commodity={chartCommodity} nodes={chartNodes} onNavigate={onNavigate} />
 
-      <section className="grapes-future">
+        <section className="grapes-future">
         <p className="sip-maps-kicker">Coming Next</p>
         <h3>Viticulture Expansion</h3>
         <div className="grapes-future-grid">
@@ -1387,7 +1393,8 @@ function GrapeIndex({ onNavigate, initialCommodity }: { onNavigate: GrapesProps[
             <span key={section}>{section}</span>
           ))}
         </div>
-      </section>
+        </section>
+      </details>
     </div>
   );
 }
@@ -1539,6 +1546,9 @@ function GrapeDetail({ grape, onNavigate }: { grape: GrapeProfile; onNavigate: G
             <p key={paragraph}>{paragraph}</p>
           ))}
         </article>
+        <details className="grapes-advanced-study">
+          <summary>Advanced and professional study</summary>
+        <div className="grape-study-grid">
         <article className="grape-study-card">
           <p className="sip-maps-kicker">Advanced</p>
           <h3>Viticulture and Style Logic</h3>
@@ -1553,6 +1563,8 @@ function GrapeDetail({ grape, onNavigate }: { grape: GrapeProfile; onNavigate: G
             <p key={paragraph}>{paragraph}</p>
           ))}
         </article>
+        </div>
+        </details>
       </section>
 
       <div className="grape-reference-layout">
@@ -1743,6 +1755,9 @@ function CommodityDetail({ profile, onNavigate }: { profile: CommodityStudyProfi
             <p key={paragraph}>{paragraph}</p>
           ))}
         </article>
+        <details className="grapes-advanced-study">
+          <summary>Advanced and professional study</summary>
+        <div className="grape-study-grid">
         <article className="grape-study-card">
           <p className="sip-maps-kicker">Advanced</p>
           <h3>Production and Style Logic</h3>
@@ -1757,6 +1772,8 @@ function CommodityDetail({ profile, onNavigate }: { profile: CommodityStudyProfi
             <p key={paragraph}>{paragraph}</p>
           ))}
         </article>
+        </div>
+        </details>
       </section>
 
       {profile.beverageFocus && profile.beverageFocus.length > 0 ? (

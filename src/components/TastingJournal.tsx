@@ -23,6 +23,8 @@ type Section = { title: string; fields: Field[] };
 type Schema = { label: string; primaryFields: Field[]; sections: Section[] };
 type StorageMode = "cloud" | "local" | "cloud-fallback";
 
+const TASTING_STUDIO_EDIT_HANDOFF_KEY = "sip-studies:tasting-studio-edit-note";
+
 type Note = {
   id: string;
   createdAt: string;
@@ -558,7 +560,7 @@ function recommendations(total: number, grape: Accuracy, alcohol: Accuracy, coun
 export function TastingJournal() {
   const { user, isConfigured } = useAuth();
   const useCloudStorage = isConfigured && Boolean(user);
-  const [tab, setTab] = useState<TabId>("make");
+  const [tab, setTab] = useState<TabId>("review");
   const [notes, setNotes] = useState<Note[]>([]);
   const [loadingNotes, setLoadingNotes] = useState(false);
   const [dataError, setDataError] = useState<string | null>(null);
@@ -795,13 +797,15 @@ export function TastingJournal() {
     }
   };
 
-  const edit = (id: string) => {
-    const found = notes.find((note) => note.id === id);
-    if (!found) return;
-    setDraft({ ...found, details: { ...found.details } });
-    setEditingId(id);
-    setRevealActual(!found.isBlind || Boolean(found.actualWineName.trim()));
-    setTab("make");
+  const openInTastingStudio = (id?: string) => {
+    if (id) {
+      try {
+        window.localStorage.setItem(TASTING_STUDIO_EDIT_HANDOFF_KEY, id);
+      } catch {
+        // Navigation still works when local storage is unavailable.
+      }
+    }
+    window.location.hash = "#app/flavors";
   };
 
   const clearDraft = () => {
@@ -1086,12 +1090,20 @@ export function TastingJournal() {
 
   return (
     <section className="tasting-journal">
-      <div className="section-header"><h2>Tasting Journal</h2><p>Structured notes, blind scoring analytics, PDF export, and an interactive country map of your tastings.</p></div>
-      <div className="journal-tabs">
-        <button className={`btn ${tab === "make" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("make")}>New Notes</button>
-        <button className={`btn ${tab === "review" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("review")}>Archive</button>
-        <button className={`btn ${tab === "analyze" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("analyze")}>Improve</button>
-        <button className={`btn ${tab === "map" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("map")}>Tasting Map</button>
+      <div className="section-header">
+        <div>
+          <p className="checkout-eyebrow">Your saved work</p>
+          <h2>Journal Archive</h2>
+          <p>Search, export, review, and learn from every tasting note. New notes now begin in the focused Tasting Studio.</p>
+        </div>
+        <button className="btn btn-primary" type="button" onClick={() => openInTastingStudio()}>
+          Start a Tasting
+        </button>
+      </div>
+      <div className="journal-tabs" role="tablist" aria-label="Journal Archive views">
+        <button type="button" role="tab" aria-selected={tab === "review"} className={`btn ${tab === "review" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("review")}>Archive</button>
+        <button type="button" role="tab" aria-selected={tab === "analyze"} className={`btn ${tab === "analyze" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("analyze")}>Insights</button>
+        <button type="button" role="tab" aria-selected={tab === "map"} className={`btn ${tab === "map" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("map")}>Tasting Map</button>
       </div>
       {loadingNotes ? <p className="hint">Loading tasting notes...</p> : null}
       {dataError ? <p className="error">{dataError}</p> : null}
@@ -1178,7 +1190,7 @@ export function TastingJournal() {
           <article className="journal-card">
             <div className="journal-toolbar"><input placeholder="Search notes..." value={search} onChange={(e) => setSearch(e.target.value)} /><button className="btn btn-light" type="button" onClick={() => setSelectedIds((current) => current.size === filtered.length ? new Set() : new Set(filtered.map((n) => n.id)))} disabled={filtered.length === 0}>{selectedIds.size === filtered.length && filtered.length > 0 ? "Unselect All" : "Select All"}</button><button className="btn btn-light" type="button" onClick={exportPdf} disabled={filtered.length === 0}>Export PDF</button></div>
             <div className="journal-note-list">
-              {filtered.map((note) => <article key={note.id} className={`journal-note-row ${note.id === activeId ? "active" : ""}`} onClick={() => setActiveId(note.id)}><label className="journal-check"><input type="checkbox" checked={selectedIds.has(note.id)} onClick={(e) => e.stopPropagation()} onChange={() => setSelectedIds((current) => { const next = new Set(current); if (next.has(note.id)) next.delete(note.id); else next.add(note.id); return next; })} /><span>Select</span></label><div className="journal-note-copy"><h3>{note.actualWineName || note.details.categoryName || "Untitled Tasting"}</h3><p>{SCHEMAS[note.beverageType].label} | {note.actualCountry || "Unknown"} | {fmtDate(note.tastingDate)}</p>{note.isBlind ? <p>Blind Accuracy: {noteScore(note) ?? "—"}{noteScore(note) !== null ? "%" : ""}</p> : null}</div><div className="journal-note-actions"><button className="btn btn-light" type="button" onClick={(e) => { e.stopPropagation(); edit(note.id); }}>Edit</button><button className="btn btn-light" type="button" disabled={deletingId === note.id} onClick={(e) => { e.stopPropagation(); void remove(note.id); }}>{deletingId === note.id ? "Deleting..." : "Delete"}</button></div></article>)}
+              {filtered.map((note) => <article key={note.id} className={`journal-note-row ${note.id === activeId ? "active" : ""}`}><label className="journal-check"><input type="checkbox" checked={selectedIds.has(note.id)} onChange={() => setSelectedIds((current) => { const next = new Set(current); if (next.has(note.id)) next.delete(note.id); else next.add(note.id); return next; })} /><span>Select</span></label><button type="button" className="journal-note-copy journal-note-select" onClick={() => setActiveId(note.id)}><h3>{note.actualWineName || note.details.categoryName || "Untitled Tasting"}</h3><p>{SCHEMAS[note.beverageType].label} | {note.actualCountry || "Unknown"} | {fmtDate(note.tastingDate)}</p>{note.isBlind ? <p>Blind Accuracy: {noteScore(note) ?? "—"}{noteScore(note) !== null ? "%" : ""}</p> : null}</button><div className="journal-note-actions"><button className="btn btn-light" type="button" onClick={() => openInTastingStudio(note.id)}>Edit in Studio</button><button className="btn btn-light" type="button" disabled={deletingId === note.id} onClick={() => void remove(note.id)}>{deletingId === note.id ? "Deleting..." : "Delete"}</button></div></article>)}
             </div>
           </article>
           <aside className="journal-card journal-review-detail">{active ? <><h3>{active.actualWineName || active.details.categoryName || "Untitled Tasting"}</h3><p className="hint">{fmtDate(active.tastingDate)}</p><p><strong>Type:</strong> {SCHEMAS[active.beverageType].label}</p><p><strong>Location:</strong> {active.location || "—"}</p><p><strong>Country / Region:</strong> {active.actualCountry || "—"} / {active.actualRegion || "—"}</p><p><strong>Blind:</strong> {active.isBlind ? "Yes" : "No"}</p>{active.isBlind ? <p><strong>Accuracy:</strong> {noteScore(active) ?? "—"}{noteScore(active) !== null ? "%" : ""}</p> : null}</> : <p className="hint">Select a note to review details.</p>}</aside>
@@ -1199,7 +1211,7 @@ export function TastingJournal() {
             {mapCountry ? <p className="hint">Selected: {displayCountry(mapCountry)} <button className="btn btn-light" type="button" onClick={() => setMapCountry(null)}>Clear</button></p> : null}
             {mapLoading ? <p className="hint">Loading map...</p> : <div className="journal-region-map-wrap"><svg viewBox="0 0 800 400" className="journal-region-map-svg" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="800" height="400" fill="#07131f" />{Array.from({ length: 17 }, (_, i) => (i - 8) * 10).filter((lat) => lat > -90 && lat < 90).map((lat) => { const y = ((90 - lat) / 180) * 400; return <line key={`lat-${lat}`} x1="0" y1={y} x2="800" y2={y} stroke="#9fdaf5" strokeWidth="0.5" strokeOpacity="0.16" pointerEvents="none" />; })}{mapPaths.map((country) => { const has = countryCounts.has(country.name); const selectedMapCountry = mapCountry === country.name; const hovered = mapHover === country.name; const fill = selectedMapCountry || (has && hovered) ? "#9fdaf5" : has ? "#edd4a8" : "#185552"; const opacity = selectedMapCountry || (has && hovered) ? 0.86 : has ? 0.64 : 0.3; return <path key={country.id} d={country.path} fill={fill} fillOpacity={opacity} stroke="#9fdaf5" strokeWidth={selectedMapCountry || hovered ? "1" : "0.5"} className={has ? "journal-country-clickable" : ""} onClick={(e) => { e.stopPropagation(); if (!has) return; setMapCountry((cur) => cur === country.name ? null : country.name); document.getElementById("journal-region-directory")?.scrollIntoView({ behavior: "smooth" }); }} onMouseEnter={() => { if (has) setMapHover(country.name); }} onMouseLeave={() => setMapHover(null)} />; })}</svg>{mapHover && countryCounts.has(mapHover) ? <div className="journal-map-tooltip"><strong>{displayCountry(mapHover)}</strong><span>{countryCounts.get(mapHover)} {countryCounts.get(mapHover) === 1 ? "tasting" : "tastings"}</span></div> : null}<div className="journal-map-count-pill">{countryCounts.size} {countryCounts.size === 1 ? "country" : "countries"} tasted</div></div>}
           </article>
-          <aside id="journal-region-directory" className="journal-card"><h3>Region Directory</h3><div className="journal-toolbar"><input placeholder="Search regions or wines..." value={mapSearch} onChange={(e) => setMapSearch(e.target.value)} /></div><div className="journal-note-list">{Object.entries(mapDirectory).length > 0 ? Object.entries(mapDirectory).map(([country, regions]) => <div key={country} className="journal-region-country"><h4>{country}</h4>{Object.entries(regions).map(([region, regionNotes]) => <div key={`${country}-${region}`} className="journal-region-group"><p><strong>{region}</strong> ({regionNotes.length})</p><div className="journal-note-list">{regionNotes.map((note) => <article key={note.id} className={`journal-note-row compact ${activeId === note.id ? "active" : ""}`} onClick={() => { setActiveId(note.id); setTab("review"); }}><div className="journal-note-copy"><h3>{note.actualWineName || "Untitled Tasting"}</h3><p>{fmtDate(note.tastingDate)}</p></div></article>)}</div></div>)}</div>) : <p className="hint">No regions found. Try clearing filters or add more tasting notes.</p>}</div></aside>
+          <aside id="journal-region-directory" className="journal-card"><h3>Region Directory</h3><div className="journal-toolbar"><input placeholder="Search regions or wines..." value={mapSearch} onChange={(e) => setMapSearch(e.target.value)} /></div><div className="journal-note-list">{Object.entries(mapDirectory).length > 0 ? Object.entries(mapDirectory).map(([country, regions]) => <div key={country} className="journal-region-country"><h4>{country}</h4>{Object.entries(regions).map(([region, regionNotes]) => <div key={`${country}-${region}`} className="journal-region-group"><p><strong>{region}</strong> ({regionNotes.length})</p><div className="journal-note-list">{regionNotes.map((note) => <button type="button" key={note.id} className={`journal-note-row journal-note-select compact ${activeId === note.id ? "active" : ""}`} onClick={() => { setActiveId(note.id); setTab("review"); }}><span className="journal-note-copy"><strong>{note.actualWineName || "Untitled Tasting"}</strong><span>{fmtDate(note.tastingDate)}</span></span></button>)}</div></div>)}</div>) : <p className="hint">No regions found. Try clearing filters or add more tasting notes.</p>}</div></aside>
         </div>
       ) : null}
     </section>

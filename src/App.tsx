@@ -35,6 +35,7 @@ import { buildOnboardingRoute, readOnboardingIntent } from "./lib/onboardingInte
 import {
   WORKSPACE_NAV_ITEMS,
   WORKSPACE_SECTIONS,
+  writeLastWorkspaceModule,
   workspaceLabelForRoute,
   type WorkspaceNavItem as WorkspaceRegistryNavItem,
   type WorkspaceSectionDefinition,
@@ -46,8 +47,10 @@ import {
   type PageStatusMap,
   canViewRoute,
   configForRoute,
+  fetchPageStatusMap,
   readPageStatusMap,
-  shouldShowInPublicNav
+  shouldShowInPublicNav,
+  subscribeToPageStatusMap
 } from "./lib/siteMap";
 
 const loadSipAcademyWineLessons = () => import("./components/SipAcademyWineLessons");
@@ -866,6 +869,11 @@ function WorkspaceShell({
   const starterWelcomeName = rawStarterName.split(/[\s._-]+/).filter(Boolean)[0] ?? "Guest";
 
   useEffect(() => {
+    if (!activeWorkspaceItem) return;
+    writeLastWorkspaceModule(activeWorkspaceItem.id);
+  }, [activeWorkspaceItem?.id]);
+
+  useEffect(() => {
     setSection(sectionFromWorkspacePage(page));
   }, [page]);
 
@@ -1050,9 +1058,9 @@ function WorkspaceShell({
     setSection(targetSection);
     const foundSection = workspaceSections.find((item) => item.id === targetSection);
     const defaultTarget = foundSection?.defaultPage ?? "sip-academy";
-    if (shouldShowInPublicNav(`app/${defaultTarget}`, pageStatuses, isAdmin, isPaid)) {
-      navigateFromMenu(defaultTarget);
-    }
+    const targetItems = menuSections.find((item) => item.id === targetSection)?.items ?? [];
+    const target = targetItems.find((item) => item.id === defaultTarget) ?? targetItems[0];
+    if (target) navigateFromMenu(target.id);
   };
 
   const signOutAndLand = async () => {
@@ -1333,7 +1341,14 @@ function WorkspaceShell({
         ) : null}
       </nav>
 
-      {isStarterPage ? <StarterFeatureDemo headingLevel={1} onFeatureNavigate={(route) => navigateFromRoomMenu(route as AppRoute)} /> : null}
+      {isStarterPage ? (
+        <StarterFeatureDemo
+          headingLevel={1}
+          pageStatuses={pageStatuses}
+          isAdmin={isAdmin}
+          onFeatureNavigate={(route) => navigateFromRoomMenu(route as AppRoute)}
+        />
+      ) : null}
 
       {isAccountPage ? accountContent : null}
       {!isStarterPage && !isAccountPage ? <Suspense fallback={<AppLoading />}>{renderedPage}</Suspense> : null}
@@ -1368,6 +1383,7 @@ function PublicHeader({
 function App() {
   const [route, setRoute] = useState<AppRoute>(() => parseRoute());
   const [pageStatuses, setPageStatuses] = useState<PageStatusMap>(() => readPageStatusMap());
+  const [pageStatusesReady, setPageStatusesReady] = useState(false);
   const [successAccessStatus, setSuccessAccessStatus] = useState<"idle" | "checking" | "checked" | "failed">("idle");
   const { loading: accessLoading, isPaid, isAdmin, refreshProfile } = useAccess();
 
@@ -1415,6 +1431,30 @@ function App() {
     return () => {
       window.removeEventListener("storage", refreshPageStatuses);
       window.removeEventListener(PAGE_STATUS_EVENT, refreshPageStatuses);
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    void fetchPageStatusMap()
+      .then((statuses) => {
+        if (active) {
+          setPageStatuses(statuses);
+          setPageStatusesReady(true);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setPageStatuses(readPageStatusMap());
+          setPageStatusesReady(true);
+        }
+      });
+    const unsubscribe = subscribeToPageStatusMap((statuses) => {
+      if (active) setPageStatuses(statuses);
+    });
+    return () => {
+      active = false;
+      unsubscribe();
     };
   }, []);
 
@@ -1488,6 +1528,14 @@ function App() {
     route === "account/avatar" ||
     (workspacePage !== null && workspacePage !== "starter");
 
+  if (!pageStatusesReady) {
+    return (
+      <div className="page page-commercial">
+        <AppLoading />
+      </div>
+    );
+  }
+
   if (accessLoading && requiresResolvedAccess) {
     return (
       <div className="page page-commercial">
@@ -1546,7 +1594,12 @@ function App() {
         return (
           <div className="page page-commercial">
             <PublicHeader onNavigate={navigate} route={route} pageStatuses={pageStatuses} />
-            <PaywallPanel onNavigate={navigateFromString} postLoginRoute={route} />
+            <PaywallPanel
+              onNavigate={navigateFromString}
+              postLoginRoute={route}
+              pageStatuses={pageStatuses}
+              isAdmin={isAdmin}
+            />
           </div>
         );
       }
@@ -1554,7 +1607,12 @@ function App() {
         return (
           <div className="page page-commercial">
             <PublicHeader onNavigate={navigate} route={route} pageStatuses={pageStatuses} />
-            <PaywallPanel onNavigate={navigateFromString} postLoginRoute={route} />
+            <PaywallPanel
+              onNavigate={navigateFromString}
+              postLoginRoute={route}
+              pageStatuses={pageStatuses}
+              isAdmin={isAdmin}
+            />
           </div>
         );
       }
@@ -1623,7 +1681,13 @@ function App() {
   return (
     <div className="page page-commercial">
       <PublicHeader onNavigate={navigate} route={route} pageStatuses={pageStatuses} />
-      {route === "home" ? <MarketingHome onNavigate={navigateFromString} /> : null}
+      {route === "home" ? (
+        <MarketingHome
+          onNavigate={navigateFromString}
+          pageStatuses={pageStatuses}
+          isAdmin={isAdmin}
+        />
+      ) : null}
       {route === "pricing" ? <PricingPage onNavigate={navigateFromString} /> : null}
       {route === "support" ? <SupportCenter onNavigate={navigateFromString} /> : null}
       {route === "study-paths" ? <StudyPaths onNavigate={navigateFromString} /> : null}

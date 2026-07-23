@@ -402,8 +402,8 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
         <div className="section-header">
           <h2>Regions</h2>
           <p>
-            Explore regions by beverage category. Wine currently includes {allRegionCountries.length} country pages, and the other categories now use
-            the same layered country, source-region, imagery, and study-guide structure as their catalogs are published.
+            Choose one beverage category and country. Learn its essentials first, test the exam cues, then open maps and
+            sources only when you need a deeper explanation. Wine currently includes {allRegionCountries.length} country pages.
           </p>
         </div>
 
@@ -501,7 +501,7 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
                     <h4>{item.name}</h4>
                     <p>{item.profile.winesOverview}</p>
                     <button className="btn btn-light" onClick={() => onNavigate(`regions/${selectedCategory}/${item.slug}`)}>
-                      Open {item.name}
+                      Study {item.name}
                     </button>
                   </article>
                 ))}
@@ -591,6 +591,12 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
           <img src={selectedSubregion.imageUrl} alt={selectedSubregion.imageAlt} loading="lazy" decoding="async" />
         </header>
 
+        <article className="regions-info-card regions-single-row">
+          <p className="sip-maps-kicker">Study Route</p>
+          <h3>Essentials → Exam Focus → Service Cue</h3>
+          <p>Read location, climate, and soils first. Predict the styles before revealing the exam and service sections below.</p>
+        </article>
+
         <div className="regions-subregion-meta">
           <article>
             <span>Classification</span>
@@ -663,6 +669,8 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
           <p>{selectedSubregion.serviceCue}</p>
         </article>
 
+        <details className="regions-deep-study">
+          <summary>Deep dive: 360 source view and references</summary>
         {selectedSubregionPanoramaScene ? (
           <VineyardPanoramaViewer
             scenes={[selectedSubregionPanoramaScene]}
@@ -683,6 +691,7 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
             ))}
           </ul>
         </article>
+        </details>
       </section>
     );
   }
@@ -732,6 +741,15 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
         />
         <p>{profile.winesOverview}</p>
       </header>
+
+      <article className="regions-info-card regions-single-row">
+        <p className="sip-maps-kicker">Study Route</p>
+        <h3>Essentials → Exam Focus → Deep Dive</h3>
+        <p>
+          Learn the country overview and source conditions, recall the key ingredients and styles, then open the full
+          regional atlas only when you are ready for detail.
+        </p>
+      </article>
 
       <div className="regions-list-layout">
         <article className="regions-info-card">
@@ -797,6 +815,8 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
         </article>
       </div>
 
+      <details className="regions-deep-study">
+        <summary>Deep dive: terminology, regional guides, maps, panoramas, and sources</summary>
       <article className="regions-info-card regions-single-row">
         <h3>{studyLabels.terminologyTitle}</h3>
         <ul>
@@ -985,6 +1005,7 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
           </header>
         </article>
       )}
+      </details>
     </section>
   );
 }

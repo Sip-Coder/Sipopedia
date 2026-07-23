@@ -201,8 +201,15 @@ export function Terminology() {
   const [editorialProcessOpen, setEditorialProcessOpen] = useState(false);
   const [infographicIndex, setInfographicIndex] = useState(0);
   const [infographicExhausted, setInfographicExhausted] = useState(false);
+  const [recallMode, setRecallMode] = useState(false);
+  const [recallDraft, setRecallDraft] = useState("");
   const swipeStartXRef = useRef<number | null>(null);
   const swipeStartYRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setRecallMode(false);
+    setRecallDraft("");
+  }, [selectedTermId]);
 
   const navigateSelectedTerm = useCallback(
     (direction: 1 | -1) => {
@@ -457,7 +464,7 @@ export function Terminology() {
           <p className="nav-overline">A development by Sip Studios:</p>
           <h2>Sipopedia</h2>
           <p>
-            Source-backed beverage terminology with applied meaning, citations, purchase paths, and generated learning graphics.
+            Learn a term, explain it from memory, then use the applied example in service, tasting, production, or study.
           </p>
           <div className="terminology-hero-metrics" aria-label="Sipopedia status">
             <span>
@@ -636,26 +643,66 @@ export function Terminology() {
                     <h3>{toTitleCaseTerm(selectedTerm.term)}</h3>
                     <p>Updated: {formatDate(selectedTerm.updated_at)}</p>
                   </div>
-                  <button className="btn btn-light" onClick={() => setSelectedTermId(null)}>
-                    Close
-                  </button>
+                  <div className="terminology-header-actions">
+                    <button
+                      type="button"
+                      className={`btn ${recallMode ? "btn-primary" : "btn-light"}`}
+                      aria-pressed={recallMode}
+                      onClick={() => {
+                        setRecallMode((current) => !current);
+                        setRecallDraft("");
+                      }}
+                    >
+                      {recallMode ? "Return to Definition" : "Test This Term"}
+                    </button>
+                    <button className="btn btn-light" onClick={() => setSelectedTermId(null)}>
+                      Close
+                    </button>
+                  </div>
                 </header>
 
                 <div className="term-modal-grid">
                   <section className="term-modal-primary">
-                    <h4>Meaning</h4>
-                    <p>{selectedTerm.meaning}</p>
-                    <h4>How to apply in Beverage Study</h4>
-                    <p>{selectedTerm.how_to_apply}</p>
-                    <h4>Real-world Example</h4>
-                    <ul>
-                      {selectedTerm.examples.map((item) => (
-                        <li key={`example-${item}`}>{item}</li>
-                      ))}
-                    </ul>
+                    {recallMode ? (
+                      <>
+                        <p className="lesson-chip">Recall Check</p>
+                        <h4>Explain {toTitleCaseTerm(selectedTerm.term)} without looking.</h4>
+                        <p>Write the meaning, one practical use, and one real-world example. Your draft stays in this browser session.</p>
+                        <textarea
+                          value={recallDraft}
+                          onChange={(event) => setRecallDraft(event.target.value)}
+                          placeholder="Meaning → application → example"
+                          rows={7}
+                        />
+                        <button type="button" className="btn btn-primary" onClick={() => setRecallMode(false)}>
+                          Reveal and Compare
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {recallDraft.trim() ? (
+                          <details open>
+                            <summary>Your recall draft</summary>
+                            <p>{recallDraft}</p>
+                          </details>
+                        ) : null}
+                        <h4>Meaning</h4>
+                        <p>{selectedTerm.meaning}</p>
+                        <h4>How to apply in Beverage Study</h4>
+                        <p>{selectedTerm.how_to_apply}</p>
+                        <h4>Real-world Example</h4>
+                        <ul>
+                          {selectedTerm.examples.map((item) => (
+                            <li key={`example-${item}`}>{item}</li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
                   </section>
 
                   <aside className="term-modal-evidence">
+                    <details>
+                      <summary>Evidence, graphics, and further study</summary>
                     <h4>Source</h4>
                     <p>
                       <strong>Title:</strong> {selectedTerm.source_title || "Not set"}
@@ -765,6 +812,7 @@ export function Terminology() {
                     )}
                     <h4>Editorial policy</h4>
                     <p>Original editorial definition. No verbatim source excerpts are published in Sipopedia.</p>
+                    </details>
                   </aside>
                 </div>
               </>

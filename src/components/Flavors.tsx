@@ -21,6 +21,8 @@ type ReviewFlag = boolean | null;
 type SettingsBeverage = "white_wine" | "red_wine" | "beer" | "spirits" | "coffee" | "tea" | "other" | "food";
 type WheelContext = "aroma" | "flavor";
 
+const TASTING_STUDIO_EDIT_HANDOFF_KEY = "sip-studies:tasting-studio-edit-note";
+
 type Field = { id: string; label: string; type: FieldType; placeholder?: string; options?: string[] };
 type Section = { title: string; fields: Field[] };
 type Schema = { label: string; primaryFields: Field[]; sections: Section[] };
@@ -908,7 +910,11 @@ export function Flavors() {
           }
         })
         .catch((error: unknown) => {
-          if (!cancelled) setDataError(error instanceof Error ? error.message : "Unable to load tasting notes.");
+          if (cancelled) return;
+          setDataError(error instanceof Error ? error.message : "Unable to load tasting notes.");
+          setNotes(loadGuestNotes());
+          setStorageMode("cloud-fallback");
+          setStatusMessage("Cloud load paused; your locally saved tasting archive is still available.");
         })
         .finally(() => {
           if (!cancelled) setLoadingNotes(false);
@@ -923,6 +929,25 @@ export function Flavors() {
       cancelled = true;
     };
   }, [useCloudStorage, user]);
+
+  useEffect(() => {
+    if (!notes.length) return;
+    let handoffId = "";
+    try {
+      handoffId = window.localStorage.getItem(TASTING_STUDIO_EDIT_HANDOFF_KEY) ?? "";
+    } catch {
+      return;
+    }
+    if (!handoffId) return;
+    const found = notes.find((note) => note.id === handoffId);
+    if (!found) return;
+    setDraft({ ...found, details: { ...found.details } });
+    setEditingId(found.id);
+    setRevealActual(!found.isBlind || Boolean(found.actualWineName.trim()));
+    setTab("make");
+    setStatusMessage("Archive note opened safely in Tasting Studio.");
+    window.localStorage.removeItem(TASTING_STUDIO_EDIT_HANDOFF_KEY);
+  }, [notes]);
 
   useEffect(() => {
     if (!aromaWheelCategories.some((category) => category.id === aromaWheelCategory)) {
@@ -1708,12 +1733,18 @@ export function Flavors() {
 
   return (
     <section className="tasting-journal">
-      <div className="section-header"><h2>Tasting Journal</h2><p>Structured notes, blind scoring analytics, PDF export, and an interactive country map of your tastings.</p></div>
-      <div className="journal-tabs">
-        <button className={`btn ${tab === "make" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("make")}>New Notes</button>
-        <button className={`btn ${tab === "review" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("review")}>Review</button>
-        <button className={`btn ${tab === "analyze" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("analyze")}>Improve</button>
-        <button className={`btn ${tab === "map" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("map")}>Tasting Map</button>
+      <div className="section-header">
+        <div>
+          <p className="checkout-eyebrow">Primary tasting workspace</p>
+          <h2>Tasting Studio</h2>
+          <p>Move through one guided loop: set the sample, record what you perceive, then conclude and save.</p>
+        </div>
+      </div>
+      <div className="journal-tabs" role="tablist" aria-label="Tasting Studio views">
+        <button type="button" role="tab" aria-selected={tab === "make"} className={`btn ${tab === "make" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("make")}>Capture</button>
+        <button type="button" role="tab" aria-selected={tab === "review"} className={`btn ${tab === "review" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("review")}>Archive</button>
+        <button type="button" role="tab" aria-selected={tab === "analyze"} className={`btn ${tab === "analyze" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("analyze")}>Insights</button>
+        <button type="button" role="tab" aria-selected={tab === "map"} className={`btn ${tab === "map" ? "btn-primary" : "btn-light"}`} onClick={() => setTab("map")}>Map</button>
       </div>
       <p className={`hint journal-storage-banner mode-${storageMode}`}>
         {storageMode === "cloud"
@@ -1752,6 +1783,14 @@ export function Flavors() {
         <div className="journal-shell">
           <article className="journal-card">
             <fieldset disabled={saving}>
+              <div className="journal-block" aria-label="Tasting workflow">
+                <h3>{editingId ? "Editing a saved tasting" : "Your tasting loop"}</h3>
+                <ol>
+                  <li><strong>Set up:</strong> choose the beverage and whether this is blind.</li>
+                  <li><strong>Observe:</strong> capture structure, aromas, and flavors before checking the label.</li>
+                  <li><strong>Conclude:</strong> make your call, reveal if needed, and save once.</li>
+                </ol>
+              </div>
               <div className="journal-form-grid">
                 <div className="journal-row"><label>Tasting Date</label><input type="date" value={draft.tastingDate.slice(0, 10)} onChange={(e) => updateDraft({ tastingDate: e.target.value })} /></div>
                 <div className="journal-row"><label>Location</label><input value={draft.location} placeholder="e.g., Classroom Tasting" onChange={(e) => updateDraft({ location: e.target.value })} /></div>
@@ -1781,21 +1820,27 @@ export function Flavors() {
                 </div>
                 <div className="flavors-setting-row">
                   <div><strong>Blind Tasting Mode</strong><p className="hint">Test yourself without seeing wine details</p></div>
-                  <button type="button" className={`flavors-switch ${draft.isBlind ? "on" : ""}`} onClick={() => { updateDraft({ isBlind: !draft.isBlind }); setRevealActual(draft.isBlind); }} aria-pressed={draft.isBlind}><span /></button>
+                  <button type="button" aria-label="Toggle blind tasting mode" className={`flavors-switch ${draft.isBlind ? "on" : ""}`} onClick={() => { updateDraft({ isBlind: !draft.isBlind }); setRevealActual(draft.isBlind); }} aria-pressed={draft.isBlind}><span /></button>
                 </div>
-                <div className="flavors-setting-row">
-                  <div><strong>Countdown Timer</strong><p className="hint">Set a timer while taking notes</p></div>
-                  <button type="button" className={`flavors-switch ${countdownEnabled ? "on" : ""}`} onClick={() => { setCountdownEnabled((current) => !current); if (countdownEnabled) stopCountdown(); }} aria-pressed={countdownEnabled}><span /></button>
-                </div>
-                {countdownEnabled ? <div className="flavors-tool-box"><div className="journal-form-grid"><div className="journal-row"><label>Minutes</label><input type="number" min={0} value={countdownMinutes} onChange={(e) => setCountdownMinutes(Math.max(0, asNum(e.target.value, 0)))} /></div><div className="journal-row"><label>Seconds</label><input type="number" min={0} max={59} value={countdownSeconds} onChange={(e) => setCountdownSeconds(Math.min(59, Math.max(0, asNum(e.target.value, 0))))} /></div></div><div className="journal-actions"><button type="button" className="btn btn-primary" onClick={startCountdown}>{countdownRunning ? "Restart" : "Start"}</button><button type="button" className="btn btn-light" onClick={stopCountdown}>Stop</button><span className="hint">{formatClock(countdownRemaining)}</span></div></div> : null}
-                <div className="flavors-setting-row">
-                  <div><strong>Metronome</strong><p className="hint">Keep rhythm during tasting</p></div>
-                  <button type="button" className={`flavors-switch ${metronomeEnabled ? "on" : ""}`} onClick={() => { setMetronomeEnabled((current) => !current); if (metronomeEnabled) stopMetronome(); }} aria-pressed={metronomeEnabled}><span /></button>
-                </div>
-                {metronomeEnabled ? <div className="flavors-tool-box"><div className="journal-row"><label>BPM: {bpm}</label><input type="range" min={40} max={220} step={1} value={bpm} onChange={(e) => setBpm(asNum(e.target.value, 60))} /></div><div className="journal-actions"><button type="button" className="btn btn-primary" onClick={toggleMetronome}>{metronomeRunning ? "Stop" : "Start"}</button><button type="button" className={`btn ${metronomeAudio ? "btn-primary" : "btn-light"}`} onClick={() => setMetronomeAudio((current) => !current)}>Audio Ticking</button><button type="button" className={`btn ${metronomeHaptic ? "btn-primary" : "btn-light"}`} onClick={() => setMetronomeHaptic((current) => !current)}>Haptic Vibration</button><button type="button" className={`btn ${metronomeProgression ? "btn-primary" : "btn-light"}`} onClick={() => setMetronomeProgression((current) => !current)}>Progression Mode</button></div></div> : null}
+                <details className="flavors-tool-box">
+                  <summary>Optional pacing tools</summary>
+                  <p className="hint">Use these only for timed drills or structured group practice.</p>
+                  <div className="flavors-setting-row">
+                    <div><strong>Countdown Timer</strong><p className="hint">Set a timer while taking notes</p></div>
+                    <button type="button" aria-label="Toggle countdown timer" className={`flavors-switch ${countdownEnabled ? "on" : ""}`} onClick={() => { setCountdownEnabled((current) => !current); if (countdownEnabled) stopCountdown(); }} aria-pressed={countdownEnabled}><span /></button>
+                  </div>
+                  {countdownEnabled ? <div className="flavors-tool-box"><div className="journal-form-grid"><div className="journal-row"><label>Minutes</label><input type="number" min={0} value={countdownMinutes} onChange={(e) => setCountdownMinutes(Math.max(0, asNum(e.target.value, 0)))} /></div><div className="journal-row"><label>Seconds</label><input type="number" min={0} max={59} value={countdownSeconds} onChange={(e) => setCountdownSeconds(Math.min(59, Math.max(0, asNum(e.target.value, 0))))} /></div></div><div className="journal-actions"><button type="button" className="btn btn-primary" onClick={startCountdown}>{countdownRunning ? "Restart" : "Start"}</button><button type="button" className="btn btn-light" onClick={stopCountdown}>Stop</button><span className="hint">{formatClock(countdownRemaining)}</span></div></div> : null}
+                  <div className="flavors-setting-row">
+                    <div><strong>Metronome</strong><p className="hint">Keep rhythm during tasting</p></div>
+                    <button type="button" aria-label="Toggle metronome" className={`flavors-switch ${metronomeEnabled ? "on" : ""}`} onClick={() => { setMetronomeEnabled((current) => !current); if (metronomeEnabled) stopMetronome(); }} aria-pressed={metronomeEnabled}><span /></button>
+                  </div>
+                  {metronomeEnabled ? <div className="flavors-tool-box"><div className="journal-row"><label>BPM: {bpm}</label><input type="range" min={40} max={220} step={1} value={bpm} onChange={(e) => setBpm(asNum(e.target.value, 60))} /></div><div className="journal-actions"><button type="button" className="btn btn-primary" onClick={toggleMetronome}>{metronomeRunning ? "Stop" : "Start"}</button><button type="button" className={`btn ${metronomeAudio ? "btn-primary" : "btn-light"}`} onClick={() => setMetronomeAudio((current) => !current)}>Audio Ticking</button><button type="button" className={`btn ${metronomeHaptic ? "btn-primary" : "btn-light"}`} onClick={() => setMetronomeHaptic((current) => !current)}>Haptic Vibration</button><button type="button" className={`btn ${metronomeProgression ? "btn-primary" : "btn-light"}`} onClick={() => setMetronomeProgression((current) => !current)}>Progression Mode</button></div></div> : null}
+                </details>
               </section>
 
-              <section className="journal-block flavors-photo-section">
+              <details className="journal-block">
+                <summary>Optional: add label photos</summary>
+                <section className="flavors-photo-section">
                 <h3>Label Photos</h3>
                 <div className="flavors-photo-zone">
                   <h4>Front Label photo</h4>
@@ -1890,7 +1935,8 @@ export function Flavors() {
                   <div className="journal-actions"><button type="button" className="btn btn-light" onClick={() => openPhotoPicker("additional")}>Add photos</button><label className="btn btn-light">Take Photo<input hidden type="file" accept={PHOTO_ACCEPT} capture="environment" onChange={(e) => void onUploadPhoto("additional", e.target.files)} /></label></div>
                   <input ref={additionalInputRef} hidden type="file" accept={PHOTO_ACCEPT} multiple onChange={(e) => void onUploadPhoto("additional", e.target.files)} />
                 </div>
-              </section>
+                </section>
+              </details>
 
               {!isWineType(draft.beverageType) ? (
                 <section className="journal-block flavors-wheel-block">
@@ -1992,7 +2038,7 @@ export function Flavors() {
           <article className="journal-card">
             <div className="journal-toolbar"><input placeholder="Search notes..." value={search} onChange={(e) => setSearch(e.target.value)} /><button className="btn btn-light" type="button" onClick={() => setSelectedIds((current) => current.size === filtered.length ? new Set() : new Set(filtered.map((n) => n.id)))} disabled={filtered.length === 0}>{selectedIds.size === filtered.length && filtered.length > 0 ? "Unselect All" : "Select All"}</button><button className="btn btn-light" type="button" onClick={exportPdf} disabled={filtered.length === 0}>Export PDF</button></div>
             <div className="journal-note-list">
-              {filtered.map((note) => <article key={note.id} className={`journal-note-row ${note.id === activeId ? "active" : ""}`} onClick={() => setActiveId(note.id)}><label className="journal-check"><input type="checkbox" checked={selectedIds.has(note.id)} onClick={(e) => e.stopPropagation()} onChange={() => setSelectedIds((current) => { const next = new Set(current); if (next.has(note.id)) next.delete(note.id); else next.add(note.id); return next; })} /><span>Select</span></label><div className="journal-note-copy"><h3>{note.actualWineName || note.details.categoryName || "Untitled Tasting"}</h3><p>{SCHEMAS[note.beverageType].label} | {note.actualCountry || "Unknown"} | {fmtDate(note.tastingDate)}</p>{note.isBlind ? <p>Blind Accuracy: {noteScore(note) ?? "—"}{noteScore(note) !== null ? "%" : ""}</p> : null}</div><div className="journal-note-actions"><button className="btn btn-light" type="button" onClick={(e) => { e.stopPropagation(); edit(note.id); }}>Edit</button><button className="btn btn-light" type="button" disabled={deletingId === note.id} onClick={(e) => { e.stopPropagation(); void remove(note.id); }}>{deletingId === note.id ? "Deleting..." : "Delete"}</button></div></article>)}
+              {filtered.map((note) => <article key={note.id} className={`journal-note-row ${note.id === activeId ? "active" : ""}`}><label className="journal-check"><input type="checkbox" checked={selectedIds.has(note.id)} onChange={() => setSelectedIds((current) => { const next = new Set(current); if (next.has(note.id)) next.delete(note.id); else next.add(note.id); return next; })} /><span>Select</span></label><button type="button" className="journal-note-copy journal-note-select" onClick={() => setActiveId(note.id)}><h3>{note.actualWineName || note.details.categoryName || "Untitled Tasting"}</h3><p>{SCHEMAS[note.beverageType].label} | {note.actualCountry || "Unknown"} | {fmtDate(note.tastingDate)}</p>{note.isBlind ? <p>Blind Accuracy: {noteScore(note) ?? "—"}{noteScore(note) !== null ? "%" : ""}</p> : null}</button><div className="journal-note-actions"><button className="btn btn-light" type="button" onClick={() => edit(note.id)}>Edit</button><button className="btn btn-light" type="button" disabled={deletingId === note.id} onClick={() => void remove(note.id)}>{deletingId === note.id ? "Deleting..." : "Delete"}</button></div></article>)}
             </div>
           </article>
           <aside className="journal-card journal-review-detail">{active ? <><h3>{active.actualWineName || active.details.categoryName || "Untitled Tasting"}</h3><p className="hint">{fmtDate(active.tastingDate)}</p><p><strong>Type:</strong> {SCHEMAS[active.beverageType].label}</p><p><strong>Location:</strong> {active.location || "—"}</p><p><strong>Country / Region:</strong> {active.actualCountry || "—"} / {active.actualRegion || "—"}</p><p><strong>Blind:</strong> {active.isBlind ? "Yes" : "No"}</p>{active.isBlind ? <p><strong>Accuracy:</strong> {noteScore(active) ?? "—"}{noteScore(active) !== null ? "%" : ""}</p> : null}</> : <p className="hint">Select a note to review details.</p>}</aside>
@@ -2076,7 +2122,7 @@ export function Flavors() {
               </div>
             ) : null}
           </article>
-          <aside id="journal-region-directory" className="journal-card"><h3>Region Directory</h3><div className="journal-toolbar"><input placeholder="Search regions or wines..." value={mapSearch} onChange={(e) => setMapSearch(e.target.value)} /></div><div className="journal-note-list">{Object.entries(mapDirectory).length > 0 ? Object.entries(mapDirectory).map(([country, regions]) => <div key={country} className="journal-region-country"><h4>{country}</h4>{Object.entries(regions).map(([region, regionNotes]) => <div key={`${country}-${region}`} className="journal-region-group"><p><strong>{region}</strong> ({regionNotes.length})</p><div className="journal-note-list">{regionNotes.map((note) => <article key={note.id} className={`journal-note-row compact ${activeId === note.id ? "active" : ""}`} onClick={() => { setActiveId(note.id); setTab("review"); }}><div className="journal-note-copy"><h3>{note.actualWineName || "Untitled Tasting"}</h3><p>{fmtDate(note.tastingDate)}</p></div></article>)}</div></div>)}</div>) : <p className="hint">No regions found. Try clearing filters or add more tasting notes.</p>}</div></aside>
+          <aside id="journal-region-directory" className="journal-card"><h3>Region Directory</h3><div className="journal-toolbar"><input placeholder="Search regions or wines..." value={mapSearch} onChange={(e) => setMapSearch(e.target.value)} /></div><div className="journal-note-list">{Object.entries(mapDirectory).length > 0 ? Object.entries(mapDirectory).map(([country, regions]) => <div key={country} className="journal-region-country"><h4>{country}</h4>{Object.entries(regions).map(([region, regionNotes]) => <div key={`${country}-${region}`} className="journal-region-group"><p><strong>{region}</strong> ({regionNotes.length})</p><div className="journal-note-list">{regionNotes.map((note) => <button type="button" key={note.id} className={`journal-note-row journal-note-select compact ${activeId === note.id ? "active" : ""}`} onClick={() => { setActiveId(note.id); setTab("review"); }}><span className="journal-note-copy"><strong>{note.actualWineName || "Untitled Tasting"}</strong><span>{fmtDate(note.tastingDate)}</span></span></button>)}</div></div>)}</div>) : <p className="hint">No regions found. Try clearing filters or add more tasting notes.</p>}</div></aside>
         </div>
       ) : null}
     </section>

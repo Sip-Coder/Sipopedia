@@ -722,6 +722,9 @@ export function FlavorWheel() {
   const [activeBeverage, setActiveBeverage] = useState<BeverageId>("wine");
   const [activeSegmentId, setActiveSegmentId] = useState("");
   const [activeFlavorName, setActiveFlavorName] = useState("");
+  const [predictedAcidity, setPredictedAcidity] = useState(5);
+  const [predictedSweetness, setPredictedSweetness] = useState(5);
+  const [practiceNote, setPracticeNote] = useState("");
 
   const fruitStatsByClimate = useMemo(() => {
     const map = new Map<ClimateBand, { acidity: number; sweetness: number; count: number }>();
@@ -879,6 +882,49 @@ export function FlavorWheel() {
           </button>
         ))}
       </div>
+
+      <article className="journal-card" aria-labelledby="flavor-calibration-title">
+        <p className="checkout-eyebrow">Active practice</p>
+        <h3 id="flavor-calibration-title">Calibrate one descriptor in three steps</h3>
+        <ol>
+          <li><strong>Predict:</strong> smell or taste first, then estimate acidity and sweetness.</li>
+          <li><strong>Compare:</strong> choose the closest wheel descriptor to reveal its reference profile.</li>
+          <li><strong>Apply:</strong> write one evidence-based sentence and carry it into your tasting note.</li>
+        </ol>
+        <div className="journal-form-grid">
+          <label className="journal-row">
+            Predicted acidity: {predictedAcidity}/10
+            <input type="range" min={1} max={10} value={predictedAcidity} onChange={(event) => setPredictedAcidity(Number(event.target.value))} />
+          </label>
+          <label className="journal-row">
+            Predicted sweetness: {predictedSweetness}/10
+            <input type="range" min={1} max={10} value={predictedSweetness} onChange={(event) => setPredictedSweetness(Number(event.target.value))} />
+          </label>
+        </div>
+        {activeFlavorName ? (
+          <p className="hint">
+            Reference for <strong>{detailLabel}</strong>: acidity {detailAcidity}/10, sweetness {detailSweetness}/10.
+            Your difference is {Math.abs(predictedAcidity - detailAcidity)} acidity point(s) and {Math.abs(predictedSweetness - detailSweetness)} sweetness point(s).
+          </p>
+        ) : (
+          <p className="hint">Now choose a segment and descriptor below to compare your prediction.</p>
+        )}
+        <label className="journal-row">
+          Evidence sentence
+          <textarea
+            rows={2}
+            value={practiceNote}
+            onChange={(event) => setPracticeNote(event.target.value)}
+            placeholder="Example: The tart red-fruit cue supports medium-plus acidity rather than sweetness."
+          />
+        </label>
+        <div className="journal-actions">
+          <a className="btn btn-primary" href="#app/flavors">Use in Tasting Studio</a>
+          <button type="button" className="btn btn-light" onClick={() => { setPracticeNote(""); setActiveFlavorName(""); }}>
+            Start another
+          </button>
+        </div>
+      </article>
 
       <div className="flavor-wheel-layout">
         <article className="flavor-wheel-canvas">

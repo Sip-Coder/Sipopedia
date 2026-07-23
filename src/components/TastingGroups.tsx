@@ -1775,33 +1775,24 @@ export function TastingGroups() {
     <section className="tasting-groups">
       <div className="section-header">
         <h2>Tasting Groups</h2>
-        <p>
-          Organize local, in-person tasting communities with persistent group creation for signed-in members and preview
-          groups for unauthenticated browsing.
-        </p>
+        <p>Find a group, understand its next meetup, request to join, and build a steady practice habit with other learners.</p>
       </div>
 
       <div className="tasting-groups-hero">
         <div className="tasting-groups-hero-copy">
           <p className="news-card-tag">Sip Studios Community</p>
-          <h3>Build cohort-backed tasting communities around real meetups.</h3>
-          <p>
-            Hosts can stand up a group, route membership requests through Supabase RLS, and coordinate members around
-            tasting themes, RSVP cards, and host-approved member access.
-          </p>
+          <h3>Move from studying alone to tasting with a consistent cohort.</h3>
+          <p>Start as a member: find the right city and focus, review the meetup rhythm, then request a seat or RSVP.</p>
           <div className="tasting-groups-hero-actions">
             <button
               type="button"
               className="btn btn-primary"
-              onClick={() => {
-                setShowCreateForm(true);
-                document.getElementById("create-tasting-group")?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
+              onClick={() => document.getElementById("group-search")?.focus()}
             >
-              Start a Group
+              Find a Group
             </button>
-            <button type="button" className="btn btn-light" onClick={() => setFocusFilter("All")}>
-              Explore All Groups
+            <button type="button" className="btn btn-light" onClick={() => document.getElementById("create-tasting-group")?.scrollIntoView({ behavior: "smooth", block: "start" })}>
+              Host Tools
             </button>
           </div>
         </div>
@@ -1846,19 +1837,18 @@ export function TastingGroups() {
         <button
           type="button"
           className="tasting-groups-quick-step"
-          onClick={() => {
-            setShowCreateForm(true);
-            document.getElementById("create-tasting-group")?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
+          onClick={handleRequestJoin}
         >
           <span>3</span>
           <div>
-            <strong>Create when ready</strong>
-            <p>Save persistent groups when signed in, or stage locally while previewing.</p>
+            <strong>Request to join</strong>
+            <p>Introduce your goal, then RSVP to the next useful meetup.</p>
           </div>
         </button>
       </div>
 
+      <details>
+        <summary>Optional: explore group cities on the globe</summary>
       <article className="tasting-groups-map-card">
         <div className="tasting-groups-map-head">
           <div>
@@ -1896,6 +1886,7 @@ export function TastingGroups() {
         )}
 
       </article>
+      </details>
 
       <div className="tasting-groups-layout">
         <aside className="tasting-groups-sidebar" aria-label="Group discovery filters">
@@ -2002,6 +1993,8 @@ export function TastingGroups() {
                 </p>
               </div>
 
+              <details>
+                <summary>Host tools: cohort exports and dashboard handoff</summary>
               <div className="tasting-groups-cohort-handoff" aria-label="Cohort handoff exports">
                 <div>
                   <p className="news-card-tag">Cohort Handoff</p>
@@ -2044,6 +2037,7 @@ export function TastingGroups() {
                 </div>
                 {cohortHandoffNotice ? <p className="tasting-groups-notice">{cohortHandoffNotice}</p> : null}
               </div>
+              </details>
 
               <div className="tasting-groups-events">
                 <h4>Upcoming Meetups</h4>
@@ -2138,6 +2132,8 @@ export function TastingGroups() {
           )}
 
           {selectedGroup ? (
+            <details>
+              <summary>Host tools: event builder and member approvals</summary>
             <article className="tasting-groups-host-console">
               <div className="tasting-groups-host-head">
                 <div>
@@ -2243,6 +2239,7 @@ export function TastingGroups() {
                 </div>
               ) : null}
             </article>
+            </details>
           ) : null}
 
           {selectedGroup ? (
@@ -2534,7 +2531,9 @@ export function TastingGroups() {
             </ul>
           </article>
 
-          <article id="create-tasting-group" className="tasting-groups-create">
+          <details id="create-tasting-group">
+            <summary>Host tools: create a new tasting group</summary>
+          <article className="tasting-groups-create">
             <div className="tasting-groups-create-head">
               <h3>Create a Tasting Group</h3>
               <button
@@ -2648,6 +2647,7 @@ export function TastingGroups() {
 
             {createNotice ? <p className="tasting-groups-notice">{createNotice}</p> : null}
           </article>
+          </details>
         </div>
       </div>
     </section>

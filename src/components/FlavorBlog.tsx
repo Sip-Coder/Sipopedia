@@ -675,6 +675,9 @@ export function FlavorBlog() {
   const [filter, setFilter] = useState<BlogFilter>(getInitialBlogFilter);
   const [selectedDailySipId, setSelectedDailySipId] = useState<string | null>(getInitialDailySipEntry);
   const [sourceModes, setSourceModes] = useState<Record<string, SourceLoadMode>>({});
+  const [studyArticleId, setStudyArticleId] = useState<string | null>(null);
+  const [studyRecall, setStudyRecall] = useState("");
+  const [studyPractice, setStudyPractice] = useState("");
 
   useEffect(() => {
     let canceled = false;
@@ -781,6 +784,10 @@ export function FlavorBlog() {
     () => dailySipReports.find((report) => report.id === selectedDailySipId) ?? null,
     [selectedDailySipId]
   );
+  const studyArticle = useMemo(
+    () => articles.find((article) => article.id === studyArticleId) ?? null,
+    [articles, studyArticleId]
+  );
   const showDailySipReport = filter === "daily-sip" && selectedDailySipReport !== null;
 
   const renderPageControls = (position: "top" | "bottom") => (
@@ -823,13 +830,28 @@ export function FlavorBlog() {
       <div className="section-header">
         <div>
           <h2>Flavor Blog</h2>
-          <p>Posts from the Sip Studies blog, Sip Studies Substack, and Daily Sip market briefing.</p>
+          <p>Editorial lessons and market briefings designed to end in recall, tasting, or service practice.</p>
         </div>
         <button className="btn btn-light" onClick={() => setRefreshCount((value) => value + 1)} disabled={isLoading}>
           {isLoading ? "Refreshing..." : "Refresh"}
         </button>
       </div>
 
+      <article className="journal-card" aria-labelledby="flavor-blog-loop-title">
+        <p className="checkout-eyebrow">Read → recall → practice</p>
+        <h3 id="flavor-blog-loop-title">{studyArticle ? studyArticle.title : "Select one article for a focused study pass"}</h3>
+        {studyArticle ? (
+          <div className="journal-form-grid">
+            <label className="journal-row">Without rereading, state the main idea in one sentence.<textarea rows={2} value={studyRecall} onChange={(event) => setStudyRecall(event.target.value)} /></label>
+            <label className="journal-row">Choose a practical follow-up.<textarea rows={2} value={studyPractice} onChange={(event) => setStudyPractice(event.target.value)} placeholder="Taste a comparison, explain it to a guest, or turn it into a quiz question." /></label>
+          </div>
+        ) : (
+          <p>Read with a purpose: one idea to remember and one observable behavior to practice.</p>
+        )}
+      </article>
+
+      <details>
+        <summary>Choose a publication</summary>
       <div className="news-filter-group">
         <p className="news-filter-label">Blog</p>
         <div className="news-source-strip">
@@ -863,6 +885,7 @@ export function FlavorBlog() {
           })}
         </div>
       </div>
+      </details>
 
       {showDailySipReport ? null : renderPageControls("top")}
       {!showDailySipReport && filteredArticles.length > maxVisibleArticles ? (
@@ -892,6 +915,18 @@ export function FlavorBlog() {
                   <p className="news-card-meta">
                     {article.sourceName} | {formatDate(article.publishedAt)}
                   </p>
+                  <button
+                    className="btn btn-primary news-link"
+                    type="button"
+                    onClick={() => {
+                      setStudyArticleId(article.id);
+                      setStudyRecall("");
+                      setStudyPractice("");
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                  >
+                    Study this lesson
+                  </button>
                   {article.sourceId === "daily-sip" ? (
                     <button
                       className="btn btn-light news-link"
