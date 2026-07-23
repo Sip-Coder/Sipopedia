@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2.110.8";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js";
 
 type AdminSupabaseClient = SupabaseClient<any>;
 
