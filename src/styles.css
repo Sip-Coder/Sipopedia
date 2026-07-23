@@ -29,6 +29,14 @@
   --welcome-pulse-brightness-max: 1.08;
   --welcome-pulse-glow-min: 16px;
   --welcome-pulse-glow-max: 28px;
+
+  /* Shared desktop typography scale. Mobile overrides live at the end of this file. */
+  --type-body: 1rem;
+  --type-small: 0.875rem;
+  --type-label: 0.75rem;
+  --type-micro: 0.6875rem;
+  --type-control: 1rem;
+  --type-heading-small: 0.875rem;
 }
 
 * {
@@ -41,8 +49,17 @@ body {
   overflow-x: hidden;
   color: var(--ink);
   font-family: "Outfit", "Trebuchet MS", sans-serif;
+  font-size: var(--type-body);
+  line-height: 1.5;
   position: relative;
   background: #020d1f;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 body::before {
@@ -754,6 +771,7 @@ select option:checked {
 
 .btn {
   border: 1px solid #b89e73;
+  font-size: var(--type-control);
   font-weight: 700;
   border-radius: 12px;
   padding: 0.66rem 0.95rem;
@@ -834,7 +852,7 @@ select option:checked {
   border: 1px solid rgba(49, 94, 89, 0.36);
   background: rgba(223, 237, 228, 0.86);
   color: #254844;
-  font-size: 0.74rem;
+  font-size: var(--type-label);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 700;
@@ -844,12 +862,12 @@ select option:checked {
 .news-link-placeholder {
   margin-top: 0.15rem;
   color: #6a5e49;
-  font-size: 0.88rem;
+  font-size: var(--type-small);
   font-weight: 600;
 }
 
 .news-card-meta {
-  font-size: 0.84rem;
+  font-size: var(--type-small);
   color: #5b6774;
   font-weight: 700;
 }
@@ -1215,7 +1233,7 @@ select option:checked {
 .news-filter-label {
   margin-bottom: 0.32rem;
   color: #486069;
-  font-size: 0.82rem;
+  font-size: var(--type-label);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: 700;
@@ -1239,7 +1257,7 @@ select option:checked {
   padding: 0.22rem 0.62rem;
   background: #edf7f9;
   color: #2c5568;
-  font-size: 0.82rem;
+  font-size: var(--type-small);
   font-weight: 700;
 }
 
@@ -1273,7 +1291,7 @@ select option:checked {
   align-items: center;
   gap: 0.5rem;
   color: #486069;
-  font-size: 0.9rem;
+  font-size: var(--type-small);
   font-weight: 700;
 }
 
@@ -1284,7 +1302,7 @@ select option:checked {
   background: #ffffff;
   color: #2f4945;
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: var(--type-control);
 }
 
 .news-page-nav {
@@ -1297,7 +1315,7 @@ select option:checked {
 .news-page-meta {
   margin: 0;
   color: #5b6774;
-  font-size: 0.9rem;
+  font-size: var(--type-small);
   font-weight: 700;
 }
 
@@ -8005,7 +8023,7 @@ select option:checked {
 .cocktail-search-panel label,
 .cocktail-kicker {
   color: #edd4a8;
-  font-size: 0.72rem;
+  font-size: var(--type-label);
   font-weight: 900;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -8306,7 +8324,7 @@ select option:checked {
 
 .cocktail-photo-panel figcaption span {
   color: #edd4a8;
-  font-size: 0.68rem;
+  font-size: var(--type-label);
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -8320,6 +8338,7 @@ select option:checked {
 
 .cocktail-photo-panel figcaption small {
   color: rgba(217, 247, 255, 0.72);
+  font-size: var(--type-small);
   font-weight: 800;
 }
 
@@ -8380,7 +8399,7 @@ select option:checked {
   color: #d9f7ff;
   padding: 0.45rem 0.55rem;
   font: inherit;
-  font-size: clamp(0.72rem, 1.25vw, 0.95rem);
+  font-size: clamp(var(--type-label), 1.25vw, 0.95rem);
   font-weight: 900;
   line-height: 1.05;
   overflow: hidden;
@@ -8401,7 +8420,7 @@ select option:checked {
   width: 100%;
   margin-top: 0.2rem;
   color: rgba(217, 247, 255, 0.62);
-  font-size: 0.64rem;
+  font-size: var(--type-micro);
   font-weight: 800;
   overflow-wrap: normal;
 }
@@ -8474,7 +8493,7 @@ select option:checked {
 .cocktail-hover-card > span,
 .cocktail-detail-panel > span {
   color: rgba(159, 218, 245, 0.78);
-  font-size: 0.86rem;
+  font-size: var(--type-small);
   font-weight: 800;
 }
 
@@ -8494,7 +8513,7 @@ select option:checked {
 .cocktail-hover-card dt,
 .cocktail-detail-panel dt {
   color: #edd4a8;
-  font-size: 0.68rem;
+  font-size: var(--type-label);
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -8504,7 +8523,7 @@ select option:checked {
 .cocktail-detail-panel dd {
   margin: 0;
   color: rgba(217, 247, 255, 0.82);
-  font-size: 0.9rem;
+  font-size: var(--type-small);
   line-height: 1.45;
 }
 
@@ -8597,7 +8616,7 @@ select option:checked {
 
 .bev-color-study-panel figcaption span {
   color: #edd4a8;
-  font-size: 0.68rem;
+  font-size: var(--type-label);
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -8611,6 +8630,7 @@ select option:checked {
 
 .bev-color-study-panel figcaption small {
   color: rgba(217, 247, 255, 0.72);
+  font-size: var(--type-small);
   font-weight: 800;
   line-height: 1.35;
 }
@@ -8698,7 +8718,7 @@ select option:checked {
 
 .cocktail-technique-score span {
   color: rgba(159, 218, 245, 0.84);
-  font-size: 0.74rem;
+  font-size: var(--type-label);
   font-weight: 900;
   text-transform: uppercase;
 }
@@ -8721,7 +8741,7 @@ select option:checked {
 
 .cocktail-technique-grid h4 {
   color: #fff0ce;
-  font-size: 0.88rem;
+  font-size: var(--type-heading-small);
   margin: 0;
   text-transform: capitalize;
 }
@@ -8769,7 +8789,7 @@ select option:checked {
 .cocktail-technique-grid button small,
 .cocktail-technique-grid p {
   color: rgba(217, 247, 255, 0.7);
-  font-size: 0.78rem;
+  font-size: var(--type-small);
   line-height: 1.32;
 }
 
@@ -8785,7 +8805,7 @@ select option:checked {
 
 .cocktail-technique-feedback strong {
   color: #edd4a8;
-  font-size: 0.72rem;
+  font-size: var(--type-label);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -8861,11 +8881,11 @@ select option:checked {
     min-width: 74px;
     min-height: 42px;
     padding: 0.42rem 0.45rem;
-    font-size: 0.78rem;
+    font-size: var(--type-label);
   }
 
   .cocktail-node span {
-    font-size: 0.58rem;
+    font-size: var(--type-micro);
   }
 
   .cocktail-node-center {
@@ -19443,7 +19463,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
 .site-room-label {
   padding-inline: 0.42rem 0.22rem;
-  font-size: 0.58rem;
+  font-size: var(--type-label);
 }
 
 .site-room-nav .btn {
@@ -20389,7 +20409,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
 .sip-nav-status-card p {
   color: rgba(217, 247, 255, 0.75);
-  font-size: 0.69rem;
+  font-size: var(--type-small);
   font-weight: 700;
   line-height: 1.22;
   margin-top: 0.22rem;
@@ -20444,14 +20464,14 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 .sip-nav-section-switcher span {
   color: #fff1d1;
   font-family: "Space Grotesk", "Gill Sans", sans-serif;
-  font-size: 0.86rem;
+  font-size: var(--type-heading-small);
   font-weight: 900;
   line-height: 1;
 }
 
 .sip-nav-section-switcher small {
   color: rgba(159, 218, 245, 0.78);
-  font-size: 0.62rem;
+  font-size: var(--type-label);
   font-weight: 900;
 }
 
@@ -20487,7 +20507,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   border-radius: 999px;
   cursor: pointer;
   font: inherit;
-  font-size: 0.72rem;
+  font-size: var(--type-label);
   font-weight: 900;
   letter-spacing: 0.01em;
   transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
@@ -20510,7 +20530,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   border: 1px solid rgba(237, 212, 168, 0.26);
   border-radius: 999px;
   color: rgba(237, 212, 168, 0.9);
-  font-size: 0.56rem;
+  font-size: var(--type-micro);
   letter-spacing: 0.08em;
   padding: 0.12rem 0.3rem;
   text-transform: uppercase;
@@ -20563,7 +20583,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 .sip-nav-band-head span {
   color: #fff1d1;
   font-family: "Space Grotesk", "Gill Sans", sans-serif;
-  font-size: 0.72rem;
+  font-size: var(--type-label);
   font-weight: 900;
   white-space: nowrap;
 }
@@ -20583,7 +20603,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   color: #8b4513;
   cursor: pointer;
   font: inherit;
-  font-size: 0.68rem;
+  font-size: var(--type-label);
   font-weight: 900;
   min-height: 28px;
   padding: 0.24rem 0.48rem;
@@ -20619,7 +20639,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
 .sip-nav-band-head em {
   color: rgba(237, 212, 168, 0.78);
-  font-size: 0.52rem;
+  font-size: var(--type-micro);
   font-style: normal;
   font-weight: 900;
   letter-spacing: 0.12em;
@@ -20688,7 +20708,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   border: 1px solid rgba(237, 212, 168, 0.36);
   border-radius: 10px;
   color: rgba(237, 212, 168, 0.9);
-  font-size: 0.58rem;
+  font-size: var(--type-micro);
   font-weight: 900;
 }
 
@@ -20696,7 +20716,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   grid-area: label;
   color: #fff1d1;
   font-family: "Space Grotesk", "Gill Sans", sans-serif;
-  font-size: 0.78rem;
+  font-size: var(--type-heading-small);
   line-height: 1.02;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -20706,7 +20726,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 .sip-nav-module-track small {
   grid-area: signal;
   color: rgba(159, 218, 245, 0.74);
-  font-size: 0.58rem;
+  font-size: var(--type-micro);
   font-weight: 800;
   line-height: 1.1;
   overflow: hidden;
@@ -20729,13 +20749,13 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 .sip-nav-empty-state strong {
   color: #fff1d1;
   font-family: "Space Grotesk", "Gill Sans", sans-serif;
-  font-size: 0.82rem;
+  font-size: var(--type-heading-small);
   line-height: 1.05;
 }
 
 .sip-nav-empty-state span {
   color: rgba(159, 218, 245, 0.76);
-  font-size: 0.64rem;
+  font-size: var(--type-small);
   font-weight: 800;
   line-height: 1.22;
 }
@@ -27336,7 +27356,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   border-radius: 999px;
   color: #f8fbff;
   display: inline-flex;
-  font-size: 0.78rem;
+  font-size: var(--type-label);
   font-weight: 900;
   gap: 0.38rem;
   padding: 0.34rem 0.58rem;
@@ -27366,7 +27386,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
 .bev-ecosystem-panel-head span {
   color: #9fdaf5;
-  font-size: 0.72rem;
+  font-size: var(--type-label);
   font-weight: 900;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -27461,7 +27481,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
 .bev-eco-node text {
   fill: #020617;
-  font-size: 0.62rem;
+  font-size: var(--type-micro);
   font-weight: 950;
   pointer-events: none;
   text-anchor: middle;
@@ -27469,7 +27489,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
 .bev-eco-label {
   fill: rgba(248, 251, 255, 0.9);
-  font-size: 0.82rem;
+  font-size: var(--type-small);
   font-weight: 900;
   paint-order: stroke;
   stroke: rgba(0, 0, 0, 0.92);
@@ -27597,8 +27617,75 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
 .bev-globe-node text {
   fill: #020617;
-  font-size: 0.52rem;
+  font-size: var(--type-micro);
   font-weight: 950;
   pointer-events: none;
   text-anchor: middle;
+}
+
+/* Mobile reading scale: typography changes without scaling spacing or component geometry. */
+@media (max-width: 760px) {
+  :root {
+    --type-body: 1.0625rem;
+    --type-small: 1rem;
+    --type-label: 0.9375rem;
+    --type-micro: 0.875rem;
+    --type-control: 1rem;
+    --type-heading-small: 1rem;
+  }
+
+  body {
+    line-height: 1.55;
+  }
+
+  input,
+  select,
+  textarea,
+  .journal-row input,
+  .journal-row select,
+  .journal-row textarea,
+  .journal-toolbar input {
+    font-size: var(--type-control);
+  }
+
+  .site-room-label,
+  .sip-nav-band-head em,
+  .cocktail-search-panel label,
+  .cocktail-kicker,
+  .cocktail-photo-panel figcaption span,
+  .cocktail-hover-card dt,
+  .cocktail-detail-panel dt,
+  .bev-color-study-panel figcaption span {
+    letter-spacing: 0.08em;
+  }
+
+  .sip-nav-status-card h2 {
+    font-size: 1.125rem;
+    line-height: 1.1;
+  }
+
+  .sip-nav-section-switcher button,
+  .sip-nav-module-track button {
+    min-height: 58px;
+  }
+
+  .bev-recipes-tabs span {
+    font-size: var(--type-heading-small);
+    line-height: 1.2;
+  }
+
+  .bev-recipes-tabs small {
+    font-size: var(--type-small);
+    line-height: 1.35;
+  }
+}
+
+@media (max-width: 620px) {
+  .bev-recipes-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bev-recipes-tabs button {
+    min-height: 92px;
+  }
 }

@@ -222,7 +222,11 @@ function trimSummary(input: string): string {
 }
 
 function parseDateOrNow(input: string, fallbackOffsetMs = 0): string {
-  const date = new Date(input);
+  const value = input.trim();
+  const numericEpoch = /^\d{10,13}$/.test(value) ? Number(value) : Number.NaN;
+  const date = Number.isFinite(numericEpoch)
+    ? new Date(value.length <= 10 ? numericEpoch * 1_000 : numericEpoch)
+    : new Date(value);
   if (Number.isNaN(date.getTime())) {
     return new Date(Date.now() - fallbackOffsetMs).toISOString();
   }
