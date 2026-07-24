@@ -17521,6 +17521,83 @@ select option:checked {
   min-height: 154px;
 }
 
+.admin-overview-grid .admin-operations-alert {
+  flex-basis: min(720px, 100%);
+  border-color: rgba(255, 187, 92, 0.58);
+  background:
+    linear-gradient(135deg, rgba(255, 177, 64, 0.13), transparent 62%),
+    #0f171c;
+}
+
+.admin-overview-grid .admin-operations-alert.status-unavailable {
+  border-color: rgba(255, 111, 111, 0.68);
+  background:
+    linear-gradient(135deg, rgba(179, 42, 42, 0.2), transparent 62%),
+    #0f171c;
+}
+
+.admin-operations-alert-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.admin-operations-alert-header h3 {
+  margin-bottom: 0.4rem;
+}
+
+.admin-operations-alert-count {
+  min-width: 72px;
+  margin: 0;
+  border: 1px solid rgba(255, 205, 133, 0.32);
+  border-radius: 12px;
+  padding: 0.5rem 0.65rem;
+  color: #f1ddb0;
+  text-align: center;
+}
+
+.admin-operations-alert-count strong,
+.admin-operations-alert-count span {
+  display: block;
+}
+
+.admin-operations-alert-count strong {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.admin-operations-alert-count span {
+  margin-top: 0.2rem;
+  color: #bfe1ee;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.admin-operations-alert-details {
+  margin-top: 0.8rem;
+  color: #d3eaf3;
+}
+
+.admin-operations-alert-details summary {
+  width: fit-content;
+  color: #f1ddb0;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.admin-operations-alert-details ul {
+  columns: 2;
+  gap: 2rem;
+  margin: 0.65rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.admin-operations-alert .admin-actions {
+  margin-top: 0.85rem;
+}
+
 .admin-stat-subpills {
   display: grid;
   grid-template-columns: repeat(3, minmax(64px, 1fr));
@@ -27923,6 +28000,21 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   font-weight: 950;
   pointer-events: none;
   text-anchor: middle;
+}
+
+@media (max-width: 640px) {
+  .admin-operations-alert-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-operations-alert-count {
+    width: fit-content;
+  }
+
+  .admin-operations-alert-details ul {
+    columns: 1;
+  }
 }
 
 /* Mobile reading scale: typography changes without scaling spacing or component geometry. */

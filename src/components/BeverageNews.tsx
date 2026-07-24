@@ -4,6 +4,7 @@ import { MAGAZINE_NEWS_REFERENCES } from "../data/magazineNewsReferences";
 import { safeHttpUrl } from "../lib/urlSafety";
 import { useArticleLibrary } from "../context/ArticleLibraryContext";
 import type { ArticleSnapshot } from "../lib/articleLibrary";
+import { writeBeverageNewsHealth } from "../lib/beverageNewsHealth";
 import { ArticleActions, ArticleFavoritesLink, ArticleReadLink } from "./ArticleActions";
 
 type BeverageType = "Wine" | "Spirits" | "Beer" | "Sake" | "General";
@@ -939,7 +940,7 @@ export function BeverageNews() {
   const [articles, setArticles] = useState<BeverageArticle[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [warning, setWarning] = useState<string | null>(null);
+  const [feedNotice, setFeedNotice] = useState<string | null>(null);
   const [refreshCount, setRefreshCount] = useState<number>(0);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [articlesPerPage, setArticlesPerPage] = useState<NewsPageSize>(12);
@@ -962,7 +963,7 @@ export function BeverageNews() {
 
     const load = async () => {
       setError(null);
-      setWarning(null);
+      setFeedNotice(null);
       const cached = readNewsCache();
       const cacheFresh =
         cached && Date.now() - new Date(cached.savedAt).getTime() <= NEWS_CACHE_MAX_AGE_MS && cached.articles.length > 0;
@@ -1018,23 +1019,45 @@ export function BeverageNews() {
       const merged = mergeResults(liveResults);
       const failed = liveResults.filter((result) => result.mode === "failed");
       const modeMap = buildModeMap(liveResults);
+      const loadedCount = liveResults.filter((result) => result.mode === "loaded").length;
+      const fallbackCount = liveResults.filter((result) => result.mode === "fallback").length;
+      const checkedAt = new Date().toISOString();
+      const cachedArticleCount = cacheFresh ? cached.articles.length : 0;
+      const sourceNamesById = new Map(FETCHABLE_SOURCES.map((source) => [source.id, source.name]));
+
+      writeBeverageNewsHealth({
+        checkedAt,
+        status:
+          merged.length > 0
+            ? failed.length > 0
+              ? "degraded"
+              : loadedCount === 0 && fallbackCount > 0
+                ? "cached"
+                : "healthy"
+            : hadCachedData
+              ? "cached"
+              : "unavailable",
+        sourceCount: FETCHABLE_SOURCES.length,
+        loadedCount,
+        fallbackCount,
+        articleCount: merged.length || cachedArticleCount,
+        failedSources: failed.map((result) => ({
+          sourceId: result.sourceId,
+          sourceName: sourceNamesById.get(result.sourceId) ?? result.sourceId
+        }))
+      });
 
       if (merged.length > 0) {
-        const savedAt = new Date().toISOString();
+        const savedAt = checkedAt;
         setArticles(merged);
         setLastUpdated(savedAt);
         writeNewsCache({ savedAt, articles: merged, sourceModes: modeMap });
       }
 
       if (!merged.length && failed.length && !hadCachedData) {
-        setError(failed.map((result) => result.error).filter(Boolean).join(" "));
-      } else if (merged.length && failed.length) {
-        const sourceNames = failed.map(
-          (result) => FETCHABLE_SOURCES.find((source) => source.id === result.sourceId)?.name ?? result.sourceId
-        );
-        setWarning(`Some sources are unavailable right now: ${sourceNames.join(", ")}.`);
+        setError("Beverage News is temporarily unavailable. Please try Refresh in a moment.");
       } else if (!merged.length && hadCachedData) {
-        setWarning("Showing cached headlines while live sources are temporarily unavailable.");
+        setFeedNotice("Live refresh is delayed. Showing recently saved headlines.");
       }
 
       setSourceModes(modeMap);
@@ -1045,8 +1068,17 @@ export function BeverageNews() {
       if (canceled) {
         return;
       }
-      const message = loadError instanceof Error ? loadError.message : "Could not load beverage news right now.";
-      setError(message);
+      void loadError;
+      writeBeverageNewsHealth({
+        checkedAt: new Date().toISOString(),
+        status: "unavailable",
+        sourceCount: FETCHABLE_SOURCES.length,
+        loadedCount: 0,
+        fallbackCount: 0,
+        articleCount: 0,
+        failedSources: [{ sourceId: "news-loader", sourceName: "Beverage News loader" }]
+      });
+      setError("Beverage News is temporarily unavailable. Please try Refresh in a moment.");
       setIsLoading(false);
     });
 
@@ -1404,7 +1436,7 @@ export function BeverageNews() {
       ) : null}
 
       {lastUpdated ? <p className="hint">Last updated: {formatDate(lastUpdated)}</p> : null}
-      {warning ? <p className="hint">{warning}</p> : null}
+      {feedNotice ? <p className="hint">{feedNotice}</p> : null}
       {error ? <p className="error">{error}</p> : null}
       {!isLoading && !error && !visibleArticles.length ? <p className="hint">No articles found for these source filters yet.</p> : null}
 
