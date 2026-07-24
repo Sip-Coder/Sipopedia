@@ -18893,6 +18893,8 @@ select option:checked {
 .starter-demo-card-cohort .starter-demo-thumb {
   height: 100%;
   min-height: 220px;
+  object-fit: contain;
+  object-position: center;
 }
 
 .page-workspace details > summary,
