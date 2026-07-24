@@ -213,7 +213,7 @@ export function MarketingHome({ onNavigate, pageStatuses, isAdmin }: MarketingHo
             </div>
           </div>
           <aside className="marketing-hero-orbit" aria-label="Sip Studies welcome panel">
-            <img className="marketing-welcome-panel" src={welcomeToSipStudies} alt="Welcome to Sip Studies" decoding="async" fetchPriority="high" />
+            <img className="marketing-welcome-panel" src={welcomeToSipStudies} alt="Welcome to Sip Studies" decoding="async" />
           </aside>
         </div>
       </div>
