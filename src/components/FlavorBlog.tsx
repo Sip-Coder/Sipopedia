@@ -4,6 +4,7 @@ import { buildDailySipCutPack } from "../lib/mediaCutPack";
 import { fetchGuildNews, type NewsRouterSource } from "../lib/newsRouter";
 import { safeHttpUrl } from "../lib/urlSafety";
 import { useArticleLibrary } from "../context/ArticleLibraryContext";
+import { useArticlePreferences } from "../context/ArticlePreferencesContext";
 import type { ArticleSnapshot } from "../lib/articleLibrary";
 import { ArticleActions, ArticleFavoritesLink, ArticleReadLink } from "./ArticleActions";
 import { MediaCutPackPanel } from "./MediaCutPack";
@@ -361,13 +362,13 @@ function buildDailySipArticles(): BlogArticle[] {
     }));
 }
 
-function getInitialBlogFilter(): BlogFilter {
-  if (typeof window === "undefined") return "all";
+function getInitialBlogFilterOverride(): BlogSourceId | null {
+  if (typeof window === "undefined") return null;
   const hashQuery = window.location.hash.split("?")[1] ?? "";
   const hashSource = new URLSearchParams(hashQuery).get("source");
   const searchSource = new URLSearchParams(window.location.search).get("source");
   const source = hashSource || searchSource;
-  return source === "daily-sip" || source === "sipstudies-site" || source === "sipstudies-substack" ? source : "all";
+  return source === "daily-sip" || source === "sipstudies-site" || source === "sipstudies-substack" ? source : null;
 }
 
 function getInitialDailySipEntry(): string | null {
@@ -683,16 +684,17 @@ function buildModeMap(results: SourceLoadResult[]): Record<string, SourceLoadMod
 
 export function FlavorBlog() {
   const { isRead, markRead } = useArticleLibrary();
+  const { flavorBlog, updateFlavorBlog } = useArticlePreferences();
+  const { articlesPerPage, readingFilter } = flavorBlog;
+  const [sourceOverride, setSourceOverride] = useState<BlogSourceId | null>(getInitialBlogFilterOverride);
+  const filter: BlogFilter = sourceOverride ?? flavorBlog.filter;
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [refreshCount, setRefreshCount] = useState(0);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  const [articlesPerPage, setArticlesPerPage] = useState<BlogPageSize>(12);
   const [page, setPage] = useState(0);
-  const [filter, setFilter] = useState<BlogFilter>(getInitialBlogFilter);
-  const [readingFilter, setReadingFilter] = useState<"all" | "unread">("all");
   const [selectedDailySipId, setSelectedDailySipId] = useState<string | null>(getInitialDailySipEntry);
   const [sourceModes, setSourceModes] = useState<Record<string, SourceLoadMode>>({});
   const [studyArticleId, setStudyArticleId] = useState<string | null>(null);
@@ -825,7 +827,7 @@ export function FlavorBlog() {
           id={`flavor-blog-page-size-${position}`}
           value={String(articlesPerPage)}
           onChange={(event) => {
-            setArticlesPerPage(Number(event.target.value) as BlogPageSize);
+            updateFlavorBlog({ articlesPerPage: Number(event.target.value) as BlogPageSize });
             setPage(0);
           }}
         >
@@ -870,7 +872,7 @@ export function FlavorBlog() {
             className={`news-source-chip ${readingFilter === "all" ? "active" : ""}`}
             type="button"
             aria-pressed={readingFilter === "all"}
-            onClick={() => setReadingFilter("all")}
+            onClick={() => updateFlavorBlog({ readingFilter: "all" })}
           >
             All articles
           </button>
@@ -878,7 +880,7 @@ export function FlavorBlog() {
             className={`news-source-chip ${readingFilter === "unread" ? "active" : ""}`}
             type="button"
             aria-pressed={readingFilter === "unread"}
-            onClick={() => setReadingFilter("unread")}
+            onClick={() => updateFlavorBlog({ readingFilter: "unread" })}
           >
             Unread
           </button>
@@ -909,7 +911,8 @@ export function FlavorBlog() {
             className={`news-source-chip ${filter === "all" ? "active" : ""}`}
             onClick={() => {
               setSelectedDailySipId(null);
-              setFilter("all");
+              setSourceOverride(null);
+              updateFlavorBlog({ filter: "all" });
             }}
           >
             All Flavor Blog
@@ -924,7 +927,8 @@ export function FlavorBlog() {
                 className={`news-source-chip ${filter === source.id ? "active" : ""}`}
                 onClick={() => {
                   setSelectedDailySipId(null);
-                  setFilter(source.id);
+                  setSourceOverride(null);
+                  updateFlavorBlog({ filter: source.id });
                 }}
               >
                 {source.name}
@@ -985,7 +989,8 @@ export function FlavorBlog() {
                         type="button"
                         onClick={() => {
                           markRead(articleSnapshot);
-                          setFilter("daily-sip");
+                          setSourceOverride(null);
+                          updateFlavorBlog({ filter: "daily-sip" });
                           setSelectedDailySipId(article.id);
                         }}
                       >

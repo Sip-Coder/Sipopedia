@@ -3,6 +3,7 @@ import { fetchGuildNews } from "../lib/newsRouter";
 import { MAGAZINE_NEWS_REFERENCES } from "../data/magazineNewsReferences";
 import { safeHttpUrl } from "../lib/urlSafety";
 import { useArticleLibrary } from "../context/ArticleLibraryContext";
+import { useArticlePreferences } from "../context/ArticlePreferencesContext";
 import type { ArticleSnapshot } from "../lib/articleLibrary";
 import { writeBeverageNewsHealth } from "../lib/beverageNewsHealth";
 import { ArticleActions, ArticleFavoritesLink, ArticleReadLink } from "./ArticleActions";
@@ -937,22 +938,15 @@ async function fetchSource(source: NewsSource): Promise<SourceLoadResult> {
 
 export function BeverageNews() {
   const { isRead } = useArticleLibrary();
+  const { beverageNews, updateBeverageNews } = useArticlePreferences();
+  const { articlesPerPage, readingFilter, filters } = beverageNews;
   const [articles, setArticles] = useState<BeverageArticle[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [feedNotice, setFeedNotice] = useState<string | null>(null);
   const [refreshCount, setRefreshCount] = useState<number>(0);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  const [articlesPerPage, setArticlesPerPage] = useState<NewsPageSize>(12);
   const [page, setPage] = useState<number>(0);
-  const [readingFilter, setReadingFilter] = useState<"all" | "unread">("all");
-  const [filters, setFilters] = useState<FilterState>({
-    preset: ALL_NEWS_PRESET,
-    selectedGuildIds: [],
-    selectedMagazineIds: [],
-    selectedBlogIds: [],
-    selectedRegulatorIds: []
-  });
   const [sourceModes, setSourceModes] = useState<Record<string, SourceLoadMode>>({});
   const [studyArticleId, setStudyArticleId] = useState<string | null>(null);
   const [takeaway, setTakeaway] = useState("");
@@ -1103,17 +1097,21 @@ export function BeverageNews() {
   );
 
   const setPreset = (preset: FilterPreset) => {
-    setFilters({
-      preset,
-      selectedGuildIds: [],
-      selectedMagazineIds: [],
-      selectedBlogIds: [],
-      selectedRegulatorIds: []
+    updateBeverageNews({
+      filters: {
+        preset,
+        selectedGuildIds: [],
+        selectedMagazineIds: [],
+        selectedBlogIds: [],
+        selectedRegulatorIds: []
+      }
     });
   };
 
   const updateCustomFilters = (updater: (current: FilterState) => Omit<FilterState, "preset">) => {
-    setFilters((current) => toCustomOrAllNews(updater(current)));
+    updateBeverageNews((current) => ({
+      filters: toCustomOrAllNews(updater(current.filters))
+    }));
   };
 
   const sourceFilteredArticles = useMemo(
@@ -1185,7 +1183,7 @@ export function BeverageNews() {
           id={`news-page-size-${position}`}
           value={String(articlesPerPage)}
           onChange={(event) => {
-            setArticlesPerPage(Number(event.target.value) as NewsPageSize);
+            updateBeverageNews({ articlesPerPage: Number(event.target.value) as NewsPageSize });
             setPage(0);
           }}
         >
@@ -1230,7 +1228,7 @@ export function BeverageNews() {
             className={`news-source-chip ${readingFilter === "all" ? "active" : ""}`}
             type="button"
             aria-pressed={readingFilter === "all"}
-            onClick={() => setReadingFilter("all")}
+            onClick={() => updateBeverageNews({ readingFilter: "all" })}
           >
             All articles
           </button>
@@ -1238,7 +1236,7 @@ export function BeverageNews() {
             className={`news-source-chip ${readingFilter === "unread" ? "active" : ""}`}
             type="button"
             aria-pressed={readingFilter === "unread"}
-            onClick={() => setReadingFilter("unread")}
+            onClick={() => updateBeverageNews({ readingFilter: "unread" })}
           >
             Unread
           </button>

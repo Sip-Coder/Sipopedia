@@ -21,6 +21,8 @@ export type ArticleLibraryItem = ArticleSnapshot & {
   isFavorite: boolean;
   readAt: string | null;
   favoritedAt: string | null;
+  readStateUpdatedAt: string | null;
+  favoriteStateUpdatedAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -42,12 +44,16 @@ type ArticleStateRow = {
   is_favorite: boolean;
   read_at: string | null;
   favorited_at: string | null;
+  read_state_updated_at: string | null;
+  favorite_state_updated_at: string | null;
   created_at: string;
   updated_at: string;
 };
 
 const ARTICLE_LIBRARY_STORAGE_PREFIX = "sipstudies:article-library:v1";
 const ARTICLE_LIBRARY_TABLE = "article_user_states";
+const ARTICLE_LIBRARY_MERGE_FUNCTION = "merge_article_user_state";
+const MAX_DATE_MS = 8_640_000_000_000_000;
 const TRACKING_QUERY_KEYS = new Set(["fbclid", "gclid", "mc_cid", "mc_eid"]);
 
 function normalizedUrlIdentity(value: string): string | null {
@@ -89,6 +95,8 @@ export function createArticleLibraryItem(article: ArticleSnapshot, now = new Dat
     isFavorite: false,
     readAt: null,
     favoritedAt: null,
+    readStateUpdatedAt: null,
+    favoriteStateUpdatedAt: null,
     createdAt: now,
     updatedAt: now
   };
@@ -102,8 +110,35 @@ function asString(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
-function asNullableString(value: unknown): string | null {
-  return typeof value === "string" && value.length > 0 ? value : null;
+function asTimestamp(value: unknown): string | null {
+  if (typeof value !== "string" || value.length === 0) return null;
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? new Date(time).toISOString() : null;
+}
+
+function timestampValue(value: string | null | undefined): number {
+  if (!value) return Number.NEGATIVE_INFINITY;
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? time : Number.NEGATIVE_INFINITY;
+}
+
+function newestTimestamp(...values: Array<string | null | undefined>): string | null {
+  let newest: string | null = null;
+  let newestValue = Number.NEGATIVE_INFINITY;
+  for (const value of values) {
+    const time = timestampValue(value);
+    if (time > newestValue && value) {
+      newest = value;
+      newestValue = time;
+    }
+  }
+  return newest;
+}
+
+export function nextArticleLibraryTimestamp(...after: Array<string | null | undefined>): string {
+  const newest = after.reduce((current, value) => Math.max(current, timestampValue(value)), Number.NEGATIVE_INFINITY);
+  const next = Math.max(Date.now(), Number.isFinite(newest) ? Math.min(newest + 1, MAX_DATE_MS) : Date.now());
+  return new Date(Math.min(next, MAX_DATE_MS)).toISOString();
 }
 
 function normalizeStoredItem(value: unknown): ArticleLibraryItem | null {
@@ -126,15 +161,30 @@ function normalizeStoredItem(value: unknown): ArticleLibraryItem | null {
   if (!article.title || !article.url) return null;
 
   const now = new Date().toISOString();
+  const createdAt = asTimestamp(value.createdAt) ?? now;
+  const updatedAt = asTimestamp(value.updatedAt) ?? createdAt;
+  const isRead = value.isRead === true;
+  const isFavorite = value.isFavorite === true;
+  const storedReadAt = asTimestamp(value.readAt);
+  const storedFavoritedAt = asTimestamp(value.favoritedAt);
+  // Legacy cache rows used one updatedAt clock for the whole record. Positive
+  // states can be safely promoted because their event time is recoverable;
+  // an ambiguous legacy `false` must not erase a newer cloud state.
+  const readStateUpdatedAt =
+    asTimestamp(value.readStateUpdatedAt) ?? (isRead ? storedReadAt ?? updatedAt : null);
+  const favoriteStateUpdatedAt =
+    asTimestamp(value.favoriteStateUpdatedAt) ?? (isFavorite ? storedFavoritedAt ?? updatedAt : null);
   return {
     ...article,
     articleKey: asString(value.articleKey).slice(0, 700) || articleKeyFor(article),
-    isRead: value.isRead === true,
-    isFavorite: value.isFavorite === true,
-    readAt: asNullableString(value.readAt),
-    favoritedAt: asNullableString(value.favoritedAt),
-    createdAt: asString(value.createdAt) || now,
-    updatedAt: asString(value.updatedAt) || now
+    isRead,
+    isFavorite,
+    readAt: isRead ? storedReadAt ?? readStateUpdatedAt : null,
+    favoritedAt: isFavorite ? storedFavoritedAt ?? favoriteStateUpdatedAt : null,
+    readStateUpdatedAt,
+    favoriteStateUpdatedAt,
+    createdAt,
+    updatedAt: newestTimestamp(updatedAt, readStateUpdatedAt, favoriteStateUpdatedAt) ?? updatedAt
   };
 }
 
@@ -164,25 +214,39 @@ export function readLocalArticleLibrary(scope: string): ArticleLibraryItem[] {
   }
 }
 
-export function writeLocalArticleLibrary(scope: string, items: ArticleLibraryItem[]): void {
-  if (typeof window === "undefined") return;
+export function writeLocalArticleLibrary(scope: string, items: ArticleLibraryItem[]): boolean {
+  if (typeof window === "undefined") return false;
   try {
-    window.localStorage.setItem(storageKey(scope), JSON.stringify(items));
+    const serialized = JSON.stringify(items);
+    window.localStorage.setItem(storageKey(scope), serialized);
+    return window.localStorage.getItem(storageKey(scope)) === serialized;
   } catch {
     // The in-memory list remains usable if browser storage is unavailable.
+    return false;
   }
 }
 
-export function clearLocalArticleLibrary(scope: string): void {
-  if (typeof window === "undefined") return;
+export function clearLocalArticleLibrary(scope: string): boolean {
+  if (typeof window === "undefined") return false;
   try {
     window.localStorage.removeItem(storageKey(scope));
+    return window.localStorage.getItem(storageKey(scope)) === null;
   } catch {
     // Ignore storage failures; cloud sync can still continue.
+    return false;
   }
 }
 
 function fromRow(row: ArticleStateRow): ArticleLibraryItem {
+  const now = new Date().toISOString();
+  const createdAt = asTimestamp(row.created_at) ?? now;
+  const updatedAt = asTimestamp(row.updated_at) ?? createdAt;
+  const readAt = asTimestamp(row.read_at);
+  const favoritedAt = asTimestamp(row.favorited_at);
+  const readStateUpdatedAt =
+    asTimestamp(row.read_state_updated_at) ?? (row.is_read ? readAt ?? updatedAt : null);
+  const favoriteStateUpdatedAt =
+    asTimestamp(row.favorite_state_updated_at) ?? (row.is_favorite ? favoritedAt ?? updatedAt : null);
   return {
     surface: row.surface,
     articleId: row.article_id,
@@ -197,16 +261,17 @@ function fromRow(row: ArticleStateRow): ArticleLibraryItem {
     articleKey: row.article_key,
     isRead: row.is_read,
     isFavorite: row.is_favorite,
-    readAt: row.read_at,
-    favoritedAt: row.favorited_at,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at
+    readAt: row.is_read ? readAt ?? readStateUpdatedAt : null,
+    favoritedAt: row.is_favorite ? favoritedAt ?? favoriteStateUpdatedAt : null,
+    readStateUpdatedAt,
+    favoriteStateUpdatedAt,
+    createdAt,
+    updatedAt: newestTimestamp(updatedAt, readStateUpdatedAt, favoriteStateUpdatedAt) ?? updatedAt
   };
 }
 
-function toRow(userId: string, item: ArticleLibraryItem) {
+function toStatePayload(item: ArticleLibraryItem) {
   return {
-    user_id: userId,
     article_key: item.articleKey,
     surface: item.surface,
     article_id: item.articleId,
@@ -222,6 +287,8 @@ function toRow(userId: string, item: ArticleLibraryItem) {
     is_favorite: item.isFavorite,
     read_at: item.readAt,
     favorited_at: item.favoritedAt,
+    read_state_updated_at: item.readStateUpdatedAt,
+    favorite_state_updated_at: item.favoriteStateUpdatedAt,
     created_at: item.createdAt,
     updated_at: item.updatedAt
   };
@@ -229,7 +296,13 @@ function toRow(userId: string, item: ArticleLibraryItem) {
 
 function mapLibraryError(message: string): string {
   const normalized = message.toLowerCase();
-  if (normalized.includes("article_user_states") || normalized.includes("pgrst205") || normalized.includes("42p01")) {
+  if (
+    normalized.includes("article_user_states") ||
+    normalized.includes("merge_article_user_state") ||
+    normalized.includes("pgrst202") ||
+    normalized.includes("pgrst205") ||
+    normalized.includes("42p01")
+  ) {
     return "Cloud article sync is not available yet.";
   }
   if (normalized.includes("permission denied") || normalized.includes("row-level security")) {
@@ -250,22 +323,94 @@ export async function listCloudArticleLibrary(userId: string): Promise<ArticleLi
   return ((data ?? []) as ArticleStateRow[]).map(fromRow);
 }
 
-export async function saveCloudArticleLibraryItem(userId: string, item: ArticleLibraryItem): Promise<void> {
+export async function saveCloudArticleLibraryItem(_userId: string, item: ArticleLibraryItem): Promise<ArticleLibraryItem> {
   if (!supabase) throw new Error("Cloud article sync is not configured.");
 
-  const { error } = await supabase
-    .from(ARTICLE_LIBRARY_TABLE)
-    .upsert(toRow(userId, item), { onConflict: "user_id,article_key" });
+  // The database derives ownership from auth.uid(). Keeping user_id out of
+  // the payload prevents a browser from selecting another account, while the
+  // RPC atomically merges the independent read and favorite clocks.
+  const { data, error } = await supabase
+    .rpc(ARTICLE_LIBRARY_MERGE_FUNCTION, { p_state: toStatePayload(item) })
+    .single();
   if (error) throw new Error(mapLibraryError(`${error.code ?? ""} ${error.message}`));
+  return fromRow(data as ArticleStateRow);
 }
 
 export async function saveCloudArticleLibrary(userId: string, items: ArticleLibraryItem[]): Promise<void> {
   if (!supabase) throw new Error("Cloud article sync is not configured.");
   if (items.length === 0) return;
-  const { error } = await supabase
-    .from(ARTICLE_LIBRARY_TABLE)
-    .upsert(items.map((item) => toRow(userId, item)), { onConflict: "user_id,article_key" });
-  if (error) throw new Error(mapLibraryError(`${error.code ?? ""} ${error.message}`));
+  await Promise.all(items.map((item) => saveCloudArticleLibraryItem(userId, item)));
+}
+
+type ArticleStateField = "read" | "favorite";
+
+function fieldParts(item: ArticleLibraryItem, field: ArticleStateField) {
+  return field === "read"
+    ? {
+        value: item.isRead,
+        eventAt: item.readAt,
+        stateUpdatedAt: item.readStateUpdatedAt
+      }
+    : {
+        value: item.isFavorite,
+        eventAt: item.favoritedAt,
+        stateUpdatedAt: item.favoriteStateUpdatedAt
+      };
+}
+
+function incomingFieldWins(
+  current: ArticleLibraryItem,
+  incoming: ArticleLibraryItem,
+  field: ArticleStateField
+): boolean {
+  const currentField = fieldParts(current, field);
+  const incomingField = fieldParts(incoming, field);
+  const currentClock = timestampValue(currentField.stateUpdatedAt);
+  const incomingClock = timestampValue(incomingField.stateUpdatedAt);
+  if (incomingClock !== currentClock) return incomingClock > currentClock;
+  // A deterministic tie-break keeps every device convergent. False wins a
+  // true tie so an explicit unread/remove action cannot be resurrected.
+  return currentField.value && !incomingField.value;
+}
+
+function mergeArticleLibraryItemPair(
+  current: ArticleLibraryItem,
+  incoming: ArticleLibraryItem
+): ArticleLibraryItem {
+  const currentUpdatedAt = timestampValue(current.updatedAt);
+  const incomingUpdatedAt = timestampValue(incoming.updatedAt);
+  const metadata =
+    incomingUpdatedAt > currentUpdatedAt
+      ? { ...current, ...incoming }
+      : { ...incoming, ...current };
+  const readSource = incomingFieldWins(current, incoming, "read") ? incoming : current;
+  const favoriteSource = incomingFieldWins(current, incoming, "favorite") ? incoming : current;
+  const createdAt =
+    timestampValue(current.createdAt) <= timestampValue(incoming.createdAt)
+      ? current.createdAt
+      : incoming.createdAt;
+  const updatedAt =
+    newestTimestamp(
+      current.updatedAt,
+      incoming.updatedAt,
+      readSource.readStateUpdatedAt,
+      favoriteSource.favoriteStateUpdatedAt
+    ) ?? metadata.updatedAt;
+
+  return {
+    ...metadata,
+    articleKey: current.articleKey,
+    isRead: readSource.isRead,
+    readAt: readSource.isRead ? readSource.readAt ?? readSource.readStateUpdatedAt : null,
+    readStateUpdatedAt: readSource.readStateUpdatedAt,
+    isFavorite: favoriteSource.isFavorite,
+    favoritedAt: favoriteSource.isFavorite
+      ? favoriteSource.favoritedAt ?? favoriteSource.favoriteStateUpdatedAt
+      : null,
+    favoriteStateUpdatedAt: favoriteSource.favoriteStateUpdatedAt,
+    createdAt,
+    updatedAt
+  };
 }
 
 export function mergeArticleLibraryItems(
@@ -275,9 +420,7 @@ export function mergeArticleLibraryItems(
   const merged = new Map<string, ArticleLibraryItem>();
   for (const item of [...cloudItems, ...localItems]) {
     const current = merged.get(item.articleKey);
-    if (!current || Date.parse(item.updatedAt) >= Date.parse(current.updatedAt)) {
-      merged.set(item.articleKey, item);
-    }
+    merged.set(item.articleKey, current ? mergeArticleLibraryItemPair(current, item) : item);
   }
   return [...merged.values()];
 }
@@ -289,7 +432,13 @@ export function articleLibraryItemsNeedingCloudSave(
   const cloudByKey = new Map(cloudItems.map((item) => [item.articleKey, item] as const));
   return localItems.filter((item) => {
     const cloudItem = cloudByKey.get(item.articleKey);
-    return !cloudItem || Date.parse(item.updatedAt) > Date.parse(cloudItem.updatedAt);
+    if (!cloudItem) {
+      return item.readStateUpdatedAt !== null || item.favoriteStateUpdatedAt !== null;
+    }
+    return (
+      incomingFieldWins(cloudItem, item, "read") ||
+      incomingFieldWins(cloudItem, item, "favorite")
+    );
   });
 }
 
@@ -301,22 +450,22 @@ export function mergeGuestArticleLibrary(
   for (const guestItem of guestItems) {
     if (!guestItem.isRead && !guestItem.isFavorite) continue;
     const current = merged.get(guestItem.articleKey);
+    const positiveGuestItem: ArticleLibraryItem = {
+      ...guestItem,
+      // Guest tombstones are not account decisions. Import only positive
+      // guest activity, and let its field clock compete with account state.
+      isRead: guestItem.isRead,
+      readAt: guestItem.isRead ? guestItem.readAt : null,
+      readStateUpdatedAt: guestItem.isRead ? guestItem.readStateUpdatedAt : null,
+      isFavorite: guestItem.isFavorite,
+      favoritedAt: guestItem.isFavorite ? guestItem.favoritedAt : null,
+      favoriteStateUpdatedAt: guestItem.isFavorite ? guestItem.favoriteStateUpdatedAt : null
+    };
     if (!current) {
-      merged.set(guestItem.articleKey, guestItem);
+      merged.set(guestItem.articleKey, positiveGuestItem);
       continue;
     }
-    const updatedAt =
-      Date.parse(guestItem.updatedAt) > Date.parse(current.updatedAt) ? guestItem.updatedAt : current.updatedAt;
-    merged.set(guestItem.articleKey, {
-      ...current,
-      ...guestItem,
-      isRead: current.isRead || guestItem.isRead,
-      isFavorite: current.isFavorite || guestItem.isFavorite,
-      readAt: current.readAt ?? guestItem.readAt,
-      favoritedAt: current.favoritedAt ?? guestItem.favoritedAt,
-      createdAt: current.createdAt,
-      updatedAt
-    });
+    merged.set(guestItem.articleKey, mergeArticleLibraryItemPair(current, positiveGuestItem));
   }
   return [...merged.values()];
 }

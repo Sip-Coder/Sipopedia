@@ -1,10 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useArticleLibrary } from "../context/ArticleLibraryContext";
+import { useArticlePreferences } from "../context/ArticlePreferencesContext";
 import { safeHttpUrl } from "../lib/urlSafety";
-import type { ArticleSurface } from "../lib/articleLibrary";
 import { ArticleActions, ArticleReadLink } from "./ArticleActions";
-
-type FavoriteFilter = "all" | ArticleSurface;
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -30,8 +28,11 @@ export function ArticleFavorites() {
     syncMessage,
     retrySync
   } = useArticleLibrary();
-  const [filter, setFilter] = useState<FavoriteFilter>("all");
-  const [unreadOnly, setUnreadOnly] = useState(false);
+  const {
+    favorites: favoritePreferences,
+    updateFavorites
+  } = useArticlePreferences();
+  const { filter, unreadOnly } = favoritePreferences;
 
   const visibleFavorites = useMemo(
     () =>
@@ -72,7 +73,7 @@ export function ArticleFavorites() {
             className={`news-source-chip ${filter === "all" ? "active" : ""}`}
             type="button"
             aria-pressed={filter === "all"}
-            onClick={() => setFilter("all")}
+            onClick={() => updateFavorites({ filter: "all" })}
           >
             All ({favorites.length})
           </button>
@@ -80,7 +81,7 @@ export function ArticleFavorites() {
             className={`news-source-chip ${filter === "flavor-blog" ? "active" : ""}`}
             type="button"
             aria-pressed={filter === "flavor-blog"}
-            onClick={() => setFilter("flavor-blog")}
+            onClick={() => updateFavorites({ filter: "flavor-blog" })}
           >
             Flavor Blog
           </button>
@@ -88,7 +89,7 @@ export function ArticleFavorites() {
             className={`news-source-chip ${filter === "beverage-news" ? "active" : ""}`}
             type="button"
             aria-pressed={filter === "beverage-news"}
-            onClick={() => setFilter("beverage-news")}
+            onClick={() => updateFavorites({ filter: "beverage-news" })}
           >
             Beverage News
           </button>
@@ -97,7 +98,7 @@ export function ArticleFavorites() {
           className={`news-source-chip ${unreadOnly ? "active" : ""}`}
           type="button"
           aria-pressed={unreadOnly}
-          onClick={() => setUnreadOnly((current) => !current)}
+          onClick={() => updateFavorites((current) => ({ unreadOnly: !current.unreadOnly }))}
         >
           Unread only
         </button>
