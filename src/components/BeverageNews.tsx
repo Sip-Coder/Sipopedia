@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { fetchGuildNews } from "../lib/newsRouter";
 import { MAGAZINE_NEWS_REFERENCES } from "../data/magazineNewsReferences";
 import { safeHttpUrl } from "../lib/urlSafety";
+import { useArticleLibrary } from "../context/ArticleLibraryContext";
+import type { ArticleSnapshot } from "../lib/articleLibrary";
+import { ArticleActions, ArticleFavoritesLink } from "./ArticleActions";
 
 type BeverageType = "Wine" | "Spirits" | "Beer" | "Sake" | "General";
 type SourceLoadMode = "loaded" | "fallback" | "failed";
@@ -118,6 +121,21 @@ type BeverageArticle = {
   sourceCategory: SourceCategory;
   beverageTypes: BeverageType[];
 };
+
+function toArticleSnapshot(article: BeverageArticle): ArticleSnapshot {
+  return {
+    surface: "beverage-news",
+    articleId: article.id,
+    sourceId: article.sourceId,
+    sourceName: article.sourceName,
+    sourceCategory: article.sourceCategory,
+    title: article.title,
+    url: article.url,
+    publishedAt: article.publishedAt,
+    summary: article.summary,
+    imageUrl: article.imageUrl
+  };
+}
 
 type SourceLoadResult = {
   sourceId: string;
@@ -917,6 +935,7 @@ async function fetchSource(source: NewsSource): Promise<SourceLoadResult> {
 }
 
 export function BeverageNews() {
+  const { isRead } = useArticleLibrary();
   const [articles, setArticles] = useState<BeverageArticle[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -925,6 +944,7 @@ export function BeverageNews() {
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [articlesPerPage, setArticlesPerPage] = useState<NewsPageSize>(12);
   const [page, setPage] = useState<number>(0);
+  const [readingFilter, setReadingFilter] = useState<"all" | "unread">("all");
   const [filters, setFilters] = useState<FilterState>({
     preset: ALL_NEWS_PRESET,
     selectedGuildIds: [],
@@ -1064,7 +1084,7 @@ export function BeverageNews() {
     setFilters((current) => toCustomOrAllNews(updater(current)));
   };
 
-  const filteredArticles = useMemo(
+  const sourceFilteredArticles = useMemo(
     () => {
       if (filters.preset === ALL_GUILDS_PRESET) {
         return articles.filter((article) => article.sourceCategory === GUILD_CATEGORY);
@@ -1093,6 +1113,13 @@ export function BeverageNews() {
     },
     [articles, filters]
   );
+  const filteredArticles = useMemo(
+    () =>
+      readingFilter === "unread"
+        ? sourceFilteredArticles.filter((article) => !isRead(toArticleSnapshot(article)))
+        : sourceFilteredArticles,
+    [isRead, readingFilter, sourceFilteredArticles]
+  );
 
   const pageCount = useMemo(
     () => Math.max(1, Math.min(MAX_NEWS_PAGE_COUNT, Math.ceil(filteredArticles.length / articlesPerPage))),
@@ -1102,7 +1129,7 @@ export function BeverageNews() {
 
   useEffect(() => {
     setPage(0);
-  }, [filters, articlesPerPage]);
+  }, [filters, articlesPerPage, readingFilter]);
 
   useEffect(() => {
     setPage((current) => Math.min(current, pageCount - 1));
@@ -1163,6 +1190,28 @@ export function BeverageNews() {
         <button className="btn btn-light" onClick={() => setRefreshCount((value) => value + 1)} disabled={isLoading}>
           {isLoading ? "Refreshing..." : "Refresh"}
         </button>
+      </div>
+
+      <div className="article-library-toolbar">
+        <div className="news-source-strip" role="group" aria-label="Filter Beverage News by reading status">
+          <button
+            className={`news-source-chip ${readingFilter === "all" ? "active" : ""}`}
+            type="button"
+            aria-pressed={readingFilter === "all"}
+            onClick={() => setReadingFilter("all")}
+          >
+            All articles
+          </button>
+          <button
+            className={`news-source-chip ${readingFilter === "unread" ? "active" : ""}`}
+            type="button"
+            aria-pressed={readingFilter === "unread"}
+            onClick={() => setReadingFilter("unread")}
+          >
+            Unread
+          </button>
+        </div>
+        <ArticleFavoritesLink />
       </div>
 
       <article className="journal-card" aria-labelledby="beverage-news-study-title">
@@ -1363,8 +1412,9 @@ export function BeverageNews() {
         {visibleArticles.map((article) => (
           (() => {
             const safeArticleUrl = safeHttpUrl(article.url);
+            const articleSnapshot = toArticleSnapshot(article);
             return (
-              <article className="news-card" key={article.id}>
+              <article className={`news-card ${isRead(articleSnapshot) ? "is-read" : ""}`} key={article.id}>
                 <NewsCardImage article={article} />
                 <p className="news-card-tag">{article.sourceCategory}</p>
                 <h3>{article.title}</h3>
@@ -1373,8 +1423,9 @@ export function BeverageNews() {
                   {article.sourceName} | {formatDate(article.publishedAt)}
                   {article.translatedFrom ? ` | translated from ${article.translatedFrom.toUpperCase()}` : ""}
                 </p>
+                <ArticleActions article={articleSnapshot} />
                 {safeArticleUrl ? (
-                  <div className="journal-actions">
+                  <div className="journal-actions article-primary-actions">
                     <button className="btn btn-primary" type="button" onClick={() => { setStudyArticleId(article.id); setTakeaway(""); setShiftAction(""); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
                       Study this headline
                     </button>

@@ -46,6 +46,7 @@ const explicitRoutes = [
   "/#app/flavors",
   "/#app/beverage-news",
   "/#app/flavor-blog",
+  "/#app/favorites",
   "/#app/ai-winecast",
   "/#app/ai-winecast/ai-winecast-ep-002",
   "/#app/tasting-groups",

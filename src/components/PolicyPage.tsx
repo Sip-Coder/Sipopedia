@@ -21,6 +21,7 @@ const content: Record<PolicyKind, { title: string; paragraphs: string[] }> = {
     paragraphs: [
       "We collect account, progress, and usage data required to operate your learning workspace.",
       "Sensitive credentials are handled by managed providers and are never embedded in frontend source control.",
+      "When a member shares an article, the recipient name, email address, and optional message are used only to deliver that requested email; recipients are not added to a Sip Studies mailing list.",
       "You may request account data export or deletion through support."
     ]
   },

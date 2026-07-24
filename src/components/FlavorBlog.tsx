@@ -3,6 +3,9 @@ import { dailySipReports, type DailySipItem, type DailySipReport } from "../data
 import { buildDailySipCutPack } from "../lib/mediaCutPack";
 import { fetchGuildNews, type NewsRouterSource } from "../lib/newsRouter";
 import { safeHttpUrl } from "../lib/urlSafety";
+import { useArticleLibrary } from "../context/ArticleLibraryContext";
+import type { ArticleSnapshot } from "../lib/articleLibrary";
+import { ArticleActions, ArticleFavoritesLink } from "./ArticleActions";
 import { MediaCutPackPanel } from "./MediaCutPack";
 
 type SourceLoadMode = "loaded" | "fallback" | "failed";
@@ -29,6 +32,21 @@ type BlogArticle = {
   summary: string;
   imageUrl?: string;
 };
+
+function toArticleSnapshot(article: BlogArticle): ArticleSnapshot {
+  return {
+    surface: "flavor-blog",
+    articleId: article.id,
+    sourceId: article.sourceId,
+    sourceName: article.sourceName,
+    sourceCategory: article.sourceCategory,
+    title: article.title,
+    url: article.url,
+    publishedAt: article.publishedAt,
+    summary: article.summary,
+    imageUrl: article.imageUrl
+  };
+}
 
 type SourceLoadResult = {
   sourceId: BlogSourceId;
@@ -664,6 +682,7 @@ function buildModeMap(results: SourceLoadResult[]): Record<string, SourceLoadMod
 }
 
 export function FlavorBlog() {
+  const { isRead } = useArticleLibrary();
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -673,6 +692,7 @@ export function FlavorBlog() {
   const [articlesPerPage, setArticlesPerPage] = useState<BlogPageSize>(12);
   const [page, setPage] = useState(0);
   const [filter, setFilter] = useState<BlogFilter>(getInitialBlogFilter);
+  const [readingFilter, setReadingFilter] = useState<"all" | "unread">("all");
   const [selectedDailySipId, setSelectedDailySipId] = useState<string | null>(getInitialDailySipEntry);
   const [sourceModes, setSourceModes] = useState<Record<string, SourceLoadMode>>({});
   const [studyArticleId, setStudyArticleId] = useState<string | null>(null);
@@ -757,9 +777,16 @@ export function FlavorBlog() {
     };
   }, [refreshCount]);
 
-  const filteredArticles = useMemo(
+  const sourceFilteredArticles = useMemo(
     () => (filter === "all" ? articles : articles.filter((article) => article.sourceId === filter)),
     [articles, filter]
+  );
+  const filteredArticles = useMemo(
+    () =>
+      readingFilter === "unread"
+        ? sourceFilteredArticles.filter((article) => !isRead(toArticleSnapshot(article)))
+        : sourceFilteredArticles,
+    [isRead, readingFilter, sourceFilteredArticles]
   );
   const pageCount = useMemo(
     () => Math.max(1, Math.min(MAX_PAGE_COUNT, Math.ceil(filteredArticles.length / articlesPerPage))),
@@ -769,7 +796,7 @@ export function FlavorBlog() {
 
   useEffect(() => {
     setPage(0);
-  }, [filter, articlesPerPage]);
+  }, [filter, articlesPerPage, readingFilter]);
 
   useEffect(() => {
     setPage((current) => Math.min(current, pageCount - 1));
@@ -835,6 +862,28 @@ export function FlavorBlog() {
         <button className="btn btn-light" onClick={() => setRefreshCount((value) => value + 1)} disabled={isLoading}>
           {isLoading ? "Refreshing..." : "Refresh"}
         </button>
+      </div>
+
+      <div className="article-library-toolbar">
+        <div className="news-source-strip" role="group" aria-label="Filter Flavor Blog by reading status">
+          <button
+            className={`news-source-chip ${readingFilter === "all" ? "active" : ""}`}
+            type="button"
+            aria-pressed={readingFilter === "all"}
+            onClick={() => setReadingFilter("all")}
+          >
+            All articles
+          </button>
+          <button
+            className={`news-source-chip ${readingFilter === "unread" ? "active" : ""}`}
+            type="button"
+            aria-pressed={readingFilter === "unread"}
+            onClick={() => setReadingFilter("unread")}
+          >
+            Unread
+          </button>
+        </div>
+        <ArticleFavoritesLink />
       </div>
 
       <article className="journal-card" aria-labelledby="flavor-blog-loop-title">
@@ -906,8 +955,9 @@ export function FlavorBlog() {
           <div className="news-grid">
             {visibleArticles.map((article) => {
               const safeArticleUrl = safeHttpUrl(article.url);
+              const articleSnapshot = toArticleSnapshot(article);
               return (
-                <article className="news-card" key={article.id}>
+                <article className={`news-card ${isRead(articleSnapshot) ? "is-read" : ""}`} key={article.id}>
                   <BlogCardImage article={article} />
                   <p className="news-card-tag">{article.sourceCategory}</p>
                   <h3>{article.title}</h3>
@@ -915,36 +965,39 @@ export function FlavorBlog() {
                   <p className="news-card-meta">
                     {article.sourceName} | {formatDate(article.publishedAt)}
                   </p>
-                  <button
-                    className="btn btn-primary news-link"
-                    type="button"
-                    onClick={() => {
-                      setStudyArticleId(article.id);
-                      setStudyRecall("");
-                      setStudyPractice("");
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                  >
-                    Study this lesson
-                  </button>
-                  {article.sourceId === "daily-sip" ? (
+                  <ArticleActions article={articleSnapshot} />
+                  <div className="journal-actions article-primary-actions">
                     <button
-                      className="btn btn-light news-link"
+                      className="btn btn-primary news-link"
                       type="button"
                       onClick={() => {
-                        setFilter("daily-sip");
-                        setSelectedDailySipId(article.id);
+                        setStudyArticleId(article.id);
+                        setStudyRecall("");
+                        setStudyPractice("");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                     >
-                      Read Article
+                      Study this lesson
                     </button>
-                  ) : safeArticleUrl ? (
-                    <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">
-                      Read Article
-                    </a>
-                  ) : (
-                    <span className="btn btn-light news-link">Invalid article URL</span>
-                  )}
+                    {article.sourceId === "daily-sip" ? (
+                      <button
+                        className="btn btn-light news-link"
+                        type="button"
+                        onClick={() => {
+                          setFilter("daily-sip");
+                          setSelectedDailySipId(article.id);
+                        }}
+                      >
+                        Read Article
+                      </button>
+                    ) : safeArticleUrl ? (
+                      <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">
+                        Read Article
+                      </a>
+                    ) : (
+                      <span className="btn btn-light news-link">Invalid article URL</span>
+                    )}
+                  </div>
                 </article>
               );
             })}

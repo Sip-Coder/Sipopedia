@@ -67,6 +67,7 @@ const loadTastingJournal = () => import("./components/TastingJournal");
 const loadFlavors = () => import("./components/Flavors");
 const loadTastingGroups = () => import("./components/TastingGroups");
 const loadFlavorBlog = () => import("./components/FlavorBlog");
+const loadArticleFavorites = () => import("./components/ArticleFavorites");
 const loadRegions = () => import("./components/Regions");
 const loadSipMaps = () => import("./components/SipMaps");
 const loadGrapes = () => import("./components/Grapes");
@@ -134,6 +135,9 @@ const TastingJournal = lazyRoute("tasting-journal", () => loadTastingJournal().t
 const Flavors = lazyRoute("flavors", () => loadFlavors().then((module) => ({ default: module.Flavors })));
 const TastingGroups = lazyRoute("tasting-groups", () => loadTastingGroups().then((module) => ({ default: module.TastingGroups })));
 const FlavorBlog = lazyRoute("flavor-blog", () => loadFlavorBlog().then((module) => ({ default: module.FlavorBlog })));
+const ArticleFavorites = lazyRoute("favorites", () =>
+  loadArticleFavorites().then((module) => ({ default: module.ArticleFavorites }))
+);
 const Regions = lazyRoute("regions", () => loadRegions().then((module) => ({ default: module.Regions })));
 const SipMaps = lazyRoute("maps", () => loadSipMaps().then((module) => ({ default: module.SipMaps })));
 const Grapes = lazyRoute("grapes", () => loadGrapes().then((module) => ({ default: module.Grapes })));
@@ -161,6 +165,7 @@ type WorkspacePage =
   | "service-roleplay"
   | "beverage-news"
   | "flavor-blog"
+  | "favorites"
   | AiWinecastPage
   | RegionsPage
   | "maps"
@@ -267,6 +272,7 @@ function normalizeWorkspacePage(value: string): WorkspacePage {
   if (value === "service-roleplay" || value === "roleplay" || value === "roleplay-lab" || value === "service-lab") return "service-roleplay";
   if (value === "beverage-news") return "beverage-news";
   if (value === "flavor-blog" || value === "flavor-blog-posts") return "flavor-blog";
+  if (value === "favorites" || value === "bookmarks" || value === "saved-articles") return "favorites";
   if (value === "ai-winecast" || value.startsWith("ai-winecast/")) return value as AiWinecastPage;
   if (value === "ai-news") return "ai-news";
   if (value === "somm-events" || value === "somm-news") return "somm-events";
@@ -349,7 +355,7 @@ function isTypingTarget(target: EventTarget | null): boolean {
 
 function sectionFromWorkspacePage(page: WorkspacePage): WorkspaceSection {
   if (page === "flavor-wheel" || page === "cellar-scanner" || page === "flavors" || page === "tasting-journal") return "taste";
-  if (page === "beverage-news" || page === "flavor-blog" || isAiWinecastPage(page) || page === "tasting-groups" || page === "ai-news" || page === "somm-events") return "connect";
+  if (page === "beverage-news" || page === "flavor-blog" || page === "favorites" || isAiWinecastPage(page) || page === "tasting-groups" || page === "ai-news" || page === "somm-events") return "connect";
   return "learn";
 }
 
@@ -407,6 +413,10 @@ function preloadWorkspacePage(target: WorkspacePage): void {
   }
   if (target === "flavor-blog") {
     void loadFlavorBlog();
+    return;
+  }
+  if (target === "favorites") {
+    void loadArticleFavorites();
     return;
   }
   if (isAiWinecastPage(target)) {
@@ -1148,6 +1158,8 @@ function WorkspaceShell({
       <BeverageNews />
     ) : page === "flavor-blog" ? (
       <FlavorBlog />
+    ) : page === "favorites" ? (
+      <ArticleFavorites />
     ) : isAiWinecastPage(page) ? (
       <AiWinecast episodeSlug={aiWinecastSlug} onNavigate={(target) => onNavigate(target as WorkspacePage)} />
     ) : isRegionsPage(page) ? (

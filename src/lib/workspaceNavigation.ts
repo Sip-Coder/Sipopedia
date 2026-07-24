@@ -18,6 +18,7 @@ export type WorkspaceStaticPage =
   | "flavors"
   | "beverage-news"
   | "flavor-blog"
+  | "favorites"
   | "ai-winecast"
   | "tasting-groups"
   | "ai-news"
@@ -246,6 +247,16 @@ export const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
     description: "Editorial beverage stories for deeper study framing and service language.",
     keywords: ["blog", "substack", "editorial"],
     previewBullets: ["Brand essays", "Study framing", "Service vocabulary"]
+  },
+  {
+    id: "favorites",
+    route: "app/favorites",
+    label: "Favorites",
+    section: "connect",
+    signal: "Saved reading list",
+    description: "Cross-device reading list for bookmarked Flavor Blog and Beverage News articles.",
+    keywords: ["favorites", "bookmarks", "saved", "reading list", "articles"],
+    previewBullets: ["Saved articles", "Read and unread status", "Cross-device organization"]
   },
   {
     id: "ai-winecast",
