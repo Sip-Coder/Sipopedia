@@ -29,7 +29,7 @@ const content: Record<PolicyKind, { title: string; paragraphs: string[] }> = {
     title: "Refund & Cancellation",
     paragraphs: [
       "Monthly plans can be canceled before renewal to avoid the next cycle charge.",
-      "Founding cohort purchases may request a refund within 7 days of purchase if less than 20% of content is consumed.",
+      "Legacy Founding Cohort purchases made while that offer was available may request a refund within 7 days of purchase if less than 20% of content is consumed.",
       "Contact support with purchase details to process changes."
     ]
   }

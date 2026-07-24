@@ -128,9 +128,9 @@ const slides = [
     title: "Monetization Already Exists",
     subtitle: "The direct-to-learner model is useful; the buyer unlocks larger enterprise value.",
     cards: [
-      ["Starter", "$0", "Public previews, account creation, and upgrade path."],
-      ["Pro", "$10/mo", "Full study access, quiz and terminology workflows, tasting tools, priority support."],
-      ["Founding Cohort", "$1,200", "Structured cohort, founder support, roadmap influence, and higher-touch learning."]
+      ["Public Preview", "No checkout", "Launch Pad discovery and account creation remain outside the pricing tiers."],
+      ["Membership", "$10/mo", "Full study access, quiz and terminology workflows, tasting tools, and priority support."],
+      ["Future Launches", "Separate", "Cohorts and community-funded projects return through dedicated campaign experiences."]
     ],
     enterprise: [
       "Distributor license",

@@ -14384,12 +14384,21 @@ select option:checked {
   gap: 1rem;
 }
 
+.pricing-grid-single {
+  grid-template-columns: minmax(0, 680px);
+  justify-content: center;
+}
+
 .pricing-card {
   position: relative;
   overflow: hidden;
   background:
     radial-gradient(circle at 8% 0%, rgba(237, 212, 168, 0.1), transparent 42%),
     linear-gradient(145deg, rgba(6, 21, 32, 0.94), rgba(10, 18, 25, 0.96));
+}
+
+.pricing-card-membership {
+  width: 100%;
 }
 
 .pricing-card::before {
@@ -14533,6 +14542,11 @@ select option:checked {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.55rem;
   margin-top: 1rem;
+}
+
+.pricing-intent-ribbon-single {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 680px;
 }
 
 .pricing-intent-ribbon span {

@@ -476,6 +476,15 @@ function assignmentDueTime(due: string): number {
   return Number.isFinite(time) ? time : Number.POSITIVE_INFINITY;
 }
 
+function membershipLabel(planCode: string | null | undefined): string {
+  const normalized = (planCode ?? "").trim().toLowerCase();
+  if (!normalized) return "No active membership";
+  if (normalized.includes("found")) return "Legacy Founding Access";
+  if (normalized.includes("pro")) return "$10/month Membership";
+  if (normalized === "local-preview-admin") return "Local Preview";
+  return planCode ?? "No active membership";
+}
+
 export function AccountDashboard({ onNavigate }: AccountDashboardProps) {
   const { user, isConfigured: isAuthConfigured } = useAuth();
   const { tier, profile, subscription, isAdmin } = useAccess();
@@ -838,7 +847,7 @@ export function AccountDashboard({ onNavigate }: AccountDashboardProps) {
             <h3>Profile</h3>
             <p><strong>Email:</strong> {accountEmail}</p>
             <p><strong>Display name:</strong> {profile?.displayName ?? "Not set"}</p>
-            <p><strong>Tier:</strong> {tier.toUpperCase()}</p>
+            <p><strong>Access:</strong> {tier === "starter" ? "LAUNCH PAD PREVIEW" : tier.toUpperCase()}</p>
             <p><strong>Role:</strong> {profile?.role ?? "visitor"}</p>
             <p><strong>Character:</strong> {avatar.title}</p>
             <p><strong>Focus:</strong> {avatarProfession.label} / {avatarCategory.label} + {avatarSecondaryCategory.label}</p>
@@ -860,7 +869,7 @@ export function AccountDashboard({ onNavigate }: AccountDashboardProps) {
         <article className="account-card account-hud-card">
           <h3>Membership</h3>
           <p><strong>Status:</strong> {subscription?.status ?? "no active subscription"}</p>
-          <p><strong>Plan:</strong> {subscription?.planCode ?? "starter"}</p>
+          <p><strong>Plan:</strong> {membershipLabel(subscription?.planCode)}</p>
           <p><strong>Period end:</strong> {subscription?.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString() : "-"}</p>
           <div className="account-dashboard-actions">
             {!subscription ? (
@@ -877,7 +886,7 @@ export function AccountDashboard({ onNavigate }: AccountDashboardProps) {
                   actionKey: "billing",
                   laneId: "billing",
                   subject: "Sip Studies billing help request",
-                  message: `Email: ${supportEmail}\nPlan: ${subscription?.planCode ?? "starter"}\nStatus: ${subscription?.status ?? "none"}\nRequest: I need help managing my payment method.`
+                  message: `Email: ${supportEmail}\nPlan: ${subscription?.planCode ?? "no active membership"}\nStatus: ${subscription?.status ?? "none"}\nRequest: I need help managing my payment method.`
                 })
               }
             >
@@ -892,7 +901,7 @@ export function AccountDashboard({ onNavigate }: AccountDashboardProps) {
                   actionKey: "cancel",
                   laneId: "billing",
                   subject: "Sip Studies cancellation request",
-                  message: `Email: ${supportEmail}\nPlan: ${subscription?.planCode ?? "starter"}\nStatus: ${subscription?.status ?? "none"}\nRequest: I want to cancel or change my membership.`
+                  message: `Email: ${supportEmail}\nPlan: ${subscription?.planCode ?? "no active membership"}\nStatus: ${subscription?.status ?? "none"}\nRequest: I want to cancel or change my membership.`
                 })
               }
             >

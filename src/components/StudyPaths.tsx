@@ -393,7 +393,7 @@ export function StudyPaths({ onNavigate }: StudyPathsProps) {
           <button type="button" className="btn btn-light" onClick={handleDownloadVerificationPacket}>
             Download Verification Packet
           </button>
-          <button type="button" className="btn btn-light" onClick={() => onNavigate(buildOnboardingRoute("support", { planId: "founding", source: "study-paths" }))}>
+          <button type="button" className="btn btn-light" onClick={() => onNavigate(buildOnboardingRoute("support", { source: "study-paths-team" }))}>
             Team Study Help
           </button>
         </div>

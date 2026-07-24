@@ -55,25 +55,25 @@ const pathfinderProfiles: PathfinderProfile[] = [
     signal: "You need orientation before depth.",
     outcome: "Preview the full workspace, understand Learn/Taste/Connect, then choose the first room without pressure.",
     commitment: "5 minute orientation",
-    unlock: "Starter preview now. Paid rooms when ready.",
+    unlock: "Public preview now. $10/month membership when ready.",
     nextSteps: ["Scan Learn/Taste/Connect", "Try one route preview", "Save a plan before upgrading"],
     primaryAction: "Open Launch Pad",
     primaryRoute: "app/launch",
-    secondaryAction: "Compare Plans",
-    secondaryRoute: buildOnboardingRoute("pricing", { planId: "starter", source: "pathfinder-new-learner" })
+    secondaryAction: "View Membership",
+    secondaryRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "pathfinder-new-learner" })
   },
   {
     id: "cert-prep",
     label: "Certification prep",
     title: "Turn recall into exam readiness.",
     signal: "You need terms, maps, quizzes, and review loops.",
-    outcome: "Use Sipopedia and academy routes as the spine, then add Pro access for drills and preserved progress.",
+    outcome: "Use Sipopedia and academy routes as the spine, then add membership access for drills and preserved progress.",
     commitment: "15 minute study block",
-    unlock: "Pro unlocks deeper practice rooms.",
+    unlock: "The $10/month membership unlocks deeper practice rooms.",
     nextSteps: ["Search weak terms", "Run a certification quiz", "Review map and service clues"],
     primaryAction: "Open Study Paths",
     primaryRoute: "study-paths",
-    secondaryAction: "Compare Pro",
+    secondaryAction: "View Membership",
     secondaryRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "pathfinder-cert-prep", next: "study-paths" })
   },
   {
@@ -83,7 +83,7 @@ const pathfinderProfiles: PathfinderProfile[] = [
     signal: "You need beer style, draught, service, and off-flavor reps.",
     outcome: "Start with beer-ready quiz filters, reinforce production through equipment mastery, then turn style language into service decisions.",
     commitment: "12 minute beer drill",
-    unlock: "Pro keeps beer service practice and saved review loops together.",
+    unlock: "Membership keeps beer service practice and saved review loops together.",
     nextSteps: ["Set quiz to Cicerone", "Open equipment mastery", "Review beer recipe maps"],
     primaryAction: "Start Beer Quiz",
     primaryRoute: "app/beverage-quiz",
@@ -97,7 +97,7 @@ const pathfinderProfiles: PathfinderProfile[] = [
     signal: "You need production, base spirit, cocktail, and guest-language reps.",
     outcome: "Use the quiz engine and beverage recipe maps to connect spirits theory with classic builds, modifiers, and table-side explanations.",
     commitment: "10 minute spirits sprint",
-    unlock: "Pro adds repeated practice across spirits, cocktails, and tasting notes.",
+    unlock: "Membership adds repeated practice across spirits, cocktails, and tasting notes.",
     nextSteps: ["Set quiz to spirits", "Review classic specs", "Log a tasting note"],
     primaryAction: "Open Bev Recipes",
     primaryRoute: "app/cocktails",
@@ -111,7 +111,7 @@ const pathfinderProfiles: PathfinderProfile[] = [
     signal: "You need fast specs, hospitality context, and profitable menu thinking.",
     outcome: "Route into cocktail builds, flavor calibration, and industry radar so practice feels like a shift-prep tool instead of a static recipe list.",
     commitment: "8 minute pre-shift rep",
-    unlock: "Pro unlocks applied rooms and saved tasting practice.",
+    unlock: "Membership unlocks applied rooms and saved tasting practice.",
     nextSteps: ["Drill classic builds", "Calibrate flavor language", "Read one Daily Sip signal"],
     primaryAction: "Open Bev Recipes",
     primaryRoute: "app/cocktails",
@@ -125,11 +125,11 @@ const pathfinderProfiles: PathfinderProfile[] = [
     signal: "You need table-side language and fast application.",
     outcome: "Jump into recipes, maps, tasting language, and industry context without walking through beginner scaffolding.",
     commitment: "10 minute service drill",
-    unlock: "Pro unlocks applied rooms and saved practice.",
+    unlock: "Membership unlocks applied rooms and saved practice.",
     nextSteps: ["Scan one label or menu item", "Translate one style clue", "Check current market context"],
     primaryAction: "Open Scanner",
     primaryRoute: "app/cellar-scanner",
-    secondaryAction: "See Pro Path",
+    secondaryAction: "View Membership",
     secondaryRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "pathfinder-working-pro", next: "app/cocktails" })
   },
   {
@@ -137,14 +137,14 @@ const pathfinderProfiles: PathfinderProfile[] = [
     label: "Team lead",
     title: "Ship a training sprint.",
     signal: "You need a shared path, accountability, and business outcomes.",
-    outcome: "Use the cohort lane for a structured 4-6 week rollout, then map modules to staff service standards.",
-    commitment: "4-6 week sprint",
-    unlock: "Founding Cohort adds guided accountability.",
+    outcome: "Use the Team Desk to plan a structured rollout, then map modules to staff service standards.",
+    commitment: "Flexible training sprint",
+    unlock: "Team training support stays separate from individual membership.",
     nextSteps: ["Choose staff lane", "Assign weekly modules", "Track service outcomes"],
     primaryAction: "Open Team Desk",
     primaryRoute: "support",
-    secondaryAction: "View Cohort",
-    secondaryRoute: buildOnboardingRoute("pricing", { planId: "founding", source: "pathfinder-team-lead" })
+    secondaryAction: "View Membership",
+    secondaryRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "pathfinder-team-lead" })
   }
 ];
 
@@ -163,7 +163,7 @@ const marketGapMoves: MarketGapMove[] = [
   },
   {
     gap: "Bar academies sell operational skill, not just knowledge.",
-    response: "Bartender and team tracks point to recipes, flavor calibration, industry radar, and cohort execution language.",
+    response: "Bartender and team tracks point to recipes, flavor calibration, industry radar, and practical training language.",
     routeLabel: "Service Tools",
     route: "app/cocktails"
   },
@@ -201,14 +201,11 @@ export function MarketingHome({ onNavigate, pageStatuses, isAdmin }: MarketingHo
             <h1>Beverage training that behaves like an operating system.</h1>
             <p className="marketing-lead">
               Learn the material, calibrate taste, and return to the exact room you meant to open. Sip Studies turns beverage education into a guided,
-              intent-aware workspace for service, study, and cohort execution.
+              intent-aware workspace for service, study, and team execution.
             </p>
             <div className="marketing-hero-actions">
               <button className="btn btn-primary" onClick={() => onNavigate(buildOnboardingRoute("pricing", { planId: "pro", source: "home-hero" }))}>
-                View Pricing
-              </button>
-              <button className="btn btn-light" onClick={() => onNavigate(buildOnboardingRoute("checkout", { planId: "founding", source: "home-hero" }))}>
-                Join Founding Cohort
+                Join for $10/month
               </button>
               <button className="btn btn-light" onClick={() => onNavigate("app/launch")}>
                 Open Launch Pad

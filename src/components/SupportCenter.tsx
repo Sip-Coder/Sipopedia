@@ -85,11 +85,11 @@ const supportLanes: SupportLane[] = [
   {
     id: "enrollment",
     label: "Enrollment",
-    title: "Choose a plan or recover checkout.",
-    promise: "Plan selection, saved destination, account-first checkout, and canceled checkout recovery stay in one path.",
-    nextStep: "Compare Plans",
+    title: "Join the membership or recover checkout.",
+    promise: "Membership details, saved destination, account-first checkout, and canceled checkout recovery stay in one path.",
+    nextStep: "View Membership",
     route: buildOnboardingRoute("pricing", { planId: "pro", source: "support-enrollment" }),
-    evidence: ["Plan you intended to buy", "The room you were trying to open", "Whether you already created an account"]
+    evidence: ["Whether you started membership checkout", "The room you were trying to open", "Whether you already created an account"]
   },
   {
     id: "billing",
@@ -98,7 +98,7 @@ const supportLanes: SupportLane[] = [
     promise: "Members can check subscription state, refresh access, and find billing controls from the dashboard.",
     nextStep: "Open Dashboard",
     route: "account",
-    evidence: ["Account email", "Plan name", "Checkout session or billing status if visible"]
+    evidence: ["Account email", "Membership or legacy purchase name", "Checkout session or billing status if visible"]
   },
   {
     id: "study",
@@ -113,9 +113,9 @@ const supportLanes: SupportLane[] = [
     id: "team",
     label: "Teams",
     title: "Plan a staff-training sprint.",
-    promise: "Managers can start from the Founding Cohort path, then map modules to service goals, pre-shift reps, and weekly accountability.",
+    promise: "Managers can use a separate support intake to map modules to service goals, pre-shift reps, and weekly accountability.",
     nextStep: "Start Team Intake",
-    route: buildOnboardingRoute("checkout", { planId: "founding", source: "support-team-training" }),
+    route: "support",
     evidence: ["Team size", "Training window", "Business goal", "Wine, beer, spirits, or bar focus"]
   }
 ];
@@ -214,7 +214,7 @@ const faqGroups = [
       {
         question: "What should I include when asking for help?",
         answer:
-          "Include the account email, the route you were trying to open, your plan, the quiz mode or weak topic if it is a learning issue, and any checkout session shown on the success page."
+          "Include the account email, the route you were trying to open, your membership or project interest, the quiz mode or weak topic if it is a learning issue, and any checkout session shown on the success page."
       }
     ]
   }
@@ -240,7 +240,7 @@ export function SupportCenter({ onNavigate }: SupportCenterProps) {
   const [requestContactEmail, setRequestContactEmail] = useState(user?.email ?? "");
   const [requestTeamName, setRequestTeamName] = useState("");
   const [requestTeamSize, setRequestTeamSize] = useState("");
-  const [requestPlanInterest, setRequestPlanInterest] = useState("Pro");
+  const [requestPlanInterest, setRequestPlanInterest] = useState("$10/month Membership");
   const [requestUrgency, setRequestUrgency] = useState<SupportRequestUrgency>("normal");
   const [requestSubject, setRequestSubject] = useState("");
   const [requestMessage, setRequestMessage] = useState("");
@@ -279,6 +279,11 @@ export function SupportCenter({ onNavigate }: SupportCenterProps) {
     () => officeHoursFocusOptions.find((focus) => focus.id === officeHoursFocus) ?? officeHoursFocusOptions[0],
     [officeHoursFocus]
   );
+  const openTeamIntake = (targetId = "support-intake") => {
+    setActiveLaneId("team");
+    setRequestPlanInterest("Team training");
+    document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   const officeHoursSignals = useMemo(
     () =>
       [
@@ -770,7 +775,17 @@ export function SupportCenter({ onNavigate }: SupportCenterProps) {
                 <span key={item}>{item}</span>
               ))}
             </div>
-            <button type="button" className="btn btn-primary" onClick={() => onNavigate(activeLane.route)}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => {
+                if (activeLane.id === "team") {
+                  openTeamIntake();
+                  return;
+                }
+                onNavigate(activeLane.route);
+              }}
+            >
               {activeLane.nextStep}
             </button>
           </div>
@@ -784,7 +799,7 @@ export function SupportCenter({ onNavigate }: SupportCenterProps) {
             <li>Checkout recovery routes for success, cancellation, and assisted enrollment.</li>
             <li>Independent credential study paths with official source links and non-affiliation notes.</li>
             <li>Beverage Quiz remediation with saved attempts and weak-topic study links.</li>
-            <li>Founding Cohort path for guided team or serious-learner onboarding.</li>
+            <li>Separate support intake for team training and future project or crowdfunding ideas.</li>
           </ul>
         </article>
 
@@ -914,7 +929,7 @@ export function SupportCenter({ onNavigate }: SupportCenterProps) {
         </div>
       </section>
 
-      <section className="support-request-section" aria-labelledby="support-request-title">
+      <section id="support-intake" className="support-request-section" aria-labelledby="support-request-title">
         <div className="support-section-heading">
           <p className="checkout-eyebrow">Support Intake</p>
           <h3 id="support-request-title">Capture the request and keep the follow-up code.</h3>
@@ -959,12 +974,11 @@ export function SupportCenter({ onNavigate }: SupportCenterProps) {
               />
             </label>
             <label>
-              Plan interest
+              Membership or project interest
               <select value={requestPlanInterest} onChange={(event) => setRequestPlanInterest(event.target.value)}>
-                <option>Free</option>
-                <option>Pro</option>
-                <option>Founding Cohort</option>
+                <option>$10/month Membership</option>
                 <option>Team training</option>
+                <option>Future project/crowdfunding</option>
                 <option>Not sure</option>
               </select>
             </label>
@@ -1205,11 +1219,11 @@ export function SupportCenter({ onNavigate }: SupportCenterProps) {
           ))}
         </div>
         <div className="support-team-actions">
-          <button type="button" className="btn btn-primary" onClick={() => onNavigate(buildOnboardingRoute("checkout", { planId: "founding", source: "support-team-sprints" }))}>
+          <button type="button" className="btn btn-primary" onClick={() => openTeamIntake()}>
             Start Team Intake
           </button>
-          <button type="button" className="btn btn-light" onClick={() => onNavigate(buildOnboardingRoute("pricing", { planId: "founding", source: "support-team-sprints" }))}>
-            Compare Cohort Plan
+          <button type="button" className="btn btn-light" onClick={() => openTeamIntake("live-handoff")}>
+            Open Live Handoff
           </button>
         </div>
       </section>

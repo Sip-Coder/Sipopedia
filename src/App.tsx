@@ -1744,17 +1744,17 @@ function App() {
       {route === "success" ? (
         <section className="checkout-page">
           <header className="section-header">
-            <h1>Checkout Complete</h1>
+            <h1>Membership Checkout Complete</h1>
             <p>
               {isPaid || isAdmin
-                ? "Your access is active. The saved room is ready."
-                : "Your signed-in account is being updated. If webhook delivery is still pending, refresh access or use enrollment help."}
+                ? "Your membership access is active. The saved room is ready."
+                : "Your signed-in account is being updated. If webhook delivery is still pending, refresh access or use membership help."}
             </p>
             <div className="checkout-direct-status" role="status" aria-live="polite">
               {successAccessStatus === "checking"
                 ? "Checking paid access for this account..."
                 : successAccessStatus === "failed"
-                  ? "Access refresh did not complete. Try again or request enrollment help."
+                  ? "Access refresh did not complete. Try again or request membership help."
                   : isPaid || isAdmin
                     ? "Access confirmed."
                     : "Checkout return received; access may still be processing."}
@@ -1777,7 +1777,7 @@ function App() {
               Refresh Access
             </button>
             <button className="btn btn-light" onClick={() => navigateFromString(checkoutRecoveryRoute)}>
-              Enrollment Help
+              Membership Help
             </button>
           </div>
         </section>
@@ -1785,18 +1785,18 @@ function App() {
       {route === "cancel" ? (
         <section className="checkout-page">
           <header className="section-header">
-            <h1>Checkout Canceled</h1>
-            <p>No charge was applied. Your account step and saved destination are still preserved, so you can retry checkout or use assisted enrollment without losing context.</p>
+            <h1>Membership Checkout Canceled</h1>
+            <p>No charge was applied. Your account step and saved destination are still preserved, so you can retry the $10/month membership checkout or ask for help without losing context.</p>
           </header>
           <div className="checkout-links">
             <button className="btn btn-primary" onClick={() => navigateFromString(checkoutRecoveryRoute)}>
-              Retry Checkout
+              Retry Membership Checkout
             </button>
             <button className="btn btn-light" onClick={() => navigateFromString(checkoutRecoveryRoute)}>
-              Assisted Enrollment
+              Membership Support
             </button>
             <button className="btn btn-light" onClick={() => navigateFromString(pricingRecoveryRoute)}>
-              Compare Plans
+              View Membership Details
             </button>
           </div>
         </section>

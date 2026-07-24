@@ -77,7 +77,9 @@ Paid access can come from:
 - admin role
 - mentor role
 - active/trialing/past-due subscription that has not expired
-- founding/pro plan code
+- the current `pro`/`pro_monthly` membership plan code
+- legacy `founding`/`founding_cohort` entitlement records (recognized for
+  backward compatibility, but not purchasable)
 
 ## Supabase Contract
 
@@ -97,7 +99,6 @@ GOOGLE_AI_API_KEY
 BILLING_WEBHOOK_SECRET
 STRIPE_SECRET_KEY
 STRIPE_PRICE_ID_PRO
-STRIPE_PRICE_ID_FOUNDING
 STRIPE_WEBHOOK_SECRET
 SUPABASE_SERVICE_ROLE_KEY
 ```
@@ -106,11 +107,21 @@ Supabase Edge Functions should own provider key usage. Frontend code should call
 
 Commerce flow:
 
-1. Frontend checkout calls `create-checkout-session`.
-2. The Edge Function verifies the signed-in Supabase user and creates a Stripe Checkout Session from server-side Price IDs.
+1. Frontend checkout calls `create-checkout-session` for the single $10/month
+   Sip Studies membership.
+2. The Edge Function verifies the signed-in Supabase user, accepts only the
+   `pro` plan, and creates a Stripe subscription Checkout Session from
+   `STRIPE_PRICE_ID_PRO`.
 3. Stripe redirects back to `#success` or `#cancel` with the preserved plan/source/next route.
 4. Stripe sends `checkout.session.completed`, `checkout.session.async_payment_succeeded`, and `customer.subscription.*` events to `billing-webhook`.
-5. `billing-webhook` verifies `Stripe-Signature` with `STRIPE_WEBHOOK_SECRET`, keeps legacy internal HMAC support via `BILLING_WEBHOOK_SECRET`, and upserts `customer_subscriptions`.
+5. `billing-webhook` verifies `Stripe-Signature` with `STRIPE_WEBHOOK_SECRET`,
+   keeps legacy internal HMAC support via `BILLING_WEBHOOK_SECRET`, and upserts
+   `customer_subscriptions`. Its legacy Founding mapping remains so existing
+   purchases and delayed webhook events keep their entitlement.
+
+Starter and Founding Cohort are not active checkout products. Any future cohort
+or community-funded offer should be implemented as a separate launch experience
+rather than another membership tier.
 
 ## Feature Boundaries
 

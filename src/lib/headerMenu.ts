@@ -40,12 +40,12 @@ export function buildHeaderMenuOptions({ isSignedIn, launchRoute }: HeaderMenuIn
     },
     {
       value: "pricing",
-      label: "Plan & Pricing",
-      detail: "Compare access levels",
-      badge: "Compare",
+      label: "Membership & Pricing",
+      detail: "$10/month membership",
+      badge: "$10/mo",
       lane: "Enrollment",
-      preview: "Compare Starter, Pro, and Founding Cohort paths before committing to checkout.",
-      keywords: ["pricing", "plans", "cost"]
+      preview: "Review the single Sip Studies membership before continuing to secure checkout.",
+      keywords: ["pricing", "membership", "cost"]
     },
     {
       value: "study-paths",
@@ -108,7 +108,7 @@ export function buildHeaderMenuOptions({ isSignedIn, launchRoute }: HeaderMenuIn
       detail: "Start access setup",
       badge: "Enroll",
       lane: "Enrollment",
-      preview: "Move into checkout with your selected plan and next destination preserved.",
+      preview: "Move into membership checkout with your next destination preserved.",
       keywords: ["enroll", "checkout", "join"]
     },
     {

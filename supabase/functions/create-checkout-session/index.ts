@@ -1,4 +1,4 @@
-type CheckoutPlanId = "pro" | "founding";
+type CheckoutPlanId = "pro";
 
 type CheckoutRequest = {
   planId?: string;
@@ -14,9 +14,9 @@ type AuthUser = {
 type PlanConfig = {
   planId: CheckoutPlanId;
   label: string;
-  mode: "payment" | "subscription";
-  priceEnvKey: string;
-  planCode: string;
+  mode: "subscription";
+  priceEnvKey: "STRIPE_PRICE_ID_PRO";
+  planCode: "pro_monthly";
 };
 
 const STRIPE_API_VERSION = "2026-02-25.clover";
@@ -69,13 +69,6 @@ const plans: Record<CheckoutPlanId, PlanConfig> = {
     mode: "subscription",
     priceEnvKey: "STRIPE_PRICE_ID_PRO",
     planCode: "pro_monthly"
-  },
-  founding: {
-    planId: "founding",
-    label: "Sip Studies Founding Cohort",
-    mode: "payment",
-    priceEnvKey: "STRIPE_PRICE_ID_FOUNDING",
-    planCode: "founding_cohort"
   }
 };
 
@@ -235,19 +228,11 @@ async function createStripeCheckoutSession({
     form.set("customer_email", user.email);
   }
 
-  if (plan.mode === "subscription") {
-    form.set("subscription_data[metadata][user_id]", metadata.user_id);
-    form.set("subscription_data[metadata][plan_id]", metadata.plan_id);
-    form.set("subscription_data[metadata][plan_code]", metadata.plan_code);
-    form.set("subscription_data[metadata][source]", metadata.source);
-    form.set("subscription_data[metadata][next]", metadata.next);
-  } else {
-    form.set("payment_intent_data[metadata][user_id]", metadata.user_id);
-    form.set("payment_intent_data[metadata][plan_id]", metadata.plan_id);
-    form.set("payment_intent_data[metadata][plan_code]", metadata.plan_code);
-    form.set("payment_intent_data[metadata][source]", metadata.source);
-    form.set("payment_intent_data[metadata][next]", metadata.next);
-  }
+  form.set("subscription_data[metadata][user_id]", metadata.user_id);
+  form.set("subscription_data[metadata][plan_id]", metadata.plan_id);
+  form.set("subscription_data[metadata][plan_code]", metadata.plan_code);
+  form.set("subscription_data[metadata][source]", metadata.source);
+  form.set("subscription_data[metadata][next]", metadata.next);
 
   const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
     method: "POST",

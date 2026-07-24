@@ -11,9 +11,13 @@ const defaultRouteTimeoutMs = 12000;
 const explicitRoutes = [
   "/#home",
   "/#pricing",
+  "/#pricing?plan=starter",
+  "/#pricing?plan=founding",
   "/#support",
   "/#study-paths",
   "/#checkout",
+  "/#checkout?plan=starter",
+  "/#checkout?plan=founding",
   "/#powerful-point",
   "/#login",
   "/#logout",
@@ -318,14 +322,34 @@ async function waitForRouteSettled(client, sessionId, route, timeoutMs) {
         const root = document.querySelector("#root");
         const text = document.body?.innerText ?? "";
         const rootText = root?.textContent?.trim() ?? "";
+        const pricingPage = document.querySelector(".pricing-page");
+        const pricingCards = Array.from(document.querySelectorAll(".pricing-grid .pricing-card"));
+        const pricingText = pricingPage?.textContent ?? "";
+        const checkoutPage = document.querySelector(".checkout-page");
+        const checkoutText = checkoutPage?.textContent ?? "";
+        const hasRetiredPricingCopy = (value) =>
+          /(?:\\bStarter\\b|Founding Cohort|\\$\\s*0(?:\\s+forever)?|\\$\\s*1,?200)/i.test(value);
         return {
           readyState: document.readyState,
           textLength: text.trim().length,
           rootTextLength: rootText.length,
           hasErrorBoundary: text.includes("Something went wrong"),
           hasWorkspaceLoading: text.includes("Loading workspace...") && text.includes("Preparing your next module."),
-          hasPaywall: text.includes("This room is locked, but your route is saved."),
+          hasPaywall: Boolean(document.querySelector(".paywall-panel")),
           hasNotFoundRecovery: text.includes("We couldn't find that page"),
+          pricingCardCount: pricingCards.length,
+          pricingHasTenMonthly: pricingCards.some((card) => {
+            const cardText = card.textContent ?? "";
+            return /\\$\\s*10\\b/.test(cardText) && /per\\s+month/i.test(cardText);
+          }),
+          pricingHasRetiredPlanCopy: hasRetiredPricingCopy(pricingText),
+          checkoutHasTenMonthly:
+            /\\$\\s*10\\b/.test(checkoutText) &&
+            /(?:per\\s+month|monthly)/i.test(checkoutText),
+          checkoutHasRetiredPlanCopy: hasRetiredPricingCopy(checkoutText),
+          checkoutPlanSwitcherCount: checkoutPage
+            ? checkoutPage.querySelectorAll(".checkout-plan-switcher").length
+            : 0,
           location: window.location.href
         };
       })()`
@@ -393,6 +417,16 @@ async function navigateAndCheck(client, sessionId, baseUrl, route, routeTimeoutM
     if ((state.rootTextLength ?? 0) <= 80) failures.push("blank or near-blank root");
     if (route.startsWith("/#app/") && route !== "/#app/launch" && state.hasPaywall) failures.push("paywall blocked workspace render");
     if (route.includes("route-that-does-not-exist") && !state.hasNotFoundRecovery) failures.push("missing not-found recovery");
+    if (route.startsWith("/#pricing")) {
+      if (state.pricingCardCount !== 1) failures.push(`expected one pricing plan, found ${state.pricingCardCount ?? 0}`);
+      if (!state.pricingHasTenMonthly) failures.push("pricing is missing the $10 per month membership");
+      if (state.pricingHasRetiredPlanCopy) failures.push("pricing includes retired Starter or Founding plan copy");
+    }
+    if (route.startsWith("/#checkout")) {
+      if (!state.checkoutHasTenMonthly) failures.push("checkout is missing the $10 monthly membership");
+      if (state.checkoutHasRetiredPlanCopy) failures.push("checkout includes retired Starter or Founding plan copy");
+      if ((state.checkoutPlanSwitcherCount ?? 0) !== 0) failures.push("checkout still renders a plan switcher");
+    }
     if (routeEvents.exceptions.length) failures.push(`runtime exception: ${routeEvents.exceptions[0]}`);
     if (routeEvents.consoleErrors.length) failures.push(`console error: ${routeEvents.consoleErrors[0]}`);
     if (routeEvents.failedRequests.length) failures.push(`failed same-origin request: ${routeEvents.failedRequests[0]}`);

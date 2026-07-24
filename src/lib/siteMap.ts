@@ -40,7 +40,7 @@ const WORKSPACE_SECTION_LABELS: Record<WorkspaceSectionId, string> = {
 
 export const SITE_MAP_PAGES: SiteMapPage[] = [
   { route: "home", label: "Home", room: "Lobby", section: "Marketing", description: "Public landing page.", defaultRoom: "Lobby", defaultStatus: "public" },
-  { route: "pricing", label: "Pricing", room: "Lobby", section: "Marketing", description: "Plan comparison and subscription pitch.", defaultRoom: "Lobby", defaultStatus: "public" },
+  { route: "pricing", label: "Pricing", room: "Lobby", section: "Marketing", description: "$10/month membership details and subscription pitch.", defaultRoom: "Lobby", defaultStatus: "public" },
   { route: "support", label: "Support & Teams", room: "Lobby", section: "Support", description: "FAQ, enrollment help, billing guidance, study remediation, and team-training intake.", defaultRoom: "Lobby", defaultStatus: "public" },
   { route: "study-paths", label: "Credential Paths", room: "Lobby", section: "Study", description: "Independent WSET, CMS, Cicerone, and regional-scholar study-path guidance.", defaultRoom: "Lobby", defaultStatus: "public" },
   { route: "checkout", label: "Checkout", room: "Lobby", section: "Commerce", description: "Enrollment and checkout intake.", defaultRoom: "Lobby", defaultStatus: "public" },
