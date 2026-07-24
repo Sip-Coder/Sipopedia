@@ -38,6 +38,7 @@ type ArticleLibraryContextValue = {
   announcement: string;
   isRead: (article: ArticleSnapshot) => boolean;
   isFavorite: (article: ArticleSnapshot) => boolean;
+  markRead: (article: ArticleSnapshot) => void;
   setRead: (article: ArticleSnapshot, isRead: boolean) => void;
   setFavorite: (article: ArticleSnapshot, isFavorite: boolean) => void;
   retrySync: () => Promise<void>;
@@ -94,8 +95,9 @@ export function ArticleLibraryProvider({ children }: PropsWithChildren) {
       try {
         const cloudItems = await listCloudArticleLibrary(user.id);
         if (canceled) return;
-        const accountPending = articleLibraryItemsNeedingCloudSave(cached, cloudItems);
-        const accountItems = mergeArticleLibraryItems(cached, cloudItems);
+        const currentItems = itemsRef.current;
+        const accountPending = articleLibraryItemsNeedingCloudSave(currentItems, cloudItems);
+        const accountItems = mergeArticleLibraryItems(currentItems, cloudItems);
         const merged = mergeGuestArticleLibrary(accountItems, guestItems);
         const pendingKeys = new Set([
           ...accountPending.map((item) => item.articleKey),
@@ -238,6 +240,14 @@ export function ArticleLibraryProvider({ children }: PropsWithChildren) {
     (article: ArticleSnapshot, value: boolean) => updatePreference(article, "read", value),
     [updatePreference]
   );
+  const markRead = useCallback(
+    (article: ArticleSnapshot) => {
+      const articleKey = articleKeyFor(article);
+      if (itemsRef.current.find((item) => item.articleKey === articleKey)?.isRead) return;
+      updatePreference(article, "read", true);
+    },
+    [updatePreference]
+  );
   const setFavorite = useCallback(
     (article: ArticleSnapshot, value: boolean) => updatePreference(article, "favorite", value),
     [updatePreference]
@@ -263,6 +273,7 @@ export function ArticleLibraryProvider({ children }: PropsWithChildren) {
       announcement,
       isRead,
       isFavorite,
+      markRead,
       setRead,
       setFavorite,
       retrySync
@@ -274,6 +285,7 @@ export function ArticleLibraryProvider({ children }: PropsWithChildren) {
       isRead,
       items,
       loading,
+      markRead,
       retrySync,
       setFavorite,
       setRead,

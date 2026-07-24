@@ -3,6 +3,7 @@ import {
   useRef,
   useState,
   type FormEvent,
+  type ReactNode,
   type RefObject
 } from "react";
 import { createPortal } from "react-dom";
@@ -13,6 +14,13 @@ import type { ArticleSnapshot } from "../lib/articleLibrary";
 
 type ArticleActionsProps = {
   article: ArticleSnapshot;
+};
+
+type ArticleReadLinkProps = {
+  article: ArticleSnapshot;
+  href: string;
+  className?: string;
+  children: ReactNode;
 };
 
 type ArticleShareDialogProps = {
@@ -403,6 +411,29 @@ export function ArticleActions({ article }: ArticleActionsProps) {
         returnFocusRef={shareButtonRef}
       />
     </>
+  );
+}
+
+export function ArticleReadLink({
+  article,
+  href,
+  className,
+  children
+}: ArticleReadLinkProps) {
+  const { markRead } = useArticleLibrary();
+
+  return (
+    <a
+      className={className}
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      data-article-action="read-source"
+      onClick={() => markRead(article)}
+      onAuxClick={() => markRead(article)}
+    >
+      {children}
+    </a>
   );
 }
 

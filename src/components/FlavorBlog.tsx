@@ -5,7 +5,7 @@ import { fetchGuildNews, type NewsRouterSource } from "../lib/newsRouter";
 import { safeHttpUrl } from "../lib/urlSafety";
 import { useArticleLibrary } from "../context/ArticleLibraryContext";
 import type { ArticleSnapshot } from "../lib/articleLibrary";
-import { ArticleActions, ArticleFavoritesLink } from "./ArticleActions";
+import { ArticleActions, ArticleFavoritesLink, ArticleReadLink } from "./ArticleActions";
 import { MediaCutPackPanel } from "./MediaCutPack";
 
 type SourceLoadMode = "loaded" | "fallback" | "failed";
@@ -682,7 +682,7 @@ function buildModeMap(results: SourceLoadResult[]): Record<string, SourceLoadMod
 }
 
 export function FlavorBlog() {
-  const { isRead } = useArticleLibrary();
+  const { isRead, markRead } = useArticleLibrary();
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -984,6 +984,7 @@ export function FlavorBlog() {
                         className="btn btn-light news-link"
                         type="button"
                         onClick={() => {
+                          markRead(articleSnapshot);
                           setFilter("daily-sip");
                           setSelectedDailySipId(article.id);
                         }}
@@ -991,9 +992,9 @@ export function FlavorBlog() {
                         Read Article
                       </button>
                     ) : safeArticleUrl ? (
-                      <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">
+                      <ArticleReadLink article={articleSnapshot} className="btn btn-light news-link" href={safeArticleUrl}>
                         Read Article
-                      </a>
+                      </ArticleReadLink>
                     ) : (
                       <span className="btn btn-light news-link">Invalid article URL</span>
                     )}

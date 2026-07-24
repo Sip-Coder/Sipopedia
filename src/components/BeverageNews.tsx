@@ -4,7 +4,7 @@ import { MAGAZINE_NEWS_REFERENCES } from "../data/magazineNewsReferences";
 import { safeHttpUrl } from "../lib/urlSafety";
 import { useArticleLibrary } from "../context/ArticleLibraryContext";
 import type { ArticleSnapshot } from "../lib/articleLibrary";
-import { ArticleActions, ArticleFavoritesLink } from "./ArticleActions";
+import { ArticleActions, ArticleFavoritesLink, ArticleReadLink } from "./ArticleActions";
 
 type BeverageType = "Wine" | "Spirits" | "Beer" | "Sake" | "General";
 type SourceLoadMode = "loaded" | "fallback" | "failed";
@@ -1429,7 +1429,9 @@ export function BeverageNews() {
                     <button className="btn btn-primary" type="button" onClick={() => { setStudyArticleId(article.id); setTakeaway(""); setShiftAction(""); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
                       Study this headline
                     </button>
-                    <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">Read source</a>
+                    <ArticleReadLink article={articleSnapshot} className="btn btn-light news-link" href={safeArticleUrl}>
+                      Read source
+                    </ArticleReadLink>
                   </div>
                 ) : (
                   <button className="btn btn-primary" type="button" onClick={() => setStudyArticleId(article.id)}>Study summary</button>

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useArticleLibrary } from "../context/ArticleLibraryContext";
 import { safeHttpUrl } from "../lib/urlSafety";
 import type { ArticleSurface } from "../lib/articleLibrary";
-import { ArticleActions } from "./ArticleActions";
+import { ArticleActions, ArticleReadLink } from "./ArticleActions";
 
 type FavoriteFilter = "all" | ArticleSurface;
 
@@ -140,9 +140,9 @@ export function ArticleFavorites() {
                 <ArticleActions article={article} />
                 <div className="journal-actions article-primary-actions">
                   {articleUrl ? (
-                    <a className="btn btn-primary news-link" href={articleUrl} target="_blank" rel="noreferrer">
+                    <ArticleReadLink article={article} className="btn btn-primary news-link" href={articleUrl}>
                       Read article
-                    </a>
+                    </ArticleReadLink>
                   ) : (
                     <span className="btn btn-light">Source may be unavailable</span>
                   )}
