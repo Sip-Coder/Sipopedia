@@ -8368,6 +8368,31 @@ select option:checked {
   padding: 0.85rem;
 }
 
+.cocktail-map-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 0.52fr);
+  gap: 0.8rem;
+  align-items: end;
+  margin-bottom: 0.75rem;
+  padding: 0.12rem 0.18rem;
+}
+
+.cocktail-map-heading h3,
+.cocktail-map-heading p {
+  margin: 0;
+}
+
+.cocktail-map-heading h3 {
+  color: #fff0ce;
+  font-size: clamp(1.08rem, 2vw, 1.35rem);
+}
+
+.cocktail-map-heading > p {
+  color: rgba(217, 247, 255, 0.72);
+  font-size: var(--type-small);
+  line-height: 1.4;
+}
+
 .cocktail-photo-panel {
   --photo-liquid: #e8b95e;
   --photo-glow: rgba(237, 212, 168, 0.26);
@@ -8632,7 +8657,7 @@ select option:checked {
 
 .cocktail-map-stage {
   position: relative;
-  min-height: clamp(560px, 70vw, 720px);
+  min-height: clamp(600px, 72vw, 760px);
   border: 1px solid rgba(159, 218, 245, 0.24);
   border-radius: 20px;
   overflow: hidden;
@@ -9115,6 +9140,216 @@ select option:checked {
   font-weight: 850;
 }
 
+.cocktail-family-tree {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+
+.cocktail-family-tree-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.36fr);
+  gap: 0.85rem;
+  align-items: start;
+}
+
+.cocktail-family-tree-current {
+  border: 1px solid rgba(159, 218, 245, 0.22);
+  border-radius: 16px;
+  background: rgba(4, 13, 24, 0.52);
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.72rem 0.8rem;
+}
+
+.cocktail-family-tree-current span,
+.cocktail-family-root-kicker {
+  color: rgba(159, 218, 245, 0.82);
+  font-size: var(--type-label);
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.cocktail-family-tree-current strong {
+  color: #fff2d3;
+  font-family: "Space Grotesk", "Gill Sans", sans-serif;
+  font-size: 1.06rem;
+}
+
+.cocktail-family-tree-current small {
+  color: rgba(217, 247, 255, 0.74);
+  font-size: var(--type-small);
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.cocktail-family-tree-roots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  align-items: start;
+}
+
+.cocktail-family-root {
+  min-width: 0;
+  border: 1px solid rgba(159, 218, 245, 0.2);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(159, 218, 245, 0.11), transparent 36%),
+    linear-gradient(145deg, rgba(4, 18, 30, 0.78), rgba(10, 39, 44, 0.62));
+  display: grid;
+  gap: 0.72rem;
+  padding: 0.82rem;
+}
+
+.cocktail-family-root-wide {
+  grid-column: 1 / -1;
+}
+
+.cocktail-family-root > header {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.cocktail-family-root-kicker {
+  margin: 0;
+}
+
+.cocktail-family-root h4 {
+  color: #fff2d3;
+  font-family: "Space Grotesk", "Gill Sans", sans-serif;
+  font-size: 1.08rem;
+  margin: 0;
+}
+
+.cocktail-family-formula {
+  color: #edd4a8;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.cocktail-family-root > header > p:last-child {
+  color: rgba(217, 247, 255, 0.72);
+  font-size: var(--type-small);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.cocktail-family-branches {
+  list-style: none;
+  display: grid;
+  gap: 0.62rem;
+  margin: 0;
+  padding: 0;
+}
+
+.cocktail-family-root-wide .cocktail-family-branches {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cocktail-family-branches > li {
+  min-width: 0;
+  border-left: 2px solid rgba(237, 212, 168, 0.42);
+  border-radius: 0 14px 14px 0;
+  background: rgba(3, 13, 24, 0.42);
+  display: grid;
+  gap: 0.52rem;
+  padding: 0.64rem;
+}
+
+.cocktail-family-branch-head {
+  display: grid;
+  gap: 0.16rem;
+}
+
+.cocktail-family-branch-head span {
+  color: #fff2d3;
+  font-weight: 900;
+}
+
+.cocktail-family-branch-head small {
+  color: rgba(159, 218, 245, 0.76);
+  font-size: var(--type-small);
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.cocktail-family-leaves {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.cocktail-family-leaves button {
+  appearance: none;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid rgba(159, 218, 245, 0.22);
+  border-radius: 12px;
+  background: rgba(7, 28, 40, 0.76);
+  color: #d9f7ff;
+  cursor: pointer;
+  display: grid;
+  gap: 0.12rem;
+  align-content: center;
+  padding: 0.5rem 0.58rem;
+  text-align: left;
+}
+
+.cocktail-family-leaves button:hover,
+.cocktail-family-leaves button:focus-visible {
+  border-color: rgba(237, 212, 168, 0.68);
+  background: rgba(18, 67, 83, 0.94);
+  outline: none;
+}
+
+.cocktail-family-leaves button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(255, 242, 211, 0.9);
+}
+
+.cocktail-family-leaves button.active {
+  border-color: rgba(237, 212, 168, 0.82);
+  background: linear-gradient(135deg, #f7edd3, #9fdaf5);
+  color: #17313b;
+  box-shadow: inset 0 0 0 1px rgba(24, 52, 63, 0.2);
+}
+
+.cocktail-family-leaves button span {
+  color: inherit;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.cocktail-family-leaves button small {
+  color: rgba(217, 247, 255, 0.66);
+  font-size: var(--type-label);
+  font-weight: 750;
+  line-height: 1.25;
+  text-transform: capitalize;
+}
+
+.cocktail-family-leaves button.active small {
+  color: rgba(23, 49, 59, 0.72);
+}
+
+.cocktail-family-tree-note {
+  border-top: 1px solid rgba(159, 218, 245, 0.16);
+  color: rgba(217, 247, 255, 0.72);
+  font-size: var(--type-small);
+  line-height: 1.45;
+  margin: 0;
+  padding-top: 0.72rem;
+}
+
+.cocktail-family-tree-note strong {
+  color: #edd4a8;
+}
+
+.cocktail-product-knowledge {
+  margin-top: 0.9rem;
+}
+
 @media (max-width: 980px) {
   .cocktail-map-layout {
     grid-template-columns: 1fr;
@@ -9142,7 +9377,20 @@ select option:checked {
   }
 
   .cocktail-map-stage {
-    min-height: 640px;
+    min-height: 700px;
+  }
+
+  .cocktail-family-tree-head,
+  .cocktail-family-tree-roots {
+    grid-template-columns: 1fr;
+  }
+
+  .cocktail-family-root-wide {
+    grid-column: auto;
+  }
+
+  .cocktail-family-root-wide .cocktail-family-branches {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -9179,6 +9427,55 @@ select option:checked {
   .cocktail-node-center {
     width: min(170px, 54vw) !important;
     min-height: 68px;
+  }
+
+  .cocktail-map-heading {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .cocktail-map-stage {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.46rem;
+    align-content: start;
+    padding: 0.58rem;
+  }
+
+  .cocktail-map-stage .cocktail-map-ring {
+    display: none;
+  }
+
+  .cocktail-map-stage .cocktail-node {
+    position: static;
+    width: 100% !important;
+    max-width: none;
+    min-height: 50px;
+    opacity: 1;
+    transform: none;
+  }
+
+  .cocktail-map-stage .cocktail-node:hover,
+  .cocktail-map-stage .cocktail-node:focus-visible {
+    transform: none;
+  }
+
+  .cocktail-map-stage .cocktail-node-center {
+    grid-column: 1 / -1;
+    order: -1;
+    min-height: 68px;
+  }
+
+  .cocktail-map-stage .cocktail-hover-card {
+    position: static;
+    grid-column: 1 / -1;
+    width: auto;
+  }
+
+  .cocktail-family-root-wide .cocktail-family-branches,
+  .cocktail-family-leaves {
+    grid-template-columns: 1fr;
   }
 
   .cocktail-hover-card {
