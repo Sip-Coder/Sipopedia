@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import { AccessProvider } from "./context/AccessContext";
+import { ArticleLibraryProvider } from "./context/ArticleLibraryContext";
+import { ArticlePreferencesProvider } from "./context/ArticlePreferencesContext";
 import { AppErrorBoundary } from "./components/AppErrorBoundary";
 import { GlobalShootingStars } from "./components/GlobalShootingStars";
 import { trackEvent } from "./lib/analytics";
@@ -39,10 +41,14 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       }}
     >
       <AuthProvider>
-        <AccessProvider>
-          <GlobalShootingStars />
-          <App />
-        </AccessProvider>
+        <ArticlePreferencesProvider>
+          <ArticleLibraryProvider>
+            <AccessProvider>
+              <GlobalShootingStars />
+              <App />
+            </AccessProvider>
+          </ArticleLibraryProvider>
+        </ArticlePreferencesProvider>
       </AuthProvider>
     </AppErrorBoundary>
   </React.StrictMode>

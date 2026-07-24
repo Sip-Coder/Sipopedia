@@ -10,5 +10,8 @@ verify_jwt = true
 [functions.news-router]
 verify_jwt = true
 
+[functions.share-article]
+verify_jwt = true
+
 [functions.terminology-harvester]
 verify_jwt = true

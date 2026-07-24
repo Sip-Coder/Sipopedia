@@ -138,7 +138,6 @@ Checkout is created server-side by the `create-checkout-session` Supabase Edge F
 ```bash
 STRIPE_SECRET_KEY=
 STRIPE_PRICE_ID_PRO=
-STRIPE_PRICE_ID_FOUNDING=
 STRIPE_WEBHOOK_SECRET=
 APP_URL=
 ALLOWED_ORIGINS=
@@ -150,7 +149,13 @@ comma-separated list of any additional trusted origins; the canonical domain,
 already allowlisted in the checkout and AI router functions. Wildcards are not
 accepted by those functions.
 
-Use Stripe Price IDs so the selected plan cannot open the wrong billing product. Pro uses Stripe Checkout in subscription mode; Founding Cohort uses Checkout in payment mode. The function attaches the signed-in Supabase user ID, selected plan, source, and next route to Checkout metadata.
+`STRIPE_PRICE_ID_PRO` backs the single purchasable Sip Studies membership at
+$10/month. Checkout uses Stripe subscription mode and rejects retired Starter
+or Founding plan requests. Existing Founding entitlements remain recognized for
+backward compatibility, but Founding Cohort is not available through checkout.
+Future cohort or community-funded offers should launch as separate experiences
+instead of additional membership tiers. The function attaches the signed-in
+Supabase user ID, plan, source, and next route to Checkout metadata.
 
 Stripe should send these events to the deployed `billing-webhook` function:
 

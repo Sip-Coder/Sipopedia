@@ -28,7 +28,6 @@ These values must never be committed to git:
 - `GOOGLE_AI_API_KEY`
 - `STRIPE_SECRET_KEY`
 - `STRIPE_PRICE_ID_PRO`
-- `STRIPE_PRICE_ID_FOUNDING`
 - `STRIPE_WEBHOOK_SECRET`
 - OAuth client secrets
 - Stripe or billing secrets
@@ -73,12 +72,15 @@ The host should provide:
 - `GOOGLE_MODEL`
 - `STRIPE_SECRET_KEY`
 - `STRIPE_PRICE_ID_PRO`
-- `STRIPE_PRICE_ID_FOUNDING`
 - `STRIPE_WEBHOOK_SECRET`
 - `APP_URL`
 - `ALLOWED_ORIGIN`
 
 For hosted frontend publishing, make sure the frontend has only the public `VITE_*` variables and that server-side secrets stay in the backend or host secret store.
+
+`STRIPE_PRICE_ID_PRO` backs the single active $10/month Sip Studies membership.
+There is no Founding checkout price to configure. Legacy Founding entitlements
+remain a billing and access compatibility concern, not a new-purchase secret.
 
 ## Safe Workflow
 

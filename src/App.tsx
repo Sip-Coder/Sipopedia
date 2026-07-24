@@ -9,8 +9,6 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode
 } from "react";
-import mainLogo from "./assets/brand/sip-studies-main-logo-opt.webp";
-import wordmark from "./assets/brand/wordmark-ruthligos-opt.webp";
 import welcomeToSipStudies from "./assets/brand/welcome-to-sip-studies.png";
 import { trackEvent } from "./lib/analytics";
 import { useAccess } from "./context/AccessContext";
@@ -30,7 +28,11 @@ import { PublicFooter } from "./components/PublicFooter";
 import { StarterFeatureDemo } from "./components/StarterFeatureDemo";
 import { TerminologyAutoLinker } from "./components/TerminologyAutoLinker";
 import { PowerfulPoint } from "./components/PowerfulPoint";
-import { buildHeaderMenuOptions, type HeaderMenuOption, type HeaderMenuValue } from "./lib/headerMenu";
+import {
+  CompactNavigation,
+  type CompactNavGroup,
+  type CompactNavItem
+} from "./components/CompactNavigation";
 import { buildOnboardingRoute, readOnboardingIntent } from "./lib/onboardingIntent";
 import {
   WORKSPACE_NAV_ITEMS,
@@ -67,6 +69,7 @@ const loadTastingJournal = () => import("./components/TastingJournal");
 const loadFlavors = () => import("./components/Flavors");
 const loadTastingGroups = () => import("./components/TastingGroups");
 const loadFlavorBlog = () => import("./components/FlavorBlog");
+const loadArticleFavorites = () => import("./components/ArticleFavorites");
 const loadRegions = () => import("./components/Regions");
 const loadSipMaps = () => import("./components/SipMaps");
 const loadGrapes = () => import("./components/Grapes");
@@ -134,6 +137,9 @@ const TastingJournal = lazyRoute("tasting-journal", () => loadTastingJournal().t
 const Flavors = lazyRoute("flavors", () => loadFlavors().then((module) => ({ default: module.Flavors })));
 const TastingGroups = lazyRoute("tasting-groups", () => loadTastingGroups().then((module) => ({ default: module.TastingGroups })));
 const FlavorBlog = lazyRoute("flavor-blog", () => loadFlavorBlog().then((module) => ({ default: module.FlavorBlog })));
+const ArticleFavorites = lazyRoute("favorites", () =>
+  loadArticleFavorites().then((module) => ({ default: module.ArticleFavorites }))
+);
 const Regions = lazyRoute("regions", () => loadRegions().then((module) => ({ default: module.Regions })));
 const SipMaps = lazyRoute("maps", () => loadSipMaps().then((module) => ({ default: module.SipMaps })));
 const Grapes = lazyRoute("grapes", () => loadGrapes().then((module) => ({ default: module.Grapes })));
@@ -161,6 +167,7 @@ type WorkspacePage =
   | "service-roleplay"
   | "beverage-news"
   | "flavor-blog"
+  | "favorites"
   | AiWinecastPage
   | RegionsPage
   | "maps"
@@ -267,6 +274,7 @@ function normalizeWorkspacePage(value: string): WorkspacePage {
   if (value === "service-roleplay" || value === "roleplay" || value === "roleplay-lab" || value === "service-lab") return "service-roleplay";
   if (value === "beverage-news") return "beverage-news";
   if (value === "flavor-blog" || value === "flavor-blog-posts") return "flavor-blog";
+  if (value === "favorites" || value === "bookmarks" || value === "saved-articles") return "favorites";
   if (value === "ai-winecast" || value.startsWith("ai-winecast/")) return value as AiWinecastPage;
   if (value === "ai-news") return "ai-news";
   if (value === "somm-events" || value === "somm-news") return "somm-events";
@@ -349,7 +357,7 @@ function isTypingTarget(target: EventTarget | null): boolean {
 
 function sectionFromWorkspacePage(page: WorkspacePage): WorkspaceSection {
   if (page === "flavor-wheel" || page === "cellar-scanner" || page === "flavors" || page === "tasting-journal") return "taste";
-  if (page === "beverage-news" || page === "flavor-blog" || isAiWinecastPage(page) || page === "tasting-groups" || page === "ai-news" || page === "somm-events") return "connect";
+  if (page === "beverage-news" || page === "flavor-blog" || page === "favorites" || isAiWinecastPage(page) || page === "tasting-groups" || page === "ai-news" || page === "somm-events") return "connect";
   return "learn";
 }
 
@@ -407,6 +415,10 @@ function preloadWorkspacePage(target: WorkspacePage): void {
   }
   if (target === "flavor-blog") {
     void loadFlavorBlog();
+    return;
+  }
+  if (target === "favorites") {
+    void loadArticleFavorites();
     return;
   }
   if (isAiWinecastPage(target)) {
@@ -482,259 +494,167 @@ function buildRoomMenuOptions(pageStatuses: PageStatusMap, isAdmin: boolean, isP
   });
 }
 
+function isCompactNavRouteActive(route: AppRoute, target: string): boolean {
+  if (route === target) return true;
+  if (target === "app/regions") return route.startsWith("app/regions/");
+  if (target === "app/grapes") return route.startsWith("app/grapes/");
+  if (target === "app/ai-winecast") return route.startsWith("app/ai-winecast/");
+  return false;
+}
+
+function buildCompactNavigationGroups({
+  route,
+  pageStatuses,
+  isAdmin,
+  isPaid,
+  isSignedIn
+}: {
+  route: AppRoute;
+  pageStatuses: PageStatusMap;
+  isAdmin: boolean;
+  isPaid: boolean;
+  isSignedIn: boolean;
+}): CompactNavGroup[] {
+  const toItem = (id: string, label: string, detail: string, badge?: string): CompactNavItem => ({
+    id,
+    label,
+    detail,
+    badge,
+    active: isCompactNavRouteActive(route, id)
+  });
+  const visible = (target: string) => shouldShowInPublicNav(target, pageStatuses, isAdmin, isPaid);
+  const essentials: CompactNavItem[] = [
+    visible("home") ? toItem("home", "Lobby Home", "Public front door") : null,
+    visible("app/starter") ? toItem("app/starter", "Launch Pad", "Continue or choose a study room") : null,
+    visible("pricing") ? toItem("pricing", "Membership & Pricing", "$10/month membership") : null,
+    visible("study-paths") ? toItem("study-paths", "Credential Paths", "Independent exam prep") : null,
+    visible("support") ? toItem("support", "Support & Teams", "Help, billing, and team training") : null
+  ].filter((item): item is CompactNavItem => Boolean(item));
+
+  const workspaceGroups: CompactNavGroup[] = workspaceSections.map((workspaceSection) => ({
+    id: workspaceSection.id,
+    label: workspaceSection.label,
+    items: workspaceNavItems
+      .filter((item) => item.section === workspaceSection.id && visible(item.route))
+      .map((item) => toItem(item.route, item.label, item.signal))
+  }));
+
+  const accountItems: CompactNavItem[] = isSignedIn
+    ? [
+        visible("account") ? toItem("account", "Account Dashboard", "Progress, profile, and billing") : null,
+        toItem("__signout", "Log Out", "End this session")
+      ].filter((item): item is CompactNavItem => Boolean(item))
+    : [
+        visible("checkout") ? toItem("checkout", "Join Sip Studies", "$10/month membership", "$10") : null,
+        visible("login") ? toItem("login", "Log In", "Return to your account") : null
+      ].filter((item): item is CompactNavItem => Boolean(item));
+
+  const bossItems: CompactNavItem[] = isAdmin
+    ? [
+        visible("admin") ? toItem("admin", "Admin Console", "Site controls and health") : null,
+        visible("admin/terminology") ? toItem("admin/terminology", "Terms Ops", "Terminology publishing") : null
+      ].filter((item): item is CompactNavItem => Boolean(item))
+    : [];
+
+  return [
+    { id: "essentials", label: "Essentials", shortLabel: "Home", items: essentials },
+    ...workspaceGroups,
+    { id: "account", label: "Account", items: accountItems },
+    ...(bossItems.length > 0 ? [{ id: "boss", label: "Boss", items: bossItems }] : [])
+  ];
+}
+
 function SiteRoomNav({
   route,
   onNavigate,
-  variant,
   pageStatuses
 }: {
   route: AppRoute;
   onNavigate: (route: AppRoute) => void;
-  variant: "header" | "workspace";
   pageStatuses: PageStatusMap;
 }) {
   const { user, signOut } = useAuth();
   const { isPaid, isAdmin } = useAccess();
-  const activeRoom = roomFromRoute(route);
-  const commandMenuRef = useRef<HTMLDivElement | null>(null);
-  const commandTriggerRef = useRef<HTMLButtonElement | null>(null);
-  const commandInputRef = useRef<HTMLInputElement | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [menuQuery, setMenuQuery] = useState("");
-  const [activeMenuIndex, setActiveMenuIndex] = useState(0);
-  const popoverId = `site-room-command-${variant}`;
-  const menuOptions = useMemo<HeaderMenuOption[]>(() => {
-    return buildHeaderMenuOptions({
-      isSignedIn: Boolean(user),
-      launchRoute: defaultGameRoomRoute(isPaid, isAdmin) as Extract<HeaderMenuValue, `app/${string}`>
-    }).filter((item) => item.value === "__signout" || shouldShowInPublicNav(item.value, pageStatuses, isAdmin, isPaid));
-  }, [isAdmin, isPaid, pageStatuses, user]);
-  const visibleMenuOptions = useMemo(() => {
-    const query = menuQuery.trim().toLowerCase();
-    if (!query) return menuOptions;
-    return menuOptions.filter((item) => {
-      const haystack = [item.label, item.detail, item.badge, ...item.keywords].join(" ").toLowerCase();
-      return haystack.includes(query);
-    });
-  }, [menuOptions, menuQuery]);
-  const activeMenuOptionIndex = visibleMenuOptions[activeMenuIndex] ? activeMenuIndex : 0;
-  const activeMenuOption = visibleMenuOptions[activeMenuOptionIndex] ?? null;
-  const activeMenuOptionId = activeMenuOption ? `${popoverId}-option-${activeMenuOptionIndex}` : undefined;
-  const visibleMenuCountLabel = `${visibleMenuOptions.length} destination${visibleMenuOptions.length === 1 ? "" : "s"}`;
+  const groups = useMemo(
+    () =>
+      buildCompactNavigationGroups({
+        route,
+        pageStatuses,
+        isAdmin,
+        isPaid,
+        isSignedIn: Boolean(user)
+      }),
+    [isAdmin, isPaid, pageStatuses, route, user]
+  );
+  const activeGroupId =
+    route.startsWith("admin")
+      ? "boss"
+      : route === "login" || route === "logout" || route === "account" || route === "account/avatar"
+        ? "account"
+        : route === "app/starter"
+          ? "essentials"
+          : route.startsWith("app/")
+            ? sectionFromWorkspacePage(normalizeWorkspacePage(route.slice("app/".length)))
+            : "essentials";
+  const currentLabel =
+    groups.flatMap((group) => group.items).find((item) => item.active)?.label ??
+    (route === "home" ? "Lobby Home" : formatRouteLabel(route));
 
   const signOutAndLand = async () => {
     await signOut();
     onNavigate("logout");
   };
 
-  useEffect(() => {
-    if (!isMenuOpen) return;
-
-    const closeOnOutsidePointer = (event: PointerEvent) => {
-      const target = event.target;
-      if (!(target instanceof Node) || commandMenuRef.current?.contains(target)) return;
-      setIsMenuOpen(false);
-    };
-
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setIsMenuOpen(false);
-      window.setTimeout(() => commandTriggerRef.current?.focus(), 0);
-    };
-
-    document.addEventListener("pointerdown", closeOnOutsidePointer);
-    document.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.removeEventListener("pointerdown", closeOnOutsidePointer);
-      document.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [isMenuOpen]);
-
-  useEffect(() => {
-    if (!isMenuOpen) return;
-    setMenuQuery("");
-    setActiveMenuIndex(0);
-    const focusTimer = window.setTimeout(() => commandInputRef.current?.focus(), 0);
-    return () => window.clearTimeout(focusTimer);
-  }, [isMenuOpen]);
-
-  useEffect(() => {
-    setActiveMenuIndex(0);
-  }, [menuQuery]);
-
-  useEffect(() => {
-    if (variant !== "header") return;
-    const openOnCommandKey = (event: KeyboardEvent) => {
-      if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== "k") return;
-      if (isTypingTarget(event.target)) return;
-      event.preventDefault();
-      setIsMenuOpen(true);
-    };
-
-    window.addEventListener("keydown", openOnCommandKey);
-    return () => window.removeEventListener("keydown", openOnCommandKey);
-  }, [variant]);
-
-  const handleMenuChange = async (value: string) => {
-    if (!value) return;
+  const handleNavigate = (value: string) => {
     if (value === "__signout") {
-      await signOutAndLand();
-      setIsMenuOpen(false);
+      void signOutAndLand();
       return;
     }
     onNavigate(value as AppRoute);
-    setIsMenuOpen(false);
-  };
-
-  const handleMenuSearchKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      setIsMenuOpen(false);
-      window.setTimeout(() => commandTriggerRef.current?.focus(), 0);
-      return;
-    }
-
-    if (!visibleMenuOptions.length) return;
-
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      setActiveMenuIndex((current) => (current + 1) % visibleMenuOptions.length);
-      return;
-    }
-
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      setActiveMenuIndex((current) => (current - 1 + visibleMenuOptions.length) % visibleMenuOptions.length);
-      return;
-    }
-
-    if (event.key === "Home") {
-      event.preventDefault();
-      setActiveMenuIndex(0);
-      return;
-    }
-
-    if (event.key === "End") {
-      event.preventDefault();
-      setActiveMenuIndex(visibleMenuOptions.length - 1);
-      return;
-    }
-
-    if (event.key === "Enter") {
-      event.preventDefault();
-      void handleMenuChange(activeMenuOption?.value ?? "");
-    }
   };
 
   return (
-    <nav className={`site-room-nav site-room-nav-${variant} ${variant === "header" ? "public-nav" : "page-nav workspace-room-nav"}`} aria-label="Site room navigation">
-      <div ref={commandMenuRef} className={`site-room-group site-room-group-compact ${activeRoom === "account" ? "is-active" : ""}`} aria-label="Menu">
-        <span className="site-room-label">Menu</span>
-        <button
-          ref={commandTriggerRef}
-          type="button"
-          className="site-command-trigger"
-          onClick={() => setIsMenuOpen((current) => !current)}
-          onKeyDown={(event) => {
-            if (event.key !== "ArrowDown") return;
-            event.preventDefault();
-            setIsMenuOpen(true);
-          }}
-          aria-expanded={isMenuOpen}
-          aria-controls={popoverId}
-          aria-haspopup="dialog"
-          aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-        >
-          <span>Choose destination</span>
-          <kbd>Ctrl K</kbd>
-          <span aria-hidden="true">+</span>
-        </button>
-        <div id={popoverId} className={`site-command-popover ${isMenuOpen ? "open" : ""}`} role="dialog" aria-label="Choose destination" hidden={!isMenuOpen}>
-          <label className="site-command-search-shell">
-            <span>Destination Lens</span>
-            <input
-              ref={commandInputRef}
-              className="site-command-search"
-              value={menuQuery}
-              onChange={(event) => setMenuQuery(event.target.value)}
-              onKeyDown={handleMenuSearchKeyDown}
-              placeholder="Search routes..."
-              aria-label="Search destinations"
-              aria-controls={`${popoverId}-results`}
-              aria-activedescendant={activeMenuOptionId}
-              aria-describedby={`${popoverId}-preview`}
-            />
-          </label>
-          <div className="site-command-meta" aria-hidden="true">
-            <span>{user ? "Member routes" : "Public routes"}</span>
-            <kbd>{visibleMenuCountLabel}</kbd>
-          </div>
-          <div id={`${popoverId}-results`} className="site-command-results" role="listbox" aria-label="Destinations">
-            {visibleMenuOptions.map((item, index) => {
-              const isRouteActive = item.value !== "__signout" && route === item.value;
-              const isKeyboardActive = index === activeMenuOptionIndex;
-              return (
-                <button
-                  key={item.value}
-                  id={`${popoverId}-option-${index}`}
-                  type="button"
-                  role="option"
-                  aria-selected={isKeyboardActive}
-                  aria-current={isRouteActive ? "page" : undefined}
-                  className={`${isRouteActive ? "active" : ""} ${isKeyboardActive ? "keyboard-active" : ""}`.trim()}
-                  onMouseEnter={() => setActiveMenuIndex(index)}
-                  onClick={() => void handleMenuChange(item.value)}
-                >
-                  <span>
-                    <strong>{item.label}</strong>
-                    <small>{item.detail}</small>
-                  </span>
-                  <em>{item.badge}</em>
-                </button>
-              );
-            })}
-          </div>
-          {activeMenuOption ? (
-            <aside id={`${popoverId}-preview`} className="site-command-preview" aria-live="polite">
-              <span>{activeMenuOption.lane}</span>
-              <strong>{activeMenuOption.label}</strong>
-              <p>{activeMenuOption.preview}</p>
-              <small>Enter opens this route. Escape returns to the page.</small>
-            </aside>
-          ) : null}
-          {!visibleMenuOptions.length ? <p className="site-command-empty">No destination found. Try pricing, enroll, account, or launch.</p> : null}
-        </div>
-      </div>
-    </nav>
+    <CompactNavigation
+      mode="public"
+      groups={groups}
+      activeGroupId={activeGroupId}
+      currentContext={roomFromRoute(route) === "boss" ? "Boss Room" : roomFromRoute(route) === "account" ? "Account" : "Sipopedia"}
+      currentLabel={currentLabel}
+      accountLabel={user ? "Dashboard" : "Log In"}
+      onNavigate={handleNavigate}
+      onOpenAccount={() => onNavigate(user ? "account" : "login")}
+      onOpenHome={() => onNavigate("home")}
+    />
   );
 }
 
 function WorkspaceShell({
   page,
+  currentRoute,
   onNavigate,
   onRouteNavigate,
   pageStatuses,
   accountContent
 }: {
   page: WorkspacePage;
+  currentRoute: AppRoute;
   onNavigate: (page: WorkspacePage) => void;
   onRouteNavigate: (route: AppRoute) => void;
   pageStatuses: PageStatusMap;
   accountContent?: ReactNode;
 }) {
   const { user, signOut } = useAuth();
-  const { isAdmin, isPaid, profile } = useAccess();
+  const { isAdmin, isPaid } = useAccess();
   const isAccountPage = Boolean(accountContent);
   const isStarterPage = page === "starter" && !isAccountPage;
   const [section, setSection] = useState<WorkspaceSection>(() => sectionFromWorkspacePage(page));
-  const [isHeroExpanded, setIsHeroExpanded] = useState(() => !accountContent);
+  const [isHeroExpanded, setIsHeroExpanded] = useState(() => page === "starter" && !accountContent);
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState("");
   const [activeCommandIndex, setActiveCommandIndex] = useState(0);
   const [termCommandResults, setTermCommandResults] = useState<TerminologyCommandResult[]>([]);
   const [termCommandLoading, setTermCommandLoading] = useState(false);
   const commandRef = useRef<HTMLDivElement | null>(null);
-  const commandTriggerRef = useRef<HTMLButtonElement | null>(null);
   const commandInputRef = useRef<HTMLInputElement | null>(null);
   const shouldCompactSingleRow = !isHeroExpanded || isAccountPage;
   const regionSlug = isRegionsPage(page) && page !== "regions" ? page.slice("regions/".length) : null;
@@ -754,6 +674,17 @@ function WorkspaceShell({
         )
       })),
     [isAdmin, isPaid, pageStatuses]
+  );
+  const compactNavigationGroups = useMemo(
+    () =>
+      buildCompactNavigationGroups({
+        route: currentRoute,
+        pageStatuses,
+        isAdmin,
+        isPaid,
+        isSignedIn: Boolean(user)
+      }),
+    [currentRoute, isAdmin, isPaid, pageStatuses, user]
   );
   const commandOptions = useMemo<WorkspaceCommandOption[]>(() => {
     const routeOptions: WorkspaceCommandOption[] = lobbyMenuOptions.map((item) => ({
@@ -859,14 +790,6 @@ function WorkspaceShell({
   const activeWorkspaceNavId: WorkspacePage =
     isRegionsPage(page) ? "regions" : isGrapesPage(page) ? "grapes" : isAiWinecastPage(page) ? "ai-winecast" : page;
   const currentModuleIndex = sectionItems.findIndex((item) => item.id === activeWorkspaceNavId);
-  const activeModulePosition =
-    currentModuleIndex >= 0 ? `${String(currentModuleIndex + 1).padStart(2, "0")} / ${String(sectionItems.length).padStart(2, "0")}` : `${sectionItems.length} routes`;
-  const rawStarterName =
-    profile?.displayName?.trim() ||
-    (typeof user?.user_metadata?.display_name === "string" ? user.user_metadata.display_name.trim() : "") ||
-    user?.email?.split("@")[0] ||
-    "Guest";
-  const starterWelcomeName = rawStarterName.split(/[\s._-]+/).filter(Boolean)[0] ?? "Guest";
 
   useEffect(() => {
     if (!activeWorkspaceItem) return;
@@ -920,6 +843,7 @@ function WorkspaceShell({
   useEffect(() => {
     const onCommandKey = (event: KeyboardEvent) => {
       if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== "k") return;
+      if (isTypingTarget(event.target)) return;
       event.preventDefault();
       setIsCommandOpen(true);
       window.setTimeout(() => commandInputRef.current?.focus(), 0);
@@ -934,7 +858,10 @@ function WorkspaceShell({
 
     const closeCommandPalette = () => {
       setIsCommandOpen(false);
-      window.setTimeout(() => commandTriggerRef.current?.focus(), 0);
+      window.setTimeout(
+        () => document.querySelector<HTMLButtonElement>(".sip-compact-navigation-workspace .sip-appbar-search")?.focus(),
+        0
+      );
     };
 
     const closeOnOutsidePointer = (event: PointerEvent) => {
@@ -985,6 +912,9 @@ function WorkspaceShell({
     if (isStarterPage || isAccountPage) return;
 
     const onWorkspaceKeyboardNav = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || isCommandOpen) return;
+      if (document.querySelector(".sip-compact-navigation-workspace.drawer-open")) return;
+      if (event.target instanceof Element && event.target.closest(".sip-sidebar")) return;
       if (isTypingTarget(event.target)) return;
       const key = event.key;
       const isArrow = key === "ArrowLeft" || key === "ArrowRight";
@@ -1024,7 +954,7 @@ function WorkspaceShell({
 
     window.addEventListener("keydown", onWorkspaceKeyboardNav);
     return () => window.removeEventListener("keydown", onWorkspaceKeyboardNav);
-  }, [currentModuleIndex, isAccountPage, isStarterPage, section, sectionItems]);
+  }, [currentModuleIndex, isAccountPage, isCommandOpen, isStarterPage, section, sectionItems]);
 
   const navigateFromMenu = (target: WorkspacePage) => {
     setIsHeroExpanded(false);
@@ -1088,6 +1018,19 @@ function WorkspaceShell({
     }
   };
 
+  const compactActiveGroupId = isAccountPage ? "account" : isStarterPage ? "essentials" : section;
+  const compactCurrentLabel =
+    compactNavigationGroups.flatMap((group) => group.items).find((item) => item.active)?.label ??
+    (isAccountPage ? "Account Dashboard" : isStarterPage ? "Launch Pad" : activeWorkspaceItem?.label ?? activeSectionInfo.label);
+
+  const navigateFromCompactMenu = (target: string) => {
+    if (target === "__signout") {
+      void signOutAndLand();
+      return;
+    }
+    navigateFromRoomMenu(target as AppRoute);
+  };
+
   const handleCommandInputKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
     if (visibleCommandOptions.length === 0) return;
 
@@ -1148,6 +1091,8 @@ function WorkspaceShell({
       <BeverageNews />
     ) : page === "flavor-blog" ? (
       <FlavorBlog />
+    ) : page === "favorites" ? (
+      <ArticleFavorites />
     ) : isAiWinecastPage(page) ? (
       <AiWinecast episodeSlug={aiWinecastSlug} onNavigate={(target) => onNavigate(target as WorkspacePage)} />
     ) : isRegionsPage(page) ? (
@@ -1167,12 +1112,27 @@ function WorkspaceShell({
     );
 
   return (
-    <section className={`workspace-shell ${isHeroExpanded ? "expanded-shell" : "compact-shell"}`}>
+    <section className={`workspace-shell with-sip-sidebar ${isHeroExpanded ? "expanded-shell" : "compact-shell"}`}>
+      <CompactNavigation
+        mode="workspace"
+        groups={compactNavigationGroups}
+        activeGroupId={compactActiveGroupId}
+        currentContext={isAccountPage ? "Account" : isStarterPage ? "Sipopedia" : activeSectionInfo.label}
+        currentLabel={compactCurrentLabel}
+        accountLabel={user ? "Dashboard" : "Log In"}
+        onNavigate={navigateFromCompactMenu}
+        onOpenSearch={() => {
+          setIsCommandOpen(true);
+          window.setTimeout(() => commandInputRef.current?.focus(), 0);
+        }}
+        onOpenAccount={() => navigateFromRoomMenu(user ? "account" : "login")}
+        onOpenHome={() => navigateFromRoomMenu("home")}
+      />
       <header className={`hero hero-brand ${isHeroExpanded ? "expanded" : "compact"} ${shouldCompactSingleRow ? "single-row" : ""}`}>
         <div className="hero-brand-full" aria-hidden={!isHeroExpanded}>
           <div className="hero-brand-expanded-layout">
             <div className="hero-brand-head">
-              <img className="hero-welcome-panel" src={welcomeToSipStudies} alt="Welcome to Sip Studies" decoding="async" fetchPriority="high" />
+              <img className="hero-welcome-panel" src={welcomeToSipStudies} alt="Welcome to Sip Studies" decoding="async" />
               {!isStarterPage ? (
                 <div className="hero-brand-copy" data-no-terminology-links>
                   <p className="hero-subtitle">Learn. Engage. Teach.</p>
@@ -1192,107 +1152,7 @@ function WorkspaceShell({
         </div>
       </header>
 
-      <nav className="workspace-command-deck sip-mission-control" aria-label="Sip Studies Menu">
-        <section className="sip-nav-status-card" aria-label="Current destination">
-          <span className="nav-overline">Sip Studies Mission Control</span>
-          <h2>{isAccountPage ? "Account Dashboard" : isStarterPage ? "Launch Pad" : activeWorkspaceItem?.label ?? activeSectionInfo.label}</h2>
-          <p>
-            {isAccountPage
-              ? "Manage profile, membership, progress, and support without leaving the workspace menu."
-              : isStarterPage
-                ? `Welcome, ${starterWelcomeName}. Pick a lane below or press Ctrl K to jump anywhere.`
-                : `${activeSectionInfo.label} / ${activeModulePosition} - ${activeSectionInfo.description}`}
-          </p>
-        </section>
-
-        <div className="sip-nav-section-switcher" aria-label="Study sections">
-          {menuSections.map((menuSection) => (
-            <button
-              key={menuSection.id}
-              type="button"
-              aria-pressed={section === menuSection.id}
-              className={section === menuSection.id ? "active" : ""}
-              onClick={() => switchSection(menuSection.id)}
-            >
-              <span>{menuSection.label}</span>
-              <small>{menuSection.items.length > 0 ? `${menuSection.items.length} modules` : "Locked"}</small>
-              <i aria-hidden="true" />
-            </button>
-          ))}
-        </div>
-
-        <div className="sip-nav-actions" aria-label="Primary menu actions">
-          <button
-            ref={commandTriggerRef}
-            type="button"
-            className="sip-nav-command-button"
-            onClick={() => {
-              setIsCommandOpen(true);
-              window.setTimeout(() => commandInputRef.current?.focus(), 0);
-            }}
-            aria-expanded={isCommandOpen}
-            aria-haspopup="dialog"
-          >
-            <span>Search</span>
-            <kbd>Ctrl K</kbd>
-          </button>
-          <button type="button" className="sip-nav-action primary" onClick={() => navigateFromRoomMenu(defaultGameRoomRoute(isPaid, isAdmin))}>
-            Launch Pad
-          </button>
-          <button type="button" className="sip-nav-action" onClick={() => navigateFromRoomMenu(user ? "account" : "login")}>
-            {user ? "Dashboard" : "Log In"}
-          </button>
-          {user ? (
-            <button type="button" className="sip-nav-action quiet" onClick={() => void signOutAndLand()}>
-              Log Out
-            </button>
-          ) : null}
-        </div>
-
-        <section className="sip-nav-lobby-band" aria-label="Lobby Navigation">
-          <span>Lobby</span>
-          <div>
-            {lobbyMenuOptions.map((item) => (
-              <button key={item.value} type="button" onClick={() => navigateFromRoomMenu(item.value)}>
-                {item.label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {menuSections.map((menuSection) =>
-          section === menuSection.id ? (
-            <section key={menuSection.id} className="sip-nav-module-band" aria-label={`${menuSection.label} modules`}>
-              <div className="sip-nav-band-head">
-                <span>{menuSection.label} Routes</span>
-                <em>{menuSection.id === "learn" ? "Shift + Arrows section / Ctrl + Arrows module" : "Shift + Arrows section"}</em>
-              </div>
-              {menuSection.items.length > 0 ? (
-                <div className="sip-nav-module-track">
-                  {menuSection.items.map((item, index) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className={activeWorkspaceNavId === item.id ? "active" : ""}
-                      aria-current={activeWorkspaceNavId === item.id ? "page" : undefined}
-                      onClick={() => navigateFromMenu(item.id)}
-                    >
-                      <span>{String(index + 1).padStart(2, "0")}</span>
-                      <strong>{item.label}</strong>
-                      <small>{item.signal}</small>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className="sip-nav-empty-state">
-                  <strong>{menuSection.label} modules are locked</strong>
-                  <span>Use the lobby links, log in, or enroll to unlock the full study workspace.</span>
-                </div>
-              )}
-            </section>
-          ) : null
-        )}
-
+      <div className="sip-command-host">
         {isCommandOpen ? (
           <div className="sip-command-palette open">
             <div ref={commandRef} className="sip-command-palette-panel" role="dialog" aria-modal="true" aria-label="Sip Search">
@@ -1339,7 +1199,7 @@ function WorkspaceShell({
             </div>
           </div>
         ) : null}
-      </nav>
+      </div>
 
       {isStarterPage ? (
         <StarterFeatureDemo
@@ -1366,17 +1226,9 @@ function PublicHeader({
   pageStatuses: PageStatusMap;
 }) {
   return (
-    <header className="public-header">
-      <button type="button" className="public-brand" onClick={() => onNavigate("home")}>
-        <span className="public-brand-orb">
-          <img src={mainLogo} alt="Sip Studies logo" className="workspace-seal" />
-        </span>
-        <span className="public-brand-lockup">
-          <img src={wordmark} alt="Sip Studies wordmark" className="workspace-wordmark" />
-        </span>
-      </button>
-      <SiteRoomNav route={route} onNavigate={onNavigate} variant="header" pageStatuses={pageStatuses} />
-    </header>
+    <div className="public-header public-header-compact">
+      <SiteRoomNav route={route} onNavigate={onNavigate} pageStatuses={pageStatuses} />
+    </div>
   );
 }
 
@@ -1587,7 +1439,6 @@ function App() {
   }
 
   if (workspacePage) {
-    const starterPageAllowed = workspacePage === "starter";
     const workspaceRoute = `app/${workspacePage}`;
     const routeVisible = canViewRoute(workspaceRoute, pageStatuses, isAdmin, isPaid);
       if (!routeVisible) {
@@ -1603,20 +1454,6 @@ function App() {
           </div>
         );
       }
-      if (!isPaid && !isAdmin && !starterPageAllowed) {
-        return (
-          <div className="page page-commercial">
-            <PublicHeader onNavigate={navigate} route={route} pageStatuses={pageStatuses} />
-            <PaywallPanel
-              onNavigate={navigateFromString}
-              postLoginRoute={route}
-              pageStatuses={pageStatuses}
-              isAdmin={isAdmin}
-            />
-          </div>
-        );
-      }
-
     const workspaceConfig = configForRoute(workspaceRoute, pageStatuses);
     const shouldAutolinkWorkspace =
       workspaceConfig.room === "Game" &&
@@ -1628,6 +1465,7 @@ function App() {
       <div className={`page ${workspacePage === "starter" ? "page-commercial page-starter" : "page-workspace"}`}>
         <WorkspaceShell
           page={workspacePage}
+          currentRoute={route}
           onNavigate={(target) => navigate(`app/${target}`)}
           onRouteNavigate={navigate}
           pageStatuses={pageStatuses}
@@ -1643,6 +1481,7 @@ function App() {
       <div className="page page-workspace">
         <WorkspaceShell
           page="starter"
+          currentRoute={route}
           onNavigate={(target) => navigate(`app/${target}`)}
           onRouteNavigate={navigate}
           pageStatuses={pageStatuses}
@@ -1732,17 +1571,17 @@ function App() {
       {route === "success" ? (
         <section className="checkout-page">
           <header className="section-header">
-            <h1>Checkout Complete</h1>
+            <h1>Membership Checkout Complete</h1>
             <p>
               {isPaid || isAdmin
-                ? "Your access is active. The saved room is ready."
-                : "Your signed-in account is being updated. If webhook delivery is still pending, refresh access or use enrollment help."}
+                ? "Your membership access is active. The saved room is ready."
+                : "Your signed-in account is being updated. If webhook delivery is still pending, refresh access or use membership help."}
             </p>
             <div className="checkout-direct-status" role="status" aria-live="polite">
               {successAccessStatus === "checking"
                 ? "Checking paid access for this account..."
                 : successAccessStatus === "failed"
-                  ? "Access refresh did not complete. Try again or request enrollment help."
+                  ? "Access refresh did not complete. Try again or request membership help."
                   : isPaid || isAdmin
                     ? "Access confirmed."
                     : "Checkout return received; access may still be processing."}
@@ -1765,7 +1604,7 @@ function App() {
               Refresh Access
             </button>
             <button className="btn btn-light" onClick={() => navigateFromString(checkoutRecoveryRoute)}>
-              Enrollment Help
+              Membership Help
             </button>
           </div>
         </section>
@@ -1773,18 +1612,18 @@ function App() {
       {route === "cancel" ? (
         <section className="checkout-page">
           <header className="section-header">
-            <h1>Checkout Canceled</h1>
-            <p>No charge was applied. Your account step and saved destination are still preserved, so you can retry checkout or use assisted enrollment without losing context.</p>
+            <h1>Membership Checkout Canceled</h1>
+            <p>No charge was applied. Your account step and saved destination are still preserved, so you can retry the $10/month membership checkout or ask for help without losing context.</p>
           </header>
           <div className="checkout-links">
             <button className="btn btn-primary" onClick={() => navigateFromString(checkoutRecoveryRoute)}>
-              Retry Checkout
+              Retry Membership Checkout
             </button>
             <button className="btn btn-light" onClick={() => navigateFromString(checkoutRecoveryRoute)}>
-              Assisted Enrollment
+              Membership Support
             </button>
             <button className="btn btn-light" onClick={() => navigateFromString(pricingRecoveryRoute)}>
-              Compare Plans
+              View Membership Details
             </button>
           </div>
         </section>

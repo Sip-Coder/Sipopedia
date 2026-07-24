@@ -6,9 +6,7 @@ import { createCloudSupportRequest, isSupportRequestRateLimitError, saveLocalSup
 import {
   buildOnboardingRoute,
   getPlanById,
-  onboardingPlans,
-  readOnboardingIntent,
-  type PlanId
+  readOnboardingIntent
 } from "../lib/onboardingIntent";
 import { CosmicSky } from "./CosmicSky";
 
@@ -17,7 +15,7 @@ type CheckoutPageProps = {
 };
 
 const checkoutSteps = [
-  { label: "Plan", detail: "Confirm fit" },
+  { label: "Membership", detail: "Confirm $10 monthly" },
   { label: "Account", detail: "Attach access" },
   { label: "Payment", detail: "Checkout or assisted" },
   { label: "Launch", detail: "Enter workspace" }
@@ -26,9 +24,7 @@ const checkoutSteps = [
 export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const { user, isConfigured: isAuthConfigured } = useAuth();
   const initialIntent = useMemo(() => readOnboardingIntent("pro"), []);
-  const [selectedPlanId, setSelectedPlanId] = useState<PlanId>(() =>
-    initialIntent.planId === "starter" ? "pro" : initialIntent.planId
-  );
+  const selectedPlanId = "pro" as const;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [emailManuallyChanged, setEmailManuallyChanged] = useState(false);
@@ -74,7 +70,7 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
       teamName: "",
       teamSize: null,
       planInterest: selectedPlan.title,
-      urgency: selectedPlanId === "founding" ? "soon" as const : "normal" as const,
+      urgency: "normal" as const,
       subject: `Assisted enrollment request: ${selectedPlan.title}`,
       message: `Plan: ${selectedPlan.title} (${selectedPlanId})\nSource: ${source}\nNext route: ${nextRoute ?? "app/launch"}\nGoal: ${goal.trim()}`,
       sourceRoute: typeof window === "undefined" ? "checkout" : window.location.hash || "checkout"
@@ -112,11 +108,6 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
       return;
     }
 
-    if (selectedPlanId === "starter") {
-      setCheckoutNotice("Starter does not require checkout. Use the Launch Pad preview or choose a paid plan.");
-      return;
-    }
-
     setCheckoutStatus("creating");
     setCheckoutNotice("Creating secure checkout for the signed-in account...");
     trackEvent("checkout_session_create_start", { plan: selectedPlanId, source });
@@ -138,11 +129,11 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
       <header className="section-header checkout-hero">
         <CosmicSky className="checkout-sky" stars={16} meteors={4} />
         <p className="checkout-eyebrow">Enrollment Console</p>
-        <h1>Start with the right plan and land in the right room.</h1>
-        <p>Confirm your plan, choose checkout or assisted enrollment, and keep your next step attached.</p>
+        <h1>Start your $10 monthly membership and return to the right room.</h1>
+        <p>Confirm your account, choose secure checkout or assisted enrollment, and keep your next step attached.</p>
         <div className="checkout-intent-ribbon" aria-label="Enrollment intent">
           <span>
-            <strong>Plan</strong>
+            <strong>Membership</strong>
             {selectedPlan.title}
           </span>
           <span>
@@ -172,7 +163,7 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
 
       <div className="checkout-layout">
         <article className="checkout-card checkout-intent-card">
-          <p className="checkout-eyebrow">Selected plan</p>
+          <p className="checkout-eyebrow">Membership</p>
           <h3>{selectedPlan.title}</h3>
           <p className="pricing-amount">
             {selectedPlan.price} <span>{selectedPlan.cadence}</span>
@@ -184,27 +175,12 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
               <li key={feature}>{feature}</li>
             ))}
           </ul>
-          <div className="checkout-plan-switcher" aria-label="Choose enrollment plan">
-            {onboardingPlans
-              .filter((plan) => plan.id !== "starter")
-              .map((plan) => (
-                <button
-                  key={plan.id}
-                  type="button"
-                  className={selectedPlanId === plan.id ? "active" : ""}
-                  aria-pressed={selectedPlanId === plan.id}
-                  onClick={() => setSelectedPlanId(plan.id)}
-                >
-                  {plan.title}
-                </button>
-              ))}
-          </div>
           <button
             type="button"
             className="btn btn-light"
             onClick={() => onNavigate(buildOnboardingRoute("pricing", { planId: selectedPlanId, source: "checkout-review", next: nextRoute }))}
           >
-            Compare Plan Details
+            View Membership Details
           </button>
         </article>
 
@@ -234,7 +210,7 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
         <article className="checkout-card checkout-card-accent">
           <p className="checkout-eyebrow">Fast path</p>
           <h3>Secure Checkout Session</h3>
-          <p>When your account is attached, Sip Studies creates a server-side Stripe Checkout Session for the selected plan.</p>
+          <p>When your account is attached, Sip Studies creates a server-side Stripe Checkout Session for the $10 monthly membership.</p>
           {!user ? (
             <>
               <p className="checkout-direct-status" role="status">Complete the Account step above before opening secure checkout.</p>
@@ -244,7 +220,7 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
             </>
           ) : (
             <button className="btn btn-primary" onClick={handleDirectCheckout} disabled={checkoutStatus === "creating"}>
-              {checkoutStatus === "creating" ? "Creating Secure Checkout..." : `Open ${selectedPlan.title} Checkout`}
+              {checkoutStatus === "creating" ? "Creating Secure Checkout..." : "Open $10 Monthly Checkout"}
             </button>
           )}
           {checkoutNotice ? <p className="checkout-direct-status" role="status" aria-live="polite">{checkoutNotice}</p> : null}
@@ -266,7 +242,7 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
             </div>
             <span>{selectedPlan.title}</span>
           </div>
-          <p>Share your goal and we will place you in the selected plan with the right onboarding path.</p>
+          <p>Share your goal and we will connect the membership to the right onboarding path.</p>
           <p className="checkout-disclosure">
             Use the same email as the account that should receive paid access. Signed-in users are prefilled when an account email is available.
           </p>
@@ -308,7 +284,7 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
             disabled={!isAssistedReady || assistedSaving}
             onClick={handleAssistedEnrollment}
           >
-            {assistedSaving ? "Saving Request" : `Submit ${selectedPlan.title} Request`}
+            {assistedSaving ? "Saving Request" : "Submit Membership Request"}
           </button>
         </article>
 
@@ -316,7 +292,7 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
           <p className="checkout-eyebrow">Why this matters</p>
           <h3>No dead-end enrollment.</h3>
           <p>
-            Sip Studies keeps the chosen plan, original CTA, and intended destination together so novice users do not lose context and returning
+            Sip Studies keeps the membership, original CTA, and intended destination together so new users do not lose context and returning
             users can resume the room they tried to enter.
           </p>
         </article>

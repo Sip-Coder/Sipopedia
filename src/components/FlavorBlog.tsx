@@ -3,6 +3,10 @@ import { dailySipReports, type DailySipItem, type DailySipReport } from "../data
 import { buildDailySipCutPack } from "../lib/mediaCutPack";
 import { fetchGuildNews, type NewsRouterSource } from "../lib/newsRouter";
 import { safeHttpUrl } from "../lib/urlSafety";
+import { useArticleLibrary } from "../context/ArticleLibraryContext";
+import { useArticlePreferences } from "../context/ArticlePreferencesContext";
+import type { ArticleSnapshot } from "../lib/articleLibrary";
+import { ArticleActions, ArticleFavoritesLink, ArticleReadLink } from "./ArticleActions";
 import { MediaCutPackPanel } from "./MediaCutPack";
 
 type SourceLoadMode = "loaded" | "fallback" | "failed";
@@ -29,6 +33,21 @@ type BlogArticle = {
   summary: string;
   imageUrl?: string;
 };
+
+function toArticleSnapshot(article: BlogArticle): ArticleSnapshot {
+  return {
+    surface: "flavor-blog",
+    articleId: article.id,
+    sourceId: article.sourceId,
+    sourceName: article.sourceName,
+    sourceCategory: article.sourceCategory,
+    title: article.title,
+    url: article.url,
+    publishedAt: article.publishedAt,
+    summary: article.summary,
+    imageUrl: article.imageUrl
+  };
+}
 
 type SourceLoadResult = {
   sourceId: BlogSourceId;
@@ -343,13 +362,13 @@ function buildDailySipArticles(): BlogArticle[] {
     }));
 }
 
-function getInitialBlogFilter(): BlogFilter {
-  if (typeof window === "undefined") return "all";
+function getInitialBlogFilterOverride(): BlogSourceId | null {
+  if (typeof window === "undefined") return null;
   const hashQuery = window.location.hash.split("?")[1] ?? "";
   const hashSource = new URLSearchParams(hashQuery).get("source");
   const searchSource = new URLSearchParams(window.location.search).get("source");
   const source = hashSource || searchSource;
-  return source === "daily-sip" || source === "sipstudies-site" || source === "sipstudies-substack" ? source : "all";
+  return source === "daily-sip" || source === "sipstudies-site" || source === "sipstudies-substack" ? source : null;
 }
 
 function getInitialDailySipEntry(): string | null {
@@ -664,15 +683,18 @@ function buildModeMap(results: SourceLoadResult[]): Record<string, SourceLoadMod
 }
 
 export function FlavorBlog() {
+  const { isRead, markRead } = useArticleLibrary();
+  const { flavorBlog, updateFlavorBlog } = useArticlePreferences();
+  const { articlesPerPage, readingFilter } = flavorBlog;
+  const [sourceOverride, setSourceOverride] = useState<BlogSourceId | null>(getInitialBlogFilterOverride);
+  const filter: BlogFilter = sourceOverride ?? flavorBlog.filter;
   const [articles, setArticles] = useState<BlogArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [refreshCount, setRefreshCount] = useState(0);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  const [articlesPerPage, setArticlesPerPage] = useState<BlogPageSize>(12);
   const [page, setPage] = useState(0);
-  const [filter, setFilter] = useState<BlogFilter>(getInitialBlogFilter);
   const [selectedDailySipId, setSelectedDailySipId] = useState<string | null>(getInitialDailySipEntry);
   const [sourceModes, setSourceModes] = useState<Record<string, SourceLoadMode>>({});
   const [studyArticleId, setStudyArticleId] = useState<string | null>(null);
@@ -757,9 +779,16 @@ export function FlavorBlog() {
     };
   }, [refreshCount]);
 
-  const filteredArticles = useMemo(
+  const sourceFilteredArticles = useMemo(
     () => (filter === "all" ? articles : articles.filter((article) => article.sourceId === filter)),
     [articles, filter]
+  );
+  const filteredArticles = useMemo(
+    () =>
+      readingFilter === "unread"
+        ? sourceFilteredArticles.filter((article) => !isRead(toArticleSnapshot(article)))
+        : sourceFilteredArticles,
+    [isRead, readingFilter, sourceFilteredArticles]
   );
   const pageCount = useMemo(
     () => Math.max(1, Math.min(MAX_PAGE_COUNT, Math.ceil(filteredArticles.length / articlesPerPage))),
@@ -769,7 +798,7 @@ export function FlavorBlog() {
 
   useEffect(() => {
     setPage(0);
-  }, [filter, articlesPerPage]);
+  }, [filter, articlesPerPage, readingFilter]);
 
   useEffect(() => {
     setPage((current) => Math.min(current, pageCount - 1));
@@ -798,7 +827,7 @@ export function FlavorBlog() {
           id={`flavor-blog-page-size-${position}`}
           value={String(articlesPerPage)}
           onChange={(event) => {
-            setArticlesPerPage(Number(event.target.value) as BlogPageSize);
+            updateFlavorBlog({ articlesPerPage: Number(event.target.value) as BlogPageSize });
             setPage(0);
           }}
         >
@@ -837,6 +866,28 @@ export function FlavorBlog() {
         </button>
       </div>
 
+      <div className="article-library-toolbar">
+        <div className="news-source-strip" role="group" aria-label="Filter Flavor Blog by reading status">
+          <button
+            className={`news-source-chip ${readingFilter === "all" ? "active" : ""}`}
+            type="button"
+            aria-pressed={readingFilter === "all"}
+            onClick={() => updateFlavorBlog({ readingFilter: "all" })}
+          >
+            All articles
+          </button>
+          <button
+            className={`news-source-chip ${readingFilter === "unread" ? "active" : ""}`}
+            type="button"
+            aria-pressed={readingFilter === "unread"}
+            onClick={() => updateFlavorBlog({ readingFilter: "unread" })}
+          >
+            Unread
+          </button>
+        </div>
+        <ArticleFavoritesLink />
+      </div>
+
       <article className="journal-card" aria-labelledby="flavor-blog-loop-title">
         <p className="checkout-eyebrow">Read → recall → practice</p>
         <h3 id="flavor-blog-loop-title">{studyArticle ? studyArticle.title : "Select one article for a focused study pass"}</h3>
@@ -860,7 +911,8 @@ export function FlavorBlog() {
             className={`news-source-chip ${filter === "all" ? "active" : ""}`}
             onClick={() => {
               setSelectedDailySipId(null);
-              setFilter("all");
+              setSourceOverride(null);
+              updateFlavorBlog({ filter: "all" });
             }}
           >
             All Flavor Blog
@@ -875,7 +927,8 @@ export function FlavorBlog() {
                 className={`news-source-chip ${filter === source.id ? "active" : ""}`}
                 onClick={() => {
                   setSelectedDailySipId(null);
-                  setFilter(source.id);
+                  setSourceOverride(null);
+                  updateFlavorBlog({ filter: source.id });
                 }}
               >
                 {source.name}
@@ -906,8 +959,9 @@ export function FlavorBlog() {
           <div className="news-grid">
             {visibleArticles.map((article) => {
               const safeArticleUrl = safeHttpUrl(article.url);
+              const articleSnapshot = toArticleSnapshot(article);
               return (
-                <article className="news-card" key={article.id}>
+                <article className={`news-card ${isRead(articleSnapshot) ? "is-read" : ""}`} key={article.id}>
                   <BlogCardImage article={article} />
                   <p className="news-card-tag">{article.sourceCategory}</p>
                   <h3>{article.title}</h3>
@@ -915,36 +969,41 @@ export function FlavorBlog() {
                   <p className="news-card-meta">
                     {article.sourceName} | {formatDate(article.publishedAt)}
                   </p>
-                  <button
-                    className="btn btn-primary news-link"
-                    type="button"
-                    onClick={() => {
-                      setStudyArticleId(article.id);
-                      setStudyRecall("");
-                      setStudyPractice("");
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                  >
-                    Study this lesson
-                  </button>
-                  {article.sourceId === "daily-sip" ? (
+                  <ArticleActions article={articleSnapshot} />
+                  <div className="journal-actions article-primary-actions">
                     <button
-                      className="btn btn-light news-link"
+                      className="btn btn-primary news-link"
                       type="button"
                       onClick={() => {
-                        setFilter("daily-sip");
-                        setSelectedDailySipId(article.id);
+                        setStudyArticleId(article.id);
+                        setStudyRecall("");
+                        setStudyPractice("");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                     >
-                      Read Article
+                      Study this lesson
                     </button>
-                  ) : safeArticleUrl ? (
-                    <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">
-                      Read Article
-                    </a>
-                  ) : (
-                    <span className="btn btn-light news-link">Invalid article URL</span>
-                  )}
+                    {article.sourceId === "daily-sip" ? (
+                      <button
+                        className="btn btn-light news-link"
+                        type="button"
+                        onClick={() => {
+                          markRead(articleSnapshot);
+                          setSourceOverride(null);
+                          updateFlavorBlog({ filter: "daily-sip" });
+                          setSelectedDailySipId(article.id);
+                        }}
+                      >
+                        Read Article
+                      </button>
+                    ) : safeArticleUrl ? (
+                      <ArticleReadLink article={articleSnapshot} className="btn btn-light news-link" href={safeArticleUrl}>
+                        Read Article
+                      </ArticleReadLink>
+                    ) : (
+                      <span className="btn btn-light news-link">Invalid article URL</span>
+                    )}
+                  </div>
                 </article>
               );
             })}

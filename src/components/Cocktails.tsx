@@ -30,6 +30,21 @@ type MapNode = {
   closeness: "nearest" | "near" | "outer";
 };
 
+type CocktailFamilyTreeBranch = {
+  id: string;
+  label: string;
+  formula: string;
+  cocktailIds: string[];
+};
+
+type CocktailFamilyTreeRoot = {
+  id: string;
+  label: string;
+  formula: string;
+  learningCue: string;
+  branches: CocktailFamilyTreeBranch[];
+};
+
 const RESOURCES_VIEW_KEY = "sipstudies:resources:view:v1";
 const COCKTAIL_TECHNIQUE_ATTEMPTS_KEY = "sipstudies:cocktail-technique-attempts:v1";
 const bevKindOrder: BevKind[] = ["wine", "beer", "cocktail", "sake", "coffee"];
@@ -61,6 +76,101 @@ const cocktailItems: BevItem[] = [
   { id: "mai-tai", name: "Mai Tai", family: "Tiki rum sour", base: ["rum"], method: "shaken", ingredients: ["aged rum", "lime", "orange curacao", "orgeat"], detailLines: ["2 oz aged rum blend", "0.75 oz lime juice", "0.5 oz orange curacao", "0.5 oz orgeat"], glassware: "Double rocks", invented: "Oakland, California, United States, 1944", profile: ["tiki", "almond", "lime"], garnish: "Mint sprig and spent lime shell", relatives: ["daiquiri", "jungle-bird", "zombie", "pina-colada"] },
   { id: "moscow-mule", name: "Moscow Mule", family: "Vodka ginger highball", base: ["vodka", "ginger beer"], method: "built", ingredients: ["vodka", "lime", "ginger beer"], detailLines: ["2 oz vodka", "0.5 oz lime juice", "Top with ginger beer"], glassware: "Copper mug", invented: "Los Angeles, United States, 1940s", profile: ["sparkling", "ginger", "lime"], garnish: "Lime wedge and mint sprig", relatives: ["dark-and-stormy", "paloma", "mojito", "tom-collins"] }
 ];
+
+const cocktailFamilyTree: CocktailFamilyTreeRoot[] = [
+  {
+    id: "spirit-forward",
+    label: "Spirit-forward",
+    formula: "Spirit + seasoning",
+    learningCue: "Keep the base spirit in focus, then shape aroma, sweetness, bitterness, or fortified wine around it.",
+    branches: [
+      {
+        id: "old-fashioned-format",
+        label: "Old Fashioned format",
+        formula: "Spirit + sugar + bitters",
+        cocktailIds: ["old-fashioned", "sazerac"]
+      },
+      {
+        id: "aromatized-wine",
+        label: "Aromatized wine",
+        formula: "Spirit + vermouth",
+        cocktailIds: ["manhattan", "martini"]
+      },
+      {
+        id: "bitter-aperitivo",
+        label: "Bitter aperitivo",
+        formula: "Spirit + bitter + vermouth",
+        cocktailIds: ["negroni", "boulevardier"]
+      }
+    ]
+  },
+  {
+    id: "tall-sparkling",
+    label: "Tall & sparkling",
+    formula: "Short build + lengthener",
+    learningCue: "Preserve carbonation, cold temperature, and an easy drinking arc while keeping the base recipe recognizable.",
+    branches: [
+      {
+        id: "highball-mule",
+        label: "Highball & Mule",
+        formula: "Spirit + citrus + carbonated mixer",
+        cocktailIds: ["paloma", "moscow-mule"]
+      },
+      {
+        id: "collins-cooler",
+        label: "Collins & Cooler",
+        formula: "Sour template + soda",
+        cocktailIds: ["mojito", "tom-collins"]
+      },
+      {
+        id: "sparkling-sour",
+        label: "Sparkling sour",
+        formula: "Short sour + sparkling wine",
+        cocktailIds: ["french-75"]
+      }
+    ]
+  },
+  {
+    id: "sours",
+    label: "Sours",
+    formula: "Spirit + citrus + sweetener",
+    learningCue: "Balance acid and sweetness first, then identify how liqueur, honey, herbs, spice, or tropical modifiers change the template.",
+    branches: [
+      {
+        id: "foundational-sour",
+        label: "Foundational sour",
+        formula: "Base spirit + citrus + sugar",
+        cocktailIds: ["daiquiri", "whiskey-sour", "gimlet"]
+      },
+      {
+        id: "honey-spice-sour",
+        label: "Honey & spice",
+        formula: "Base spirit + citrus + flavored sweetener",
+        cocktailIds: ["gold-rush", "bee-knees", "penicillin"]
+      },
+      {
+        id: "daisy",
+        label: "Daisy",
+        formula: "Base spirit + citrus + orange liqueur",
+        cocktailIds: ["margarita", "sidecar"]
+      },
+      {
+        id: "liqueur-herbal-sour",
+        label: "Liqueur & herbal",
+        formula: "Sour structure + layered modifiers",
+        cocktailIds: ["aviation", "last-word", "paper-plane"]
+      },
+      {
+        id: "tropical-rum-sour",
+        label: "Tropical rum sour",
+        formula: "Rum + citrus + fruit, nut, or liqueur",
+        cocktailIds: ["hemingway-daiquiri", "mai-tai"]
+      }
+    ]
+  }
+];
+
+const cocktailItemById = new Map(cocktailItems.map((item) => [item.id, item]));
 
 const beerItems: BevItem[] = [
   { id: "pilsner", name: "Pilsner", family: "Lager", base: ["noble hops", "pilsner malt"], method: "bottom-fermented", ingredients: ["Saaz/Hallertau hops", "Pilsner barley malt", "lager yeast", "soft water"], detailLines: ["Hops: Saaz or Hallertau", "Barley: 100% Pilsner malt", "Yeast: clean lager strain", "Water: Plzen-style soft water"], glassware: "Pilsner glass", invented: "Plzen, Czech Republic, 1842", profile: ["crisp", "dry", "clean"], relatives: ["helles", "kolsch", "vienna-lager", "india-pale-lager"] },
@@ -342,8 +452,8 @@ function nodeWidthForLabel(label: string, baseSize: number) {
 
 function nodeBounds(node: Pick<MapNode, "x" | "y" | "size">) {
   return {
-    halfWidth: Math.min(18, Math.max(6.5, node.size / 8.8)),
-    halfHeight: 4.8
+    halfWidth: Math.min(16, Math.max(5.5, node.size / 11.5)),
+    halfHeight: 4.2
   };
 }
 
@@ -354,31 +464,84 @@ function separateMapNodes(nodes: MapNode[]) {
   nodes.forEach((node) => {
     const next = { ...node };
     const bounds = nodeBounds(next);
+    const minAllowedX = bounds.halfWidth + 1;
+    const maxAllowedX = 99 - bounds.halfWidth;
+    const minAllowedY = bounds.halfHeight + 1;
+    const maxAllowedY = 99 - bounds.halfHeight;
+    const distanceFromOrigin = (candidate: { x: number; y: number }) =>
+      (candidate.x - node.x) ** 2 + (candidate.y - node.y) ** 2;
+    const overlapPenalty = (
+      candidate: { x: number; y: number },
+      obstacles: Array<{ x: number; y: number; halfWidth: number; halfHeight: number }>
+    ) =>
+      obstacles.reduce((total, obstacle) => {
+        const overlapX = bounds.halfWidth + obstacle.halfWidth + 1.4 - Math.abs(candidate.x - obstacle.x);
+        const overlapY = bounds.halfHeight + obstacle.halfHeight + 1.2 - Math.abs(candidate.y - obstacle.y);
+        return overlapX > 0 && overlapY > 0 ? total + overlapX * overlapY : total;
+      }, 0);
+
+    next.x = Math.max(minAllowedX, Math.min(maxAllowedX, next.x));
+    next.y = Math.max(minAllowedY, Math.min(maxAllowedY, next.y));
 
     for (let attempt = 0; attempt < 90; attempt += 1) {
-      let moved = false;
       const obstacles = [centerBounds, ...placed.map((item) => ({ ...item, ...nodeBounds(item) }))];
-
-      obstacles.forEach((obstacle) => {
+      const colliding = obstacles.filter((obstacle) => {
         const minX = bounds.halfWidth + obstacle.halfWidth + 1.4;
         const minY = bounds.halfHeight + obstacle.halfHeight + 1.2;
-        const dx = next.x - obstacle.x;
-        const dy = next.y - obstacle.y;
-        if (Math.abs(dx) >= minX || Math.abs(dy) >= minY) return;
-
-        const pushX = (minX - Math.abs(dx)) * (dx >= 0 ? 1 : -1);
-        const pushY = (minY - Math.abs(dy)) * (dy >= 0 ? 1 : -1);
-        if (Math.abs(pushX) < Math.abs(pushY)) {
-          next.x += pushX;
-        } else {
-          next.y += pushY;
-        }
-        moved = true;
+        return Math.abs(next.x - obstacle.x) < minX && Math.abs(next.y - obstacle.y) < minY;
       });
 
-      next.x = Math.max(bounds.halfWidth + 1, Math.min(99 - bounds.halfWidth, next.x));
-      next.y = Math.max(bounds.halfHeight + 1, Math.min(99 - bounds.halfHeight, next.y));
-      if (!moved) break;
+      if (colliding.length === 0) break;
+
+      const candidates = colliding
+        .flatMap((obstacle) => {
+          const minX = bounds.halfWidth + obstacle.halfWidth + 1.4;
+          const minY = bounds.halfHeight + obstacle.halfHeight + 1.2;
+          return [
+            { x: obstacle.x - minX, y: next.y },
+            { x: obstacle.x + minX, y: next.y },
+            { x: next.x, y: obstacle.y - minY },
+            { x: next.x, y: obstacle.y + minY }
+          ];
+        })
+        .filter(
+          (candidate) =>
+            candidate.x >= minAllowedX &&
+            candidate.x <= maxAllowedX &&
+            candidate.y >= minAllowedY &&
+            candidate.y <= maxAllowedY
+        )
+        .map((candidate) => ({
+          ...candidate,
+          penalty: overlapPenalty(candidate, obstacles),
+          distance: distanceFromOrigin(candidate)
+        }))
+        .sort((left, right) => left.penalty - right.penalty || left.distance - right.distance);
+
+      const bestCandidate = candidates[0];
+      if (!bestCandidate) break;
+      if (Math.abs(bestCandidate.x - next.x) < 0.01 && Math.abs(bestCandidate.y - next.y) < 0.01) break;
+      next.x = bestCandidate.x;
+      next.y = bestCandidate.y;
+    }
+
+    const finalObstacles = [centerBounds, ...placed.map((item) => ({ ...item, ...nodeBounds(item) }))];
+    if (overlapPenalty(next, finalObstacles) > 0) {
+      let fallback: { x: number; y: number; distance: number } | null = null;
+      for (let y = minAllowedY; y <= maxAllowedY; y += 2) {
+        for (let x = minAllowedX; x <= maxAllowedX; x += 2) {
+          const candidate = { x, y };
+          if (overlapPenalty(candidate, finalObstacles) > 0) continue;
+          const distance = distanceFromOrigin(candidate);
+          if (!fallback || distance < fallback.distance) {
+            fallback = { ...candidate, distance };
+          }
+        }
+      }
+      if (fallback) {
+        next.x = fallback.x;
+        next.y = fallback.y;
+      }
     }
 
     placed.push(next);
@@ -1150,6 +1313,86 @@ function CocktailTechniqueLab({ item }: { item: BevItem }) {
   );
 }
 
+function CocktailFamilyTree({ activeItem, onSelect }: { activeItem: BevItem; onSelect: (item: BevItem) => void }) {
+  const activeLocation = cocktailFamilyTree
+    .flatMap((root) => root.branches.map((branch) => ({ root, branch })))
+    .find(({ branch }) => branch.cocktailIds.includes(activeItem.id));
+
+  return (
+    <article className="wine-resource-panel cocktail-family-tree" aria-labelledby="cocktail-family-tree-title">
+      <div className="cocktail-family-tree-head">
+        <div className="wine-resource-panel-head">
+          <span>02</span>
+          <div>
+            <h3 id="cocktail-family-tree-title">Cocktail Family Tree</h3>
+            <p>Learn the parent formula first, then follow each branch to see how classics and modern variations change one decision at a time.</p>
+          </div>
+        </div>
+        <div className="cocktail-family-tree-current" aria-live="polite">
+          <span>Current leaf</span>
+          <strong>{activeItem.name}</strong>
+          <small>
+            {activeLocation
+              ? `${activeLocation.root.label} → ${activeLocation.branch.label}`
+              : activeItem.family}
+          </small>
+        </div>
+      </div>
+
+      <div className="cocktail-family-tree-roots">
+        {cocktailFamilyTree.map((root) => (
+          <section
+            key={root.id}
+            className={`cocktail-family-root${root.id === "sours" ? " cocktail-family-root-wide" : ""}`}
+            aria-labelledby={`cocktail-family-${root.id}`}
+          >
+            <header>
+              <p className="cocktail-family-root-kicker">Parent family</p>
+              <h4 id={`cocktail-family-${root.id}`}>{root.label}</h4>
+              <strong className="cocktail-family-formula">{root.formula}</strong>
+              <p>{root.learningCue}</p>
+            </header>
+
+            <ul className="cocktail-family-branches">
+              {root.branches.map((branch) => (
+                <li key={branch.id}>
+                  <div className="cocktail-family-branch-head">
+                    <span>{branch.label}</span>
+                    <small>{branch.formula}</small>
+                  </div>
+                  <div className="cocktail-family-leaves">
+                    {branch.cocktailIds.map((cocktailId) => {
+                      const item = cocktailItemById.get(cocktailId);
+                      if (!item) return null;
+                      const isActive = item.id === activeItem.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          className={isActive ? "active" : ""}
+                          aria-current={isActive ? "true" : undefined}
+                          onClick={() => onSelect(item)}
+                        >
+                          <span>{item.name}</span>
+                          <small>{item.method}</small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+
+      <p className="cocktail-family-tree-note">
+        <strong>Study cue:</strong> This is a build-template tree, not a claim that every drink descends historically from the one beside it. Compare the formula, technique, and modifier that changed.
+      </p>
+    </article>
+  );
+}
+
 export function Cocktails() {
   const [recipeView, setRecipeView] = useState<RecipeView>("cocktail");
   const [kind, setKind] = useState<BevKind>("cocktail");
@@ -1414,8 +1657,14 @@ export function Cocktails() {
       </div>
 
       <div className="cocktail-map-layout">
-        <details className="cocktail-map-card cocktail-relationship-details">
-          <summary>Explore the relationship map (advanced)</summary>
+        <article className="cocktail-map-card">
+          <div className="cocktail-map-heading">
+            <div>
+              <p className="cocktail-kicker">Relationship Map</p>
+              <h3>Build outward from {activeItem.name}</h3>
+            </div>
+            <p>Choose any cocktail to recenter the map. Higher affinity means more shared family, base, technique, or flavor cues.</p>
+          </div>
           <div className="cocktail-map-stage" aria-label={`${activeItem.name} relationship map`}>
             <div className="cocktail-map-ring ring-one" />
             <div className="cocktail-map-ring ring-two" />
@@ -1453,7 +1702,7 @@ export function Cocktails() {
               </aside>
             ) : null}
           </div>
-        </details>
+        </article>
 
         <BevPhoto kind={kind} item={activeItem} />
 
@@ -1480,8 +1729,10 @@ export function Cocktails() {
         <BevColorStudyPhoto kind={kind} item={activeItem} />
       </div>
 
+      {kind === "cocktail" ? <CocktailFamilyTree activeItem={activeItem} onSelect={selectItem} /> : null}
+
       {kind === "cocktail" ? (
-        <article className="wine-resource-panel">
+        <article className="wine-resource-panel cocktail-product-knowledge">
           <div className="wine-resource-panel-head">
             <span>03</span>
             <div>

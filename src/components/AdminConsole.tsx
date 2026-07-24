@@ -3,6 +3,12 @@ import { useAccess } from "../context/AccessContext";
 import { supabase } from "../lib/supabase";
 import { trackEvent } from "../lib/analytics";
 import {
+  isBeverageNewsHealthFresh,
+  readBeverageNewsHealth,
+  subscribeToBeverageNewsHealth,
+  type BeverageNewsHealth
+} from "../lib/beverageNewsHealth";
+import {
   SITE_MAP_PAGES,
   type PageStatusMap,
   type PageRoomAccess,
@@ -90,6 +96,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const [socialPostBody, setSocialPostBody] = useState("");
   const [socialMediaFiles, setSocialMediaFiles] = useState<string[]>([]);
   const [socialPostStatus, setSocialPostStatus] = useState("Draft not staged.");
+  const [beverageNewsHealth, setBeverageNewsHealth] = useState<BeverageNewsHealth | null>(() =>
+    readBeverageNewsHealth()
+  );
 
   useEffect(() => {
     if (!isAdmin || !supabase) return;
@@ -161,6 +170,13 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     };
   }, [isAdmin]);
 
+  useEffect(() => {
+    if (!isAdmin) return;
+    const refreshHealth = () => setBeverageNewsHealth(readBeverageNewsHealth());
+    refreshHealth();
+    return subscribeToBeverageNewsHealth(refreshHealth);
+  }, [isAdmin]);
+
   const siteMapDirty = useMemo(
     () =>
       SITE_MAP_PAGES.some((page) => {
@@ -230,6 +246,23 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const selectedPlatformLabels = socialPlatforms
     .filter((platform) => targetPlatforms[platform.id])
     .map((platform) => platform.label);
+  const beverageNewsNeedsAttention =
+    beverageNewsHealth !== null &&
+    isBeverageNewsHealthFresh(beverageNewsHealth) &&
+    beverageNewsHealth.status !== "healthy";
+  const beverageNewsSeverity =
+    beverageNewsHealth?.status === "unavailable"
+      ? "Critical"
+      : beverageNewsHealth?.status === "degraded" &&
+          beverageNewsHealth.failedSources.length >= Math.ceil(beverageNewsHealth.sourceCount / 2)
+        ? "High"
+        : "Warning";
+  const beverageNewsAlertTitle =
+    beverageNewsHealth?.status === "unavailable"
+      ? "Beverage News unavailable"
+      : beverageNewsHealth?.status === "cached"
+        ? "Beverage News live refresh delayed"
+        : "Beverage News coverage degraded";
 
   const toggleConnectedPlatform = (platformId: SocialPlatformKey) => {
     setConnectedPlatforms((current) => {
@@ -428,6 +461,49 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
               </article>
             </div>
           </section>
+
+          {beverageNewsNeedsAttention && beverageNewsHealth ? (
+            <section className="admin-overview-group" aria-label="Operations alerts">
+              <p className="admin-overview-group-label">Alerts:</p>
+              <div className="admin-overview-grid">
+                <article className={`admin-card admin-operations-alert status-${beverageNewsHealth.status}`}>
+                  <div className="admin-operations-alert-header">
+                    <div>
+                      <p className="admin-eyebrow">{beverageNewsSeverity} · Content health</p>
+                      <h3>{beverageNewsAlertTitle}</h3>
+                    </div>
+                    <p className="admin-operations-alert-count">
+                      <strong>{beverageNewsHealth.failedSources.length}</strong>
+                      <span>sources</span>
+                    </p>
+                  </div>
+                  <p>
+                    {beverageNewsHealth.status === "degraded"
+                      ? `${beverageNewsHealth.failedSources.length} of ${beverageNewsHealth.sourceCount} sources are unavailable. ${beverageNewsHealth.loadedCount} live source${beverageNewsHealth.loadedCount === 1 ? "" : "s"}${beverageNewsHealth.fallbackCount > 0 ? ` and ${beverageNewsHealth.fallbackCount} fallback source${beverageNewsHealth.fallbackCount === 1 ? "" : "s"}` : ""} are still serving ${beverageNewsHealth.articleCount.toLocaleString()} articles.`
+                      : beverageNewsHealth.status === "cached"
+                        ? `Live sources did not return articles. Students can still read ${beverageNewsHealth.articleCount.toLocaleString()} recently saved headlines.`
+                        : "No current or saved headlines are available. Students see a simple retry message."}
+                  </p>
+                  <small>Last checked {new Date(beverageNewsHealth.checkedAt).toLocaleString()}</small>
+                  {beverageNewsHealth.failedSources.length > 0 ? (
+                    <details className="admin-operations-alert-details">
+                      <summary>View affected sources</summary>
+                      <ul>
+                        {beverageNewsHealth.failedSources.map((source) => (
+                          <li key={source.sourceId}>{source.sourceName}</li>
+                        ))}
+                      </ul>
+                    </details>
+                  ) : null}
+                  <div className="admin-actions">
+                    <button className="btn btn-light" type="button" onClick={() => onNavigate("app/beverage-news")}>
+                      Open Beverage News
+                    </button>
+                  </div>
+                </article>
+              </div>
+            </section>
+          ) : null}
 
           <section className="admin-overview-group" aria-label="Edits overview">
             <p className="admin-overview-group-label">Edits:</p>

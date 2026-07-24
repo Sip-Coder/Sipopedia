@@ -36,8 +36,8 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
     <section className="paywall-panel">
       <header className="section-header paywall-hero">
         <p className="checkout-eyebrow">Access Checkpoint</p>
-        <h2>This room is locked, but your route is saved.</h2>
-        <p>Upgrade or log in to unlock the Learn, Taste, and Connect modules connected to this destination.</p>
+        <h2>Unlock this room for $10 per month.</h2>
+        <p>One Sip Studies membership opens the Learn, Taste, and Connect workspace, and your route is already saved.</p>
         <div className="paywall-route-chip" aria-label="Blocked route intent">
           <span>Trying to open</span>
           <strong>{nextRouteLabel}</strong>
@@ -57,8 +57,8 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
           <p className="paywall-tier">{isSignedIn ? "Launch Pad access" : "Public preview"}</p>
           <p>
             {isSignedIn
-              ? "Your account can use the Launch Pad while you upgrade. Paid checkout starts from this same account."
-              : "Public visitors can preview the workspace before enrolling. Log in first, then pay, so access attaches correctly."}
+              ? "Your account can use the Launch Pad while you subscribe. Checkout starts from this same account."
+              : "Public visitors can preview the Launch Pad. Log in before checkout so membership access attaches to the right account."}
           </p>
           {subscription ? (
             <p className="hint">
@@ -77,10 +77,10 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
               </button>
             ) : null}
             <button className="btn btn-primary" onClick={() => onNavigate(pricingRoute)}>
-              Compare Plans
+              See the $10 Membership
             </button>
             <button className="btn btn-light" onClick={() => onNavigate(checkoutRoute)}>
-              Start Enrollment
+              Subscribe for $10/month
             </button>
           </div>
           {errorMessage ? <p className="error">{errorMessage}</p> : null}
@@ -108,8 +108,8 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
           <p className="checkout-eyebrow">No lost path</p>
           <h3>Enrollment resumes here.</h3>
           <p>
-            Compare Plans and Start Enrollment both carry <strong>{nextRouteLabel}</strong> as the next route, so the user can return to the room
-            that triggered this checkpoint. Checkout creates a secure session only after the learner is signed in.
+            Membership details and checkout both carry <strong>{nextRouteLabel}</strong> as the next route, so you can return to the room
+            that triggered this checkpoint. Secure checkout opens only after sign-in.
           </p>
         </article>
       </div>

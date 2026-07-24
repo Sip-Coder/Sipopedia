@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { buildOnboardingRoute } from "../lib/onboardingIntent";
 import {
   LAST_WORKSPACE_MODULE_EVENT,
   WORKSPACE_NAV_ITEMS,
@@ -74,15 +73,6 @@ const portalCopy: Record<CoreTrack, { code: string; title: string; headline: str
 };
 
 const portalOrder: CoreTrack[] = ["Learn", "Taste", "Connect"];
-
-const foundingCohortFeature: DemoFeature = {
-  id: "founding-cohort",
-  title: "Founding Cohort Track",
-  track: "Enrollment",
-  image: "/starter-thumbs/founding-cohort-640.webp",
-  summary: "Structured 4-6 week execution sprint for serious learners and teams.",
-  bullets: ["Weekly objectives", "Cohort accountability", "Direct founder feedback loop"]
-};
 
 export const starterPreviewFeatures: DemoFeature[] = WORKSPACE_NAV_ITEMS.map((item) => ({
   id: item.id,
@@ -183,9 +173,6 @@ export function StarterFeatureDemo({
   );
 
   const routeForFeature = (feature: DemoFeature): string => {
-    if (feature.id === "founding-cohort") {
-      return buildOnboardingRoute("checkout", { planId: "founding", source: "starter-preview" });
-    }
     return feature.route ?? `app/${feature.id}`;
   };
   const HeadingTag = headingLevel === 1 ? "h1" : "h2";
@@ -339,15 +326,6 @@ export function StarterFeatureDemo({
             </div>
           </>
         ) : null}
-      </div>
-
-      <div className="starter-demo-cohort">
-        <div>
-          <p className="starter-demo-kicker">Enrollment Track</p>
-          <h3>Need the structured path?</h3>
-          <p>Founding Cohort remains available without competing with the three core study rooms.</p>
-        </div>
-        {renderFeatureCard(foundingCohortFeature, "cohort")}
       </div>
     </section>
   );

@@ -112,6 +112,28 @@ type SubscriptionRecord = {
   cancel_at_period_end: boolean;
 };
 
+const RECENT_SUBSCRIPTION_LIMIT = 20;
+const ENTITLING_SUBSCRIPTION_STATUSES = new Set<SubscriptionStatus>(["trialing", "active", "past_due"]);
+
+function isEntitlingSubscription(
+  status: SubscriptionStatus,
+  currentPeriodEnd: string | null,
+  now = Date.now()
+): boolean {
+  if (!ENTITLING_SUBSCRIPTION_STATUSES.has(status)) return false;
+  if (!currentPeriodEnd) return true;
+  const periodEnd = new Date(currentPeriodEnd).getTime();
+  return !Number.isNaN(periodEnd) && periodEnd >= now;
+}
+
+function selectSubscriptionRecord(records: SubscriptionRecord[] | null | undefined): SubscriptionRecord | null {
+  if (!records?.length) return null;
+  return (
+    records.find((record) => isEntitlingSubscription(record.status, record.current_period_end)) ??
+    records[0]
+  );
+}
+
 function mapProfileError(error: PostgrestError): string {
   if (error.code === "PGRST116") {
     return "Profile record not found. Sign out and sign in again to trigger profile creation.";
@@ -143,11 +165,7 @@ export function AccessProvider({ children }: PropsWithChildren) {
 
   const isSubscriptionPaid = (record: AccessSubscription | null): boolean => {
     if (!record) return false;
-    if (!["trialing", "active", "past_due"].includes(record.status)) return false;
-    if (!record.currentPeriodEnd) return true;
-    const periodEnd = new Date(record.currentPeriodEnd).getTime();
-    if (Number.isNaN(periodEnd)) return true;
-    return periodEnd >= Date.now();
+    return isEntitlingSubscription(record.status, record.currentPeriodEnd);
   };
 
   const refreshProfile = async () => {
@@ -174,8 +192,8 @@ export function AccessProvider({ children }: PropsWithChildren) {
         .select("id,provider,provider_customer_id,provider_subscription_id,plan_code,status,current_period_end,cancel_at_period_end")
         .eq("user_id", user.id)
         .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle<SubscriptionRecord>()
+        .limit(RECENT_SUBSCRIPTION_LIMIT)
+        .returns<SubscriptionRecord[]>()
     ]);
 
     if (profileResult.error) {
@@ -200,7 +218,7 @@ export function AccessProvider({ children }: PropsWithChildren) {
       role: profileResult.data.role,
       createdAt: profileResult.data.created_at
     });
-    setSubscription(normalizeSubscription(subscriptionResult.data ?? null));
+    setSubscription(normalizeSubscription(selectSubscriptionRecord(subscriptionResult.data)));
     setErrorMessage(null);
     setLoading(false);
   };
@@ -256,8 +274,8 @@ export function AccessProvider({ children }: PropsWithChildren) {
             .select("id,provider,provider_customer_id,provider_subscription_id,plan_code,status,current_period_end,cancel_at_period_end")
             .eq("user_id", user.id)
             .order("updated_at", { ascending: false })
-            .limit(1)
-            .maybeSingle<SubscriptionRecord>()
+            .limit(RECENT_SUBSCRIPTION_LIMIT)
+            .returns<SubscriptionRecord[]>()
         ]);
 
         if (!active) return;
@@ -281,7 +299,7 @@ export function AccessProvider({ children }: PropsWithChildren) {
           role: profileResult.data.role,
           createdAt: profileResult.data.created_at
         });
-        setSubscription(normalizeSubscription(subscriptionResult.data ?? null));
+        setSubscription(normalizeSubscription(selectSubscriptionRecord(subscriptionResult.data)));
         setErrorMessage(null);
         setLoading(false);
       } catch (error: unknown) {

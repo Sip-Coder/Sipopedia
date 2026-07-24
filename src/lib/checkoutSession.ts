@@ -4,10 +4,9 @@ import {
   FunctionsRelayError
 } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
-import type { PlanId } from "./onboardingIntent";
 
 export type CheckoutSessionRequest = {
-  planId: Exclude<PlanId, "starter">;
+  planId: "pro";
   source: string;
   next: string | null;
 };

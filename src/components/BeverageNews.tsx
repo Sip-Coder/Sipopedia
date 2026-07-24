@@ -2,6 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { fetchGuildNews } from "../lib/newsRouter";
 import { MAGAZINE_NEWS_REFERENCES } from "../data/magazineNewsReferences";
 import { safeHttpUrl } from "../lib/urlSafety";
+import { useArticleLibrary } from "../context/ArticleLibraryContext";
+import { useArticlePreferences } from "../context/ArticlePreferencesContext";
+import type { ArticleSnapshot } from "../lib/articleLibrary";
+import { writeBeverageNewsHealth } from "../lib/beverageNewsHealth";
+import { ArticleActions, ArticleFavoritesLink, ArticleReadLink } from "./ArticleActions";
 
 type BeverageType = "Wine" | "Spirits" | "Beer" | "Sake" | "General";
 type SourceLoadMode = "loaded" | "fallback" | "failed";
@@ -118,6 +123,21 @@ type BeverageArticle = {
   sourceCategory: SourceCategory;
   beverageTypes: BeverageType[];
 };
+
+function toArticleSnapshot(article: BeverageArticle): ArticleSnapshot {
+  return {
+    surface: "beverage-news",
+    articleId: article.id,
+    sourceId: article.sourceId,
+    sourceName: article.sourceName,
+    sourceCategory: article.sourceCategory,
+    title: article.title,
+    url: article.url,
+    publishedAt: article.publishedAt,
+    summary: article.summary,
+    imageUrl: article.imageUrl
+  };
+}
 
 type SourceLoadResult = {
   sourceId: string;
@@ -917,21 +937,16 @@ async function fetchSource(source: NewsSource): Promise<SourceLoadResult> {
 }
 
 export function BeverageNews() {
+  const { isRead } = useArticleLibrary();
+  const { beverageNews, updateBeverageNews } = useArticlePreferences();
+  const { articlesPerPage, readingFilter, filters } = beverageNews;
   const [articles, setArticles] = useState<BeverageArticle[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [warning, setWarning] = useState<string | null>(null);
+  const [feedNotice, setFeedNotice] = useState<string | null>(null);
   const [refreshCount, setRefreshCount] = useState<number>(0);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  const [articlesPerPage, setArticlesPerPage] = useState<NewsPageSize>(12);
   const [page, setPage] = useState<number>(0);
-  const [filters, setFilters] = useState<FilterState>({
-    preset: ALL_NEWS_PRESET,
-    selectedGuildIds: [],
-    selectedMagazineIds: [],
-    selectedBlogIds: [],
-    selectedRegulatorIds: []
-  });
   const [sourceModes, setSourceModes] = useState<Record<string, SourceLoadMode>>({});
   const [studyArticleId, setStudyArticleId] = useState<string | null>(null);
   const [takeaway, setTakeaway] = useState("");
@@ -942,7 +957,7 @@ export function BeverageNews() {
 
     const load = async () => {
       setError(null);
-      setWarning(null);
+      setFeedNotice(null);
       const cached = readNewsCache();
       const cacheFresh =
         cached && Date.now() - new Date(cached.savedAt).getTime() <= NEWS_CACHE_MAX_AGE_MS && cached.articles.length > 0;
@@ -998,23 +1013,45 @@ export function BeverageNews() {
       const merged = mergeResults(liveResults);
       const failed = liveResults.filter((result) => result.mode === "failed");
       const modeMap = buildModeMap(liveResults);
+      const loadedCount = liveResults.filter((result) => result.mode === "loaded").length;
+      const fallbackCount = liveResults.filter((result) => result.mode === "fallback").length;
+      const checkedAt = new Date().toISOString();
+      const cachedArticleCount = cacheFresh ? cached.articles.length : 0;
+      const sourceNamesById = new Map(FETCHABLE_SOURCES.map((source) => [source.id, source.name]));
+
+      writeBeverageNewsHealth({
+        checkedAt,
+        status:
+          merged.length > 0
+            ? failed.length > 0
+              ? "degraded"
+              : loadedCount === 0 && fallbackCount > 0
+                ? "cached"
+                : "healthy"
+            : hadCachedData
+              ? "cached"
+              : "unavailable",
+        sourceCount: FETCHABLE_SOURCES.length,
+        loadedCount,
+        fallbackCount,
+        articleCount: merged.length || cachedArticleCount,
+        failedSources: failed.map((result) => ({
+          sourceId: result.sourceId,
+          sourceName: sourceNamesById.get(result.sourceId) ?? result.sourceId
+        }))
+      });
 
       if (merged.length > 0) {
-        const savedAt = new Date().toISOString();
+        const savedAt = checkedAt;
         setArticles(merged);
         setLastUpdated(savedAt);
         writeNewsCache({ savedAt, articles: merged, sourceModes: modeMap });
       }
 
       if (!merged.length && failed.length && !hadCachedData) {
-        setError(failed.map((result) => result.error).filter(Boolean).join(" "));
-      } else if (merged.length && failed.length) {
-        const sourceNames = failed.map(
-          (result) => FETCHABLE_SOURCES.find((source) => source.id === result.sourceId)?.name ?? result.sourceId
-        );
-        setWarning(`Some sources are unavailable right now: ${sourceNames.join(", ")}.`);
+        setError("Beverage News is temporarily unavailable. Please try Refresh in a moment.");
       } else if (!merged.length && hadCachedData) {
-        setWarning("Showing cached headlines while live sources are temporarily unavailable.");
+        setFeedNotice("Live refresh is delayed. Showing recently saved headlines.");
       }
 
       setSourceModes(modeMap);
@@ -1025,8 +1062,17 @@ export function BeverageNews() {
       if (canceled) {
         return;
       }
-      const message = loadError instanceof Error ? loadError.message : "Could not load beverage news right now.";
-      setError(message);
+      void loadError;
+      writeBeverageNewsHealth({
+        checkedAt: new Date().toISOString(),
+        status: "unavailable",
+        sourceCount: FETCHABLE_SOURCES.length,
+        loadedCount: 0,
+        fallbackCount: 0,
+        articleCount: 0,
+        failedSources: [{ sourceId: "news-loader", sourceName: "Beverage News loader" }]
+      });
+      setError("Beverage News is temporarily unavailable. Please try Refresh in a moment.");
       setIsLoading(false);
     });
 
@@ -1051,20 +1097,24 @@ export function BeverageNews() {
   );
 
   const setPreset = (preset: FilterPreset) => {
-    setFilters({
-      preset,
-      selectedGuildIds: [],
-      selectedMagazineIds: [],
-      selectedBlogIds: [],
-      selectedRegulatorIds: []
+    updateBeverageNews({
+      filters: {
+        preset,
+        selectedGuildIds: [],
+        selectedMagazineIds: [],
+        selectedBlogIds: [],
+        selectedRegulatorIds: []
+      }
     });
   };
 
   const updateCustomFilters = (updater: (current: FilterState) => Omit<FilterState, "preset">) => {
-    setFilters((current) => toCustomOrAllNews(updater(current)));
+    updateBeverageNews((current) => ({
+      filters: toCustomOrAllNews(updater(current.filters))
+    }));
   };
 
-  const filteredArticles = useMemo(
+  const sourceFilteredArticles = useMemo(
     () => {
       if (filters.preset === ALL_GUILDS_PRESET) {
         return articles.filter((article) => article.sourceCategory === GUILD_CATEGORY);
@@ -1093,6 +1143,13 @@ export function BeverageNews() {
     },
     [articles, filters]
   );
+  const filteredArticles = useMemo(
+    () =>
+      readingFilter === "unread"
+        ? sourceFilteredArticles.filter((article) => !isRead(toArticleSnapshot(article)))
+        : sourceFilteredArticles,
+    [isRead, readingFilter, sourceFilteredArticles]
+  );
 
   const pageCount = useMemo(
     () => Math.max(1, Math.min(MAX_NEWS_PAGE_COUNT, Math.ceil(filteredArticles.length / articlesPerPage))),
@@ -1102,7 +1159,7 @@ export function BeverageNews() {
 
   useEffect(() => {
     setPage(0);
-  }, [filters, articlesPerPage]);
+  }, [filters, articlesPerPage, readingFilter]);
 
   useEffect(() => {
     setPage((current) => Math.min(current, pageCount - 1));
@@ -1126,7 +1183,7 @@ export function BeverageNews() {
           id={`news-page-size-${position}`}
           value={String(articlesPerPage)}
           onChange={(event) => {
-            setArticlesPerPage(Number(event.target.value) as NewsPageSize);
+            updateBeverageNews({ articlesPerPage: Number(event.target.value) as NewsPageSize });
             setPage(0);
           }}
         >
@@ -1163,6 +1220,28 @@ export function BeverageNews() {
         <button className="btn btn-light" onClick={() => setRefreshCount((value) => value + 1)} disabled={isLoading}>
           {isLoading ? "Refreshing..." : "Refresh"}
         </button>
+      </div>
+
+      <div className="article-library-toolbar">
+        <div className="news-source-strip" role="group" aria-label="Filter Beverage News by reading status">
+          <button
+            className={`news-source-chip ${readingFilter === "all" ? "active" : ""}`}
+            type="button"
+            aria-pressed={readingFilter === "all"}
+            onClick={() => updateBeverageNews({ readingFilter: "all" })}
+          >
+            All articles
+          </button>
+          <button
+            className={`news-source-chip ${readingFilter === "unread" ? "active" : ""}`}
+            type="button"
+            aria-pressed={readingFilter === "unread"}
+            onClick={() => updateBeverageNews({ readingFilter: "unread" })}
+          >
+            Unread
+          </button>
+        </div>
+        <ArticleFavoritesLink />
       </div>
 
       <article className="journal-card" aria-labelledby="beverage-news-study-title">
@@ -1355,7 +1434,7 @@ export function BeverageNews() {
       ) : null}
 
       {lastUpdated ? <p className="hint">Last updated: {formatDate(lastUpdated)}</p> : null}
-      {warning ? <p className="hint">{warning}</p> : null}
+      {feedNotice ? <p className="hint">{feedNotice}</p> : null}
       {error ? <p className="error">{error}</p> : null}
       {!isLoading && !error && !visibleArticles.length ? <p className="hint">No articles found for these source filters yet.</p> : null}
 
@@ -1363,8 +1442,9 @@ export function BeverageNews() {
         {visibleArticles.map((article) => (
           (() => {
             const safeArticleUrl = safeHttpUrl(article.url);
+            const articleSnapshot = toArticleSnapshot(article);
             return (
-              <article className="news-card" key={article.id}>
+              <article className={`news-card ${isRead(articleSnapshot) ? "is-read" : ""}`} key={article.id}>
                 <NewsCardImage article={article} />
                 <p className="news-card-tag">{article.sourceCategory}</p>
                 <h3>{article.title}</h3>
@@ -1373,12 +1453,15 @@ export function BeverageNews() {
                   {article.sourceName} | {formatDate(article.publishedAt)}
                   {article.translatedFrom ? ` | translated from ${article.translatedFrom.toUpperCase()}` : ""}
                 </p>
+                <ArticleActions article={articleSnapshot} />
                 {safeArticleUrl ? (
-                  <div className="journal-actions">
+                  <div className="journal-actions article-primary-actions">
                     <button className="btn btn-primary" type="button" onClick={() => { setStudyArticleId(article.id); setTakeaway(""); setShiftAction(""); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
                       Study this headline
                     </button>
-                    <a className="btn btn-light news-link" href={safeArticleUrl} target="_blank" rel="noreferrer">Read source</a>
+                    <ArticleReadLink article={articleSnapshot} className="btn btn-light news-link" href={safeArticleUrl}>
+                      Read source
+                    </ArticleReadLink>
                   </div>
                 ) : (
                   <button className="btn btn-primary" type="button" onClick={() => setStudyArticleId(article.id)}>Study summary</button>

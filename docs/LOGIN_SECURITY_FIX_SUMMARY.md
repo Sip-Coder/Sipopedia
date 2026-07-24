@@ -102,7 +102,6 @@ Keep private:
 - `GOOGLE_AI_API_KEY`
 - `STRIPE_SECRET_KEY`
 - `STRIPE_PRICE_ID_PRO`
-- `STRIPE_PRICE_ID_FOUNDING`
 - `STRIPE_WEBHOOK_SECRET`
 - OAuth client secrets
 - downloaded OAuth JSON files

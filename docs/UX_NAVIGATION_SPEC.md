@@ -74,7 +74,7 @@ Current rules:
 - The paywall must show the attempted destination from `next` or the blocked route.
 - The paywall must explain current access state using Launch Pad / public preview language.
 - The paywall must preview the Learn, Taste, and Connect lanes before asking for payment.
-- Compare Plans and Start Enrollment must preserve the blocked route in `next`.
+- Membership Details and Subscribe for $10/month must preserve the blocked route in `next`.
 - Starter Preview cards must use Learn, Taste, Connect, and Enrollment labels; do not reintroduce House Brand labels.
 
 ## Workspace Navigation
