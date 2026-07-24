@@ -291,6 +291,10 @@ function isSameOriginResource(baseUrl, resourceUrl) {
   }
 }
 
+function isBrowserCanceledRequest(params) {
+  return params.canceled === true || params.errorText === "net::ERR_ABORTED";
+}
+
 function routeLabel(route) {
   return route.replace(/^\/#?/, "") || "root";
 }
@@ -394,6 +398,7 @@ async function navigateAndCheck(client, sessionId, baseUrl, route, routeTimeoutM
         routeEvents.failedRequests.push(`${status} ${responseUrl}`);
       }
     } else if (message.method === "Network.loadingFailed") {
+      if (isBrowserCanceledRequest(params)) return;
       const request = routeEvents.requestUrls.get(params.requestId);
       const requestUrl = request?.url ?? "";
       const requestWasCancelled = params.canceled === true || params.errorText === "net::ERR_ABORTED";
