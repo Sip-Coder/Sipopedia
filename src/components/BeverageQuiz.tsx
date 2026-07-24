@@ -939,7 +939,12 @@ export function BeverageQuiz() {
                   <li key={`${preset.id}-${action}`}>{action}</li>
                 ))}
               </ul>
-              <LearningSourcePanel pack={learningSourcePackForQuiz(preset.examType, preset.topicId)} title="Benchmark Sources" compact />
+              <LearningSourcePanel
+                pack={learningSourcePackForQuiz(preset.examType, preset.topicId)}
+                title="Benchmark Sources"
+                tone="dark"
+                compact
+              />
               <p className="quiz-preset-source">{preset.sourceNote}</p>
               <button type="button" className="btn btn-primary" onClick={() => launchPreset(preset)}>
                 Launch Drill
@@ -1049,7 +1054,7 @@ export function BeverageQuiz() {
         </div>
 
         <div className="quiz-source-row">
-          <LearningSourcePanel pack={quizSourcePack} title="Current Source Lens" compact />
+          <LearningSourcePanel pack={quizSourcePack} title="Current Source Lens" tone="dark" compact />
         </div>
 
         <div className="quiz-actions">
@@ -1220,7 +1225,9 @@ export function BeverageQuiz() {
                     </p>
                   ) : null}
                   {showAnswers ? <p className="quiz-explanation">{question.teachingNote}</p> : null}
-                  {showAnswers ? <LearningSourcePanel pack={questionSourcePack} title="Explanation Sources" compact /> : null}
+                  {showAnswers ? (
+                    <LearningSourcePanel pack={questionSourcePack} title="Explanation Sources" tone="dark" compact />
+                  ) : null}
                 </li>
               );
             })}

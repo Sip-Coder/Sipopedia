@@ -28162,3 +28162,575 @@ button.journal-note-row.journal-note-select .journal-note-copy {
     animation: none;
   }
 }
+
+/* Sipopedia visual-system alignment for the Learn practice rooms. */
+@media screen {
+  :is(.beverage-quiz, .study-sheets-page, .service-roleplay-page) {
+    --practice-room-border: rgba(159, 218, 245, 0.2);
+    --practice-room-border-strong: rgba(159, 218, 245, 0.32);
+    --practice-room-gold-border: rgba(237, 212, 168, 0.42);
+    --practice-room-panel: rgba(5, 25, 38, 0.72);
+    --practice-room-panel-strong: rgba(5, 25, 38, 0.9);
+    --practice-room-field: rgba(2, 13, 31, 0.68);
+    --practice-room-heading: #fff3cc;
+    --practice-room-text: #f7edd3;
+    --practice-room-muted: rgba(247, 237, 211, 0.74);
+    --practice-room-accent: #9fdaf5;
+    --practice-room-ink: #071822;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: var(--practice-room-text);
+    margin-top: 1.3rem;
+    padding: 1.25rem;
+    border: 1px solid rgba(159, 218, 245, 0.26);
+    border-radius: 20px;
+    background:
+      linear-gradient(90deg, rgba(159, 218, 245, 0.08) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(159, 218, 245, 0.06) 1px, transparent 1px),
+      radial-gradient(circle at 12% 4%, rgba(159, 218, 245, 0.22), transparent 30%),
+      radial-gradient(circle at 86% 0%, rgba(237, 212, 168, 0.18), transparent 34%),
+      linear-gradient(145deg, rgba(4, 24, 36, 0.96), rgba(11, 54, 58, 0.94) 48%, rgba(37, 28, 23, 0.96));
+    background-size: 42px 42px, 42px 42px, auto, auto, auto;
+    box-shadow: 0 24px 56px rgba(1, 10, 22, 0.34);
+  }
+
+  :is(.beverage-quiz, .study-sheets-page, .service-roleplay-page) :is(h2, h3, h4, h5) {
+    color: var(--practice-room-heading);
+  }
+
+  :is(.beverage-quiz, .study-sheets-page, .service-roleplay-page) :is(p, li, small) {
+    color: var(--practice-room-muted);
+  }
+
+  :is(
+      .beverage-quiz > .section-header,
+      .study-sheets-hero,
+      .service-roleplay-hero
+    ) {
+    border: 1px solid rgba(159, 218, 245, 0.24);
+    border-radius: 18px;
+    background:
+      linear-gradient(135deg, rgba(8, 36, 54, 0.94), rgba(18, 76, 77, 0.82)),
+      radial-gradient(circle at 88% 18%, rgba(237, 212, 168, 0.18), transparent 34%);
+    box-shadow: inset 0 0 0 1px rgba(237, 212, 168, 0.1), 0 20px 46px rgba(2, 13, 31, 0.28);
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+    margin-bottom: 0;
+  }
+
+  :is(
+      .beverage-quiz > .section-header,
+      .study-sheets-hero,
+      .service-roleplay-hero
+    ) h2 {
+    max-width: 880px;
+    color: var(--practice-room-heading);
+    font-size: clamp(1.4rem, 2vw, 2rem);
+    letter-spacing: -0.03em;
+    line-height: 1.06;
+    text-shadow: 0 0 18px rgba(159, 218, 245, 0.18);
+  }
+
+  :is(
+      .beverage-quiz > .section-header,
+      .study-sheets-hero,
+      .service-roleplay-hero
+    ) > p:not(.checkout-eyebrow):not(.service-roleplay-notice):not(.study-sheets-notice) {
+    max-width: 800px;
+    color: rgba(247, 237, 211, 0.86);
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  :is(.beverage-quiz, .study-sheets-page, .service-roleplay-page) :is(.checkout-eyebrow, .nav-overline) {
+    color: var(--practice-room-accent);
+  }
+
+  :is(.beverage-quiz, .study-sheets-page, .service-roleplay-page) .hint {
+    color: rgba(247, 237, 211, 0.66);
+  }
+
+  :is(.beverage-quiz, .study-sheets-page, .service-roleplay-page) .btn-light {
+    color: var(--practice-room-text);
+    border-color: rgba(159, 218, 245, 0.28);
+    background: rgba(4, 24, 36, 0.68);
+  }
+
+  :is(.beverage-quiz, .study-sheets-page, .service-roleplay-page) .btn-light:hover {
+    color: var(--practice-room-heading);
+    border-color: var(--practice-room-gold-border);
+    background: rgba(13, 61, 65, 0.76);
+  }
+
+  :is(.beverage-quiz, .study-sheets-page, .service-roleplay-page) .btn-primary {
+    color: #edd4a8;
+    border-color: rgba(159, 218, 245, 0.34);
+    background: linear-gradient(120deg, #185552, #185552 64%, #8b4513 100%);
+  }
+
+  :is(.beverage-quiz, .study-sheets-page, .service-roleplay-page)
+    :is(button, input, select, textarea, a):focus-visible {
+    outline: 3px solid rgba(255, 243, 204, 0.9);
+    outline-offset: 2px;
+  }
+
+  .beverage-quiz {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .beverage-quiz .quiz-preset-panel,
+  .beverage-quiz .quiz-controls,
+  .beverage-quiz .quiz-meta,
+  .beverage-quiz .quiz-remediation-panel,
+  .beverage-quiz .quiz-current-review,
+  .beverage-quiz .quiz-question-card,
+  .beverage-quiz .quiz-share-actions {
+    border-color: var(--practice-room-border);
+    background: var(--practice-room-panel);
+    box-shadow: inset 0 0 0 1px rgba(237, 212, 168, 0.08);
+  }
+
+  .beverage-quiz .quiz-preset-panel,
+  .beverage-quiz .quiz-remediation-panel,
+  .beverage-quiz .quiz-current-review {
+    background:
+      linear-gradient(135deg, rgba(5, 25, 38, 0.82), rgba(13, 61, 65, 0.68)),
+      radial-gradient(circle at 90% 0%, rgba(159, 218, 245, 0.12), transparent 34%);
+  }
+
+  .beverage-quiz .quiz-preset-head h3,
+  .beverage-quiz .quiz-preset-card h4,
+  .beverage-quiz .quiz-remediation-copy h3,
+  .beverage-quiz .quiz-current-review h3,
+  .beverage-quiz .quiz-review-queue h4,
+  .beverage-quiz .quiz-remediation-stats strong,
+  .beverage-quiz .quiz-question-title {
+    color: var(--practice-room-heading);
+  }
+
+  .beverage-quiz .quiz-preset-head p,
+  .beverage-quiz .quiz-preset-card p,
+  .beverage-quiz .quiz-preset-card ul,
+  .beverage-quiz .quiz-remediation-copy p,
+  .beverage-quiz .quiz-review-queue p,
+  .beverage-quiz .quiz-current-review ul,
+  .beverage-quiz .quiz-standard,
+  .beverage-quiz .quiz-explanation,
+  .beverage-quiz .quiz-meta p {
+    color: var(--practice-room-muted);
+  }
+
+  .beverage-quiz .quiz-preset-card,
+  .beverage-quiz .quiz-remediation-stats article,
+  .beverage-quiz .quiz-weak-topic-list button,
+  .beverage-quiz .quiz-option {
+    color: var(--practice-room-text);
+    border-color: var(--practice-room-border);
+    background: linear-gradient(145deg, rgba(6, 31, 44, 0.9), rgba(15, 70, 72, 0.76));
+    box-shadow: inset 0 0 0 1px rgba(237, 212, 168, 0.06);
+  }
+
+  .beverage-quiz .quiz-preset-card.active {
+    border-color: rgba(255, 243, 204, 0.48);
+    background: linear-gradient(145deg, rgba(8, 36, 54, 0.98), rgba(18, 76, 77, 0.9));
+    box-shadow: 0 18px 34px rgba(1, 10, 22, 0.32), 0 0 0 1px rgba(159, 218, 245, 0.12);
+  }
+
+  .beverage-quiz .quiz-preset-card span,
+  .beverage-quiz .quiz-remediation-stats span,
+  .beverage-quiz .quiz-weak-topic-list span,
+  .beverage-quiz .quiz-control-row label {
+    color: var(--practice-room-accent);
+  }
+
+  .beverage-quiz .quiz-preset-source {
+    border-top-color: var(--practice-room-border);
+  }
+
+  .beverage-quiz .quiz-customize-controls > summary {
+    color: var(--practice-room-accent);
+  }
+
+  .beverage-quiz .quiz-control-row input,
+  .beverage-quiz .quiz-control-row select,
+  .beverage-quiz .quiz-share-row input {
+    color: var(--practice-room-text);
+    border-color: rgba(159, 218, 245, 0.24);
+    background: var(--practice-room-field);
+  }
+
+  .beverage-quiz :is(input, textarea)::placeholder {
+    color: rgba(247, 237, 211, 0.48);
+  }
+
+  .beverage-quiz .learning-source-panel-dark {
+    border-color: var(--practice-room-border);
+    background:
+      radial-gradient(circle at 0% 0%, rgba(237, 212, 168, 0.12), transparent 40%),
+      rgba(4, 13, 24, 0.5);
+  }
+
+  .beverage-quiz .quiz-weak-topic-list button:hover,
+  .beverage-quiz .quiz-weak-topic-list button:focus-visible {
+    border-color: rgba(255, 243, 204, 0.48);
+    box-shadow: 0 0 0 2px rgba(159, 218, 245, 0.2);
+  }
+
+  .beverage-quiz .quiz-study-links a,
+  .beverage-quiz .quiz-inline-study-links a {
+    color: var(--practice-room-ink);
+    border-color: rgba(255, 243, 204, 0.42);
+    background: linear-gradient(135deg, #fff3cc, #edd4a8);
+  }
+
+  .beverage-quiz .quiz-question-title span {
+    color: var(--practice-room-ink);
+    border-color: rgba(255, 243, 204, 0.42);
+    background: linear-gradient(135deg, #fff3cc, #9fdaf5);
+  }
+
+  .beverage-quiz .quiz-option:hover {
+    border-color: var(--practice-room-gold-border);
+  }
+
+  .beverage-quiz .quiz-option.selected {
+    color: var(--practice-room-heading);
+    border-color: rgba(159, 218, 245, 0.62);
+    background: rgba(24, 85, 82, 0.72);
+  }
+
+  .beverage-quiz .quiz-option.correct {
+    color: #effff5;
+    border-color: rgba(115, 190, 152, 0.76);
+    background: rgba(22, 101, 68, 0.42);
+  }
+
+  .beverage-quiz .quiz-option.wrong {
+    color: #fff1f1;
+    border-color: rgba(239, 146, 146, 0.76);
+    background: rgba(127, 29, 29, 0.42);
+  }
+
+  .beverage-quiz .quiz-option-key {
+    color: var(--practice-room-accent);
+    border-color: var(--practice-room-border-strong);
+  }
+
+  .beverage-quiz .quiz-answer-line {
+    color: #b9f3d0;
+  }
+
+  .beverage-quiz .quiz-explanation {
+    border-top-color: rgba(159, 218, 245, 0.22);
+  }
+
+  .study-sheets-sidebar,
+  .study-sheet-print-card,
+  .service-roleplay-sidebar,
+  .service-roleplay-panel,
+  .service-roleplay-history,
+  .service-roleplay-success,
+  .service-roleplay-step,
+  .service-roleplay-results,
+  .service-roleplay-handoffs {
+    color: var(--practice-room-text);
+    border-color: var(--practice-room-border);
+    background: var(--practice-room-panel);
+    box-shadow: inset 0 0 0 1px rgba(237, 212, 168, 0.08);
+  }
+
+  .study-sheets-sidebar,
+  .service-roleplay-sidebar {
+    background:
+      linear-gradient(160deg, rgba(5, 25, 38, 0.9), rgba(17, 68, 69, 0.7)),
+      radial-gradient(circle at 0% 0%, rgba(159, 218, 245, 0.12), transparent 32%);
+  }
+
+  .study-sheet-print-card,
+  .service-roleplay-panel {
+    background:
+      linear-gradient(145deg, rgba(2, 13, 31, 0.72), rgba(7, 44, 53, 0.72)),
+      radial-gradient(circle at 90% 0%, rgba(159, 218, 245, 0.14), transparent 28%);
+  }
+
+  .study-sheets-category-grid button,
+  .study-sheets-index button,
+  .service-roleplay-category-grid button,
+  .service-roleplay-scenario-list button,
+  .service-roleplay-options button {
+    color: var(--practice-room-text);
+    border-color: rgba(159, 218, 245, 0.18);
+    background: rgba(2, 13, 31, 0.46);
+  }
+
+  .study-sheets-category-grid button:hover,
+  .study-sheets-category-grid button:focus-visible,
+  .study-sheets-index button:hover,
+  .study-sheets-index button:focus-visible,
+  .service-roleplay-category-grid button:hover,
+  .service-roleplay-category-grid button:focus-visible,
+  .service-roleplay-scenario-list button:hover,
+  .service-roleplay-scenario-list button:focus-visible,
+  .service-roleplay-options button:hover,
+  .service-roleplay-options button:focus-visible {
+    border-color: rgba(237, 212, 168, 0.46);
+    background: rgba(13, 61, 65, 0.72);
+    box-shadow: 0 10px 22px rgba(2, 13, 31, 0.24);
+  }
+
+  .study-sheets-category-grid button.active,
+  .study-sheets-index button.active,
+  .service-roleplay-category-grid button.active,
+  .service-roleplay-scenario-list button.active,
+  .service-roleplay-options button.selected {
+    color: var(--practice-room-ink);
+    border-color: rgba(255, 243, 204, 0.62);
+    background: linear-gradient(135deg, #fff3cc, #9fdaf5);
+    box-shadow: 0 10px 24px rgba(1, 10, 22, 0.28);
+  }
+
+  .study-sheets-category-grid button.active :is(span, strong),
+  .study-sheets-index button.active :is(span, strong, small),
+  .service-roleplay-category-grid button.active :is(span, strong),
+  .service-roleplay-scenario-list button.active :is(span, strong, small),
+  .service-roleplay-options button.selected :is(span, strong) {
+    color: var(--practice-room-ink);
+  }
+
+  .study-sheets-category-grid span,
+  .study-sheets-index span,
+  .service-roleplay-category-grid span,
+  .service-roleplay-scenario-list span,
+  .service-roleplay-history span,
+  .service-roleplay-step-head span,
+  .service-roleplay-feedback span,
+  .service-roleplay-options button span {
+    color: var(--practice-room-accent);
+  }
+
+  .study-sheets-category-grid strong,
+  .study-sheets-index strong,
+  .service-roleplay-category-grid strong,
+  .service-roleplay-scenario-list strong,
+  .service-roleplay-history strong,
+  .study-sheet-print-head h3,
+  .service-roleplay-panel-head h3,
+  .service-roleplay-score-card strong {
+    color: var(--practice-room-heading);
+  }
+
+  .study-sheets-index small,
+  .service-roleplay-scenario-list small,
+  .service-roleplay-history small,
+  .service-roleplay-history time,
+  .study-sheet-print-head p,
+  .study-sheet-exam-use p,
+  .study-sheet-block-grid li,
+  .study-sheet-drills span,
+  .service-roleplay-panel-head p,
+  .service-roleplay-success li,
+  .service-roleplay-cues p,
+  .service-roleplay-feedback p,
+  .service-roleplay-feedback small,
+  .service-roleplay-results p,
+  .service-roleplay-result-grid li {
+    color: var(--practice-room-muted);
+  }
+
+  .study-sheet-print-head > span,
+  .service-roleplay-score-card {
+    border-color: rgba(237, 212, 168, 0.28);
+    background: rgba(4, 24, 36, 0.44);
+  }
+
+  .study-sheet-print-head > span,
+  .service-roleplay-score-card span,
+  .service-roleplay-score-card small {
+    color: #edd4a8;
+  }
+
+  .study-sheet-exam-use,
+  .study-sheet-block-grid section,
+  .study-sheet-drills,
+  .study-sheet-handoffs,
+  .service-roleplay-success,
+  .service-roleplay-step,
+  .service-roleplay-results,
+  .service-roleplay-handoffs,
+  .service-roleplay-history article,
+  .service-roleplay-cues p,
+  .service-roleplay-result-grid section {
+    border-color: rgba(159, 218, 245, 0.18);
+    background: rgba(5, 25, 38, 0.72);
+  }
+
+  .study-sheet-drills span,
+  .service-roleplay-success > div span {
+    color: var(--practice-room-accent);
+    border-color: rgba(159, 218, 245, 0.24);
+    background: rgba(2, 13, 31, 0.46);
+  }
+
+  .study-sheets-notice,
+  .service-roleplay-notice {
+    color: #d9f3ff;
+    border-color: rgba(159, 218, 245, 0.3);
+    background: rgba(13, 61, 65, 0.48);
+  }
+
+  .service-roleplay-meter {
+    background: rgba(2, 13, 31, 0.54);
+  }
+
+  .service-roleplay-meter span {
+    background: linear-gradient(90deg, #9fdaf5, #edd4a8);
+  }
+
+  .service-roleplay-cues label {
+    color: rgba(247, 237, 211, 0.82);
+    line-height: 1.45;
+  }
+
+  .service-roleplay-cues label strong {
+    color: var(--practice-room-accent);
+  }
+
+  .service-roleplay-cues textarea {
+    width: 100%;
+    min-height: 96px;
+    resize: vertical;
+    color: var(--practice-room-text);
+    border: 1px solid rgba(159, 218, 245, 0.24);
+    border-radius: 12px;
+    background: var(--practice-room-field);
+    padding: 0.68rem 0.75rem;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+
+  .service-roleplay-cues textarea::placeholder {
+    color: rgba(247, 237, 211, 0.48);
+  }
+
+  .service-roleplay-options button strong {
+    color: rgba(247, 237, 211, 0.9);
+  }
+
+  .service-roleplay-feedback {
+    border-color: rgba(159, 218, 245, 0.24);
+    background: rgba(13, 61, 65, 0.46);
+  }
+
+  .service-roleplay-feedback.score-0,
+  .service-roleplay-feedback.score-1 {
+    border-color: rgba(239, 146, 146, 0.54);
+    background: rgba(127, 29, 29, 0.34);
+  }
+
+  .service-roleplay-feedback.score-2 {
+    border-color: rgba(237, 212, 168, 0.44);
+    background: rgba(139, 69, 19, 0.28);
+  }
+}
+
+@media screen and (max-width: 760px) {
+  :is(.beverage-quiz, .study-sheets-page, .service-roleplay-page) {
+    padding: 0.75rem;
+    border-radius: 18px;
+  }
+
+  :is(
+      .beverage-quiz > .section-header,
+      .study-sheets-hero,
+      .service-roleplay-hero
+    ) {
+    padding: 1rem;
+  }
+
+  :is(
+      .beverage-quiz > .section-header,
+      .study-sheets-hero,
+      .service-roleplay-hero
+    ) h2 {
+    font-size: 1.5rem;
+    line-height: 1.08;
+  }
+
+  :is(
+      .beverage-quiz > .section-header,
+      .study-sheets-hero,
+      .service-roleplay-hero
+    ) > p:not(.checkout-eyebrow):not(.service-roleplay-notice):not(.study-sheets-notice) {
+    font-size: var(--type-body);
+  }
+
+  :is(.beverage-quiz, .study-sheets-page, .service-roleplay-page) .btn {
+    min-height: 48px;
+    font-size: var(--type-control);
+  }
+
+  .beverage-quiz .quiz-preset-card p,
+  .beverage-quiz .quiz-preset-card ul,
+  .beverage-quiz .quiz-meta p,
+  .beverage-quiz .quiz-remediation-copy p,
+  .beverage-quiz .quiz-review-queue p,
+  .beverage-quiz .quiz-current-review li,
+  .beverage-quiz .quiz-standard,
+  .beverage-quiz .quiz-explanation {
+    font-size: var(--type-small);
+  }
+
+  .beverage-quiz .quiz-preset-card span,
+  .beverage-quiz .quiz-remediation-stats span,
+  .beverage-quiz .quiz-weak-topic-list span,
+  .beverage-quiz .learning-source-panel-head span,
+  .beverage-quiz .learning-source-cues span,
+  .beverage-quiz .learning-source-links a,
+  .beverage-quiz .quiz-study-links a,
+  .beverage-quiz .quiz-inline-study-links a {
+    font-size: var(--type-micro);
+  }
+
+  .beverage-quiz .quiz-option {
+    min-height: 48px;
+    font-size: var(--type-body);
+  }
+
+  .study-sheets-category-grid span,
+  .study-sheets-index span,
+  .service-roleplay-category-grid span,
+  .service-roleplay-scenario-list span,
+  .service-roleplay-history span,
+  .service-roleplay-step-head span,
+  .service-roleplay-feedback span,
+  .service-roleplay-options button span {
+    font-size: var(--type-micro);
+  }
+
+  .study-sheets-index small,
+  .service-roleplay-scenario-list small,
+  .service-roleplay-history small,
+  .service-roleplay-history time,
+  .study-sheet-print-head > span,
+  .study-sheet-drills span,
+  .service-roleplay-score-card span,
+  .service-roleplay-score-card small,
+  .service-roleplay-options button strong {
+    font-size: var(--type-small);
+  }
+
+  .study-sheets-category-grid button,
+  .study-sheets-index button,
+  .service-roleplay-category-grid button,
+  .service-roleplay-scenario-list button,
+  .service-roleplay-options button {
+    min-height: 48px;
+  }
+
+  .service-roleplay-cues textarea {
+    min-height: 116px;
+    font-size: var(--type-control);
+  }
+}
