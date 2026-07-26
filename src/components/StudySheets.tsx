@@ -239,8 +239,8 @@ export function StudySheets({ onNavigate }: StudySheetsProps) {
             {completedSheetIds.includes(activeSheet.id) ? "Completed - Practice Again" : "Mark Drill Complete"}
           </button>
         </div>
-        <details>
-          <summary>Export, instructor, and credential tools</summary>
+        <section className="always-visible-section">
+          <h3 className="always-visible-section-title">Export, instructor, and credential tools</h3>
           <div className="study-sheets-hero-actions">
             <button type="button" className="btn btn-light" onClick={handleExportPacketPdf}>
               Export PDF Packet
@@ -258,7 +258,7 @@ export function StudySheets({ onNavigate }: StudySheetsProps) {
               Credential Paths
             </button>
           </div>
-        </details>
+        </section>
         {copyNotice ? <p className="study-sheets-notice">{copyNotice}</p> : null}
       </header>
 

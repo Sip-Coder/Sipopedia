@@ -141,25 +141,11 @@
   object-fit: contain;
 }
 
-.sip-appbar-brand > span {
-  display: grid;
-  gap: 0.02rem;
-}
-
 .sip-appbar-wordmark {
   width: 94px;
   height: 21px;
   object-fit: contain;
   object-position: left center;
-}
-
-.sip-appbar-brand small {
-  color: var(--sip-menu-muted);
-  font-size: 0.58rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  line-height: 1;
-  text-transform: uppercase;
 }
 
 .sip-appbar-current {
@@ -475,7 +461,7 @@
   color: var(--sip-menu-cyan);
   cursor: pointer;
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.5rem;
   padding: 0.38rem 0.46rem;
@@ -509,25 +495,6 @@
 
 .sip-sidebar-row.active::before {
   background: var(--sip-menu-cream);
-}
-
-.sip-sidebar-row-mark {
-  width: 30px;
-  height: 30px;
-  border: 1px solid rgba(159, 218, 245, 0.22);
-  border-radius: 9px;
-  background: rgba(159, 218, 245, 0.08);
-  color: rgba(237, 212, 168, 0.9);
-  display: inline-grid;
-  place-items: center;
-  font-size: 0.68rem;
-  font-weight: 950;
-}
-
-.sip-sidebar-row.active .sip-sidebar-row-mark {
-  border-color: rgba(237, 212, 168, 0.56);
-  background: rgba(237, 212, 168, 0.12);
-  color: var(--sip-menu-cream);
 }
 
 .sip-sidebar-row-copy {
@@ -683,23 +650,9 @@
     height: 34px;
   }
 
-  .sip-appbar-wordmark,
-  .sip-appbar-brand small,
   .sip-appbar-current,
   .sip-appbar-search kbd {
     display: none;
-  }
-
-  .sip-appbar-brand > span {
-    display: block;
-  }
-
-  .sip-appbar-brand > span::after {
-    content: "Sipopedia";
-    color: var(--sip-menu-cream);
-    font-family: "Space Grotesk", "Gill Sans", sans-serif;
-    font-size: 0.82rem;
-    font-weight: 900;
   }
 
   .sip-appbar-actions {
@@ -1646,14 +1599,10 @@ select option:checked {
   padding: 0.85rem;
 }
 
-.somm-events-shell > details {
+.somm-events-shell > .always-visible-section {
   border: 1px solid rgba(159, 218, 245, 0.2);
   border-radius: 14px;
   background: rgba(4, 15, 26, 0.62);
-  padding: 0.35rem;
-}
-
-.somm-events-shell > details[open] {
   padding: 0.55rem;
 }
 
@@ -13417,13 +13366,6 @@ select option:checked {
   --facility-accent: #8f3d8d;
 }
 
-.sip-game-page:fullscreen {
-  margin: 0;
-  min-height: 100vh;
-  border-radius: 0;
-  overflow: auto;
-}
-
 .sip-game-kicker {
   margin: 0;
   font-size: 0.76rem;
@@ -13588,6 +13530,15 @@ select option:checked {
   display: block;
 }
 
+.sip-game-stage {
+  position: relative;
+  min-width: 0;
+}
+
+.sip-game-fullscreen-exit {
+  display: none;
+}
+
 .sip-game-world-wrap {
   border: 1px solid rgba(36, 76, 82, 0.22);
   border-radius: 12px;
@@ -13606,10 +13557,6 @@ select option:checked {
   background-size: cover;
   cursor: crosshair;
   isolation: isolate;
-}
-
-.sip-game-page:fullscreen .sip-game-world {
-  min-height: min(74vh, 780px);
 }
 
 .sip-game-vignette {
@@ -13987,30 +13934,65 @@ select option:checked {
 .sip-game-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 1200;
   display: grid;
-  place-items: center;
-  padding: 1rem;
+  align-items: safe center;
+  justify-items: center;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding:
+    max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom))
+    max(0.75rem, env(safe-area-inset-left));
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   background: rgba(4, 15, 18, 0.54);
   backdrop-filter: blur(4px);
+  box-sizing: border-box;
 }
 
 .sip-game-equipment-modal {
   position: relative;
   width: min(1120px, 100%);
-  max-height: min(860px, calc(100vh - 2rem));
-  overflow: auto;
+  max-width: 100%;
+  max-height: min(860px, 100%);
+  max-block-size: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   border: 2px solid rgba(255, 253, 246, 0.92);
   border-radius: 8px;
   background:
     linear-gradient(145deg, rgba(255, 253, 246, 0.96), rgba(235, 244, 237, 0.96)),
     #fffdf6;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.sip-game-equipment-modal-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  max-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
   display: grid;
-  grid-template-columns: minmax(320px, 1.1fr) minmax(0, 0.9fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  grid-auto-rows: max-content;
   gap: 1rem;
-  padding: 1rem;
-  align-items: stretch;
+  padding: 3.5rem 1rem 1rem;
+  scroll-padding-block: 3.5rem max(1rem, env(safe-area-inset-bottom));
+  align-content: start;
+  align-items: start;
+  box-sizing: border-box;
 }
 
 .sip-game-room-complete-modal {
@@ -14026,6 +14008,9 @@ select option:checked {
   box-shadow: 0 20px 42px rgba(5, 18, 20, 0.3);
   display: grid;
   gap: 0.5rem;
+  max-height: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .sip-game-room-complete-modal h3 {
@@ -14054,6 +14039,9 @@ select option:checked {
   box-shadow: 0 24px 58px rgba(5, 18, 20, 0.34);
   display: grid;
   gap: 0.55rem;
+  max-height: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .sip-game-finale-modal h3 {
@@ -14085,9 +14073,9 @@ select option:checked {
   position: absolute;
   top: 8px;
   right: 8px;
-  z-index: 2;
-  width: 32px;
-  height: 32px;
+  z-index: 5;
+  width: 44px;
+  height: 44px;
   border: 1px solid rgba(36, 76, 82, 0.24);
   border-radius: 8px;
   background: rgba(18, 42, 45, 0.86);
@@ -14097,7 +14085,9 @@ select option:checked {
 }
 
 .sip-game-equipment-portrait {
+  min-width: 0;
   min-height: 390px;
+  max-height: min(650px, calc(100dvh - 6rem));
   border-radius: 8px;
   border: 1px solid rgba(36, 76, 82, 0.16);
   background:
@@ -14105,19 +14095,23 @@ select option:checked {
     rgba(255, 253, 246, 0.9);
   display: grid;
   place-items: center;
+  padding: 0.7rem;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .sip-game-equipment-portrait img {
-  width: 100%;
-  height: 100%;
-  max-height: 540px;
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(540px, calc(100dvh - 7.4rem));
   object-fit: contain;
-  padding: 0.7rem;
 }
 
 .sip-game-ff-dialogue {
-  align-self: stretch;
+  align-self: start;
+  height: max-content;
   border: 2px solid rgba(36, 76, 82, 0.28);
   border-radius: 8px;
   padding: 1rem;
@@ -14128,8 +14122,10 @@ select option:checked {
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08), 0 12px 22px rgba(5, 18, 20, 0.2);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 390px;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .sip-game-ff-dialogue .sip-game-dialogue-kicker {
@@ -14162,6 +14158,15 @@ select option:checked {
   color: rgba(248, 255, 249, 0.88);
   font-size: 0.88rem;
   line-height: 1.35;
+}
+
+.sip-game-checkpoint-action {
+  display: grid;
+  margin-top: 0.9rem;
+}
+
+.sip-game-ff-dialogue .btn {
+  min-height: 44px;
 }
 
 @keyframes sip-game-idle-sheet {
@@ -14336,17 +14341,203 @@ select option:checked {
     min-height: 0;
   }
 
-  .sip-game-equipment-modal {
-    grid-template-columns: 1fr;
-    gap: 0.55rem;
-  }
-
-  .sip-game-equipment-portrait {
-    min-height: 260px;
+  .sip-game-modal-backdrop {
+    padding:
+      max(0.5rem, env(safe-area-inset-top))
+      max(0.5rem, env(safe-area-inset-right))
+      max(0.5rem, env(safe-area-inset-bottom))
+      max(0.5rem, env(safe-area-inset-left));
   }
 
   .sip-game-dialogue-actions {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 760px) {
+  .sip-game-equipment-modal-body {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+    padding: 3.5rem 0.75rem 0.75rem;
+  }
+
+  .sip-game-equipment-portrait {
+    min-height: 0;
+    max-height: none;
+    padding: 0.5rem;
+  }
+
+  .sip-game-equipment-portrait img {
+    max-height: min(420px, 44dvh);
+  }
+
+  .sip-game-ff-dialogue {
+    min-height: 0;
+    padding: 0.85rem;
+  }
+}
+
+.sip-game-stage:fullscreen,
+.sip-game-stage.is-expanded-fallback {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #071719;
+  box-sizing: border-box;
+}
+
+.sip-game-stage:fullscreen {
+  max-width: none;
+}
+
+.sip-game-stage.is-expanded-fallback {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+}
+
+.sip-game-stage:fullscreen::backdrop {
+  background: #071719;
+}
+
+.sip-game-stage:fullscreen .sip-game-layout,
+.sip-game-stage.is-expanded-fallback .sip-game-layout,
+.sip-game-stage:fullscreen .sip-game-world-wrap,
+.sip-game-stage.is-expanded-fallback .sip-game-world-wrap {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.sip-game-stage:fullscreen .sip-game-world-wrap,
+.sip-game-stage.is-expanded-fallback .sip-game-world-wrap {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #071719;
+}
+
+.sip-game-stage:fullscreen .sip-game-world,
+.sip-game-stage.is-expanded-fallback .sip-game-world {
+  width: min(100vw, 177.778dvh);
+  height: min(100vh, 56.25vw);
+  height: min(100dvh, 56.25vw);
+  min-height: 0;
+  max-width: none;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 0;
+  touch-action: none;
+  user-select: none;
+}
+
+.sip-game-stage:fullscreen .sip-game-fullscreen-exit,
+.sip-game-stage.is-expanded-fallback .sip-game-fullscreen-exit {
+  position: fixed;
+  top: max(8px, env(safe-area-inset-top));
+  left: max(8px, env(safe-area-inset-left));
+  z-index: 1100;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.72rem;
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  border-radius: 999px;
+  background: rgba(7, 23, 25, 0.82);
+  color: #fffdf6;
+  font: inherit;
+  font-weight: 800;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+}
+
+.sip-game-stage:fullscreen .sip-game-fullscreen-exit:hover,
+.sip-game-stage:fullscreen .sip-game-fullscreen-exit:focus-visible,
+.sip-game-stage.is-expanded-fallback .sip-game-fullscreen-exit:hover,
+.sip-game-stage.is-expanded-fallback .sip-game-fullscreen-exit:focus-visible {
+  background: rgba(19, 58, 61, 0.96);
+  outline: 2px solid #fff4cf;
+  outline-offset: 2px;
+}
+
+.sip-game-stage:fullscreen .sip-game-modal-backdrop,
+.sip-game-stage.is-expanded-fallback .sip-game-modal-backdrop {
+  padding:
+    max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom))
+    max(0.75rem, env(safe-area-inset-left));
+}
+
+@media (orientation: portrait) and (max-width: 680px) {
+  .sip-game-stage:fullscreen .sip-game-world,
+  .sip-game-stage.is-expanded-fallback .sip-game-world {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    aspect-ratio: auto;
+  }
+
+  .sip-game-stage:fullscreen .sip-game-fullscreen-exit,
+  .sip-game-stage.is-expanded-fallback .sip-game-fullscreen-exit {
+    right: max(8px, env(safe-area-inset-right));
+    left: auto;
+  }
+
+  .sip-game-stage:fullscreen .sip-game-master-chip,
+  .sip-game-stage.is-expanded-fallback .sip-game-master-chip {
+    padding-right: 4.6rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .sip-game-equipment-modal-body {
+    grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.2fr);
+    gap: 0.65rem;
+    padding: 3.25rem 0.65rem 0.65rem;
+  }
+
+  .sip-game-equipment-portrait,
+  .sip-game-ff-dialogue {
+    min-height: 0;
+  }
+
+  .sip-game-equipment-portrait {
+    max-height: calc(100dvh - 4.5rem);
+  }
+
+  .sip-game-equipment-portrait img {
+    max-height: calc(100dvh - 5.5rem);
+  }
+
+  .sip-game-stage:fullscreen .sip-game-master-chip,
+  .sip-game-stage.is-expanded-fallback .sip-game-master-chip {
+    padding: 0.38rem 0.5rem;
+  }
+
+  .sip-game-stage:fullscreen .sip-game-objective-chip,
+  .sip-game-stage.is-expanded-fallback .sip-game-objective-chip {
+    padding: 0.42rem 0.58rem;
+  }
+
+  .sip-game-stage:fullscreen .sip-game-dialogue-card,
+  .sip-game-stage.is-expanded-fallback .sip-game-dialogue-card {
+    max-height: 45%;
+    overflow: auto;
   }
 }
 
@@ -19943,6 +20134,22 @@ select option:checked {
 .page-workspace details[open] > summary,
 .page-starter details[open] > summary {
   margin-bottom: 0.7rem;
+}
+
+.page-workspace .always-visible-section,
+.page-starter .always-visible-section {
+  min-width: 0;
+}
+
+.page-workspace .always-visible-section-title,
+.page-starter .always-visible-section-title {
+  border-bottom: 1px solid rgba(159, 218, 245, 0.2);
+  color: #fff1d1;
+  font-size: clamp(1rem, 2.1vw, 1.18rem);
+  font-weight: 850;
+  line-height: 1.35;
+  margin: 0 0 0.7rem;
+  padding: 0 0 0.55rem;
 }
 
 button.journal-note-select {
@@ -29370,7 +29577,7 @@ button.journal-note-row.journal-note-select .journal-note-copy {
     border-top-color: var(--practice-room-border);
   }
 
-  .beverage-quiz .quiz-customize-controls > summary {
+  .beverage-quiz .quiz-customize-controls > .always-visible-section-title {
     color: var(--practice-room-accent);
   }
 

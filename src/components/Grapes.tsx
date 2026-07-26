@@ -1381,8 +1381,8 @@ function GrapeIndex({ onNavigate, initialCommodity }: { onNavigate: GrapesProps[
         ))}
       </div>
 
-      <details className="grapes-advanced-study">
-        <summary>Advanced relationship chart and curriculum roadmap</summary>
+      <section className="grapes-advanced-study always-visible-section">
+        <h3 className="always-visible-section-title">Advanced relationship chart and curriculum roadmap</h3>
         <IngredientRelationshipChart commodity={chartCommodity} nodes={chartNodes} onNavigate={onNavigate} />
 
         <section className="grapes-future">
@@ -1394,7 +1394,7 @@ function GrapeIndex({ onNavigate, initialCommodity }: { onNavigate: GrapesProps[
           ))}
         </div>
         </section>
-      </details>
+      </section>
     </div>
   );
 }
@@ -1546,8 +1546,8 @@ function GrapeDetail({ grape, onNavigate }: { grape: GrapeProfile; onNavigate: G
             <p key={paragraph}>{paragraph}</p>
           ))}
         </article>
-        <details className="grapes-advanced-study">
-          <summary>Advanced and professional study</summary>
+        <section className="grapes-advanced-study always-visible-section">
+          <h3 className="always-visible-section-title">Advanced and professional study</h3>
         <div className="grape-study-grid">
         <article className="grape-study-card">
           <p className="sip-maps-kicker">Advanced</p>
@@ -1564,7 +1564,7 @@ function GrapeDetail({ grape, onNavigate }: { grape: GrapeProfile; onNavigate: G
           ))}
         </article>
         </div>
-        </details>
+        </section>
       </section>
 
       <div className="grape-reference-layout">
@@ -1755,8 +1755,8 @@ function CommodityDetail({ profile, onNavigate }: { profile: CommodityStudyProfi
             <p key={paragraph}>{paragraph}</p>
           ))}
         </article>
-        <details className="grapes-advanced-study">
-          <summary>Advanced and professional study</summary>
+        <section className="grapes-advanced-study always-visible-section">
+          <h3 className="always-visible-section-title">Advanced and professional study</h3>
         <div className="grape-study-grid">
         <article className="grape-study-card">
           <p className="sip-maps-kicker">Advanced</p>
@@ -1773,7 +1773,7 @@ function CommodityDetail({ profile, onNavigate }: { profile: CommodityStudyProfi
           ))}
         </article>
         </div>
-        </details>
+        </section>
       </section>
 
       {profile.beverageFocus && profile.beverageFocus.length > 0 ? (

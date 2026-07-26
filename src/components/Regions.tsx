@@ -669,8 +669,8 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
           <p>{selectedSubregion.serviceCue}</p>
         </article>
 
-        <details className="regions-deep-study">
-          <summary>Deep dive: 360 source view and references</summary>
+        <section className="regions-deep-study always-visible-section">
+          <h3 className="always-visible-section-title">Deep dive: 360 source view and references</h3>
         {selectedSubregionPanoramaScene ? (
           <VineyardPanoramaViewer
             scenes={[selectedSubregionPanoramaScene]}
@@ -691,7 +691,7 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
             ))}
           </ul>
         </article>
-        </details>
+        </section>
       </section>
     );
   }
@@ -815,8 +815,8 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
         </article>
       </div>
 
-      <details className="regions-deep-study">
-        <summary>Deep dive: terminology, regional guides, maps, panoramas, and sources</summary>
+      <section className="regions-deep-study always-visible-section">
+        <h3 className="always-visible-section-title">Deep dive: terminology, regional guides, maps, panoramas, and sources</h3>
       <article className="regions-info-card regions-single-row">
         <h3>{studyLabels.terminologyTitle}</h3>
         <ul>
@@ -1005,7 +1005,7 @@ export function Regions({ regionSlug, onNavigate }: RegionsProps) {
           </header>
         </article>
       )}
-      </details>
+      </section>
     </section>
   );
 }

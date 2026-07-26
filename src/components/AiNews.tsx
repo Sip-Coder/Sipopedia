@@ -904,8 +904,8 @@ export function AiNews() {
         )}
       </article>
 
-      <details>
-        <summary>Filter technical sources</summary>
+      <section className="always-visible-section">
+        <h3 className="always-visible-section-title">Filter technical sources</h3>
       <div className="news-filter-group">
         <p className="news-filter-label">Global</p>
         <div className="news-source-strip">
@@ -1046,7 +1046,7 @@ export function AiNews() {
           })}
         </div>
       </div>
-      </details>
+      </section>
 
       {renderPageControls("top")}
       {filteredArticles.length > maxVisibleArticles ? (

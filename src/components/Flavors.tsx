@@ -1822,8 +1822,8 @@ export function Flavors() {
                   <div><strong>Blind Tasting Mode</strong><p className="hint">Test yourself without seeing wine details</p></div>
                   <button type="button" aria-label="Toggle blind tasting mode" className={`flavors-switch ${draft.isBlind ? "on" : ""}`} onClick={() => { updateDraft({ isBlind: !draft.isBlind }); setRevealActual(draft.isBlind); }} aria-pressed={draft.isBlind}><span /></button>
                 </div>
-                <details className="flavors-tool-box">
-                  <summary>Optional pacing tools</summary>
+                <section className="flavors-tool-box always-visible-section">
+                  <h3 className="always-visible-section-title">Optional pacing tools</h3>
                   <p className="hint">Use these only for timed drills or structured group practice.</p>
                   <div className="flavors-setting-row">
                     <div><strong>Countdown Timer</strong><p className="hint">Set a timer while taking notes</p></div>
@@ -1835,11 +1835,11 @@ export function Flavors() {
                     <button type="button" aria-label="Toggle metronome" className={`flavors-switch ${metronomeEnabled ? "on" : ""}`} onClick={() => { setMetronomeEnabled((current) => !current); if (metronomeEnabled) stopMetronome(); }} aria-pressed={metronomeEnabled}><span /></button>
                   </div>
                   {metronomeEnabled ? <div className="flavors-tool-box"><div className="journal-row"><label>BPM: {bpm}</label><input type="range" min={40} max={220} step={1} value={bpm} onChange={(e) => setBpm(asNum(e.target.value, 60))} /></div><div className="journal-actions"><button type="button" className="btn btn-primary" onClick={toggleMetronome}>{metronomeRunning ? "Stop" : "Start"}</button><button type="button" className={`btn ${metronomeAudio ? "btn-primary" : "btn-light"}`} onClick={() => setMetronomeAudio((current) => !current)}>Audio Ticking</button><button type="button" className={`btn ${metronomeHaptic ? "btn-primary" : "btn-light"}`} onClick={() => setMetronomeHaptic((current) => !current)}>Haptic Vibration</button><button type="button" className={`btn ${metronomeProgression ? "btn-primary" : "btn-light"}`} onClick={() => setMetronomeProgression((current) => !current)}>Progression Mode</button></div></div> : null}
-                </details>
+                </section>
               </section>
 
-              <details className="journal-block">
-                <summary>Optional: add label photos</summary>
+              <section className="journal-block always-visible-section">
+                <h3 className="always-visible-section-title">Optional: add label photos</h3>
                 <section className="flavors-photo-section">
                 <h3>Label Photos</h3>
                 <div className="flavors-photo-zone">
@@ -1936,7 +1936,7 @@ export function Flavors() {
                   <input ref={additionalInputRef} hidden type="file" accept={PHOTO_ACCEPT} multiple onChange={(e) => void onUploadPhoto("additional", e.target.files)} />
                 </div>
                 </section>
-              </details>
+              </section>
 
               {!isWineType(draft.beverageType) ? (
                 <section className="journal-block flavors-wheel-block">

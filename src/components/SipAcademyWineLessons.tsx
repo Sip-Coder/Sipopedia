@@ -2353,8 +2353,8 @@ export function SipAcademyWineLessons() {
                 <span>Recall check</span>
                 <span>Next unit</span>
               </div>
-              <details className="academy-mentor-details">
-                <summary>Meet your optional study mentors</summary>
+              <section className="academy-mentor-details always-visible-section">
+                <h3 className="always-visible-section-title">Meet your optional study mentors</h3>
               <div className="academy-header-hero-mentors" aria-label="Sip Academy mentors">
                 <button type="button" className={`academy-header-mentor ${guideState.speaker === "sippy" ? "active" : ""}`} onClick={() => setProfileMentorId("sippy")}>
                   <img src={sippyImage} alt="" loading="lazy" decoding="async" />
@@ -2369,7 +2369,7 @@ export function SipAcademyWineLessons() {
                   <span>Hummin</span>
                 </button>
               </div>
-              </details>
+              </section>
             </div>
           </div>
 
@@ -2397,8 +2397,8 @@ export function SipAcademyWineLessons() {
                 Start Focus Sprint
               </button>
             </div>
-            <details className="academy-advanced-controls">
-              <summary>Progress, mentors, and alternate study modes</summary>
+            <section className="academy-advanced-controls always-visible-section">
+              <h3 className="always-visible-section-title">Progress, mentors, and alternate study modes</h3>
             <div className="academy-level-band">
               <div>
                 <strong>{Math.round(combinedCompletionRatio * 100)}%</strong>
@@ -2451,7 +2451,7 @@ export function SipAcademyWineLessons() {
                 </button>
               ))}
             </div>
-            </details>
+            </section>
           </aside>
         </div>
       </header>
@@ -2462,8 +2462,8 @@ export function SipAcademyWineLessons() {
         <div className="academy-learning-flow">
       <CategoryTrainingSprints />
 
-      <details className="academy-cinematic-details">
-        <summary>Explore the current realm cinematic</summary>
+      <section className="academy-cinematic-details always-visible-section">
+        <h3 className="always-visible-section-title">Explore the current realm cinematic</h3>
       <section className="academy-cinematic" aria-label="Active realm cinematic preview">
         <div className="academy-cinematic-stage">
           <img
@@ -2521,7 +2521,7 @@ export function SipAcademyWineLessons() {
           </div>
         </div>
       </section>
-      </details>
+      </section>
 
       <section className="academy-flow-intro" aria-label="Sip Academy learning flow">
         <div>

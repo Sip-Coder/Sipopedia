@@ -1221,7 +1221,8 @@ function getCheckpointTeachingNotes(level: GameLevel, facility: Facility, checkp
 }
 
 export function SipStudiosGame() {
-  const pageRef = useRef<HTMLElement | null>(null);
+  const fullscreenStageRef = useRef<HTMLDivElement | null>(null);
+  const fullscreenButtonRef = useRef<HTMLButtonElement | null>(null);
   const worldRef = useRef<HTMLDivElement | null>(null);
   const animationRef = useRef<number | null>(null);
   const lastTickRef = useRef<number | null>(null);
@@ -1241,9 +1242,8 @@ export function SipStudiosGame() {
   const [showQuickNextLevelCta, setShowQuickNextLevelCta] = useState(false);
   const [visited, setVisited] = useState<Record<string, number>>({});
   const [mastered, setMastered] = useState<Record<string, true>>({});
-  const [checkpointResponse, setCheckpointResponse] = useState("");
-  const [checkpointResponseNotice, setCheckpointResponseNotice] = useState("");
   const [lineIndex, setLineIndex] = useState(0);
+  const [isExpandedFallback, setIsExpandedFallback] = useState(false);
 
   const level = useMemo(() => LEVELS.find((item) => item.id === levelId) ?? LEVELS[0], [levelId]);
   const facility = useMemo(() => level.facilities.find((item) => item.id === facilityId) ?? level.facilities[0], [facilityId, level]);
@@ -1270,6 +1270,7 @@ export function SipStudiosGame() {
   const isFinalLevelRoomComplete = level.number === 8 && roomComplete;
   const finalCelebrationKey = getRoomCompletionKey(level.id, facility.id);
   const isFinalLevelCelebration = isFinalLevelRoomComplete && !modalCheckpoint && !roomCompletionModalKey && !finalCelebrationDismissed[finalCelebrationKey];
+  const hasOpenGameModal = Boolean(modalCheckpoint || roomCompletionModalKey || isFinalLevelCelebration);
   const finalLevelCelebration = FINAL_LEVEL_CELEBRATIONS[facility.id];
   const otherFacilities = level.facilities.filter((item) => item.id !== facility.id);
   const nextLevel = LEVELS.find((item) => item.number === level.number + 1) ?? null;
@@ -1297,11 +1298,6 @@ export function SipStudiosGame() {
     if (!checkpointModalId) return;
     if (roomCompletionModalKey) setRoomCompletionModalKey(null);
   }, [checkpointModalId, roomCompletionModalKey]);
-
-  useEffect(() => {
-    setCheckpointResponse("");
-    setCheckpointResponseNotice("");
-  }, [checkpointModalId]);
 
   useEffect(() => {
     const step = (ts: number) => {
@@ -1406,10 +1402,6 @@ export function SipStudiosGame() {
 
   const markCheckpointMastered = () => {
     if (!modalCheckpoint) return;
-    if (checkpointResponse.trim().length < 24) {
-      setCheckpointResponseNotice("Add a short input → action → output explanation and one warning sign before marking mastery.");
-      return;
-    }
     const checkpointId = modalCheckpoint.id;
     setMastered((current) => ({
       ...current,
@@ -1438,18 +1430,74 @@ export function SipStudiosGame() {
     window.location.hash = `#app/${page}`;
   };
 
+  useEffect(() => {
+    if (!isExpandedFallback && !hasOpenGameModal) return;
+    const previousOverflow = document.body.style.overflow;
+    const previousOverscrollBehavior = document.body.style.overscrollBehavior;
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "none";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.overscrollBehavior = previousOverscrollBehavior;
+    };
+  }, [hasOpenGameModal, isExpandedFallback]);
+
+  const unlockOrientation = () => {
+    const orientation = screen.orientation as ScreenOrientation & {
+      unlock?: () => void;
+    } | undefined;
+    orientation?.unlock?.();
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (document.fullscreenElement === fullscreenStageRef.current) return;
+      unlockOrientation();
+      fullscreenButtonRef.current?.focus();
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const exitFullscreen = async () => {
+    if (document.fullscreenElement === fullscreenStageRef.current) {
+      try {
+        await document.exitFullscreen();
+      } catch {
+        // The browser can finish its own fullscreen exit gesture.
+      }
+    }
+    setIsExpandedFallback(false);
+    unlockOrientation();
+    fullscreenButtonRef.current?.focus();
+  };
+
   const toggleFullscreen = async () => {
-    if (!pageRef.current) return;
-    if (document.fullscreenElement) {
-      await document.exitFullscreen();
+    const stage = fullscreenStageRef.current;
+    if (!stage) return;
+    if (document.fullscreenElement === stage || isExpandedFallback) {
+      await exitFullscreen();
       return;
     }
-    await pageRef.current.requestFullscreen();
+
+    if (!stage.requestFullscreen) {
+      setIsExpandedFallback(true);
+      return;
+    }
+
+    try {
+      await stage.requestFullscreen({ navigationUI: "hide" });
+    } catch {
+      // iOS and embedded browsers may not expose element fullscreen.
+      setIsExpandedFallback(true);
+      return;
+    }
+
     try {
       const orientation = screen.orientation as ScreenOrientation & {
         lock?: (orientation: "landscape") => Promise<void>;
-      };
-      await orientation.lock?.("landscape");
+      } | undefined;
+      await orientation?.lock?.("landscape");
     } catch {
       // Some mobile browsers only allow manual rotation after fullscreen starts.
     }
@@ -1457,7 +1505,6 @@ export function SipStudiosGame() {
 
   return (
     <section
-      ref={pageRef}
       className="sip-game-page"
       aria-label="Sip Studios adventure game"
       style={{ "--facility-accent": facility.accent } as CSSProperties}
@@ -1506,16 +1553,33 @@ export function SipStudiosGame() {
           </button>
         ))}
         <button
+          ref={fullscreenButtonRef}
           type="button"
           className="sip-game-fullscreen-btn"
           onClick={toggleFullscreen}
           aria-label="Open Sip by Bit fullscreen for landscape play"
+          aria-controls="sip-game-stage"
         >
           Full Screen / Rotate
         </button>
       </div>
 
-      <div className="sip-game-layout">
+      <div
+        id="sip-game-stage"
+        ref={fullscreenStageRef}
+        className={`sip-game-stage${isExpandedFallback ? " is-expanded-fallback" : ""}`}
+        aria-label={`${facility.name} game stage`}
+      >
+        <button
+          type="button"
+          className="sip-game-fullscreen-exit"
+          onClick={exitFullscreen}
+          aria-label="Exit full screen"
+        >
+          Exit
+        </button>
+
+        <div className="sip-game-layout">
         <div className="sip-game-world-wrap">
           <div
             className="sip-game-world"
@@ -1660,7 +1724,7 @@ export function SipStudiosGame() {
             ) : null}
           </div>
         </div>
-      </div>
+        </div>
 
       {modalCheckpoint ? (
         <div
@@ -1676,50 +1740,49 @@ export function SipStudiosGame() {
             aria-modal="true"
             aria-label={`${modalCheckpoint.name} checkpoint briefing`}
             onPointerDown={(event) => event.stopPropagation()}
+            onKeyDown={(event) => {
+              if (event.key !== "Escape") return;
+              event.stopPropagation();
+              closeCheckpointModal();
+            }}
           >
-            <button type="button" className="sip-game-modal-close" onClick={() => closeCheckpointModal()} aria-label="Close checkpoint briefing">
+            <button
+              type="button"
+              className="sip-game-modal-close"
+              onClick={() => closeCheckpointModal()}
+              aria-label="Close checkpoint briefing"
+              autoFocus
+            >
               x
             </button>
-            <div className="sip-game-equipment-portrait">
-              <img
-                src={getGeneratedCheckpointImage(level.id, facility.id, modalCheckpoint.id)}
-                alt={modalCheckpoint.name}
-                onError={(event) => {
-                  event.currentTarget.onerror = null;
-                  event.currentTarget.src = modalCheckpoint.image;
-                }}
-              />
-            </div>
-            <div className="sip-game-ff-dialogue">
-              <p className="sip-game-dialogue-kicker">
-                {leadGuide.name} - {modalCheckpoint.stage}
-              </p>
-              <h3>{modalCheckpoint.name}</h3>
-              <p>{modalCheckpoint.purpose}</p>
-              <p>{modalCheckpoint.detail}</p>
-              <div className="sip-game-teaching-notes" aria-label={`${modalCheckpoint.name} teaching notes`}>
-                {modalTeachingNotes.map((note) => (
-                  <p key={note}>{note}</p>
-                ))}
-              </div>
-              <div className="sip-game-teaching-notes">
-                <label htmlFor={`checkpoint-response-${modalCheckpoint.id}`}>
-                  <strong>Recall check:</strong> Explain the input → action → output, plus one warning sign, in your own words.
-                </label>
-                <textarea
-                  id={`checkpoint-response-${modalCheckpoint.id}`}
-                  value={checkpointResponse}
-                  onChange={(event) => {
-                    setCheckpointResponse(event.target.value);
-                    setCheckpointResponseNotice("");
+            <div className="sip-game-equipment-modal-body">
+              <div className="sip-game-equipment-portrait">
+                <img
+                  src={getGeneratedCheckpointImage(level.id, facility.id, modalCheckpoint.id)}
+                  alt={modalCheckpoint.name}
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = modalCheckpoint.image;
                   }}
-                  rows={4}
-                  placeholder="Input… Action… Output… Warning sign…"
                 />
-                {checkpointResponseNotice ? <p className="hint" role="status">{checkpointResponseNotice}</p> : null}
-                <button type="button" className="btn btn-primary" onClick={markCheckpointMastered}>
-                  Mark Checkpoint Mastered
-                </button>
+              </div>
+              <div className="sip-game-ff-dialogue">
+                <p className="sip-game-dialogue-kicker">
+                  {leadGuide.name} - {modalCheckpoint.stage}
+                </p>
+                <h3>{modalCheckpoint.name}</h3>
+                <p>{modalCheckpoint.purpose}</p>
+                <p>{modalCheckpoint.detail}</p>
+                <div className="sip-game-teaching-notes" aria-label={`${modalCheckpoint.name} teaching notes`}>
+                  {modalTeachingNotes.map((note) => (
+                    <p key={note}>{note}</p>
+                  ))}
+                </div>
+                <div className="sip-game-checkpoint-action">
+                  <button type="button" className="btn btn-primary" onClick={markCheckpointMastered}>
+                    Mark Checkpoint Mastered
+                  </button>
+                </div>
               </div>
             </div>
           </article>
@@ -1823,6 +1886,7 @@ export function SipStudiosGame() {
           </article>
         </div>
       ) : null}
+      </div>
     </section>
   );
 }

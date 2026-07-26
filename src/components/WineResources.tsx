@@ -959,8 +959,8 @@ export function WineResources() {
       ) : null}
 
       <aside className="wine-resource-sources">
-        <details>
-          <summary>{activeRegionLabel} evidence and source links</summary>
+        <section className="always-visible-section">
+          <h3 className="always-visible-section-title">{activeRegionLabel} evidence and source links</h3>
         <div>
           {sourceLinks
             .filter((source) => source.label.toLowerCase().includes(activeRegion === "burgundy" ? "bourgogne" : activeRegion))
@@ -970,7 +970,7 @@ export function WineResources() {
               </a>
             ))}
         </div>
-        </details>
+        </section>
       </aside>
         </>
       ) : null}

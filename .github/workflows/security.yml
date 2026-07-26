@@ -44,6 +44,9 @@ jobs:
       - name: Secret Guard Regression Test
         run: npm run test:security
 
+      - name: Navigation Policy Test
+        run: npm run test:navigation
+
       - name: Dependency Audit
         run: npm audit --audit-level=high
 

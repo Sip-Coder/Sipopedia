@@ -681,10 +681,10 @@ export function Terminology() {
                     ) : (
                       <>
                         {recallDraft.trim() ? (
-                          <details open>
-                            <summary>Your recall draft</summary>
+                          <section className="always-visible-section">
+                            <h3 className="always-visible-section-title">Your recall draft</h3>
                             <p>{recallDraft}</p>
-                          </details>
+                          </section>
                         ) : null}
                         <h4>Meaning</h4>
                         <p>{selectedTerm.meaning}</p>
@@ -701,8 +701,8 @@ export function Terminology() {
                   </section>
 
                   <aside className="term-modal-evidence">
-                    <details>
-                      <summary>Evidence, graphics, and further study</summary>
+                    <section className="always-visible-section">
+                      <h3 className="always-visible-section-title">Evidence, graphics, and further study</h3>
                     <h4>Source</h4>
                     <p>
                       <strong>Title:</strong> {selectedTerm.source_title || "Not set"}
@@ -812,7 +812,7 @@ export function Terminology() {
                     )}
                     <h4>Editorial policy</h4>
                     <p>Original editorial definition. No verbatim source excerpts are published in Sipopedia.</p>
-                    </details>
+                    </section>
                   </aside>
                 </div>
               </>
