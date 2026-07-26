@@ -494,8 +494,8 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
         </section>
       ) : null}
 
-      {stage === "next" ? <details>
-        <summary>Advanced bottle metadata and external matching</summary>
+      {stage === "next" ? <section className="always-visible-section">
+        <h3 className="always-visible-section-title">Advanced bottle metadata and external matching</h3>
       <section className="cellar-metadata-section" aria-labelledby="cellar-metadata-title">
         <div className="cellar-metadata-head">
           <div>
@@ -537,10 +537,10 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
           </article>
         </div>
       </section>
-      </details> : null}
+      </section> : null}
 
-      {stage === "next" ? <details>
-        <summary>Optional tasting feedback coach</summary>
+      {stage === "next" ? <section className="always-visible-section">
+        <h3 className="always-visible-section-title">Optional tasting feedback coach</h3>
       <section className="cellar-tasting-feedback-section" aria-labelledby="cellar-feedback-title">
         <div className="cellar-tasting-feedback-head">
           <div>
@@ -668,10 +668,10 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
           </button>
         </div>
       </section>
-      </details> : null}
+      </section> : null}
 
-      <details>
-        <summary>Saved cellar records ({records.length})</summary>
+      <section className="always-visible-section">
+        <h3 className="always-visible-section-title">Saved cellar records ({records.length})</h3>
       <section className="cellar-records-section" aria-labelledby="cellar-records-title">
         <div className="cellar-records-head">
           <div>
@@ -708,7 +708,7 @@ export function CellarScanner({ onNavigate }: { onNavigate: (route: string) => v
           )}
         </div>
       </section>
-      </details>
+      </section>
     </section>
   );
 }

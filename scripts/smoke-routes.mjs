@@ -62,6 +62,35 @@ const explicitRoutes = [
   "/route-that-does-not-exist"
 ];
 
+const allowedDisclosureSources = new Set([
+  "src/components/AdminConsole.tsx",
+  "src/components/SupportCenter.tsx"
+]);
+
+function listSourceFiles(directory) {
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const fullPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) return listSourceFiles(fullPath);
+    return entry.isFile() && /\.(?:ts|tsx)$/.test(entry.name) ? [fullPath] : [];
+  });
+}
+
+function assertStudentDisclosureSourcePolicy() {
+  const sourceFiles = listSourceFiles(path.join(repoRoot, "src"));
+  const unexpectedDisclosures = sourceFiles.flatMap((filePath) => {
+    const relativePath = path.relative(repoRoot, filePath).replaceAll("\\", "/");
+    if (allowedDisclosureSources.has(relativePath)) return [];
+    const source = fs.readFileSync(filePath, "utf8");
+    return /<(?:details|summary)(?:\s|>)/.test(source) ? [relativePath] : [];
+  });
+
+  if (unexpectedDisclosures.length > 0) {
+    throw new Error(
+      `Student-facing disclosure controls are not allowed. Replace them with always-visible sections: ${unexpectedDisclosures.join(", ")}`
+    );
+  }
+}
+
 function parseArgs(argv) {
   const options = {
     baseUrl: process.env.SMOKE_BASE_URL ?? null,
@@ -333,6 +362,11 @@ async function waitForRouteSettled(client, sessionId, route, timeoutMs) {
           readyState: document.readyState,
           textLength: text.trim().length,
           rootTextLength: rootText.length,
+          rootExists: Boolean(root),
+          rootHtmlLength: root?.innerHTML?.length ?? 0,
+          bodyHtmlLength: document.body?.innerHTML?.length ?? 0,
+          scriptSources: Array.from(document.scripts).map((script) => script.src || "[inline]"),
+          resourceCount: performance.getEntriesByType("resource").length,
           hasErrorBoundary: text.includes("Something went wrong"),
           hasWorkspaceLoading: text.includes("Loading workspace...") && text.includes("Preparing your next module."),
           hasPaywall: Boolean(document.querySelector(".paywall-panel")),
@@ -446,10 +480,144 @@ async function navigateAndCheck(client, sessionId, baseUrl, route, routeTimeoutM
   }
 }
 
+async function assertCompactNavigationBehavior(client, sessionId, baseUrl, routeTimeoutMs) {
+  const diagnostics = {
+    consoleErrors: [],
+    exceptions: [],
+    failedRequests: [],
+    requestUrls: new Map()
+  };
+  const removeListener = client.onEvent((message) => {
+    if (message.sessionId !== sessionId) return;
+    const params = message.params ?? {};
+    if (message.method === "Runtime.consoleAPICalled" && params.type === "error") {
+      diagnostics.consoleErrors.push(textFromConsoleArgs(params.args));
+    } else if (message.method === "Runtime.exceptionThrown") {
+      diagnostics.exceptions.push(params.exceptionDetails?.exception?.description ?? params.exceptionDetails?.text ?? "Runtime exception");
+    } else if (message.method === "Network.requestWillBeSent") {
+      diagnostics.requestUrls.set(params.requestId, params.request?.url ?? "");
+    } else if (message.method === "Network.responseReceived") {
+      const responseUrl = params.response?.url ?? "";
+      const status = params.response?.status ?? 0;
+      if (status >= 400 && isSameOriginResource(baseUrl, responseUrl) && !responseUrl.endsWith(".map")) {
+        diagnostics.failedRequests.push(`${status} ${responseUrl}`);
+      }
+    } else if (message.method === "Network.loadingFailed") {
+      const requestUrl = diagnostics.requestUrls.get(params.requestId) ?? "";
+      const requestWasCancelled = params.canceled === true || params.errorText === "net::ERR_ABORTED";
+      if (!requestWasCancelled && requestUrl && isSameOriginResource(baseUrl, requestUrl) && !requestUrl.endsWith(".map")) {
+        diagnostics.failedRequests.push(`${params.errorText ?? "failed"} ${requestUrl}`);
+      }
+    }
+  });
+
+  await client.send(
+    "Emulation.setDeviceMetricsOverride",
+    {
+      width: 390,
+      height: 844,
+      deviceScaleFactor: 1,
+      mobile: true
+    },
+    sessionId
+  );
+
+  try {
+    await client.send("Page.navigate", { url: "about:blank" }, sessionId);
+    await sleep(100);
+    await client.send("Page.navigate", { url: `${baseUrl}/#app/launch` }, sessionId);
+    await sleep(700);
+    const settled = await waitForRouteSettled(client, sessionId, "/#app/launch", routeTimeoutMs);
+    if (settled.hasErrorBoundary || settled.hasWorkspaceLoading || settled.timedOut) {
+      throw new Error(
+        `Compact navigation check could not load the Launch Pad: ${JSON.stringify({
+          settled,
+          consoleErrors: diagnostics.consoleErrors,
+          exceptions: diagnostics.exceptions,
+          failedRequests: diagnostics.failedRequests
+        })}`
+      );
+    }
+
+    const openedState = await evaluate(
+      client,
+      sessionId,
+      `(() => {
+        const menuButton = document.querySelector(".sip-appbar-menu");
+        if (!(menuButton instanceof HTMLButtonElement)) return { error: "Menu button is missing." };
+        menuButton.click();
+        return true;
+      })()`
+    );
+    if (openedState?.error) throw new Error(openedState.error);
+    await sleep(120);
+
+    const mobileState = await evaluate(
+      client,
+      sessionId,
+      `(() => {
+        const navigation = document.querySelector(".sip-compact-navigation");
+        const searchInput = document.querySelector('input[aria-label="Search Sip Studies"]');
+        const groupLabels = Array.from(document.querySelectorAll(".sip-sidebar-groups button"))
+          .map((button) => button.textContent?.trim() ?? "");
+        return {
+          drawerOpen: navigation?.classList.contains("drawer-open") ?? false,
+          searchFocused: document.activeElement === searchInput,
+          searchLabel: searchInput?.getAttribute("aria-label") ?? null,
+          searchPlaceholder: searchInput?.getAttribute("placeholder") ?? null,
+          hasBossGroup: groupLabels.some((label) => label.includes("Boss")),
+          letterBadgeCount: document.querySelectorAll(".sip-sidebar-row-mark").length
+        };
+      })()`
+    );
+
+    if (!mobileState.drawerOpen) throw new Error("Mobile Menu did not open the destination drawer.");
+    if (mobileState.searchFocused) throw new Error("Mobile Menu automatically focused Search.");
+    if (mobileState.searchLabel !== "Search Sip Studies" || mobileState.searchPlaceholder !== "Search") {
+      throw new Error("Compact navigation Search does not use the expected accessible label and placeholder.");
+    }
+    if (mobileState.hasBossGroup) throw new Error("Boss navigation is visible without the Google admin identity.");
+    if (mobileState.letterBadgeCount !== 0) throw new Error("Compact navigation still renders initial-letter badges.");
+
+    await evaluate(
+      client,
+      sessionId,
+      `(() => {
+        const input = document.querySelector('input[aria-label="Search Sip Studies"]');
+        if (!(input instanceof HTMLInputElement)) return false;
+        const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+        setter?.call(input, "privacy");
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        return true;
+      })()`
+    );
+    await sleep(220);
+
+    const searchState = await evaluate(
+      client,
+      sessionId,
+      `(() => ({
+        labels: Array.from(document.querySelectorAll(".sip-sidebar-route-list .sip-sidebar-row strong"))
+          .map((item) => item.textContent?.trim() ?? ""),
+        details: Array.from(document.querySelectorAll(".sip-sidebar-route-list .sip-sidebar-row small"))
+          .map((item) => item.textContent?.trim() ?? "")
+      }))()`
+    );
+    if (!searchState.labels.includes("Privacy")) {
+      throw new Error("Site-wide Search could not find the Privacy page outside the visible menu group.");
+    }
+  } finally {
+    removeListener();
+    await client.send("Emulation.clearDeviceMetricsOverride", {}, sessionId);
+  }
+}
+
 async function main() {
   if (typeof WebSocket !== "function") {
     throw new Error("This smoke script requires a Node runtime with global WebSocket support.");
   }
+
+  assertStudentDisclosureSourcePolicy();
 
   const options = parseArgs(process.argv.slice(2));
   const startedProcesses = [];
@@ -520,7 +688,10 @@ async function main() {
     await client.send("Log.enable", {}, sessionId);
 
     await client.send("Page.navigate", { url: `${baseUrl}/#home` }, sessionId);
-    await sleep(700);
+    const initialState = await waitForRouteSettled(client, sessionId, "/#home", options.routeTimeoutMs);
+    if (initialState.hasErrorBoundary || initialState.hasWorkspaceLoading || initialState.timedOut) {
+      throw new Error(`Route smoke could not hydrate the initial page: ${JSON.stringify(initialState)}`);
+    }
     await evaluate(
       client,
       sessionId,
@@ -530,6 +701,10 @@ async function main() {
         return true;
       })()`
     );
+
+    process.stdout.write("Checking compact navigation behavior ... ");
+    await assertCompactNavigationBehavior(client, sessionId, baseUrl, options.routeTimeoutMs);
+    process.stdout.write("ok\n");
 
     const results = [];
     for (const route of explicitRoutes) {

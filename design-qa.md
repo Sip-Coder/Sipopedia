@@ -1,141 +1,188 @@
-# Design QA: Compact Sipopedia navigation
+# Sip Game Appbar, Fullscreen, and Checkpoint Modal Design QA
 
-## Scope
+## Comparison Targets
 
-- Product area: public header and all Sipopedia workspace routes
-- Branch: `Improvements`
-- Review date: 2026-07-24
-- Reference visual truth: `https://sipopedia-reference.sipstudies.chatgpt.site/`
-- Requested outcome:
-  - retain the reference experiment's slim app bar, grouped destinations, search, and keyboard efficiency;
-  - reduce visual and decision complexity;
-  - make the menu compact and dependable on phones;
-  - keep route visibility and counts synchronized with Boss Room publication settings.
+### Light Sip Studies emblem (latest)
 
-## Source and implementation evidence
+- Source visual truth: `DUMP IN/Logo/Sip Studies Logo 03 - Light.png`
+- Normalized source crop: `design-qa-assets/sip-appbar-light-logo-reference-normalized.png`
+- Focused implementation screenshot: `design-qa-assets/sip-appbar-light-logo-implementation-focus.png`
+- Full implementation screenshot: `design-qa-assets/sip-appbar-light-logo-implementation-full.jpg`
+- Combined comparison: `design-qa-assets/sip-appbar-light-logo-comparison.png` (normalized source left, rendered implementation right)
+- Route: `http://127.0.0.1:5100/#app/sip-game`
+- Viewport: 639 × 910 CSS px at device pixel ratio 1 for the full implementation capture.
+- Pixel dimensions: original source 1728 × 1728 px; optimized runtime asset 256 × 256 px; normalized source 33 × 33 px; focused implementation 33 × 33 px; full implementation 624 × 889 px.
+- Density normalization: the source was downsampled to the 33 × 33 px in-app capture size. The implementation crop accounts for the in-app capture surface scaling from the 34 × 34 CSS px mobile slot. Neither comparison image was enlarged.
+- State: Sip Game page, navigation drawer closed, normal appbar.
+- Comparison intent: replace only the dark round emblem with the user-supplied light mint-and-gold Sip Studies emblem while retaining the Sip Studies script wordmark, header geometry, navigation behavior, and accessible name.
 
-All captures are stored in:
+### Appbar logo cleanup
 
-`C:\Users\TwoKn\Documents\Codex\2026-07-20\prior-conversation-with-codex-conversation-role\artifacts\menu-redesign-2026-07-24`
+- Source visual truth: `design-qa-assets/sip-appbar-logo-reference.png`
+- Focused implementation screenshot: `design-qa-assets/sip-appbar-logo-implementation-focus.png`
+- Full implementation screenshot: `design-qa-assets/sip-appbar-logo-implementation-full.jpg`
+- Combined comparison: `design-qa-assets/sip-appbar-logo-comparison.png` (reported state left, implementation right)
+- Route: `http://127.0.0.1:5100/#app/sip-game`
+- Viewport: 639 × 910 CSS px for the full implementation capture; focused comparison region 270 × 81 px.
+- Pixel dimensions: source 270 × 81 px; focused implementation 270 × 81 px; full implementation 624 × 889 px.
+- Density normalization: source and focused implementation are equal-sized 1:1 crops with no resizing. The browser viewport used device pixel ratio 1; the in-app browser capture surface was 624 × 889 px.
+- State: Sip Game page, navigation drawer closed, normal appbar.
+- Comparison intent: the source is the reported pre-change state. The implementation intentionally removes the `Sipopedia` subtitle while retaining the existing round Sip Studies emblem and Sip Studies script wordmark.
 
-### Source captures
+### Recall-entry removal
 
-- `02-reference-menu-desktop.png` — reference desktop menu
-- `03-reference-menu-mobile-closed.png` — reference mobile app bar
-- `04-reference-menu-mobile-open.png` — reference mobile drawer
-- `07-current-menu-desktop-closed.png` — production menu before this change
-- `08-current-menu-desktop-expanded.png` — production menu before this change, expanded
+- Source visual truth: `design-qa-assets/sip-game-no-recall-field-reference.png`
+- Focused implementation screenshot: `design-qa-assets/sip-game-no-recall-field-implementation.jpg`
+- Full implementation screenshot: `design-qa-assets/sip-game-no-recall-field-full.jpg`
+- Combined comparison: `design-qa-assets/sip-game-no-recall-field-comparison.jpg` (reported state left, implementation right)
+- Route: `http://127.0.0.1:5100/#app/sip-game`
+- Viewport: 1920 × 1080 CSS px for the expanded full view; focused comparison region 608 × 357 px.
+- Pixel dimensions: source 608 × 357 px; focused implementation 608 × 357 px; full implementation 1920 × 1080 px.
+- Density normalization: source and focused implementation are equal-sized 1:1 crops; no resizing was used.
+- State: Level 1, Winery, `Vine Training` checkpoint briefing open in expanded play.
+- Comparison intent: the source is the reported pre-change state. The implementation intentionally removes the Recall check copy, textarea, and validation notice while preserving the teaching notes and mastery action.
 
-### Final implementation captures
+### Checkpoint modal
 
-- `25-after-public-desktop-open-final-compact.png` — compact desktop overlay drawer
-- `13b-after-public-mobile-closed.png` — compact mobile app bar
-- `14-after-public-mobile-open.png` — mobile drawer
-- `15-after-workspace-mobile-closed.png` — mobile workspace with no oversized welcome hero
-- `18-after-workspace-tablet-closed.png` — tablet workspace
-- `19b-after-workspace-1440-final.png` — wide workspace with persistent sidebar
+- Source visual truth: `design-qa-assets/sip-game-modal-reference.png`
+- Implementation screenshot: `design-qa-assets/sip-game-modal-implementation.jpg`
+- Combined comparison: `design-qa-assets/sip-game-modal-comparison.jpg` (source left, implementation right)
+- Route: `http://127.0.0.1:5100/#app/sip-game`
+- Viewport: 602 × 884 CSS px, portrait
+- Pixel dimensions: source 602 × 884 px; implementation 602 × 884 px
+- Density normalization: both artifacts are 1:1 captures at the same pixel dimensions; no resizing was used.
+- State: Level 1, Distillery, `Corn Crop` checkpoint briefing open, modal body at its initial scroll position.
+- Comparison intent: the source is the reported pre-fix state. The implementation intentionally makes the image shorter, keeps it fully contained, and exposes more lesson content while preserving the same artwork, content order, colors, typography, and modal structure.
 
-### Paired comparison inputs inspected
+### Game-only fullscreen
 
-- `26-desktop-reference-implementation-final.png` — final desktop full-view comparison
-- `23-mobile-closed-reference-implementation.png` — mobile app-bar comparison
-- `24-mobile-open-reference-implementation.png` — mobile drawer comparison
-- `27-desktop-drawer-focused.png` — focused typography, spacing, grouping, and active-state comparison
+- Source visual truth: `design-qa-assets/sip-game-fullscreen-reference.png`
+- Implementation screenshot: `design-qa-assets/sip-game-fullscreen-implementation.jpg`
+- Combined comparison: `design-qa-assets/sip-game-fullscreen-comparison.jpg` (source left, implementation right)
+- Viewport: 593 × 725 CSS px, portrait
+- Pixel dimensions: source 593 × 725 px; implementation 593 × 725 px
+- Density normalization: both artifacts are 1:1 captures at the same pixel dimensions.
+- State: Level 1, Distillery, no lesson modal open, game stage expanded.
 
-The focused crop was required because the full desktop comparison made small route labels difficult to judge precisely.
+## Findings
 
-## Capture geometry and normalization
+- No actionable P0, P1, or P2 issue remains.
+- The appbar and navigation drawer now use the supplied light Sip Studies emblem. Its pale mint ring and gold central glass remain visibly distinct against the dark navy surfaces at the production 34 px mobile and 38 px desktop slots.
+- The runtime emblem is a 256 × 256 lossless WebP derived directly from the 1728 × 1728 transparent source. It preserves transparency and the circular crop without stretching, replacement artwork, or visible edge halos.
+- The appbar brand lockup contains exactly two visible image assets: the round Sip Studies emblem and the Sip Studies script wordmark. Its rendered text content is empty, so no `Sipopedia` subtitle or synthetic mobile replacement remains.
+- The logo lockup stays inside the appbar without colliding with the Menu control and creates no horizontal document overflow at 390 × 844, 639 × 910, or 1280 × 900 CSS px.
+- The checkpoint image uses its full aspect ratio with `object-fit: contain`; no part of the source art is cropped.
+- The shared checkpoint renderer no longer includes the written Recall check, textarea, or response validation in any level or facility.
+- `Mark Checkpoint Mastered` remains the clear primary action and now records mastery immediately without requiring typed text.
+- The modal is bounded by the visual viewport in normal and expanded play. Its lesson body is the only scroll owner, so the image, teaching notes, and mastery action remain reachable without horizontal overflow.
+- The 44 × 44 px Close control is outside the scrolling body, stays visible at the top-right at every scroll position, and remains the hit-tested foreground control when the fullscreen Exit control occupies the same corner behind the dialog.
+- The underlying page is scroll-locked while a checkpoint, room-complete, or finale modal is open, eliminating the second page scrollbar and restoring the prior body styles when the modal closes.
+- The expanded view still contains only the requested game stage. Page navigation, titles, level controls, facility controls, and the fullscreen entry button remain outside that view.
 
-| Mode | CSS viewport | Source pixels | Implementation pixels | Normalization | DPR |
-| --- | --- | --- | --- | --- | --- |
-| Desktop overlay, open | 1146 × 912 | 1131 × 900 | 1146 × 912 | Implementation normalized to 1131 × 900 for paired comparison | 1 |
-| Mobile, closed | 390 × 844 | 375 × 812 | 375 × 812 | None | 1 |
-| Mobile, open | 390 × 844 | 375 × 812 | 390 × 844 | Implementation normalized to 375 × 812 for paired comparison | 1 |
-| Tablet workspace | 1024 × 768 | — | 1009 × 757 | Browser scrollbar excluded | 1 |
-| Wide workspace | 1440 × 900 | — | 1425 × 891 | Browser scrollbar excluded | 1 |
+## Required Fidelity Surfaces
 
-The source and implementation use the same dark theme and menu state in each paired comparison. Production page content intentionally differs from the experiment; the comparison target is navigation composition, density, typography, states, and responsiveness.
+- Fonts and typography: the authentic Sip Studies script wordmark image is preserved at 94 × 21 CSS px. The added all-caps `Sipopedia` text is intentionally removed rather than replaced by another text treatment. Existing Sip Game families, weights, sizes, line heights, letter spacing, and hierarchy remain unchanged.
+- Spacing and layout rhythm: the emblem and wordmark remain a single horizontal lockup with the existing gap. Desktop uses a 38 × 38 px emblem and mobile uses 34 × 34 px; neither overlaps the Menu control. The modal retains the existing card, radius, borders, and padding. Narrow screens use one content column; short landscapes use two compact columns.
+- Colors and visual tokens: the supplied emblem's pale mint and gold palette now creates clear foreground contrast against the navy appbar and sidebar while leaving the surrounding production tokens unchanged. The cream modal surface, deep teal lesson card, gold focus ring, borders, and gradients remain mapped to the existing Sipopedia/Sip Game design system.
+- Image quality and asset fidelity: the authentic supplied light emblem is used directly through an optimized transparent WebP derivative; it is not recreated with HTML, CSS, SVG, emoji, or placeholder art. The Sip Studies script wordmark remains unchanged and sharp. The same high-resolution `Corn Crop` asset is used in the checkpoint modal and is neither substituted nor stretched.
+- Copy and content: the `Sipopedia` subtitle is intentionally removed only from the appbar brand lockup. Checkpoint teaching notes and the mastery action remain unchanged. Recall-entry instructions, placeholder copy, and validation notice remain intentionally removed.
+- Icons and controls: the existing text Close control remains visually consistent with the game. Its minimum target is 44 × 44 px and it retains the gold focus treatment.
+- Accessibility and interaction states: the appbar brand retains the explicit `Open Sip Studies home` accessible name; the decorative seal stays silent and the wordmark supplies image alt text. The checkpoint dialog retains semantic `role="dialog"` and `aria-modal`; focus enters on Close, Escape dismisses it, and background scrolling is disabled while any game modal is open.
 
-## Comparison history and corrections
+## Focused Region Comparison
 
-| Severity | Earlier finding | Correction | Post-fix evidence |
-| --- | --- | --- | --- |
-| P1 | The original production workspace used a second, competing navigation system: status card, three lane cards, four action controls, lobby pills, and a horizontal module rail. It occupied multiple stacked rows on phones. | Replaced both public and workspace navigation with one shared compact component driven by canonical route data. | `25-after-public-desktop-open-final-compact.png`, `14-after-public-mobile-open.png`, `19b-after-workspace-1440-final.png` |
-| P1 | A closed off-canvas drawer could remain keyboard-reachable, and Escape could fall through to the workspace shortcut that navigates to Launch Pad. | Closed overlay drawers now receive `aria-hidden` and `inert`; open drawers trap focus, lock body scroll, stop Escape propagation, restore focus, and gate global workspace shortcuts. | Browser checks confirmed `inert`, `aria-hidden="true"`, cleared body overflow, restored Menu focus, and an unchanged route after Escape. |
-| P2 | The first direct workspace capture still expanded the large Welcome hero above the current module, recreating above-the-fold clutter. | Limited the expanded hero to the Launch Pad only; direct module routes now start with the app bar and module content. | Before: `11-after-workspace-1146-closed.png`; after: `15-after-workspace-mobile-closed.png`, `18-after-workspace-tablet-closed.png`, `19b-after-workspace-1440-final.png` |
-| P2 | The first overlay implementation used a 296px desktop/tablet drawer, slightly wider than the reference and less compact than requested. | Tightened the medium-screen drawer to 280px while retaining the 318px mobile maximum for readable text and touch targets. | First comparison: `22-desktop-reference-implementation.png`; final comparison: `26-desktop-reference-implementation-final.png` |
+- `design-qa-assets/sip-appbar-light-logo-comparison.png` compares the supplied light emblem and its browser-rendered appbar crop at the same 33 × 33 px density. The circular artwork, mint outer ring, gold center, transparency, and crop align; the small JPEG color shift in the browser capture is expected compression, not asset drift.
+- `design-qa-assets/sip-appbar-light-logo-implementation-full.jpg` confirms that the lighter emblem has stronger contrast than the previous dark asset while retaining the original appbar alignment and wordmark pairing.
+- `design-qa-assets/sip-appbar-logo-comparison.png` compares the exact 270 × 81 px appbar crop. It shows the round emblem and script wordmark preserved while the former `SIPOPEDIA` line is removed; spacing remains balanced and no replacement label is introduced.
+- `design-qa-assets/sip-appbar-logo-implementation-full.jpg` confirms the compact lockup remains aligned inside the complete Sip Game appbar.
+- `design-qa-assets/sip-game-no-recall-field-comparison.jpg` compares the exact lower modal region at 608 × 357 px. It clearly shows the removed Recall check, textarea, and resulting whitespace, with the mastery action moving directly beneath the teaching notes.
+- The 1920 × 1080 full implementation capture confirms that the compacted lower region still balances correctly with the checkpoint image and surrounding expanded-game backdrop.
 
-No open P0, P1, or P2 findings remain.
+## Comparison History
 
-## Required fidelity review
+1. Light Sip Studies emblem
+   - Finding: [P1] The prior dark emblem lost most of its internal detail against the navy appbar and sidebar.
+   - Fix: added a 256 × 256 lossless transparent WebP derivative of the supplied light logo and changed the shared compact-navigation emblem import. The same asset now feeds both the appbar and drawer brand marks.
+   - Post-fix evidence: `design-qa-assets/sip-appbar-light-logo-implementation-focus.png`, `design-qa-assets/sip-appbar-light-logo-implementation-full.jpg`, and `design-qa-assets/sip-appbar-light-logo-comparison.png`.
+   - Result: the mint ring and gold center remain legible in both 34 px mobile and 38 px desktop slots without changing layout or navigation behavior.
 
-### Fonts and typography
+2. Appbar logo cleanup
+   - Finding: [P1] The brand lockup displayed an extra `Sipopedia` subtitle beneath the authentic Sip Studies wordmark, and mobile CSS recreated the same unwanted label with a pseudo-element.
+   - Fix: removed the subtitle markup, its desktop styling, and the mobile pseudo-element; retained the original emblem and wordmark images as the only two brand children.
+   - Post-fix evidence: `design-qa-assets/sip-appbar-logo-implementation-focus.png`, `design-qa-assets/sip-appbar-logo-implementation-full.jpg`, and `design-qa-assets/sip-appbar-logo-comparison.png`.
+   - Result: desktop and mobile render only the requested Sip Studies emblem plus Sip Studies text logo, with no overlap or horizontal overflow.
 
-- Reused Sipopedia's existing `Space Grotesk` and body-font stack.
-- Route titles use stronger optical weight than metadata; detail text remains secondary without dropping below the established mobile type scale.
-- The implementation intentionally uses larger route text than the reference on mobile so destination labels remain readable.
-- Long current-route and row labels truncate without shifting controls.
+3. Recall-entry removal
+   - Finding: [P1] The requested removal would have left every mastery button permanently blocked if the former 24-character response validation remained.
+   - Fix: removed the shared textarea, label, response/notice state, reset effect, validation branch, and dedicated textarea CSS together. Preserved the keyed mastery update and `closeCheckpointModal(checkpointId)` progression path.
+   - Post-fix evidence: `design-qa-assets/sip-game-no-recall-field-implementation.jpg`, `design-qa-assets/sip-game-no-recall-field-full.jpg`, and `design-qa-assets/sip-game-no-recall-field-comparison.jpg`.
+   - Result: the button immediately records mastery and closes the dialog; all checkpoint popouts inherit the same simplified UI.
 
-### Spacing and layout rhythm
+4. Reported source state
+   - Finding: [P1] Modal content and persistent controls could be cut off or lost on constrained viewports because the dialog itself owned overflow, the Close control could move with it, and short landscapes retained an oversized image minimum.
+   - Fix: introduced a dedicated modal body scroll owner; kept Close outside that body; bounded the modal with dynamic viewport and safe-area units; capped imagery by viewport; added short-landscape and narrow-screen layouts.
+   - Post-fix evidence: `design-qa-assets/sip-game-modal-implementation.jpg`.
 
-- App bar is 62px on desktop/tablet and 58px on mobile.
-- Wide workspaces use a 232px persistent sidebar from 1280px upward.
-- Compact desktop/tablet uses a 280px overlay drawer to avoid shrinking route content before its viewport media queries activate.
-- Mobile uses an off-canvas drawer up to 318px wide, 50px route rows, safe-area padding, and a visible backdrop target.
-- No horizontal overflow was present at 1440px, 1024px, or 390px.
+5. First responsive implementation pass
+   - Finding: [P2] The narrow one-column grid allowed the lesson card to shrink while its copy overflowed its border, and a later row-sizing adjustment briefly allowed the image row to shrink.
+   - Fix: made the lesson card `height: max-content`, set modal grid rows to `max-content`, and aligned grid content to the start so the single body scroller accounts for the complete image and lesson-card heights.
+   - Post-fix evidence: `design-qa-assets/sip-game-modal-comparison.jpg`; the complete image and lesson card remain intact while the modal body scrolls.
 
-### Colors and visual tokens
+6. Final browser pass
+   - Finding: [P2] Normal-page modal previews still exposed both the internal modal scrollbar and the underlying page scrollbar.
+   - Fix: added lifecycle-safe body overflow and overscroll locking for every Sip Game modal and fullscreen fallback state.
+   - Post-fix evidence: the final implementation and combined comparison show one modal scrollbar; runtime checks confirmed body styles restore after Close and Escape.
 
-- Reused the production navy, cyan, teal, cream, and chestnut tokens.
-- Active destinations use border, background, left indicator, and font weight so state does not depend on color alone.
-- Focus rings use the existing cream highlight at accessible visual prominence.
+7. Earlier fullscreen pass
+   - Finding: [P2] The in-stage Exit control obscured the left side of the full-width mobile mastery HUD.
+   - Fix: moved Exit to the portrait safe-area top-right and reserved right-side HUD padding.
+   - Post-fix evidence: `design-qa-assets/sip-game-fullscreen-implementation.jpg` and `design-qa-assets/sip-game-fullscreen-comparison.jpg`.
 
-### Image quality and asset fidelity
+## Interaction and Responsive Evidence
 
-- Reused the repository's real optimized Sip Studies seal and wordmark.
-- No placeholder imagery, emoji, custom SVG, inline SVG, CSS illustration, or simulated brand asset was introduced.
-- The compact header swaps from seal plus wordmark to seal plus `Sipopedia` text on narrow screens to prevent the prior oversized lockup.
+- Light emblem asset: browser `currentSrc` resolved to `sip-studies-logo-03-light-opt.webp`; intrinsic size was 256 × 256 px and the image completed successfully.
+- Light emblem responsive sizing: 34 × 34 CSS px at 390 × 844 and 639 × 910; 38 × 38 CSS px at 1280 × 900. It remained inside the appbar with zero horizontal overflow and no Menu overlap.
+- Appbar brand: two visible `IMG` children, zero rendered label text, and no `small` or generated-label child at the 390 × 844 mobile and 1280 × 900 desktop test sizes.
+- Appbar geometry: the logo lockup remained within the appbar; Menu and emblem bounds did not overlap; document horizontal overflow was 0 at every tested width.
+- Appbar interaction: the single `Open Sip Studies home` brand button remained enabled with its accessible name intact; closing the navigation drawer left the appbar and Sip Game preview usable.
+- Normal portrait: 390 × 844 and 602 × 884.
+- Normal tablet/tall portrait: 700 × 900.
+- Normal compact landscape: 720 × 540 and 844 × 390.
+- Expanded portrait: 390 × 844.
+- Expanded landscape: 844 × 390.
+- Modal geometry: backdrop and modal remained within the viewport; document horizontal overflow was 0 at every tested size.
+- Scroll behavior: only `.sip-game-equipment-modal-body` scrolls; `Mark Checkpoint Mastered` is fully visible at maximum scroll.
+- Close behavior: 44 × 44 px target remained visible and hit-testable at the top and bottom of the modal; pointer Close and Escape both dismissed the dialog.
+- Mastery behavior: `Vine Training` advanced from 0/3 to 1/3 and closed its dialog immediately without a written response.
+- Removal scope: browser DOM checks confirmed no Recall check copy, textarea, placeholder, or validation notice in normal, portrait, landscape, or expanded modal states.
+- Fullscreen containment: checkpoint dialog remained inside the game-stage subtree; its z-index placed it above the fullscreen Exit control.
+- Scroll-lock cleanup: body overflow and overscroll styles were restored after the modal closed.
+- Browser console: no warnings or errors found during the final browser pass.
+- Validation: `npm run typecheck`, `npm run build`, and `git diff --check` passed. Vite retained its existing non-blocking Three.js chunk-size warning.
 
-### Copy and content
+## Open Questions
 
-- Menu copy comes from the current workspace registry and curated production essentials.
-- Retired experimental utility routes—checkout outcomes, policies, signed-out landing, Avatar Creator, and old cohort/enrollment pages—were not copied into the primary student menu.
-- `Favorites`, current Learn/Taste/Connect modules, account actions, and admin-only Boss routes remain accurate to the production app.
+- None.
 
-## Functional, responsive, and accessibility checks
+## Implementation Checklist
 
-- Confirmed route groups and counts derive after `shouldShowInPublicNav(...)` filtering, so Boss Room `public`/`edit`/`off` updates immediately change navigation and counts.
-- Confirmed nested Regions, Grapes, and AI Winecast routes highlight their parent destination.
-- Confirmed persistent sidebar at 1440px, overlay drawer at 1024px and 1146px, and mobile drawer at 390px.
-- Confirmed active route auto-scrolls into view when a long group opens.
-- Confirmed drawer search filters across all visible groups.
-- Confirmed Arrow Up/Down, Home/End, and Enter select filtered destinations.
-- Confirmed `Ctrl/Cmd + K` opens public drawer search and workspace global search.
-- Confirmed workspace `Shift + Left/Right`, `Ctrl + Left/Right`, and `Ctrl + Shift + Left/Right` handlers remain in place and are gated while a drawer or search layer is open.
-- Confirmed overlay click, Escape, and route selection close the drawer.
-- Confirmed body scroll locking and cleanup.
-- Confirmed focus trapping and focus return.
-- Confirmed closed overlay drawers are `aria-hidden` and `inert`.
-- Confirmed mobile route controls are at least 50px high.
-- Confirmed no new console errors after fresh navigation through Home and Flavor Blog.
+- [x] Replace the dark compact-navigation emblem with the supplied light Sip Studies logo.
+- [x] Preserve transparency and source fidelity in a right-sized production asset.
+- [x] Show only the Sip Studies emblem and Sip Studies script wordmark in the appbar on desktop and mobile.
+- [x] Remove both the rendered and pseudo-element `Sipopedia` subtitle without changing brand navigation.
+- [x] Keep every modal edge within normal and expanded visual viewports.
+- [x] Preserve the full checkpoint image without cropping.
+- [x] Use one internal vertical scroll owner and prevent horizontal overflow.
+- [x] Keep Close pinned, keyboard reachable, and at least 44 × 44 px.
+- [x] Remove the written recall input and validation from the shared checkpoint modal.
+- [x] Keep teaching notes and the mastery action reachable.
+- [x] Preserve checkpoint, room, and level progression without typed text.
+- [x] Prevent the fullscreen Exit control from overlapping the active modal.
+- [x] Lock the background page and restore it cleanly after dismissal.
+- [x] Support portrait, landscape, tablet, desktop, safe-area, and dynamic viewport sizing.
 
-## Automated verification
+## Follow-up Polish
 
-- `git diff --check` — passed
-- `npm run typecheck` — passed
-- `npm run rgrd:check` — passed, including:
-  - 4/4 security tests;
-  - secret guard;
-  - `npm audit` with 0 vulnerabilities;
-  - all Supabase Edge Function type checks;
-  - Replit dry-run build;
-  - production build;
-  - Git LFS pointer guard;
-  - RGRD manifest verification;
-  - 51/51 route smoke checks.
+- No P3 visual changes are required for this request.
 
-The build retains the repository's existing non-fatal Three.js chunk-size warning.
-
-## Final result
-
-passed
+final result: passed

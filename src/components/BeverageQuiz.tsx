@@ -954,8 +954,8 @@ export function BeverageQuiz() {
         </div>
       </section>
 
-      <details className="quiz-customize-controls">
-        <summary>Customize certification, topic, and practice length</summary>
+      <section className="quiz-customize-controls always-visible-section">
+        <h3 className="always-visible-section-title">Customize certification, topic, and practice length</h3>
       <div className="quiz-controls">
         <div className="quiz-control-row">
           <label htmlFor="quiz-exam-type">Exam Type</label>
@@ -1073,7 +1073,7 @@ export function BeverageQuiz() {
           ) : null}
         </div>
       </div>
-      </details>
+      </section>
 
       <div className="quiz-meta">
         <p>

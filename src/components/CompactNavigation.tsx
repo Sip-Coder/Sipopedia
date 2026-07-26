@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
-import mainLogo from "../assets/brand/sip-studies-main-logo-opt.webp";
+import mainLogo from "../assets/brand/sip-studies-logo-03-light-opt.webp";
 import wordmark from "../assets/brand/wordmark-ruthligos-opt.webp";
+import { searchTerminologyCommandResults } from "../lib/terminology";
 
 export type CompactNavItem = {
   id: string;
@@ -8,6 +9,12 @@ export type CompactNavItem = {
   detail: string;
   active?: boolean;
   badge?: string;
+  searchText?: string;
+  termId?: string;
+};
+
+export type CompactNavSearchItem = CompactNavItem & {
+  groupLabel: string;
 };
 
 export type CompactNavGroup = {
@@ -24,15 +31,28 @@ type CompactNavigationProps = {
   currentContext: string;
   accountLabel: string;
   activeGroupId?: string;
+  searchItems?: CompactNavSearchItem[];
+  includeTerminologySearch?: boolean;
   onNavigate: (id: string) => void;
+  onOpenTerminologyTerm?: (termId: string, termLabel: string) => void;
   onOpenSearch?: () => void;
   onOpenAccount: () => void;
   onOpenHome: () => void;
 };
 
-function initialForLabel(label: string): string {
-  const word = label.trim().split(/\s+/)[0] ?? "";
-  return word.slice(0, 1).toUpperCase() || "S";
+function compactSearchScore(item: CompactNavSearchItem, normalizedQuery: string): number {
+  const label = item.label.toLowerCase();
+  const detail = item.detail.toLowerCase();
+  const group = item.groupLabel.toLowerCase();
+  const searchText = item.searchText?.toLowerCase() ?? "";
+
+  if (label === normalizedQuery) return 110;
+  if (label.startsWith(normalizedQuery)) return 90;
+  if (label.includes(normalizedQuery)) return 75;
+  if (searchText.includes(normalizedQuery)) return 58;
+  if (detail.includes(normalizedQuery)) return 48;
+  if (group.includes(normalizedQuery)) return 34;
+  return 0;
 }
 
 export function CompactNavigation({
@@ -42,7 +62,10 @@ export function CompactNavigation({
   currentContext,
   accountLabel,
   activeGroupId,
+  searchItems,
+  includeTerminologySearch = false,
   onNavigate,
+  onOpenTerminologyTerm,
   onOpenSearch,
   onOpenAccount,
   onOpenHome
@@ -52,6 +75,8 @@ export function CompactNavigation({
   const [selectedGroupId, setSelectedGroupId] = useState(activeGroupId ?? groups[0]?.id ?? "essentials");
   const [activeRowIndex, setActiveRowIndex] = useState(0);
   const [isFilterFocused, setIsFilterFocused] = useState(false);
+  const [terminologyResults, setTerminologyResults] = useState<CompactNavSearchItem[]>([]);
+  const [isTerminologyLoading, setIsTerminologyLoading] = useState(false);
   const [isMobileDrawer, setIsMobileDrawer] = useState(() =>
     typeof window === "undefined" ? false : window.matchMedia("(max-width: 1279px)").matches
   );
@@ -66,17 +91,43 @@ export function CompactNavigation({
     availableGroups[0];
   const normalizedQuery = query.trim().toLowerCase();
   const isOverlayDrawer = mode === "public" || isMobileDrawer;
-  const queryResults = useMemo(
+  const searchableItems = useMemo<CompactNavSearchItem[]>(() => {
+    if (searchItems?.length) return searchItems;
+    return availableGroups.flatMap((group) =>
+      group.items.map((item) => ({ ...item, groupLabel: group.label }))
+    );
+  }, [availableGroups, searchItems]);
+  const staticQueryResults = useMemo(
     () =>
       normalizedQuery
-        ? availableGroups.flatMap((group) =>
-            group.items
-              .filter((item) => `${item.label} ${item.detail} ${item.badge ?? ""} ${group.label}`.toLowerCase().includes(normalizedQuery))
-              .map((item) => ({ ...item, groupLabel: group.label }))
-          )
+        ? searchableItems
+            .map((item) => ({ item, score: compactSearchScore(item, normalizedQuery) }))
+            .filter((result) => result.score > 0)
+            .sort((left, right) => right.score - left.score || left.item.label.localeCompare(right.item.label))
         : [],
-    [availableGroups, normalizedQuery]
+    [normalizedQuery, searchableItems]
   );
+  const queryResults = useMemo(() => {
+    if (!normalizedQuery) return [];
+    const combined = [
+      ...staticQueryResults,
+      ...terminologyResults.map((item) => ({
+        item,
+        score: compactSearchScore(item, normalizedQuery) + 18
+      }))
+    ];
+    const seen = new Set<string>();
+    return combined
+      .sort((left, right) => right.score - left.score || left.item.label.localeCompare(right.item.label))
+      .map((result) => result.item)
+      .filter((item) => {
+        const key = item.termId ? `term:${item.termId}` : `route:${item.id}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .slice(0, 20);
+  }, [normalizedQuery, staticQueryResults, terminologyResults]);
   const displayedItems = normalizedQuery ? queryResults : selectedGroup?.items ?? [];
   const activeRowId = displayedItems[activeRowIndex] ? `sip-sidebar-${mode}-option-${activeRowIndex}` : undefined;
 
@@ -128,7 +179,6 @@ export function CompactNavigation({
     if (!isDrawerOpen || !isOverlayDrawer) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const focusTimer = window.setTimeout(() => filterInputRef.current?.focus(), 0);
 
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
@@ -160,12 +210,51 @@ export function CompactNavigation({
     document.addEventListener("keydown", closeOnEscape, true);
     document.addEventListener("keydown", trapFocus);
     return () => {
-      window.clearTimeout(focusTimer);
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", closeOnEscape, true);
       document.removeEventListener("keydown", trapFocus);
     };
   }, [isDrawerOpen, isOverlayDrawer]);
+
+  useEffect(() => {
+    const terminologyQuery = query.trim();
+    if (!includeTerminologySearch || terminologyQuery.length < 2) {
+      setTerminologyResults([]);
+      setIsTerminologyLoading(false);
+      return;
+    }
+
+    let active = true;
+    setTerminologyResults([]);
+    setIsTerminologyLoading(true);
+    const timer = window.setTimeout(() => {
+      searchTerminologyCommandResults(terminologyQuery, 12)
+        .then((results) => {
+          if (!active) return;
+          setTerminologyResults(
+            results.map((result) => ({
+              id: `term:${result.id}`,
+              termId: result.id,
+              label: result.term,
+              detail: result.meaning,
+              groupLabel: "Sipopedia term",
+              searchText: `${result.term} ${result.meaning}`
+            }))
+          );
+        })
+        .catch(() => {
+          if (active) setTerminologyResults([]);
+        })
+        .finally(() => {
+          if (active) setIsTerminologyLoading(false);
+        });
+    }, 140);
+
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, [includeTerminologySearch, query]);
 
   useEffect(() => {
     setIsDrawerOpen(false);
@@ -188,11 +277,19 @@ export function CompactNavigation({
 
   const openDrawer = () => {
     setIsDrawerOpen(true);
-    if (isOverlayDrawer) window.setTimeout(() => filterInputRef.current?.focus(), 0);
   };
 
-  const chooseItem = (id: string) => {
-    onNavigate(id);
+  const openSearch = () => {
+    setIsDrawerOpen(true);
+    window.setTimeout(() => filterInputRef.current?.focus(), 0);
+  };
+
+  const chooseItem = (item: CompactNavItem) => {
+    if (item.termId && onOpenTerminologyTerm) {
+      onOpenTerminologyTerm(item.termId, item.label);
+    } else {
+      onNavigate(item.id);
+    }
     if (isOverlayDrawer) {
       setIsDrawerOpen(false);
       window.setTimeout(() => menuButtonRef.current?.focus(), 0);
@@ -223,7 +320,7 @@ export function CompactNavigation({
     }
     if (event.key === "Enter") {
       event.preventDefault();
-      chooseItem(displayedItems[activeRowIndex]?.id ?? displayedItems[0].id);
+      chooseItem(displayedItems[activeRowIndex] ?? displayedItems[0]);
     }
   };
 
@@ -235,11 +332,8 @@ export function CompactNavigation({
       className={`sip-sidebar-row ${item.active ? "active" : ""} ${isFilterFocused && activeRowIndex === rowIndex ? "keyboard-active" : ""}`.trim()}
       aria-current={item.active ? "page" : undefined}
       onMouseEnter={() => setActiveRowIndex(rowIndex)}
-      onClick={() => chooseItem(item.id)}
+      onClick={() => chooseItem(item)}
     >
-      <span className="sip-sidebar-row-mark" aria-hidden="true">
-        {initialForLabel(item.label)}
-      </span>
       <span className="sip-sidebar-row-copy">
         <strong>{item.label}</strong>
         <small>{groupLabel ? `${groupLabel} · ${item.detail}` : item.detail}</small>
@@ -263,10 +357,7 @@ export function CompactNavigation({
         </button>
         <button type="button" className="sip-appbar-brand" onClick={onOpenHome} aria-label="Open Sip Studies home">
           <img src={mainLogo} alt="" className="sip-appbar-seal" />
-          <span>
-            <img src={wordmark} alt="Sip Studies" className="sip-appbar-wordmark" />
-            <small>Sipopedia</small>
-          </span>
+          <img src={wordmark} alt="Sip Studies" className="sip-appbar-wordmark" />
         </button>
         <div className="sip-appbar-current" aria-label="Current destination">
           <span>{currentContext}</span>
@@ -281,7 +372,7 @@ export function CompactNavigation({
                 onOpenSearch();
                 return;
               }
-              openDrawer();
+              openSearch();
             }}
           >
             <span>Search</span>
@@ -334,15 +425,16 @@ export function CompactNavigation({
         </div>
 
         <label className="sip-sidebar-search">
-          <span>Find a destination</span>
+          <span>Search</span>
           <input
             ref={filterInputRef}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search rooms..."
-            aria-label="Search destinations"
+            placeholder="Search"
+            aria-label="Search Sip Studies"
             aria-controls={`sip-sidebar-${mode}-routes`}
             aria-activedescendant={activeRowId}
+            aria-busy={isTerminologyLoading}
             onKeyDown={handleFilterKeyDown}
             onFocus={() => setIsFilterFocused(true)}
             onBlur={() => setIsFilterFocused(false)}
@@ -376,8 +468,10 @@ export function CompactNavigation({
           {normalizedQuery ? (
             queryResults.length > 0 ? (
               queryResults.map((item, index) => renderRouteRow(item, index, item.groupLabel))
+            ) : isTerminologyLoading ? (
+              <p className="sip-sidebar-empty" role="status">Searching Sipopedia…</p>
             ) : (
-              <p className="sip-sidebar-empty">No destination matches “{query.trim()}”.</p>
+              <p className="sip-sidebar-empty">No page or term matches “{query.trim()}”.</p>
             )
           ) : (
             selectedGroup?.items.map((item, index) => renderRouteRow(item, index))

@@ -276,11 +276,14 @@ export async function searchTerminologyCommandResults(query: string, limit = 10)
       .slice(0, limit);
   }
 
+  const safeSearchQuery = trimmedQuery.replace(/[%_,()]/g, " ").replace(/\s+/g, " ").trim();
+  if (!safeSearchQuery) return [];
+
   const { data, error } = await supabase
     .from("terminology_entries")
     .select("id,term,sort_group,meaning,infographic_url")
     .eq("is_published", true)
-    .ilike("term", `%${trimmedQuery.replace(/[%_]/g, "")}%`)
+    .or(`term.ilike.%${safeSearchQuery}%,meaning.ilike.%${safeSearchQuery}%`)
     .order("importance_score", { ascending: false })
     .order("normalized_term", { ascending: true })
     .limit(Math.max(limit * 4, 20));

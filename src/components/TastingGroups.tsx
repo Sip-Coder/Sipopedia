@@ -1847,8 +1847,8 @@ export function TastingGroups() {
         </button>
       </div>
 
-      <details>
-        <summary>Optional: explore group cities on the globe</summary>
+      <section className="always-visible-section">
+        <h3 className="always-visible-section-title">Optional: explore group cities on the globe</h3>
       <article className="tasting-groups-map-card">
         <div className="tasting-groups-map-head">
           <div>
@@ -1886,7 +1886,7 @@ export function TastingGroups() {
         )}
 
       </article>
-      </details>
+      </section>
 
       <div className="tasting-groups-layout">
         <aside className="tasting-groups-sidebar" aria-label="Group discovery filters">
@@ -1993,8 +1993,8 @@ export function TastingGroups() {
                 </p>
               </div>
 
-              <details>
-                <summary>Host tools: cohort exports and dashboard handoff</summary>
+              <section className="always-visible-section">
+                <h3 className="always-visible-section-title">Host tools: cohort exports and dashboard handoff</h3>
               <div className="tasting-groups-cohort-handoff" aria-label="Cohort handoff exports">
                 <div>
                   <p className="news-card-tag">Cohort Handoff</p>
@@ -2037,7 +2037,7 @@ export function TastingGroups() {
                 </div>
                 {cohortHandoffNotice ? <p className="tasting-groups-notice">{cohortHandoffNotice}</p> : null}
               </div>
-              </details>
+              </section>
 
               <div className="tasting-groups-events">
                 <h4>Upcoming Meetups</h4>
@@ -2132,8 +2132,8 @@ export function TastingGroups() {
           )}
 
           {selectedGroup ? (
-            <details>
-              <summary>Host tools: event builder and member approvals</summary>
+            <section className="always-visible-section">
+              <h3 className="always-visible-section-title">Host tools: event builder and member approvals</h3>
             <article className="tasting-groups-host-console">
               <div className="tasting-groups-host-head">
                 <div>
@@ -2239,7 +2239,7 @@ export function TastingGroups() {
                 </div>
               ) : null}
             </article>
-            </details>
+            </section>
           ) : null}
 
           {selectedGroup ? (
@@ -2531,8 +2531,8 @@ export function TastingGroups() {
             </ul>
           </article>
 
-          <details id="create-tasting-group">
-            <summary>Host tools: create a new tasting group</summary>
+          <section id="create-tasting-group" className="always-visible-section">
+            <h3 className="always-visible-section-title">Host tools: create a new tasting group</h3>
           <article className="tasting-groups-create">
             <div className="tasting-groups-create-head">
               <h3>Create a Tasting Group</h3>
@@ -2647,7 +2647,7 @@ export function TastingGroups() {
 
             {createNotice ? <p className="tasting-groups-notice">{createNotice}</p> : null}
           </article>
-          </details>
+          </section>
         </div>
       </div>
     </section>

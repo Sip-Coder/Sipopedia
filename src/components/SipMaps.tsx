@@ -669,8 +669,8 @@ export function SipMaps() {
         </p>
       </section>
 
-      <details className="sip-maps-deep-study">
-        <summary>Deep dive: 360 views, regional downloads, and country plates</summary>
+      <section className="sip-maps-deep-study always-visible-section">
+        <h3 className="always-visible-section-title">Deep dive: 360 views, regional downloads, and country plates</h3>
       {activeMap.vineyardScenes && activeMap.vineyardScenes.length > 0 ? (
         <VineyardPanoramaViewer scenes={activeMap.vineyardScenes} />
       ) : null}
@@ -847,7 +847,7 @@ export function SipMaps() {
           </aside>
         </div>
       </section>
-      </details>
+      </section>
     </section>
   );
 }

@@ -552,8 +552,8 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
           </div>
         </section>
 
-        <details>
-          <summary>Transcript, creator cuts, and source archive</summary>
+        <section className="always-visible-section">
+          <h3 className="always-visible-section-title">Transcript, creator cuts, and source archive</h3>
         {activeCutPack ? <MediaCutPackPanel pack={activeCutPack} className="ai-winecast-cut-pack" /> : null}
         {activeCutPack ? (
           <section className="ai-winecast-transcript-archive" aria-labelledby="winecast-transcript-title">
@@ -576,7 +576,7 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
             </div>
           </section>
         ) : null}
-        </details>
+        </section>
 
         <section className="ai-winecast-study-grid" aria-label="Episode study notes">
           <article className="ai-winecast-term-card">
@@ -597,8 +597,8 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
           </article>
         </section>
 
-        <details>
-          <summary>Extended episode notes</summary>
+        <section className="always-visible-section">
+          <h3 className="always-visible-section-title">Extended episode notes</h3>
         <section className="ai-winecast-article-sections" aria-label="Episode article sections">
           {activeEpisode.articleSections.map((section) => (
             <article key={section.title} className="ai-winecast-article-section">
@@ -607,7 +607,7 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
             </article>
           ))}
         </section>
-        </details>
+        </section>
 
         <div className="ai-winecast-source-strip">
           <span>Source page scraped from SipStudies.com podcast archive.</span>
@@ -645,8 +645,8 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
         </div>
       </header>
 
-      <details>
-        <summary>About the Winecast archive</summary>
+      <section className="always-visible-section">
+        <h3 className="always-visible-section-title">About the Winecast archive</h3>
       <section className="ai-winecast-feature">
         <img src={AI_WINECAST_BG} alt="Ai Winecast background artwork" loading="lazy" decoding="async" />
         <div>
@@ -658,7 +658,7 @@ export function AiWinecast({ episodeSlug, onNavigate }: AiWinecastProps) {
           </p>
         </div>
       </section>
-      </details>
+      </section>
 
       <section className="ai-winecast-watch-queue" aria-labelledby="winecast-watch-queue-title">
         <div className="ai-winecast-watch-copy">

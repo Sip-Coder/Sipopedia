@@ -901,8 +901,8 @@ export function FlavorBlog() {
         )}
       </article>
 
-      <details>
-        <summary>Choose a publication</summary>
+      <section className="always-visible-section">
+        <h3 className="always-visible-section-title">Choose a publication</h3>
       <div className="news-filter-group">
         <p className="news-filter-label">Blog</p>
         <div className="news-source-strip">
@@ -938,7 +938,7 @@ export function FlavorBlog() {
           })}
         </div>
       </div>
-      </details>
+      </section>
 
       {showDailySipReport ? null : renderPageControls("top")}
       {!showDailySipReport && filteredArticles.length > maxVisibleArticles ? (

@@ -1261,8 +1261,8 @@ export function BeverageNews() {
         )}
       </article>
 
-      <details>
-        <summary>Filter by publication or institution</summary>
+      <section className="always-visible-section">
+        <h3 className="always-visible-section-title">Filter by publication or institution</h3>
       <div className="news-filter-group">
         <p className="news-filter-label">Blog</p>
         <div className="news-source-strip">
@@ -1423,7 +1423,7 @@ export function BeverageNews() {
           .
         </p>
       ) : null}
-      </details>
+      </section>
 
       {renderPageControls("top")}
       {filteredArticles.length > maxVisibleArticles ? (

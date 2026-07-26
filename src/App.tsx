@@ -31,8 +31,10 @@ import { PowerfulPoint } from "./components/PowerfulPoint";
 import {
   CompactNavigation,
   type CompactNavGroup,
-  type CompactNavItem
+  type CompactNavItem,
+  type CompactNavSearchItem
 } from "./components/CompactNavigation";
+import { isBossNavigationUser } from "./lib/adminAccess";
 import { buildOnboardingRoute, readOnboardingIntent } from "./lib/onboardingIntent";
 import {
   WORKSPACE_NAV_ITEMS,
@@ -47,6 +49,7 @@ import { searchTerminologyCommandResults, type TerminologyCommandResult } from "
 import {
   PAGE_STATUS_EVENT,
   type PageStatusMap,
+  SITE_MAP_PAGES,
   canViewRoute,
   configForRoute,
   fetchPageStatusMap,
@@ -507,13 +510,15 @@ function buildCompactNavigationGroups({
   pageStatuses,
   isAdmin,
   isPaid,
-  isSignedIn
+  isSignedIn,
+  showBossNavigation
 }: {
   route: AppRoute;
   pageStatuses: PageStatusMap;
   isAdmin: boolean;
   isPaid: boolean;
   isSignedIn: boolean;
+  showBossNavigation: boolean;
 }): CompactNavGroup[] {
   const toItem = (id: string, label: string, detail: string, badge?: string): CompactNavItem => ({
     id,
@@ -549,7 +554,7 @@ function buildCompactNavigationGroups({
         visible("login") ? toItem("login", "Log In", "Return to your account") : null
       ].filter((item): item is CompactNavItem => Boolean(item));
 
-  const bossItems: CompactNavItem[] = isAdmin
+  const bossItems: CompactNavItem[] = showBossNavigation
     ? [
         visible("admin") ? toItem("admin", "Admin Console", "Site controls and health") : null,
         visible("admin/terminology") ? toItem("admin/terminology", "Terms Ops", "Terminology publishing") : null
@@ -564,6 +569,65 @@ function buildCompactNavigationGroups({
   ];
 }
 
+const NON_SEARCHABLE_SITE_ROUTES = new Set(["success", "cancel", "logout"]);
+const workspaceSearchMetadataByRoute = new Map(workspaceNavItems.map((item) => [item.route, item] as const));
+
+function buildCompactNavigationSearchItems({
+  route,
+  pageStatuses,
+  isAdmin,
+  isPaid,
+  isSignedIn,
+  showBossNavigation
+}: {
+  route: AppRoute;
+  pageStatuses: PageStatusMap;
+  isAdmin: boolean;
+  isPaid: boolean;
+  isSignedIn: boolean;
+  showBossNavigation: boolean;
+}): CompactNavSearchItem[] {
+  return SITE_MAP_PAGES.filter((page) => {
+    if (NON_SEARCHABLE_SITE_ROUTES.has(page.route)) return false;
+    if (page.room === "Boss" && !showBossNavigation) return false;
+    if (!isSignedIn && (page.route === "account" || page.route === "account/avatar")) return false;
+    if (isSignedIn && page.route === "login") return false;
+    return shouldShowInPublicNav(page.route, pageStatuses, isAdmin, isPaid);
+  }).map((page) => {
+    const workspaceItem = workspaceSearchMetadataByRoute.get(page.route as WorkspaceRegistryNavItem["route"]);
+    const detail = workspaceItem?.signal ?? page.description;
+    const searchText = [
+      page.label,
+      page.description,
+      page.section,
+      page.room,
+      workspaceItem?.signal,
+      workspaceItem?.description,
+      ...(workspaceItem?.keywords ?? []),
+      ...(workspaceItem?.previewBullets ?? [])
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    return {
+      id: page.route,
+      label: page.label,
+      detail,
+      groupLabel: page.room === "Game" ? page.section : page.room === "Boss" ? "Boss" : page.section,
+      searchText,
+      active: isCompactNavRouteActive(route, page.route)
+    };
+  });
+}
+
+function openTerminologySearchResult(termId: string, termLabel: string): void {
+  preloadWorkspacePage("sipopedia");
+  const params = new URLSearchParams({ term: termId, q: termLabel });
+  window.history.pushState(null, "", `/#app/sipopedia?${params.toString()}`);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+}
+
 function SiteRoomNav({
   route,
   onNavigate,
@@ -575,6 +639,7 @@ function SiteRoomNav({
 }) {
   const { user, signOut } = useAuth();
   const { isPaid, isAdmin } = useAccess();
+  const showBossNavigation = isBossNavigationUser(user);
   const groups = useMemo(
     () =>
       buildCompactNavigationGroups({
@@ -582,10 +647,24 @@ function SiteRoomNav({
         pageStatuses,
         isAdmin,
         isPaid,
-        isSignedIn: Boolean(user)
+        isSignedIn: Boolean(user),
+        showBossNavigation
       }),
-    [isAdmin, isPaid, pageStatuses, route, user]
+    [isAdmin, isPaid, pageStatuses, route, showBossNavigation, user]
   );
+  const searchItems = useMemo(
+    () =>
+      buildCompactNavigationSearchItems({
+        route,
+        pageStatuses,
+        isAdmin,
+        isPaid,
+        isSignedIn: Boolean(user),
+        showBossNavigation
+      }),
+    [isAdmin, isPaid, pageStatuses, route, showBossNavigation, user]
+  );
+  const includeTerminologySearch = shouldShowInPublicNav("app/sipopedia", pageStatuses, isAdmin, isPaid);
   const activeGroupId =
     route.startsWith("admin")
       ? "boss"
@@ -617,11 +696,14 @@ function SiteRoomNav({
     <CompactNavigation
       mode="public"
       groups={groups}
+      searchItems={searchItems}
+      includeTerminologySearch={includeTerminologySearch}
       activeGroupId={activeGroupId}
       currentContext={roomFromRoute(route) === "boss" ? "Boss Room" : roomFromRoute(route) === "account" ? "Account" : "Sipopedia"}
       currentLabel={currentLabel}
       accountLabel={user ? "Dashboard" : "Log In"}
       onNavigate={handleNavigate}
+      onOpenTerminologyTerm={openTerminologySearchResult}
       onOpenAccount={() => onNavigate(user ? "account" : "login")}
       onOpenHome={() => onNavigate("home")}
     />
@@ -645,6 +727,7 @@ function WorkspaceShell({
 }) {
   const { user, signOut } = useAuth();
   const { isAdmin, isPaid } = useAccess();
+  const showBossNavigation = isBossNavigationUser(user);
   const isAccountPage = Boolean(accountContent);
   const isStarterPage = page === "starter" && !isAccountPage;
   const [section, setSection] = useState<WorkspaceSection>(() => sectionFromWorkspacePage(page));
@@ -682,10 +765,24 @@ function WorkspaceShell({
         pageStatuses,
         isAdmin,
         isPaid,
-        isSignedIn: Boolean(user)
+        isSignedIn: Boolean(user),
+        showBossNavigation
       }),
-    [currentRoute, isAdmin, isPaid, pageStatuses, user]
+    [currentRoute, isAdmin, isPaid, pageStatuses, showBossNavigation, user]
   );
+  const compactNavigationSearchItems = useMemo(
+    () =>
+      buildCompactNavigationSearchItems({
+        route: currentRoute,
+        pageStatuses,
+        isAdmin,
+        isPaid,
+        isSignedIn: Boolean(user),
+        showBossNavigation
+      }),
+    [currentRoute, isAdmin, isPaid, pageStatuses, showBossNavigation, user]
+  );
+  const includeTerminologySearch = shouldShowInPublicNav("app/sipopedia", pageStatuses, isAdmin, isPaid);
   const commandOptions = useMemo<WorkspaceCommandOption[]>(() => {
     const routeOptions: WorkspaceCommandOption[] = lobbyMenuOptions.map((item) => ({
       id: `route:${item.value}`,
@@ -977,11 +1074,7 @@ function WorkspaceShell({
 
   const navigateToTerminologyTerm = (termId: string, termLabel: string) => {
     setIsHeroExpanded(false);
-    preloadWorkspacePage("sipopedia");
-    const params = new URLSearchParams({ term: termId, search: termLabel });
-    window.history.pushState(null, "", `/#app/sipopedia?${params.toString()}`);
-    window.dispatchEvent(new PopStateEvent("popstate"));
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    openTerminologySearchResult(termId, termLabel);
   };
 
   const switchSection = (targetSection: WorkspaceSection) => {
@@ -1116,11 +1209,14 @@ function WorkspaceShell({
       <CompactNavigation
         mode="workspace"
         groups={compactNavigationGroups}
+        searchItems={compactNavigationSearchItems}
+        includeTerminologySearch={includeTerminologySearch}
         activeGroupId={compactActiveGroupId}
         currentContext={isAccountPage ? "Account" : isStarterPage ? "Sipopedia" : activeSectionInfo.label}
         currentLabel={compactCurrentLabel}
         accountLabel={user ? "Dashboard" : "Log In"}
         onNavigate={navigateFromCompactMenu}
+        onOpenTerminologyTerm={navigateToTerminologyTerm}
         onOpenSearch={() => {
           setIsCommandOpen(true);
           window.setTimeout(() => commandInputRef.current?.focus(), 0);

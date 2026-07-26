@@ -453,8 +453,8 @@ export function SommEvents() {
                 )}
               </div>
 
-              <details>
-                <summary>Optional media and social channels</summary>
+              <section className="always-visible-section">
+                <h3 className="always-visible-section-title">Optional media and social channels</h3>
               <section className="somm-events-media-modules">
                 <h4>Connected Media Modules</h4>
                 {connectedSocials.length ? (
@@ -470,13 +470,13 @@ export function SommEvents() {
                   <p className="somm-events-empty">No media modules active yet.</p>
                 )}
               </section>
-              </details>
+              </section>
             </div>
           </div>
         </article>
 
-        <details>
-          <summary>Advanced host tools: edit the event microsite</summary>
+        <section className="always-visible-section">
+          <h3 className="always-visible-section-title">Advanced host tools: edit the event microsite</h3>
         <aside className="somm-events-builder">
           <div className="somm-events-builder-head">
             <h3>Events Builder</h3>
@@ -647,7 +647,7 @@ export function SommEvents() {
             </div>
           </section>
         </aside>
-        </details>
+        </section>
       </div>
     </section>
   );
