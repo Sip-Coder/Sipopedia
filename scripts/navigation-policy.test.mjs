@@ -87,6 +87,10 @@ test("The terminology fallback remains inside Replit's deployable source tree", 
     new URL("../src/lib/terminology.ts", import.meta.url),
     "utf8"
   );
+  const terminologyGeneratorSource = await readFile(
+    new URL("../output/generate_misc_updates.cjs", import.meta.url),
+    "utf8"
+  );
   const fallbackSource = JSON.parse(
     await readFile(
       new URL("../src/data/terminologyCuratedV2Terms.json", import.meta.url),
@@ -101,6 +105,14 @@ test("The terminology fallback remains inside Replit's deployable source tree", 
   assert.doesNotMatch(
     terminologySource,
     /from\s+["'][^"']*(?:\.\.\/)+output\//
+  );
+  assert.match(
+    terminologyGeneratorSource,
+    /readFileSync\(["']src\/data\/terminologyCuratedV2Terms\.json["']/
+  );
+  assert.doesNotMatch(
+    terminologyGeneratorSource,
+    /readFileSync\(["']output\/terminology_curated_v2_terms\.json["']/
   );
   assert.ok(Array.isArray(fallbackSource));
   assert.ok(fallbackSource.length > 0);
