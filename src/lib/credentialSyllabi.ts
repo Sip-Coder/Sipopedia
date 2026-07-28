@@ -65,7 +65,7 @@ export const credentialSyllabusBlocks: CredentialSyllabusBlock[] = [
     sipActions: [
       { label: "Launch Spirits Quiz", route: "app/beverage-quiz?preset=spirits-category", detail: "Practice base material, distillation, maturation, and category identity." },
       { label: "Study Spirits Resources", route: "app/resources", detail: "Use spirits reference cards and answer keys." },
-      { label: "Practice Cocktails", route: "app/cocktails", detail: "Connect spirit categories to classic builds and service decisions." }
+      { label: "Practice Cocktails", route: "app/recipes", detail: "Connect spirit categories to classic builds and service decisions." }
     ],
     readinessChecks: [
       "Can name the raw material behind common spirit categories",
@@ -147,7 +147,7 @@ export const credentialSyllabusBlocks: CredentialSyllabusBlock[] = [
     ],
     sipActions: [
       { label: "Service Quiz", route: "app/beverage-quiz?preset=bar-service", detail: "Drill guest sequence and practical service language." },
-      { label: "Classic Builds", route: "app/cocktails", detail: "Practice specs, modifiers, and technique choices." },
+      { label: "Classic Builds", route: "app/recipes", detail: "Practice specs, modifiers, and technique choices." },
       { label: "Flavor Calibration", route: "app/flavor-wheel", detail: "Translate technical descriptors into guest language." },
       { label: "Bar Roleplay", route: "app/service-roleplay", detail: "Score Martini translation, low-ABV pacing, and recovery language." }
     ],

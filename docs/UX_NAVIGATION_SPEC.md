@@ -37,14 +37,14 @@ Primary examples:
 #app/regions
 #app/maps
 #app/grapes
-#app/cocktails
+#app/recipes
 #app/resources
 #app/flavor-wheel
 #app/flavors
 #app/tasting-journal
 ```
 
-`#app/cocktails` is the technical route for the user-facing **Bev Recipes** tab.
+`#app/recipes` is the canonical route for the user-facing **Bev Recipes** tab. Existing `#app/cocktails` links redirect to it for backward compatibility.
 
 ## Onboarding Intent
 

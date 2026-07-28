@@ -607,7 +607,7 @@ export function WineResources() {
   };
   const goToCocktails = () => {
     if (typeof window === "undefined") return;
-    window.location.hash = "#app/cocktails";
+    window.location.hash = "#app/recipes";
   };
   const navigateBeverageByDirection = (direction: 1 | -1) => {
     if (availableBeverages.length <= 1) return;

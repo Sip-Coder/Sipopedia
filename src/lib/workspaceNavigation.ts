@@ -3,6 +3,7 @@ export type WorkspaceSectionId = "learn" | "taste" | "connect";
 export type WorkspaceStaticPage =
   | "sip-academy"
   | "sip-game"
+  | "beyond-the-glass"
   | "sipopedia"
   | "beverage-quiz"
   | "study-sheets"
@@ -43,6 +44,7 @@ export type WorkspaceNavItem = {
   previewBullets: [string, string, string];
   previewImage?: string;
   featuredPractice?: boolean;
+  defaultRoom?: "Lobby" | "Game";
 };
 
 export const WORKSPACE_SECTIONS: WorkspaceSectionDefinition[] = [
@@ -89,6 +91,18 @@ export const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
     description: "Interactive walkaround with mentor conversations and quest-driven practice.",
     keywords: ["game", "practice", "drills"],
     previewBullets: ["NPC mentor interactions", "Map exploration", "Quest checkpoints"]
+  },
+  {
+    id: "beyond-the-glass",
+    route: "app/beyond-the-glass",
+    label: "Beyond The Glass",
+    section: "learn",
+    signal: "Cinematic knowledge journeys",
+    description: "Scroll-controlled stories that reveal the connected systems inside every beverage.",
+    keywords: ["beyond the glass", "journey", "story", "water", "cinematic", "systems"],
+    previewBullets: ["Reversible scroll story", "Narrated learning layers", "Accessible chapter archive"],
+    previewImage: "/beyond-the-glass/poster-reduced-motion.webp",
+    defaultRoom: "Lobby"
   },
   {
     id: "sipopedia",
@@ -352,5 +366,6 @@ export function workspaceLabelForRoute(route: string | null | undefined): string
   if (!route) return null;
   const routePart = route.replace(/^#/, "").split("?")[0].replace(/^app\//, "");
   if (!routePart || routePart === "starter" || routePart === "launch") return "Launch Pad";
-  return WORKSPACE_NAV_ITEMS.find((item) => item.id === routePart || routePart.startsWith(`${item.id}/`))?.label ?? null;
+  const workspacePage = routePart === "recipes" ? "cocktails" : routePart;
+  return WORKSPACE_NAV_ITEMS.find((item) => item.id === workspacePage || workspacePage.startsWith(`${item.id}/`))?.label ?? null;
 }

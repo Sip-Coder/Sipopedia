@@ -71,14 +71,14 @@ Recommended action:
 - Add a minimal test runner for pure logic.
 - Add Playwright smoke tests for the main user workflows.
 
-### Low: Route names and user-facing labels have drifted
+### Resolved: Bev Recipes has a canonical user-facing route
 
-The user-facing tab is **Bev Recipes**, but the technical route is still `cocktails`. That is acceptable for backward compatibility, but new docs and future code should consistently note that `#app/cocktails` is the Bev Recipes route.
+The user-facing tab is **Bev Recipes**, and new navigation uses the matching canonical route `#app/recipes`.
 
-Recommended action:
+Compatibility policy:
 
-- Keep the route alias for compatibility.
-- Optionally add `#app/bev-recipes` as a normalized alias.
+- Keep `#app/cocktails` as a redirect for existing bookmarks and shared links.
+- Use `#app/recipes` in new product links, documentation, and smoke coverage.
 
 ## What I Would Have Done Differently
 

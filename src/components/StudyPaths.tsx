@@ -91,7 +91,7 @@ const credentialPaths: CredentialPath[] = [
       { label: "Regions", route: "app/regions" },
       { label: "Print Sheets", route: "app/study-sheets" },
       { label: "Roleplay Lab", route: "app/service-roleplay" },
-      { label: "Service Tools", route: "app/cocktails" }
+      { label: "Service Tools", route: "app/recipes" }
     ],
     weeklyLoop: ["Day 1: service scenario", "Day 2: region theory", "Day 3: blind-tasting note", "Day 4: beverage service drill", "Day 5: retake weak topics"]
   },
@@ -132,7 +132,7 @@ const credentialPaths: CredentialPath[] = [
       { label: "Service Quiz", route: "app/beverage-quiz?preset=bar-service" },
       { label: "Print Specs", route: "app/study-sheets" },
       { label: "Roleplay Lab", route: "app/service-roleplay" },
-      { label: "Cocktails", route: "app/cocktails" },
+      { label: "Cocktails", route: "app/recipes" },
       { label: "Support & Teams", route: "support" }
     ],
     weeklyLoop: ["Day 1: guest cue", "Day 2: ingredient role", "Day 3: technique drill", "Day 4: classic build", "Day 5: pre-shift roleplay"]

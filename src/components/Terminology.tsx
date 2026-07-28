@@ -181,6 +181,32 @@ function buildInfographicCandidates(term: string, url: string | null) {
   return uniqueUrls([...preferred, ...compatibility]);
 }
 
+function TerminologyGalleryImage({ term, url }: { term: string; url: string | null }) {
+  const candidates = useMemo(() => buildInfographicCandidates(term, url), [term, url]);
+  const [candidateIndex, setCandidateIndex] = useState(0);
+  const [exhausted, setExhausted] = useState(candidates.length === 0);
+  const imageSrc = candidates[candidateIndex] ?? null;
+
+  if (!imageSrc || exhausted) {
+    return <span className="terminology-gallery-missing">No image</span>;
+  }
+
+  return (
+    <img
+      src={imageSrc}
+      alt={term}
+      loading="lazy"
+      onError={() => {
+        if (candidateIndex + 1 < candidates.length) {
+          setCandidateIndex(candidateIndex + 1);
+          return;
+        }
+        setExhausted(true);
+      }}
+    />
+  );
+}
+
 export function Terminology() {
   const initialHashState = useMemo(() => readTerminologyHashState(), []);
   const [bucket, setBucket] = useState<TermBucket>("ALL");
@@ -591,10 +617,13 @@ export function Terminology() {
             {!loading && !error && galleryMode ? (
               <div className="terminology-gallery-grid">
                 {rows.map((row) => {
-                  const [imageSrc] = buildInfographicCandidates(row.term, row.infographic_url);
                   return (
                     <button key={row.id} type="button" className="terminology-gallery-card" onClick={() => setSelectedTermId(row.id)}>
-                      {imageSrc ? <img src={imageSrc} alt={row.term} loading="lazy" /> : <span className="terminology-gallery-missing">No image</span>}
+                      <TerminologyGalleryImage
+                        key={`${row.id}:${row.infographic_url ?? ""}`}
+                        term={row.term}
+                        url={row.infographic_url}
+                      />
                       <span>
                         <strong>{toTitleCaseTerm(row.term)}</strong>
                         <small>{shortMeaning(row.meaning)}</small>

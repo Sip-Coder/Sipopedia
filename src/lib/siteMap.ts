@@ -58,10 +58,10 @@ export const SITE_MAP_PAGES: SiteMapPage[] = [
   ...WORKSPACE_NAV_ITEMS.map((item) => ({
     route: item.route,
     label: item.label,
-    room: "Game" as const,
+    room: item.defaultRoom ?? "Game",
     section: WORKSPACE_SECTION_LABELS[item.section],
     description: item.description,
-    defaultRoom: "Game" as const,
+    defaultRoom: item.defaultRoom ?? "Game",
     defaultStatus: "public" as const
   })),
   { route: "admin", label: "Admin Console", room: "Boss", section: "Operations", description: "Back-office dashboard.", defaultRoom: "Boss", defaultStatus: "edit" },

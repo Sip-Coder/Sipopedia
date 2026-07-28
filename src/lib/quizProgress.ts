@@ -111,7 +111,7 @@ export function quizStudyLinksForTopic(topicId: string, topicLabel: string): Sav
   const topicRoutes: Record<string, SavedQuizStudyLink[]> = {
     service: [
       { label: "Sipopedia service terms", route: sipopediaSearchRoute("service"), detail: "Source-backed vocabulary and application notes" },
-      { label: "Bev Recipes service reps", route: "app/cocktails", detail: "Apply language to recipes and table-side decisions" }
+      { label: "Bev Recipes service reps", route: "app/recipes", detail: "Apply language to recipes and table-side decisions" }
     ],
     storage: [
       { label: "Sipopedia storage terms", route: sipopediaSearchRoute("storage cellar"), detail: "Cellar, serving temperature, and condition terms" },
@@ -147,7 +147,7 @@ export function quizStudyLinksForTopic(topicId: string, topicLabel: string): Sav
     ],
     "beer-styles": [
       { label: "Sipopedia beer styles", route: sipopediaSearchRoute("beer styles"), detail: "Style and sensory vocabulary" },
-      { label: "Bev Recipes beer maps", route: "app/cocktails", detail: "Review beer recipe and service maps" }
+      { label: "Bev Recipes beer maps", route: "app/recipes", detail: "Review beer recipe and service maps" }
     ],
     "beer-draught": [
       { label: "Sipopedia draught", route: sipopediaSearchRoute("draught"), detail: "Draft-system and service vocabulary" },

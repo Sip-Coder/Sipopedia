@@ -8,6 +8,7 @@ public/region-assets/**/*.png filter=lfs diff=lfs merge=lfs -text
 public/daily-sip/*.png filter=lfs diff=lfs merge=lfs -text
 public/academy/**/*.png filter=lfs diff=lfs merge=lfs -text
 public/academy/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+public/beyond-the-glass/*.webp filter=lfs diff=lfs merge=lfs -text
 public/maps/**/*.png filter=lfs diff=lfs merge=lfs -text
 public/maps/**/*.afdesign filter=lfs diff=lfs merge=lfs -text
 public/**/*.geojson filter=lfs diff=lfs merge=lfs -text

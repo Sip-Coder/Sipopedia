@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { isBossNavigationUser } from "../src/lib/adminAccess.ts";
+import { WORKSPACE_NAV_ITEMS } from "../src/lib/workspaceNavigation.ts";
+import { journeyOfADrop } from "../src/data/beyondTheGlassChapters.ts";
 
 test("Boss navigation is limited to the Google-authenticated Sip Studies admin", () => {
   const cases = [
@@ -38,5 +40,43 @@ test("Boss navigation is limited to the Google-authenticated Sip Studies admin",
 
   for (const { name, user, expected } of cases) {
     assert.equal(isBossNavigationUser(user), expected, name);
+  }
+});
+
+test("Beyond The Glass follows Sip Game and opens as a public Lobby experience", () => {
+  const sipGameIndex = WORKSPACE_NAV_ITEMS.findIndex((item) => item.id === "sip-game");
+  const beyondTheGlassIndex = WORKSPACE_NAV_ITEMS.findIndex((item) => item.id === "beyond-the-glass");
+  const beyondTheGlass = WORKSPACE_NAV_ITEMS[beyondTheGlassIndex];
+
+  assert.notEqual(sipGameIndex, -1);
+  assert.equal(beyondTheGlassIndex, sipGameIndex + 1);
+  assert.deepEqual(
+    { route: beyondTheGlass?.route, defaultRoom: beyondTheGlass?.defaultRoom },
+    { route: "app/beyond-the-glass", defaultRoom: "Lobby" }
+  );
+});
+
+test("The Journey of a Drop chapter data is complete and internally linked", () => {
+  assert.equal(journeyOfADrop.scenes.length, 8);
+  assert.equal(journeyOfADrop.scenes[0]?.range[0], 0);
+  assert.equal(journeyOfADrop.scenes[journeyOfADrop.scenes.length - 1]?.range[1], 1);
+
+  for (const [index, scene] of journeyOfADrop.scenes.entries()) {
+    assert.ok(scene.range[1] > scene.range[0], `${scene.id} has a positive scroll range`);
+    if (index > 0) {
+      assert.equal(scene.range[0], journeyOfADrop.scenes[index - 1].range[1], `${scene.id} begins where the previous scene ends`);
+    }
+  }
+
+  const layerIds = journeyOfADrop.knowledgeLayers.map((layer) => layer.id);
+  assert.equal(layerIds.length, 10);
+  assert.equal(new Set(layerIds).size, 10);
+
+  const sourceIds = new Set(journeyOfADrop.sources.map((source) => source.id));
+  for (const layer of journeyOfADrop.knowledgeLayers) {
+    assert.ok(layer.sourceIds.length > 0, `${layer.id} has at least one source`);
+    for (const sourceId of layer.sourceIds) {
+      assert.ok(sourceIds.has(sourceId), `${layer.id} source ${sourceId} resolves`);
+    }
   }
 });

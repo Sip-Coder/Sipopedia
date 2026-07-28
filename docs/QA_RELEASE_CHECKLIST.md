@@ -35,7 +35,8 @@ npm.cmd run security:secrets
 - Open `#app/grapes`.
 - Open `#app/grapes/hops`.
 - Open a commodity detail page such as `#app/grapes/tea/green-tea`.
-- Open `#app/cocktails`.
+- Open `#app/recipes`.
+- Open legacy `#app/cocktails` and confirm it redirects to `#app/recipes`.
 - Open `#app/resources`.
 - Refresh on a deep route and confirm the expected page returns.
 

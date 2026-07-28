@@ -20,11 +20,11 @@ Routes are hash-based:
 #app/grapes
 #app/grapes/hops
 #app/grapes/hops/citra
-#app/cocktails
+#app/recipes
 #app/resources
 ```
 
-Legacy hash aliases are normalized in `normalizeWorkspacePage`.
+Legacy hash aliases are normalized in `normalizeWorkspacePage`; `#app/cocktails` redirects to the canonical `#app/recipes` URL.
 
 ## Main Application Layers
 

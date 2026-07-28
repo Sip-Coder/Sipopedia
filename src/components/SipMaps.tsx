@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, type TouchEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getCountryMapSource } from "../data/mapSources";
 import { countriesByContinent } from "../data/regions";
+import { getRegionAssetEntry } from "../data/regionAssetManifest";
 import { countryMapAssetPath, countryMapDownloadName } from "../lib/countryMaps";
 import { VineyardPanoramaViewer, type VineyardPanoramaScene } from "./VineyardPanoramaViewer";
 
@@ -45,6 +46,11 @@ type RegionalMapAsset = {
 type CountryRegionIndexRow = {
   region: string;
   detail?: string;
+};
+
+type CountryStudyRegion = CountryRegionIndexRow & {
+  iconicVineyard?: string;
+  routeSlug?: string;
 };
 
 const continentOptions: { id: WineMapId; label: string }[] = [
@@ -94,6 +100,30 @@ const countryRegionIndexOverrides: Record<string, CountryRegionIndexRow[]> = {
     { region: "Vins Doux Naturels", detail: "Banyuls, Maury, Rivesaltes, Muscat production sites" }
   ]
 };
+
+function slugifyRegionRoute(input: string): string {
+  return input
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+}
+
+function findMatchingProfileRegion(
+  regionName: string,
+  profileRegions: Array<{ region: string; iconicVineyard: string }>
+) {
+  const routeSlug = slugifyRegionRoute(regionName);
+  return (
+    profileRegions.find((region) => slugifyRegionRoute(region.region) === routeSlug) ??
+    profileRegions.find((region) => {
+      const profileSlug = slugifyRegionRoute(region.region);
+      return routeSlug.startsWith(profileSlug) || profileSlug.startsWith(routeSlug);
+    }) ??
+    null
+  );
+}
 
 function regionalMapUrl(folderName: string, fileName: string): string {
   return `/maps/Regional/${encodeURIComponent(folderName)}/${encodeURIComponent(fileName)}`;
@@ -398,9 +428,10 @@ export function SipMaps() {
   const [regionalMaps, setRegionalMaps] = useState<RegionalMapAsset[]>([]);
   const [regionalMapIndex, setRegionalMapIndex] = useState(0);
   const [countryMapIndex, setCountryMapIndex] = useState(0);
+  const [countryRegionIndex, setCountryRegionIndex] = useState(0);
+  const [activeAtlasRegionName, setActiveAtlasRegionName] = useState<string | null>(null);
   const [regionalLoading, setRegionalLoading] = useState(false);
   const regionalPauseUntilRef = useRef(0);
-  const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const activeMap = wineMaps[activeMapId];
   const showComingSoonNotice = activeMap.status === "coming-soon";
   const activeRegionalMap = regionalMaps[regionalMapIndex] ?? null;
@@ -411,6 +442,29 @@ export function SipMaps() {
     ? countryRegionIndexOverrides[activeCountryMap.slug] ??
       activeCountryMap.profile.majorRegions.map((region) => ({ region: region.region }))
     : [];
+  const activeCountryStudyRegions: CountryStudyRegion[] = activeCountryMap
+    ? activeCountryRegionIndex.map((region) => {
+        const matchingProfileRegion = findMatchingProfileRegion(region.region, activeCountryMap.profile.majorRegions);
+        return {
+          ...region,
+          iconicVineyard: matchingProfileRegion?.iconicVineyard,
+          routeSlug: matchingProfileRegion ? slugifyRegionRoute(matchingProfileRegion.region) : undefined
+        };
+      })
+    : [];
+  const activeCountryRegion = activeCountryStudyRegions[countryRegionIndex] ?? null;
+  const activeCountryRegionAsset =
+    activeCountryMap && activeCountryRegion?.routeSlug
+      ? getRegionAssetEntry("wine", activeCountryMap.slug, activeCountryRegion.routeSlug)
+      : null;
+  const activeCountryAsset = activeCountryMap ? getRegionAssetEntry("wine", activeCountryMap.slug) : null;
+  const activeCountryRegionImage =
+    activeCountryRegionAsset?.imageUrl ??
+    activeCountryAsset?.imageUrl ??
+    activeCountryMap?.profile.countryImageUrl ??
+    null;
+  const activeAtlasRegion =
+    activeMap.regions.find((region) => region.name === activeAtlasRegionName) ?? activeMap.regions[0] ?? null;
   const mapDownloadAssets: MapDownloadAssets | null =
     activeMap.status === "ready"
       ? {
@@ -428,7 +482,13 @@ export function SipMaps() {
   useEffect(() => {
     setShowDownloadOptions(false);
     setCountryMapIndex(0);
+    setCountryRegionIndex(0);
+    setActiveAtlasRegionName(null);
   }, [activeMapId]);
+
+  useEffect(() => {
+    setCountryRegionIndex(0);
+  }, [activeCountryMap?.slug]);
 
   useEffect(() => {
     regionalPauseUntilRef.current = 0;
@@ -484,91 +544,8 @@ export function SipMaps() {
     setCountryMapIndex((current) => (current + 1) % activeCountryMaps.length);
   };
 
-  const cycleContinent = (direction: 1 | -1) => {
-    setActiveMapId((current) => {
-      const currentIndex = continentOptions.findIndex((option) => option.id === current);
-      const safeIndex = currentIndex < 0 ? 0 : currentIndex;
-      const nextIndex = (safeIndex + direction + continentOptions.length) % continentOptions.length;
-      return continentOptions[nextIndex].id;
-    });
-  };
-
-  const goToPreviousContinent = () => cycleContinent(-1);
-  const goToNextContinent = () => cycleContinent(1);
-
-  const handleMapsTouchStart = (event: TouchEvent<HTMLElement>) => {
-    if (event.touches.length !== 1) {
-      swipeStartRef.current = null;
-      return;
-    }
-    const touch = event.touches[0];
-    swipeStartRef.current = { x: touch.clientX, y: touch.clientY };
-  };
-
-  const handleMapsTouchEnd = (event: TouchEvent<HTMLElement>) => {
-    const start = swipeStartRef.current;
-    swipeStartRef.current = null;
-    if (!start || event.changedTouches.length === 0) return;
-
-    const touch = event.changedTouches[0];
-    const dx = touch.clientX - start.x;
-    const dy = touch.clientY - start.y;
-    const horizontalThreshold = 52;
-    const horizontalDominance = Math.abs(dy) * 1.2;
-
-    if (Math.abs(dx) < horizontalThreshold) return;
-    if (Math.abs(dx) < horizontalDominance) return;
-
-    if (dx < 0) {
-      goToNextContinent();
-    } else {
-      goToPreviousContinent();
-    }
-  };
-
-  useEffect(() => {
-    const cycleByKeyboard = (direction: 1 | -1) => {
-      setActiveMapId((current) => {
-        const currentIndex = continentOptions.findIndex((option) => option.id === current);
-        const safeIndex = currentIndex < 0 ? 0 : currentIndex;
-        const nextIndex = (safeIndex + direction + continentOptions.length) % continentOptions.length;
-        return continentOptions[nextIndex].id;
-      });
-    };
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (target) {
-        const tagName = target.tagName.toLowerCase();
-        if (target.isContentEditable || tagName === "input" || tagName === "textarea" || tagName === "select") {
-          return;
-        }
-      }
-
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setActiveMapId("north-america");
-        setRegionalMapIndex(0);
-        setShowDownloadOptions(false);
-      } else if (event.key === "ArrowLeft") {
-        if (target?.tagName.toLowerCase() === "button") return;
-        event.preventDefault();
-        cycleByKeyboard(-1);
-      } else if (event.key === "ArrowRight") {
-        if (target?.tagName.toLowerCase() === "button") return;
-        event.preventDefault();
-        cycleByKeyboard(1);
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, []);
-
   return (
-    <section className="sip-maps" onTouchStart={handleMapsTouchStart} onTouchEnd={handleMapsTouchEnd}>
+    <section className="sip-maps">
       <header className="sip-maps-hero">
         <div>
           <p className="sip-maps-kicker">Sip Studios Maps</p>
@@ -591,7 +568,7 @@ export function SipMaps() {
               </button>
             ))}
           </div>
-          <span>{showComingSoonNotice ? "Coming Soon" : "Generated static map asset."}</span>
+          <span>{showComingSoonNotice ? "Coming Soon" : "Select a map marker to focus a wine region."}</span>
         </div>
       </header>
 
@@ -610,6 +587,26 @@ export function SipMaps() {
                 <span>This continent is queued for Sip Studies wine cartography.</span>
               </div>
             )}
+            {activeMap.imageSrc && activeMap.regions.length > 0 ? (
+              <div className="sip-map-hotspot-layer" aria-label={`${activeMap.label} interactive wine regions`}>
+                {activeMap.regions.map((region, index) => {
+                  const isSelected = activeAtlasRegion?.name === region.name;
+                  return (
+                    <button
+                      key={region.name}
+                      type="button"
+                      className={`sip-map-hotspot${isSelected ? " is-active" : ""}`}
+                      style={{ left: `${region.x}%`, top: `${region.y}%` }}
+                      aria-label={`Focus ${region.name}`}
+                      aria-pressed={isSelected}
+                      onClick={() => setActiveAtlasRegionName(region.name)}
+                    >
+                      <span className="sip-map-hotspot-number">{index + 1}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
             {showComingSoonNotice ? <span className="sip-map-coming-soon-badge">Coming Soon</span> : null}
           </article>
 
@@ -637,13 +634,28 @@ export function SipMaps() {
             <p className="sip-maps-kicker">Map Brief</p>
             <h3>{activeMap.title}</h3>
             <p>{activeMap.brief}</p>
+            {activeAtlasRegion ? (
+              <div className="sip-map-active-region" aria-live="polite">
+                <span>Focused wine region</span>
+                <strong>{activeAtlasRegion.name}</strong>
+                <small>Find marker {activeMap.regions.findIndex((region) => region.name === activeAtlasRegion.name) + 1} on the atlas.</small>
+              </div>
+            ) : null}
           </div>
 
           <div className="sip-map-panel-card">
             <p className="sip-maps-kicker">Primary Callouts</p>
             <div className="sip-map-region-list">
               {activeMap.regions.map((region) => (
-                <span key={region.name}>{region.name}</span>
+                <button
+                  key={region.name}
+                  type="button"
+                  className={activeAtlasRegion?.name === region.name ? "is-active" : ""}
+                  aria-pressed={activeAtlasRegion?.name === region.name}
+                  onClick={() => setActiveAtlasRegionName(region.name)}
+                >
+                  {region.name}
+                </button>
               ))}
               {activeMap.regions.length === 0 ? <span>Queued</span> : null}
             </div>
@@ -677,9 +689,9 @@ export function SipMaps() {
 
       <section className="sip-regional-maps" aria-label={`${activeMap.label} regional map downloads`}>
         <header className="sip-regional-maps-header">
-          <p className="sip-maps-kicker">A.I. Regional Maps</p>
-          <h3>{activeMap.label} Regional Collection</h3>
-          <p>Downloads are tied to the selected continent. Use arrows to navigate the carousel.</p>
+          <p className="sip-maps-kicker">Regional Atlas</p>
+          <h3>{activeMap.label} Study Map</h3>
+          <p>Use this wider regional view to compare geography before moving into a country atlas.</p>
         </header>
 
         <div className="sip-regional-carousel">
@@ -697,8 +709,8 @@ export function SipMaps() {
                 <strong>{regionalLoading ? "Loading regional maps..." : "Regional maps coming soon"}</strong>
                 <span>
                   {regionalLoading
-                    ? "Looking for map files in the selected continent folder."
-                    : "Add files under public/maps/Regional for this continent to enable carousel and downloads."}
+                    ? "Preparing the selected regional map."
+                    : "A regional study map is not available yet."}
                 </span>
               </div>
             )}
@@ -726,15 +738,19 @@ export function SipMaps() {
           </div>
 
           <div className="sip-regional-controls">
-            <button type="button" className="sip-regional-step-btn" onClick={goToPreviousRegionalMap} disabled={regionalMaps.length <= 1}>
-              Previous
-            </button>
-            <button type="button" className="sip-regional-step-btn" onClick={goToNextRegionalMap} disabled={regionalMaps.length <= 1}>
-              Next
-            </button>
+            {regionalMaps.length > 1 ? (
+              <>
+                <button type="button" className="sip-regional-step-btn" onClick={goToPreviousRegionalMap}>
+                  Previous Map
+                </button>
+                <button type="button" className="sip-regional-step-btn" onClick={goToNextRegionalMap}>
+                  Next Map
+                </button>
+              </>
+            ) : null}
             {activeRegionalMap ? (
               <a className="sip-regional-download" href={activeRegionalMap.src} download={activeRegionalMap.filename}>
-                Download Current PNG
+                Download Regional Map
               </a>
             ) : null}
           </div>
@@ -743,14 +759,42 @@ export function SipMaps() {
 
       <section className="sip-country-maps" aria-label={`${activeMap.label} country map downloads`}>
         <header className="sip-regional-maps-header">
-          <p className="sip-maps-kicker">A.I. Country Maps</p>
-          <h3>{activeMap.label} Country Map Collection</h3>
-          <p>First-batch country study plates generated from the same Sip Studios atlas system.</p>
+          <p className="sip-maps-kicker">Interactive Country Atlas</p>
+          <h3>Explore {activeMap.label} by wine region</h3>
+          <p>Choose a country, then select any listed region to turn the map into a focused study path.</p>
         </header>
 
-        <div className="sip-country-map-layout">
-          <div className="sip-country-map-frame">
-            {activeCountryMap ? (
+        <div className="sip-country-atlas-toolbar">
+          <div className="sip-country-selector" role="group" aria-label={`Choose a ${activeMap.label} country map`}>
+            {activeCountryMaps.map((country, index) => {
+              const isActive = activeCountryMap?.slug === country.slug;
+              return (
+                <button
+                  key={country.slug}
+                  type="button"
+                  aria-pressed={isActive}
+                  className={`sip-country-map-chip${isActive ? " is-active" : ""}`}
+                  onClick={() => setCountryMapIndex(index)}
+                >
+                  {country.name}
+                </button>
+              );
+            })}
+          </div>
+          {activeCountryMap ? (
+            <p className="sip-country-atlas-status" aria-live="polite">
+              {activeCountryMap.name} · country {countryMapIndex + 1} of {activeCountryMaps.length}
+            </p>
+          ) : null}
+        </div>
+
+        {activeCountryMap ? (
+          <div className="sip-country-map-layout">
+            <figure className="sip-country-map-frame">
+              <div className="sip-country-map-frame-head">
+                <span>Country atlas</span>
+                <strong>{activeCountryMap.name}</strong>
+              </div>
               <img
                 className="sip-country-map-image"
                 src={countryMapAssetPath(activeCountryMap)}
@@ -758,94 +802,123 @@ export function SipMaps() {
                 loading="lazy"
                 decoding="async"
               />
-            ) : (
-              <div className="sip-regional-empty">
-                <strong>Country maps coming soon</strong>
-                <span>No enabled country pages are currently assigned to this continent.</span>
-              </div>
-            )}
-          </div>
+              <figcaption>Select a wine region below, then use the focused study card to continue.</figcaption>
+            </figure>
 
-          <aside className="sip-country-map-panel">
-            <p className="sip-maps-kicker">Country Plate</p>
-            <h3>{activeCountryMap ? activeCountryMap.name : activeMap.label}</h3>
-            <p>
-              {activeCountryMap
-                ? `${activeCountryMap.name} is wired to its country page and downloadable as an editable SVG map plate.`
-                : "Country map assets will appear here as country pages are enabled."}
-            </p>
-            {activeCountryMapSource ? (
-              <div className={`sip-map-source-panel sip-map-source-panel--${activeCountryMapSource.tone}`}>
-                <div className="sip-map-source-summary">
-                  <span>{activeCountryMapSource.tierLabel}</span>
+            <aside className="sip-country-map-panel" aria-label={`${activeCountryMap.name} selected region`}>
+              <div>
+                <p className="sip-maps-kicker">Selected Wine Region</p>
+                <h3>{activeCountryRegion?.region ?? activeCountryMap.name}</h3>
+              </div>
+              {activeCountryRegionImage ? (
+                <div className="sip-country-region-photo">
+                  <img
+                    src={activeCountryRegionImage}
+                    alt={`${activeCountryRegion?.region ?? activeCountryMap.name} vineyard study landscape`}
+                    loading="lazy"
+                    decoding="async"
+                    onError={(event) => {
+                      event.currentTarget.onerror = null;
+                      event.currentTarget.src = countryMapAssetPath(activeCountryMap);
+                      event.currentTarget.classList.add("is-map-fallback");
+                    }}
+                  />
+                </div>
+              ) : null}
+              <p>
+                {activeCountryRegion?.detail ??
+                  activeCountryRegion?.iconicVineyard ??
+                  `Use the ${activeCountryMap.name} map to locate this region before opening its full study guide.`}
+              </p>
+              <div className="sip-country-study-sequence" aria-label="Study sequence">
+                <span>1 · Locate</span>
+                <span>2 · Name</span>
+                <span>3 · Explain</span>
+              </div>
+              <div className="sip-country-map-actions" aria-label={`${activeCountryMap.name} study actions`}>
+                <a className="sip-regional-download is-primary" href={`#app/regions/wine/${activeCountryMap.slug}`}>
+                  Open Country Guide
+                </a>
+              </div>
+            </aside>
+
+            {activeCountryStudyRegions.length > 0 ? (
+              <div className="sip-country-region-index" aria-label={`${activeCountryMap.name} interactive wine region index`}>
+                <div className="sip-country-region-index-head">
+                  <div>
+                    <p className="sip-maps-kicker">Wine Regions</p>
+                    <strong>Choose a region to focus the lesson</strong>
+                  </div>
+                  <span>
+                    {countryRegionIndex + 1} of {activeCountryStudyRegions.length}
+                  </span>
+                </div>
+                <div className="sip-country-region-grid" role="group" aria-label={`${activeCountryMap.name} wine regions`}>
+                  {activeCountryStudyRegions.map((region, index) => {
+                    const isActive = countryRegionIndex === index;
+                    return (
+                      <button
+                        key={`${activeCountryMap.slug}-${region.region}`}
+                        type="button"
+                        aria-pressed={isActive}
+                        className={`sip-country-region-button${isActive ? " is-active" : ""}`}
+                        onClick={() => setCountryRegionIndex(index)}
+                      >
+                        <span>{String(index + 1).padStart(2, "0")}</span>
+                        <strong>
+                          {region.region}
+                          {region.detail ? <small>{region.detail}</small> : null}
+                        </strong>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+
+            <footer className="sip-country-atlas-footer">
+              {activeCountryMapSource ? (
+                <div className={`sip-country-source-credit sip-map-source-panel--${activeCountryMapSource.tone}`}>
+                  <span>Map source</span>
                   <strong>{activeCountryMapSource.statusLabel}</strong>
+                  <p>
+                    {activeCountryMapSource.sourceUrl ? (
+                      <a href={activeCountryMapSource.sourceUrl} target="_blank" rel="noreferrer">
+                        {activeCountryMapSource.sourceName}
+                      </a>
+                    ) : (
+                      activeCountryMapSource.sourceName
+                    )}
+                  </p>
                 </div>
-                <p>
-                  Source:{" "}
-                  {activeCountryMapSource.sourceUrl ? (
-                    <a href={activeCountryMapSource.sourceUrl} target="_blank" rel="noreferrer">
-                      {activeCountryMapSource.sourceName}
-                    </a>
-                  ) : (
-                    activeCountryMapSource.sourceName
-                  )}
-                </p>
-                <p>{activeCountryMapSource.sourceMethod}</p>
-                <div className="sip-map-source-tags" aria-label={`${activeCountryMap.name} available map layers`}>
-                  {activeCountryMapSource.availableLayers.slice(0, 5).map((layer) => (
-                    <span key={`${activeCountryMap.slug}-${layer}`}>{layer}</span>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-            {activeCountryMap ? (
-              <div className="sip-country-map-actions" aria-label={`${activeCountryMap.name} map actions`}>
-                <a className="sip-regional-download" href={countryMapAssetPath(activeCountryMap)} download={countryMapDownloadName(activeCountryMap)}>
-                  Download SVG
-                </a>
-                <a className="sip-regional-download" href={`#app/regions/wine/${activeCountryMap.slug}`}>
-                  Open Country Page
-                </a>
-              </div>
-            ) : null}
-            {activeCountryMap && activeCountryRegionIndex.length > 0 ? (
-              <div className="sip-country-region-index" aria-label={`${activeCountryMap.name} study region index`}>
-                <p className="sip-maps-kicker">Region Index</p>
-                <ol>
-                  {activeCountryRegionIndex.map((region, index) => (
-                    <li key={`${activeCountryMap.slug}-${region.region}`}>
-                      <span>{String(index + 1).padStart(2, "0")}</span>
-                      <strong>
-                        {region.region}
-                        {region.detail ? <small>{region.detail}</small> : null}
-                      </strong>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            ) : null}
-            <div className="sip-map-region-list">
-              {activeCountryMaps.map((country) => (
-                <button
-                  key={country.slug}
-                  type="button"
-                  className={`sip-country-map-chip${activeCountryMap?.slug === country.slug ? " is-active" : ""}`}
-                  onClick={() => setCountryMapIndex(activeCountryMaps.findIndex((item) => item.slug === country.slug))}
+              ) : null}
+              <div className="sip-country-atlas-footer-actions">
+                <a
+                  className="sip-regional-download"
+                  href={countryMapAssetPath(activeCountryMap)}
+                  download={countryMapDownloadName(activeCountryMap)}
                 >
-                  {country.name}
-                </button>
-              ))}
-            </div>
-            <div className="sip-regional-controls">
-              <button type="button" className="sip-regional-step-btn" onClick={goToPreviousCountryMap} disabled={activeCountryMaps.length <= 1}>
-                Previous
-              </button>
-              <button type="button" className="sip-regional-step-btn" onClick={goToNextCountryMap} disabled={activeCountryMaps.length <= 1}>
-                Next
-              </button>
-            </div>
-          </aside>
-        </div>
+                  Download Map
+                </a>
+                {activeCountryMaps.length > 1 ? (
+                  <>
+                    <button type="button" className="sip-regional-step-btn" onClick={goToPreviousCountryMap}>
+                      Previous Country
+                    </button>
+                    <button type="button" className="sip-regional-step-btn" onClick={goToNextCountryMap}>
+                      Next Country
+                    </button>
+                  </>
+                ) : null}
+              </div>
+            </footer>
+          </div>
+        ) : (
+          <div className="sip-regional-empty">
+            <strong>Country maps coming soon</strong>
+            <span>No country pages are currently assigned to this continent.</span>
+          </div>
+        )}
       </section>
       </section>
     </section>
