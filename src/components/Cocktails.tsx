@@ -651,7 +651,14 @@ function buildEcosystemEdges(nodes: EcosystemNode[]) {
     ["Mineral Water", "Soda Water"], ["Tequila", "Grapefruit Juice"], ["Brandy", "Cognac"], ["Amaro", "Bitters and Soda"]
   ].forEach(([left, right]) => connectLabels(left, right));
 
-  return edges;
+  const uniqueEdges = new Map<string, [string, string, string]>();
+  edges.forEach((edge) => {
+    const [leftId, rightId] = edge;
+    const relationshipKey = [leftId, rightId].sort().join("::");
+    uniqueEdges.set(relationshipKey, edge);
+  });
+
+  return Array.from(uniqueEdges.values());
 }
 
 const ecosystemNodes = buildEcosystemNodes();
@@ -777,8 +784,8 @@ function BeverageEcosystemGlobe() {
 }
 
 function BeverageEcosystemMap({ variant }: { variant: "sphere" | "flat" }) {
-  const [zoom, setZoom] = useState(0.62);
-  const [pan, setPan] = useState({ x: -660, y: -360 });
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
   const [dragStart, setDragStart] = useState<{ x: number; y: number; panX: number; panY: number } | null>(null);
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
   const nodeById = useMemo(() => new Map(ecosystemNodes.map((node) => [node.id, node])), []);
@@ -788,10 +795,10 @@ function BeverageEcosystemMap({ variant }: { variant: "sphere" | "flat" }) {
   const viewWidth = 3100;
   const viewHeight = 2240;
 
-  const clampZoom = (value: number) => Math.max(0.42, Math.min(2.4, value));
+  const clampZoom = (value: number) => Math.max(0.72, Math.min(2.4, value));
   const reset = () => {
-    setZoom(0.62);
-    setPan({ x: -660, y: -360 });
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
   };
 
   return (
@@ -824,7 +831,12 @@ function BeverageEcosystemMap({ variant }: { variant: "sphere" | "flat" }) {
         onPointerUp={() => setDragStart(null)}
         onPointerCancel={() => setDragStart(null)}
       >
-        <svg className="bev-ecosystem-svg" viewBox={`0 0 ${viewWidth} ${viewHeight}`} style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}>
+        <svg
+          className="bev-ecosystem-svg"
+          viewBox={`0 0 ${viewWidth} ${viewHeight}`}
+          preserveAspectRatio="xMidYMid meet"
+          style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
+        >
           <defs>
             <filter id={`bev-node-glow-${variant}`} x="-80%" y="-80%" width="260%" height="260%">
               <feGaussianBlur stdDeviation="4" result="blur" />

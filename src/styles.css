@@ -574,7 +574,7 @@
 .sip-command-host {
   position: relative;
   z-index: 90;
-  width: 0;
+  width: 100%;
   height: 0;
   margin: 0;
   padding: 0;
@@ -5867,6 +5867,47 @@ select option:checked {
   color: #fff3cc;
 }
 
+.term-modal .lesson-chip {
+  color: #071822;
+  background: linear-gradient(135deg, #fff3cc, #9fdaf5);
+}
+
+.term-modal .error {
+  color: #ffb4a8;
+}
+
+.term-modal .btn:focus-visible {
+  outline: 3px solid #9fdaf5;
+  outline-offset: 3px;
+}
+
+.term-modal-grid a:not(.btn):not(.terminology-autolink) {
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
+.term-modal-grid a:not(.btn):focus-visible,
+.term-modal .terminology-autolink:focus-visible {
+  outline: 3px solid #9fdaf5;
+  outline-offset: 2px;
+}
+
+.term-modal-primary textarea {
+  color: #071822;
+  border-color: #185552;
+  background: #fff7dd;
+}
+
+.term-modal-primary textarea::placeholder {
+  color: #4d5a60;
+  opacity: 1;
+}
+
+.term-modal-primary textarea:focus-visible {
+  outline: 3px solid #9fdaf5;
+  outline-offset: 3px;
+}
+
 .terminology-autolink {
   color: #fff2c6;
   text-decoration: none;
@@ -5922,6 +5963,26 @@ select option:checked {
 
 .term-infographic-download {
   width: fit-content;
+}
+
+.term-modal-grid a.term-infographic-download {
+  color: #071822;
+  border-color: rgba(255, 243, 204, 0.62);
+  background: linear-gradient(135deg, #fff3cc, #edd4a8);
+  text-decoration: none;
+}
+
+.term-modal-grid a.term-infographic-download:hover {
+  color: #071822;
+  border-color: #9fdaf5;
+  background: #fff7dd;
+}
+
+.term-modal-grid a.term-infographic-download:focus-visible {
+  color: #071822;
+  border-color: #9fdaf5;
+  outline: 3px solid #9fdaf5;
+  outline-offset: 3px;
 }
 
 .terminology-admin-layout {
@@ -21816,11 +21877,18 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 }
 
 .sip-command-palette {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 190;
   display: grid;
   place-items: center;
+  box-sizing: border-box;
+  overflow: auto;
+  padding: clamp(0.6rem, 3vw, 1.5rem);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(237, 212, 168, 0.14), transparent 36%),
+    rgba(0, 8, 18, 0.56);
+  backdrop-filter: blur(12px);
   pointer-events: none;
   opacity: 0;
   transform: translateY(-4px) scale(0.99);
@@ -21834,7 +21902,11 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 }
 
 .sip-command-palette-panel {
-  width: min(680px, calc(100% - 1.2rem));
+  box-sizing: border-box;
+  width: min(680px, 100%);
+  max-width: calc(100vw - 1.2rem);
+  max-height: calc(100dvh - 1.2rem);
+  overflow: hidden;
   border: 1px solid rgba(237, 212, 168, 0.34);
   border-radius: 24px;
   background:
@@ -21892,7 +21964,8 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   gap: 0.34rem;
   margin-top: 0.48rem;
   max-height: min(48vh, 360px);
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding-right: 0.1rem;
 }
 
@@ -22368,16 +22441,6 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   font-size: var(--type-small);
   font-weight: 800;
   line-height: 1.22;
-}
-
-.sip-mission-control .sip-command-palette {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(237, 212, 168, 0.14), transparent 36%),
-    rgba(0, 8, 18, 0.48);
-  backdrop-filter: blur(12px);
 }
 
 .sip-command-results button[aria-selected="true"] {
@@ -27585,6 +27648,66 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   background: transparent;
 }
 
+.sip-map-hotspot-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.sip-map-hotspot {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 160ms ease;
+}
+
+.sip-map-hotspot:hover,
+.sip-map-hotspot:focus-visible,
+.sip-map-hotspot.is-active {
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
+.sip-map-hotspot:focus-visible {
+  outline: 2px solid #48e5dc;
+  outline-offset: 0;
+}
+
+.sip-map-hotspot-number {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 2px solid rgba(255, 240, 206, 0.92);
+  border-radius: 999px;
+  background: rgba(4, 19, 31, 0.88);
+  color: #fff0ce;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 0 0 4px rgba(4, 19, 31, 0.5), 0 8px 18px rgba(0, 8, 18, 0.38);
+  transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.sip-map-hotspot:hover .sip-map-hotspot-number,
+.sip-map-hotspot:focus-visible .sip-map-hotspot-number,
+.sip-map-hotspot.is-active .sip-map-hotspot-number {
+  background: #edd4a8;
+  color: #04131f;
+  box-shadow: 0 0 0 5px rgba(72, 229, 220, 0.2), 0 10px 22px rgba(0, 8, 18, 0.44);
+}
+
 .sip-map-coming-soon-badge {
   position: absolute;
   top: 0.9rem;
@@ -27808,6 +27931,50 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   align-items: start;
 }
 
+.sip-country-map-layout {
+  grid-template-areas:
+    "map focus"
+    "regions regions"
+    "footer footer";
+  grid-template-columns: minmax(0, 1.55fr) minmax(270px, 0.45fr);
+  margin-top: 0.85rem;
+}
+
+.sip-country-atlas-toolbar {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.sip-country-selector {
+  display: flex;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.2rem 0.12rem 0.42rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline proximity;
+  scrollbar-width: none;
+}
+
+.sip-country-selector::-webkit-scrollbar {
+  display: none;
+}
+
+.sip-country-selector .sip-country-map-chip {
+  flex: 0 0 auto;
+  min-height: 2.6rem;
+  padding-inline: 0.8rem;
+  scroll-snap-align: center;
+}
+
+.sip-country-atlas-status {
+  margin: 0;
+  color: rgba(217, 247, 255, 0.7);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
 .regions-country-map-head {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
@@ -27926,6 +28093,44 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   line-height: 0;
 }
 
+.sip-country-map-frame {
+  grid-area: map;
+  align-self: stretch;
+}
+
+.sip-country-map-frame-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid rgba(159, 218, 245, 0.2);
+  background: rgba(4, 19, 31, 0.84);
+  line-height: 1.2;
+}
+
+.sip-country-map-frame-head span {
+  color: rgba(159, 218, 245, 0.78);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.sip-country-map-frame-head strong {
+  color: #fff0ce;
+  font-size: 0.9rem;
+}
+
+.sip-country-map-frame figcaption {
+  padding: 0.68rem 0.85rem 0.75rem;
+  border-top: 1px solid rgba(159, 218, 245, 0.16);
+  color: rgba(217, 247, 255, 0.68);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .sip-country-map-image,
 .regions-country-map-frame img {
   display: block;
@@ -27937,12 +28142,57 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 }
 
 .sip-country-map-panel {
+  grid-area: focus;
   display: grid;
   gap: 0.75rem;
   padding: 1rem;
   border: 1px solid rgba(159, 218, 245, 0.18);
   border-radius: 20px;
   background: rgba(4, 13, 24, 0.52);
+}
+
+.sip-country-region-photo {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid rgba(159, 218, 245, 0.24);
+  border-radius: 14px;
+  background: rgba(4, 19, 31, 0.78);
+}
+
+.sip-country-region-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sip-country-region-photo img.is-map-fallback {
+  object-fit: contain;
+}
+
+.sip-country-study-sequence {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.sip-country-study-sequence span {
+  display: grid;
+  place-items: center;
+  min-height: 2.35rem;
+  border: 1px solid rgba(159, 218, 245, 0.2);
+  border-radius: 10px;
+  background: rgba(8, 31, 43, 0.72);
+  color: rgba(217, 247, 255, 0.82);
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.sip-country-map-actions .sip-regional-download.is-primary {
+  border-color: rgba(237, 212, 168, 0.64);
+  background: linear-gradient(135deg, rgba(18, 67, 83, 0.96), rgba(113, 70, 28, 0.9));
+  color: #fff0ce;
 }
 
 .sip-country-map-chip {
@@ -27971,12 +28221,184 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 }
 
 .sip-country-region-index {
+  grid-area: regions;
   display: grid;
   gap: 0.55rem;
   padding: 0.78rem;
   border: 1px solid rgba(237, 212, 168, 0.22);
   border-radius: 16px;
   background: rgba(3, 14, 24, 0.58);
+}
+
+.sip-country-region-index-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.sip-country-region-index-head > div {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.sip-country-region-index-head > div > strong {
+  color: #fff0ce;
+  font-size: 0.9rem;
+}
+
+.sip-country-region-index-head > span {
+  flex: 0 0 auto;
+  border: 1px solid rgba(159, 218, 245, 0.24);
+  border-radius: 999px;
+  padding: 0.32rem 0.55rem;
+  color: rgba(217, 247, 255, 0.78);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.sip-country-region-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.sip-country-region-button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 3.25rem;
+  padding: 0.48rem 0.55rem;
+  border: 1px solid rgba(159, 218, 245, 0.2);
+  border-radius: 13px;
+  background: rgba(8, 31, 43, 0.68);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.sip-country-region-button:hover,
+.sip-country-region-button:focus-visible,
+.sip-country-region-button.is-active {
+  border-color: rgba(237, 212, 168, 0.7);
+  background: linear-gradient(135deg, rgba(18, 67, 83, 0.9), rgba(35, 55, 48, 0.86));
+}
+
+.sip-country-region-button:hover {
+  transform: translateY(-1px);
+}
+
+.sip-country-region-button:focus-visible {
+  outline: 2px solid rgba(72, 229, 220, 0.92);
+  outline-offset: 2px;
+}
+
+.sip-country-region-button > span {
+  display: inline-grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 999px;
+  background: rgba(237, 212, 168, 0.92);
+  color: #04131f;
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.sip-country-region-button > strong {
+  display: grid;
+  gap: 0.15rem;
+  color: #fff0ce;
+  font-size: 0.79rem;
+  line-height: 1.2;
+}
+
+.sip-country-region-button small {
+  color: rgba(211, 239, 245, 0.74);
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.sip-country-atlas-footer {
+  grid-area: footer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding-top: 0.15rem;
+}
+
+.sip-country-source-credit {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.14rem 0.45rem;
+  padding-left: 0.72rem;
+  border-left: 4px solid rgba(159, 218, 245, 0.7);
+}
+
+.sip-country-source-credit > span {
+  color: rgba(159, 218, 245, 0.76);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sip-country-source-credit > strong {
+  color: #fff0ce;
+  font-size: 0.72rem;
+}
+
+.sip-country-source-credit p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: rgba(217, 247, 255, 0.7);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.sip-country-source-credit a {
+  color: #edd4a8;
+}
+
+.sip-country-atlas-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.sip-map-active-region {
+  display: grid;
+  gap: 0.1rem;
+  margin-top: 0.7rem;
+  padding: 0.65rem 0.72rem;
+  border: 1px solid rgba(237, 212, 168, 0.28);
+  border-radius: 13px;
+  background: rgba(8, 31, 43, 0.68);
+}
+
+.sip-map-active-region span {
+  color: rgba(159, 218, 245, 0.76);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sip-map-active-region strong {
+  color: #fff0ce;
+  font-size: 0.92rem;
+}
+
+.sip-map-active-region small {
+  color: rgba(217, 247, 255, 0.7);
+  font-size: 0.68rem;
+  font-weight: 700;
 }
 
 .sip-country-region-index ol {
@@ -28141,7 +28563,8 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   margin-top: 0.6rem;
 }
 
-.sip-map-region-list span {
+.sip-map-region-list span,
+.sip-map-region-list button {
   display: inline-flex;
   align-items: center;
   max-width: 100%;
@@ -28155,6 +28578,24 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   line-height: 1.2;
   white-space: normal;
   word-break: break-word;
+}
+
+.sip-map-region-list button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.sip-map-region-list button:hover,
+.sip-map-region-list button:focus-visible,
+.sip-map-region-list button.is-active {
+  border-color: rgba(237, 212, 168, 0.62);
+  background: rgba(18, 67, 83, 0.78);
+  color: #fff0ce;
+}
+
+.sip-map-region-list button:focus-visible {
+  outline: 2px solid rgba(72, 229, 220, 0.9);
+  outline-offset: 2px;
 }
 
 .sip-map-prompt-details summary {
@@ -28305,8 +28746,21 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
 @media (max-width: 980px) {
   .sip-maps-hero,
-  .sip-maps-layout {
+  .sip-maps-layout,
+  .sip-country-map-layout {
     grid-template-columns: 1fr;
+  }
+
+  .sip-country-map-layout {
+    grid-template-areas:
+      "map"
+      "regions"
+      "focus"
+      "footer";
+  }
+
+  .sip-country-region-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .grapes-layout {
@@ -28353,6 +28807,54 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 @media (max-width: 620px) {
   .sip-map-frame {
     border-radius: 20px;
+  }
+
+  .sip-country-maps {
+    padding: 0.75rem;
+    border-radius: 20px;
+  }
+
+  .sip-country-selector {
+    margin-inline: -0.15rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .sip-country-selector .sip-country-map-chip {
+    min-height: 2.75rem;
+    font-size: 0.78rem;
+  }
+
+  .sip-country-region-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sip-country-map-panel,
+  .sip-country-region-index {
+    padding: 0.72rem;
+  }
+
+  .sip-country-atlas-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sip-country-atlas-footer-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: stretch;
+  }
+
+  .sip-country-atlas-footer-actions .sip-regional-download:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .sip-country-atlas-footer-actions > * {
+    min-height: 2.75rem;
+  }
+
+  .sip-map-hotspot-number {
+    width: 1.55rem;
+    height: 1.55rem;
   }
 
   .grapes-list {
@@ -28410,7 +28912,8 @@ button.journal-note-row.journal-note-select .journal-note-copy {
     gap: 0.3rem;
   }
 
-  .sip-map-region-list span {
+  .sip-map-region-list span,
+  .sip-map-region-list button {
     padding: 0.2rem 0.46rem;
     font-size: 0.72rem;
   }
@@ -29025,14 +29528,14 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 }
 
 .bev-ecosystem-viewport {
+  aspect-ratio: 3100 / 2240;
   background:
     linear-gradient(rgba(96, 165, 250, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(96, 165, 250, 0.08) 1px, transparent 1px),
     #010409;
   background-size: 44px 44px;
   cursor: grab;
-  height: min(72vh, 760px);
-  min-height: 520px;
+  min-height: 0;
   overflow: hidden;
   position: relative;
   touch-action: none;
@@ -29043,11 +29546,13 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 }
 
 .bev-ecosystem-svg {
-  height: 1250px;
+  display: block;
+  height: 100%;
   overflow: visible;
-  transform-origin: 0 0;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
   transition: transform 120ms ease-out;
-  width: 1800px;
+  width: 100%;
 }
 
 .bev-eco-edge {
@@ -29133,7 +29638,6 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 @media (max-width: 860px) {
   .bev-recipes-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .bev-ecosystem-panel-head { align-items: start; flex-direction: column; }
-  .bev-ecosystem-viewport { height: 620px; }
 }
 
 .bev-ecosystem-globe-panel {

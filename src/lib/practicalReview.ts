@@ -129,7 +129,7 @@ function readCocktailItems(): PracticalReviewItem[] {
         maxScore,
         percent,
         detail: `${score}/${maxScore} technique decisions matched the benchmark`,
-        route: "app/cocktails",
+        route: "app/recipes",
         createdAt: asText(record.createdAt) || new Date(0).toISOString()
       };
     });

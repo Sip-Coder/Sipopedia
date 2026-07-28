@@ -60,6 +60,7 @@ import {
 
 const loadSipAcademyWineLessons = () => import("./components/SipAcademyWineLessons");
 const loadSipStudiosGame = () => import("./components/SipStudiosGame");
+const loadBeyondTheGlassPage = () => import("./features/beyond-the-glass/BeyondTheGlassPage");
 const loadFlavorWheel = () => import("./components/FlavorWheel");
 const loadCellarScanner = () => import("./components/CellarScanner");
 const loadBeverageQuiz = () => import("./components/BeverageQuiz");
@@ -128,6 +129,9 @@ const SipAcademyWineLessons = lazyRoute("sip-academy", () =>
   loadSipAcademyWineLessons().then((module) => ({ default: module.SipAcademyWineLessons }))
 );
 const SipStudiosGame = lazyRoute("sip-game", () => loadSipStudiosGame().then((module) => ({ default: module.SipStudiosGame })));
+const BeyondTheGlassPage = lazyRoute("beyond-the-glass", () =>
+  loadBeyondTheGlassPage().then((module) => ({ default: module.BeyondTheGlassPage }))
+);
 const FlavorWheel = lazyRoute("flavor-wheel", () => loadFlavorWheel().then((module) => ({ default: module.FlavorWheel })));
 const CellarScanner = lazyRoute("cellar-scanner", () => loadCellarScanner().then((module) => ({ default: module.CellarScanner })));
 const BeverageQuiz = lazyRoute("beverage-quiz", () => loadBeverageQuiz().then((module) => ({ default: module.BeverageQuiz })));
@@ -159,6 +163,7 @@ type WorkspacePage =
   | "starter"
   | "sip-academy"
   | "sip-game"
+  | "beyond-the-glass"
   | "sipopedia"
   | "flavor-wheel"
   | "cellar-scanner"
@@ -266,6 +271,7 @@ function normalizeWorkspacePage(value: string): WorkspacePage {
   if (value === "home") return "starter";
   if (value === "sip-academy") return "sip-academy";
   if (value === "sip-game") return "sip-game";
+  if (value === "beyond-the-glass" || value === "BTG" || value === "btg") return "beyond-the-glass";
   if (value === "sipopedia" || value === "terminology") return "sipopedia";
   if (value === "flavor-wheel") return "flavor-wheel";
   if (value === "cellar-scanner" || value === "scanner" || value === "label-scanner" || value === "cellar") return "cellar-scanner";
@@ -285,7 +291,7 @@ function normalizeWorkspacePage(value: string): WorkspacePage {
   if (value === "maps" || value === "wine-maps") return "maps";
   if (value === "grapes" || value === "wine-grapes") return "grapes";
   if (value.startsWith("grapes/")) return value as GrapesPage;
-  if (value === "cocktails" || value === "cocktail-map") return "cocktails";
+  if (value === "recipes" || value === "cocktails" || value === "cocktail-map") return "cocktails";
   if (value === "resources" || value === "wine-resources") return "resources";
   return "starter";
 }
@@ -302,6 +308,7 @@ function parseRoute(hashValue?: string): AppRoute {
 
 function toHash(route: AppRoute): string {
   if (route === "app/starter") return "app/launch";
+  if (route === "app/cocktails") return "app/recipes";
   return route;
 }
 
@@ -310,6 +317,19 @@ function routeToUrl(route: AppRoute): string {
   if (route === "admin/terminology") return "/admin/terminology";
   const hash = toHash(route);
   return hash === "home" ? "/#home" : `/#${hash}`;
+}
+
+function canonicalizeLegacyRecipeUrl(route: AppRoute): void {
+  if (typeof window === "undefined" || route !== "app/cocktails") return;
+
+  const rawHash = window.location.hash.replace(/^#/, "");
+  const queryIndex = rawHash.indexOf("?");
+  const routePart = queryIndex >= 0 ? rawHash.slice(0, queryIndex) : rawHash;
+  const legacyRecipeRoutes = new Set(["app/cocktails", "cocktails", "app/cocktail-map", "cocktail-map"]);
+  if (!legacyRecipeRoutes.has(routePart)) return;
+
+  const query = queryIndex >= 0 ? rawHash.slice(queryIndex) : "";
+  window.history.replaceState(null, "", `${routeToUrl(route)}${query}`);
 }
 
 function roomFromRoute(route: AppRoute): SiteRoom {
@@ -374,6 +394,10 @@ function preloadWorkspacePage(target: WorkspacePage): void {
   }
   if (target === "sip-game") {
     void loadSipStudiosGame();
+    return;
+  }
+  if (target === "beyond-the-glass") {
+    void loadBeyondTheGlassPage();
     return;
   }
   if (target === "sipopedia") {
@@ -464,16 +488,12 @@ function AppLoading() {
   );
 }
 
-type SiteMenuOption = {
-  value: AppRoute;
-  label: string;
-};
-
 type WorkspaceCommandOption = {
   id: string;
   label: string;
   detail: string;
   kind: string;
+  searchText?: string;
   shortcut?: string;
   route?: AppRoute;
   page?: WorkspacePage;
@@ -481,21 +501,6 @@ type WorkspaceCommandOption = {
   action?: "logout";
   score?: number;
 };
-
-function buildRoomMenuOptions(pageStatuses: PageStatusMap, isAdmin: boolean, isPaid: boolean, isSignedIn: boolean): SiteMenuOption[] {
-  const primaryTargets: SiteMenuOption[] = [
-    { value: "home", label: "Lobby Home" },
-    { value: "pricing", label: "Plan & Pricing" },
-    { value: "study-paths", label: "Credential Paths" },
-    { value: "support", label: "Support & Teams" },
-    ...(isSignedIn ? [] : [{ value: "checkout" as const, label: "Enroll Now" }])
-  ];
-
-  return primaryTargets.filter((item) => {
-    if (item.value.startsWith("admin")) return false;
-    return shouldShowInPublicNav(item.value, pageStatuses, isAdmin, isPaid);
-  });
-}
 
 function isCompactNavRouteActive(route: AppRoute, target: string): boolean {
   if (route === target) return true;
@@ -747,7 +752,6 @@ function WorkspaceShell({
     () => workspaceNavItems.filter((item) => item.section === section && shouldShowInPublicNav(`app/${item.id}`, pageStatuses, isAdmin, isPaid)),
     [isAdmin, isPaid, pageStatuses, section]
   );
-  const lobbyMenuOptions = useMemo(() => buildRoomMenuOptions(pageStatuses, isAdmin, isPaid, Boolean(user)), [isAdmin, isPaid, pageStatuses, user]);
   const menuSections = useMemo(
     () =>
       workspaceSections.map((item) => ({
@@ -784,60 +788,32 @@ function WorkspaceShell({
   );
   const includeTerminologySearch = shouldShowInPublicNav("app/sipopedia", pageStatuses, isAdmin, isPaid);
   const commandOptions = useMemo<WorkspaceCommandOption[]>(() => {
-    const routeOptions: WorkspaceCommandOption[] = lobbyMenuOptions.map((item) => ({
-      id: `route:${item.value}`,
+    const routeOptions: WorkspaceCommandOption[] = compactNavigationSearchItems.map((item) => ({
+      id: `route:${item.id}`,
       label: item.label,
-      detail: item.value === "checkout" ? "Start enrollment" : "Lobby navigation",
-      kind: "Lobby",
-      shortcut: item.value === "home" ? "G H" : item.value === "pricing" ? "G P" : "Enroll",
-      route: item.value
+      detail: item.detail,
+      kind: item.groupLabel,
+      searchText: item.searchText,
+      shortcut:
+        item.id === "home"
+          ? "G H"
+          : item.id === "pricing"
+            ? "G P"
+            : item.id === "app/starter"
+              ? "Esc"
+              : item.id === "account/avatar"
+                ? "Profile"
+                : undefined,
+      route: item.id as AppRoute
     }));
 
-    const actionOptions: WorkspaceCommandOption[] = [
-      {
-        id: "action:launch-pad",
-        label: "Launch Pad",
-        detail: "Return to the workspace front door",
-        kind: "Action",
-        shortcut: "Esc",
-        route: defaultGameRoomRoute(isPaid, isAdmin)
-      },
-      ...(user
-        ? [
-            {
-              id: "action:dashboard",
-              label: "Account Dashboard",
-              detail: "Membership, progress, and settings",
-              kind: "Action",
-              shortcut: "Account",
-              route: "account" as const
-            },
-            {
-              id: "action:avatar",
-              label: "Avatar Creator",
-              detail: "Build and save your 8-bit Sip Studies character",
-              kind: "Action",
-              shortcut: "Profile",
-              route: "account/avatar" as const
-            },
-            { id: "action:logout", label: "Log Out", detail: "End this session", kind: "Action", shortcut: "Exit", action: "logout" as const }
-          ]
-        : [{ id: "action:login", label: "Log In", detail: "Open account access", kind: "Action", shortcut: "Account", route: "login" as const }])
-    ];
-
-    const moduleOptions = menuSections.flatMap((menuSection) =>
-      menuSection.items.map((item) => ({
-        id: `module:${item.id}`,
-        label: item.label,
-        detail: item.signal,
-        kind: menuSection.label,
-        shortcut: menuSection.id === section ? "Ctrl Arrows" : "Shift Arrows",
-        page: item.id
-      }))
-    );
-
-    return [...actionOptions, ...routeOptions, ...moduleOptions];
-  }, [isAdmin, isPaid, lobbyMenuOptions, menuSections, user]);
+    return user
+      ? [
+          ...routeOptions,
+          { id: "action:logout", label: "Log Out", detail: "End this session", kind: "Account", shortcut: "Exit", action: "logout" }
+        ]
+      : routeOptions;
+  }, [compactNavigationSearchItems, user]);
   const termCommandOptions = useMemo<WorkspaceCommandOption[]>(
     () =>
       termCommandResults.map((term) => ({
@@ -855,7 +831,9 @@ function WorkspaceShell({
     const query = commandQuery.trim().toLowerCase();
     const siteOptions = query
       ? commandOptions
-          .filter((item) => `${item.label} ${item.detail} ${item.kind} ${item.shortcut ?? ""}`.toLowerCase().includes(query))
+          .filter((item) =>
+            `${item.label} ${item.detail} ${item.kind} ${item.shortcut ?? ""} ${item.searchText ?? ""}`.toLowerCase().includes(query)
+          )
           .map((item) => ({
             ...item,
             score:
@@ -903,7 +881,7 @@ function WorkspaceShell({
 
   useEffect(() => {
     const query = commandQuery.trim();
-    if (!isCommandOpen || query.length < 2) {
+    if (!includeTerminologySearch || !isCommandOpen || query.length < 2) {
       setTermCommandResults([]);
       setTermCommandLoading(false);
       return;
@@ -930,7 +908,7 @@ function WorkspaceShell({
       active = false;
       window.clearTimeout(timer);
     };
-  }, [commandQuery, isCommandOpen]);
+  }, [commandQuery, includeTerminologySearch, isCommandOpen]);
 
   useEffect(() => {
     if (activeCommandIndex < visibleCommandOptions.length) return;
@@ -1162,6 +1140,8 @@ function WorkspaceShell({
       <SipAcademyWineLessons />
     ) : page === "sip-game" ? (
       <SipStudiosGame />
+    ) : page === "beyond-the-glass" ? (
+      <BeyondTheGlassPage onNavigate={(target) => onNavigate(target as WorkspacePage)} />
     ) : page === "sipopedia" ? (
       <Terminology />
     ) : page === "flavor-wheel" ? (
@@ -1337,8 +1317,11 @@ function App() {
 
   useEffect(() => {
     const onRouteChange = () => {
-      setRoute(parseRoute());
+      const nextRoute = parseRoute();
+      canonicalizeLegacyRecipeUrl(nextRoute);
+      setRoute(nextRoute);
     };
+    onRouteChange();
     window.addEventListener("hashchange", onRouteChange);
     window.addEventListener("popstate", onRouteChange);
     return () => {

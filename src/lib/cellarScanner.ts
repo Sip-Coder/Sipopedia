@@ -198,7 +198,7 @@ export function cellarStudyLinksForRecord(record: Pick<CellarScanDraft, "beverag
   if (record.beverageType === "spirits") {
     return [
       { label: "Spirits Quiz", route: "app/beverage-quiz", detail: "Practice spirits category and production logic" },
-      { label: "Bev Recipes", route: "app/cocktails", detail: "Connect base spirits to classic builds" },
+      { label: "Bev Recipes", route: "app/recipes", detail: "Connect base spirits to classic builds" },
       { label: "Flavor Wheel", route: "app/flavor-wheel", detail: "Calibrate aroma and texture language" }
     ];
   }

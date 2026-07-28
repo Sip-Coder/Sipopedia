@@ -2340,7 +2340,7 @@ export function SipAcademyWineLessons() {
             </div>
             <div className="academy-header-hero-copy">
               <p className="academy-kicker">01 Sip Academy</p>
-              <h2>Daily Pocket Wine Academy</h2>
+              <h2>Sip Academy</h2>
               <p>
                 {voiceMode === "story"
                   ? `${LESSONS.length} guided missions across ${REALMS.length} realms, narrated as a wine-history journey through regions, styles, and service rituals.`

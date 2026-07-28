@@ -31,6 +31,11 @@ const explicitRoutes = [
   "/#app/launch",
   "/#app/sip-academy",
   "/#app/sip-game",
+  "/#app/beyond-the-glass",
+  "/#BTG",
+  "/#btg",
+  "/#app/BTG",
+  "/#app/btg",
   "/#app/sipopedia",
   "/#app/beverage-quiz",
   "/#app/study-sheets",
@@ -42,6 +47,7 @@ const explicitRoutes = [
   "/#app/grapes",
   "/#app/grapes/cabernet-sauvignon",
   "/#app/grapes/hops/cascade",
+  "/#app/recipes",
   "/#app/cocktails",
   "/#app/resources",
   "/#app/flavor-wheel",
@@ -461,6 +467,10 @@ async function navigateAndCheck(client, sessionId, baseUrl, route, routeTimeoutM
       if (state.checkoutHasRetiredPlanCopy) failures.push("checkout includes retired Starter or Founding plan copy");
       if ((state.checkoutPlanSwitcherCount ?? 0) !== 0) failures.push("checkout still renders a plan switcher");
     }
+    if (route === "/#app/cocktails") {
+      const finalHash = state.location ? new URL(state.location).hash : "";
+      if (finalHash !== "#app/recipes") failures.push(`legacy recipe route did not redirect to #app/recipes (found ${finalHash || "no hash"})`);
+    }
     if (routeEvents.exceptions.length) failures.push(`runtime exception: ${routeEvents.exceptions[0]}`);
     if (routeEvents.consoleErrors.length) failures.push(`console error: ${routeEvents.consoleErrors[0]}`);
     if (routeEvents.failedRequests.length) failures.push(`failed same-origin request: ${routeEvents.failedRequests[0]}`);
@@ -605,6 +615,115 @@ async function assertCompactNavigationBehavior(client, sessionId, baseUrl, route
     );
     if (!searchState.labels.includes("Privacy")) {
       throw new Error("Site-wide Search could not find the Privacy page outside the visible menu group.");
+    }
+
+    const commandOpened = await evaluate(
+      client,
+      sessionId,
+      `(() => {
+        const closeButton = document.querySelector(".sip-sidebar-close");
+        if (closeButton instanceof HTMLButtonElement) closeButton.click();
+        const searchButton = document.querySelector(".sip-compact-navigation-workspace .sip-appbar-search");
+        if (!(searchButton instanceof HTMLButtonElement)) return { error: "Workspace Search button is missing." };
+        searchButton.click();
+        return true;
+      })()`
+    );
+    if (commandOpened?.error) throw new Error(commandOpened.error);
+    await sleep(160);
+
+    const noMatchState = await evaluate(
+      client,
+      sessionId,
+      `(() => {
+        const input = document.querySelector('input[aria-label="Search Sip Studies destinations"]');
+        if (!(input instanceof HTMLInputElement)) return { error: "Workspace Search input is missing." };
+        const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+        setter?.call(input, "zzzz-no-match");
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        const panel = document.querySelector(".sip-command-palette-panel");
+        const rect = panel?.getBoundingClientRect();
+        return {
+          panelWidth: rect?.width ?? 0,
+          viewportWidth: window.innerWidth
+        };
+      })()`
+    );
+    if (noMatchState?.error) throw new Error(noMatchState.error);
+    let stablePanelState = null;
+    const noMatchDeadline = Date.now() + 4000;
+    while (Date.now() < noMatchDeadline) {
+      stablePanelState = await evaluate(
+        client,
+        sessionId,
+        `(() => {
+          const panel = document.querySelector(".sip-command-palette-panel");
+          const rect = panel?.getBoundingClientRect();
+          return {
+            panelWidth: rect?.width ?? 0,
+            emptyCopy: document.querySelector(".sip-command-results p")?.textContent?.trim() ?? ""
+          };
+        })()`
+      );
+      if (stablePanelState.emptyCopy.includes("No destination or term found")) break;
+      await sleep(160);
+    }
+    if (stablePanelState.panelWidth < 320) {
+      throw new Error(`Workspace Search collapsed on a no-match query (width ${stablePanelState.panelWidth}px).`);
+    }
+    if (!stablePanelState.emptyCopy.includes("No destination or term found")) {
+      throw new Error("Workspace Search did not render its no-match state.");
+    }
+
+    await evaluate(
+      client,
+      sessionId,
+      `(() => {
+        const input = document.querySelector('input[aria-label="Search Sip Studies destinations"]');
+        if (!(input instanceof HTMLInputElement)) return false;
+        const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+        setter?.call(input, "privacy");
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        return true;
+      })()`
+    );
+    await sleep(220);
+    const commandPageLabels = await evaluate(
+      client,
+      sessionId,
+      `Array.from(document.querySelectorAll(".sip-command-results button strong"))
+        .map((item) => item.textContent?.trim() ?? "")`
+    );
+    if (!commandPageLabels.includes("Privacy")) {
+      throw new Error("Workspace Search could not find the Privacy page from the complete site map.");
+    }
+
+    await evaluate(
+      client,
+      sessionId,
+      `(() => {
+        const input = document.querySelector('input[aria-label="Search Sip Studies destinations"]');
+        if (!(input instanceof HTMLInputElement)) return false;
+        const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+        setter?.call(input, "Dosage");
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        return true;
+      })()`
+    );
+    let commandTermLabels = [];
+    const terminologyDeadline = Date.now() + 4000;
+    while (Date.now() < terminologyDeadline) {
+      commandTermLabels = await evaluate(
+        client,
+        sessionId,
+        `Array.from(document.querySelectorAll(".sip-command-results button strong"))
+          .map((item) => item.textContent?.trim() ?? "")`
+      );
+      if (commandTermLabels.includes("Dosage")) break;
+      await sleep(160);
+    }
+    if (!commandTermLabels.includes("Dosage")) {
+      throw new Error("Workspace Search could not find a Sipopedia terminology result.");
     }
   } finally {
     removeListener();

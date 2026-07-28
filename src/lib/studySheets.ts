@@ -151,7 +151,7 @@ export const studySheets: StudySheet[] = [
     examUse: "Use for CMS-style service drills, pre-shift training, and hospitality roleplay.",
     routeHandoffs: [
       { label: "Support Teams", route: "support" },
-      { label: "Cocktails", route: "app/cocktails" },
+      { label: "Cocktails", route: "app/recipes" },
       { label: "Roleplay Lab", route: "app/service-roleplay" },
       { label: "Service Quiz", route: "app/beverage-quiz?preset=bar-service" }
     ],
@@ -179,7 +179,7 @@ export const studySheets: StudySheet[] = [
     subtitle: "A print-ready build sheet for core classic specs, method, glass, and garnish.",
     examUse: "Use for BarSmarts-style reps, team pre-shift drills, and cocktail-map recall.",
     routeHandoffs: [
-      { label: "Open Cocktails", route: "app/cocktails" },
+      { label: "Open Cocktails", route: "app/recipes" },
       { label: "Roleplay Lab", route: "app/service-roleplay" },
       { label: "Service Quiz", route: "app/beverage-quiz?preset=bar-service" },
       { label: "Team Help", route: "support" }

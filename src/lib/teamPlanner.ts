@@ -87,7 +87,7 @@ export const teamSprintTemplates: TeamSprintTemplate[] = [
       { week: 1, title: "Guest Language Baseline", route: "app/sipopedia", outcome: "Team can explain five core service terms in plain language." },
       { week: 2, title: "Pairing Logic Drill", route: "app/flavor-wheel", outcome: "Team can connect weight, intensity, acid, sweetness, and texture to a pairing." },
       { week: 3, title: "Classic Style Map", route: "app/regions", outcome: "Team can name key regions and grapes behind the current list." },
-      { week: 4, title: "Table-Side Scenario", route: "app/cocktails", outcome: "Team can answer three common guest questions with confident, concise language." }
+      { week: 4, title: "Table-Side Scenario", route: "app/recipes", outcome: "Team can answer three common guest questions with confident, concise language." }
     ]
   },
   {
@@ -109,7 +109,7 @@ export const teamSprintTemplates: TeamSprintTemplate[] = [
     defaultOwner: "Bar lead",
     assignments: [
       { week: 1, title: "Base Spirit Grid", route: "app/resources", outcome: "Team can list production and flavor differences across core spirits." },
-      { week: 2, title: "Classic Build Drill", route: "app/cocktails", outcome: "Team can recall specs and explain structure for core classics." },
+      { week: 2, title: "Classic Build Drill", route: "app/recipes", outcome: "Team can recall specs and explain structure for core classics." },
       { week: 3, title: "Flavor Calibration", route: "app/flavor-wheel", outcome: "Team can translate flavor descriptions into guest-facing language." },
       { week: 4, title: "Spirits Theory Retake", route: "app/beverage-quiz", outcome: "Team completes a spirits-focused quiz and records weak topics." }
     ]

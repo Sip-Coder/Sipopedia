@@ -260,7 +260,7 @@ export const serviceRoleplayScenarios: ServiceRoleplayScenario[] = [
     ],
     handoffs: [
       { label: "Classic Specs", route: "app/study-sheets" },
-      { label: "Cocktails", route: "app/cocktails" },
+      { label: "Cocktails", route: "app/recipes" },
       { label: "Bar Quiz", route: "app/beverage-quiz?preset=bar-service" }
     ],
     steps: [

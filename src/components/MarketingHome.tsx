@@ -100,7 +100,7 @@ const pathfinderProfiles: PathfinderProfile[] = [
     unlock: "Membership adds repeated practice across spirits, cocktails, and tasting notes.",
     nextSteps: ["Set quiz to spirits", "Review classic specs", "Log a tasting note"],
     primaryAction: "Open Bev Recipes",
-    primaryRoute: "app/cocktails",
+    primaryRoute: "app/recipes",
     secondaryAction: "Run Quiz",
     secondaryRoute: "app/beverage-quiz"
   },
@@ -114,7 +114,7 @@ const pathfinderProfiles: PathfinderProfile[] = [
     unlock: "Membership unlocks applied rooms and saved tasting practice.",
     nextSteps: ["Drill classic builds", "Calibrate flavor language", "Read one Daily Sip signal"],
     primaryAction: "Open Bev Recipes",
-    primaryRoute: "app/cocktails",
+    primaryRoute: "app/recipes",
     secondaryAction: "Open Flavor Wheel",
     secondaryRoute: "app/flavor-wheel"
   },
@@ -130,7 +130,7 @@ const pathfinderProfiles: PathfinderProfile[] = [
     primaryAction: "Open Scanner",
     primaryRoute: "app/cellar-scanner",
     secondaryAction: "View Membership",
-    secondaryRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "pathfinder-working-pro", next: "app/cocktails" })
+    secondaryRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "pathfinder-working-pro", next: "app/recipes" })
   },
   {
     id: "team-lead",
@@ -150,6 +150,12 @@ const pathfinderProfiles: PathfinderProfile[] = [
 
 const marketGapMoves: MarketGapMove[] = [
   {
+    gap: "Beverage education often separates facts that only make sense as a connected system.",
+    response: "Beyond The Glass follows one drop through a cinematic, scroll-controlled story of science, culture, people, and responsibility.",
+    routeLabel: "Explore Beyond The Glass",
+    route: "app/beyond-the-glass"
+  },
+  {
     gap: "Competitors win with named credentials and exam ladders.",
     response: "Sip Studies now routes students through an independent credential prep desk before they touch the full menu.",
     routeLabel: "Credential Paths",
@@ -165,7 +171,7 @@ const marketGapMoves: MarketGapMove[] = [
     gap: "Bar academies sell operational skill, not just knowledge.",
     response: "Bartender and team tracks point to recipes, flavor calibration, industry radar, and practical training language.",
     routeLabel: "Service Tools",
-    route: "app/cocktails"
+    route: "app/recipes"
   },
   {
     gap: "Streaming and creator platforms make learning feel episodic.",

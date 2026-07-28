@@ -1424,7 +1424,7 @@ export function SipStudiosGame() {
     setFinalCelebrationDismissed((current) => ({ ...current, [finalCelebrationKey]: true }));
   };
 
-  const navigateToWorkspace = (page: "sipopedia" | "maps" | "cocktails") => {
+  const navigateToWorkspace = (page: "sipopedia" | "beyond-the-glass" | "maps" | "recipes") => {
     if (typeof window === "undefined") return;
     setRoomCompletionModalKey(null);
     window.location.hash = `#app/${page}`;
@@ -1876,10 +1876,13 @@ export function SipStudiosGame() {
               <button type="button" className="btn btn-light" onClick={() => navigateToWorkspace("sipopedia")}>
                 Sipopedia
               </button>
+              <button type="button" className="btn btn-light" onClick={() => navigateToWorkspace("beyond-the-glass")}>
+                Beyond The Glass
+              </button>
               <button type="button" className="btn btn-light" onClick={() => navigateToWorkspace("maps")}>
                 Maps
               </button>
-              <button type="button" className="btn btn-primary" onClick={() => navigateToWorkspace("cocktails")}>
+              <button type="button" className="btn btn-primary" onClick={() => navigateToWorkspace("recipes")}>
                 Bev Recipes
               </button>
             </div>
