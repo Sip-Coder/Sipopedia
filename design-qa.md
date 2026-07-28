@@ -390,7 +390,102 @@ final result: passed
 
 ---
 
+## Beyond The Glass — Mobile Scene Composition Repair
+
+This section supersedes the portrait-mobile composition claims in the earlier cinematic chapter QA below.
+
+### Comparison Target
+
+- Source visual truth:
+  - `.codex-remote-attachments/019f825f-f49a-7c40-adb0-1dc18d096e82/41611069-418d-4c9e-9f8b-1ebe4272c099/3-Photo-3.jpg` — Aerial Dive
+  - `.codex-remote-attachments/019f825f-f49a-7c40-adb0-1dc18d096e82/41611069-418d-4c9e-9f8b-1ebe4272c099/2-Photo-2.jpg` — Isolation
+  - `.codex-remote-attachments/019f825f-f49a-7c40-adb0-1dc18d096e82/41611069-418d-4c9e-9f8b-1ebe4272c099/1-Photo-1.jpg` — Reassembly
+- Browser-rendered implementation: `http://127.0.0.1:5100/#app/beyond-the-glass`
+- Implementation captures:
+  - `C:/Users/TwoKn/.codex/visualizations/2026/07/21/019f825f-f49a-7c40-adb0-1dc18d096e82/btg-mobile-qa/03-aerial-dive-captions-390x844-final.png`
+  - `C:/Users/TwoKn/.codex/visualizations/2026/07/21/019f825f-f49a-7c40-adb0-1dc18d096e82/btg-mobile-qa/04-isolation-captions-390x844-final.png`
+  - `C:/Users/TwoKn/.codex/visualizations/2026/07/21/019f825f-f49a-7c40-adb0-1dc18d096e82/btg-mobile-qa/07-reassembly-captions-390x844-final.png`
+- Combined comparison evidence:
+  - `C:/Users/TwoKn/.codex/visualizations/2026/07/21/019f825f-f49a-7c40-adb0-1dc18d096e82/btg-mobile-qa/comparison-aerial-dive.png`
+  - `C:/Users/TwoKn/.codex/visualizations/2026/07/21/019f825f-f49a-7c40-adb0-1dc18d096e82/btg-mobile-qa/comparison-isolation.png`
+  - `C:/Users/TwoKn/.codex/visualizations/2026/07/21/019f825f-f49a-7c40-adb0-1dc18d096e82/btg-mobile-qa/comparison-reassembly.png`
+- Viewport: 390 × 844 CSS px at device pixel ratio 1. The in-app browser content capture was 375 × 812 px after browser chrome and scrollbars.
+- Pixel normalization: each source phone screenshot was 597 × 1280 px. The 52 px operating-system status area and 26 px bottom system area were excluded, producing a 597 × 1202 px content crop. That crop and the 375 × 812 implementation were each normalized to 844 px high in the 833 × 898 comparison boards.
+- State: Aerial Dive, Isolation, and Reassembly with optional captions visible. Route, theme, scene copy, characters, and interaction state match; the repair intentionally changes mobile composition and control layout.
+
+### Findings
+
+- No actionable P0, P1, or P2 issue remains.
+- Aerial Dive now uses only its authored mid-altitude plate. The second transparent Drop is disabled on phone layouts, eliminating the visibly doubled and misaligned water subject.
+- Isolation now switches directly to its authored isolation plate with one subtle Noise overlay. Copy, artwork, character sprites, controls, and captions occupy separate rows.
+- Reassembly no longer inherits the Responsibility card from System in Motion. At the former failing progress value `0.861`, the scene shows only the Reassembly title and Living Knowledge Card.
+- Phone visuals now change with the semantic scene boundary instead of exposing partially blended base layers. Each tested mobile state has exactly one visible base image with a total base opacity of 1.
+- Previous and Next are fully visible in the first control row. Narration, captions, Stop, Mute, and Transcript remain visible without a horizontal control scroller.
+
+### Required Fidelity Surfaces
+
+- Fonts and typography: the existing Sipopedia display serif remains unchanged. Mobile summaries use a readable 0.9 rem size, controls use 0.76 rem with 44 px minimum height, and captions use 0.82 rem with an internal scroll only when the complete spoken line exceeds its reserved area. No heading, label, caption, or button text is truncated.
+- Spacing and layout rhythm: portrait mode uses explicit grid rows for header, scene copy, artwork, optional layer context, and narration controls. Measured gaps remain positive at every tested size; no semantic regions intersect. Compact 320 × 568 screens receive a shorter header and denser CTA arrangement while retaining a dedicated artwork band.
+- Colors and visual tokens: the repair reuses the existing ink, deep teal, cream, water-blue, and brass tokens. Opaque text panels remain separate from—not layered over—the artwork, so legibility no longer depends on heavier scrims.
+- Image quality and asset fidelity: all original Beyond The Glass WebP artwork remains intact. Per-scene focal positions preserve the authored subject; the orbit uses `contain` so all ten educational objects remain visible. No new placeholder, CSS-drawn, SVG, or substitute asset was introduced.
+- Copy and content: all scene titles, summaries, layer names, questions, captions, narration, and calls to action remain unchanged. On Scenes 5–6, the compact layer strip retains the layer number, guide, object, and title; full explanations and prompts remain available in the field guide and transcript.
+- Accessibility and interaction: all seven controls remain available, all measured buttons are at least 44 × 44 px, captions default off but can be shown independently, and the complete transcript remains available. The stage has no page-level horizontal overflow.
+
+### Full-View Comparison Evidence
+
+- `comparison-aerial-dive.png` shows the reported top copy, duplicate water subjects, character labels, narration, and clipped controls on the left; the repaired right side has one aligned Drop, a dedicated full-width art band, complete controls, and a separate caption area.
+- `comparison-isolation.png` shows the reported Drop, Noise, characters, and text surfaces competing for the same canvas on the left; the repaired right side preserves the conceptual distortion while separating all readable content from the artwork.
+- `comparison-reassembly.png` shows the reported Responsibility card covering the final artifact on the left; the repaired right side displays the complete Living Knowledge Card without a stale layer panel.
+
+Focused crops were not required because each combined board renders all titles, controls, captions, characters, and central subjects at readable size. The reported failures were full-stage composition defects rather than sub-pixel icon or typography mismatches.
+
+### Comparison History
+
+1. Reported mobile composition failure
+   - Earlier finding: [P1] four independently positioned UI surfaces covered the graphics; global opacity envelopes exposed three or four semantic scenes at once; the separate Drop duplicated embedded water artwork; and the Responsibility layer remained mounted through progress `0.88` although Reassembly began at `0.86`.
+   - Fix: changed layer visibility to scene identity, mapped desktop visual crossfades to real scene ranges, hid the redundant mobile Drop, and rebuilt portrait mode as reserved grid rows.
+   - Post-fix evidence: the first 390 × 844 Aerial Dive, Isolation, and Reassembly captures removed the reported overlap and duplication.
+
+2. Compact-height correction
+   - Earlier finding: [P1] the first repair still allowed the three-row narration controls to extend below a 320 × 568 viewport in Opening, Scenes 5–6, and Invitation.
+   - Fix: added a compact portrait rule that shortens the redundant chapter header, tightens rhythm, preserves 44 px controls, and places final CTAs side by side.
+   - Post-fix evidence: every region remained inside the stage in all eight 320 × 568 scenes; the smallest measured artwork band was 114 px in Invitation and 142 px in System in Motion.
+
+3. Scene-boundary correction
+   - Earlier finding: [P2] the first 8% of a new mobile scene still crossfaded from the previous base plate, so the title could change before the picture did.
+   - Fix: made mobile base imagery deterministic by `data-scene`, allowing only the matching base plate and a subtle Noise overlay in Isolation.
+   - Post-fix evidence:
+     - `boundary-0421-isolation-390x844-final.png` shows Isolation immediately after progress `0.42`, with only the isolation base.
+     - `boundary-0861-reassembly-390x844-deterministic-final.png` shows Reassembly immediately after progress `0.86`, with only the Living Knowledge Card and no layer panel.
+
+4. Readability polish
+   - Earlier finding: [P2] the repaired mobile summaries, layer metadata, buttons, and captions were slightly undersized compared with the supplied phone captures.
+   - Fix: raised summary, layer-object, control, and caption sizes while retaining compact-screen fit.
+   - Post-fix evidence: refreshed combined comparison boards and final 320 × 568 / 390 × 844 geometry sweeps.
+
+### Interaction and Validation Evidence
+
+- Traversed all eight scenes with actual Previous/Next controls at 320 × 568, 360 × 800, 390 × 844, and 412 × 915.
+- Every sampled portrait scene passed: stage containment, semantic row order, positive region gaps, no character/narration collision, no copy/layer/narration clipping, no page-level horizontal overflow, one visible base plate, and 44 px minimum control targets.
+- Tested captions off and on in Aerial Dive, Isolation, Deconstruction, System in Motion, and Reassembly. Caption growth reduced the reserved artwork row without overlapping it.
+- Tested the exact Aerial Dive → Isolation boundary at progress `0.419` and `0.421`.
+- Tested the exact System in Motion → Reassembly failure interval at progress `0.861`; the stale layer panel was absent and the final artifact was fully active.
+- Traversed all eight desktop scenes at 1440 × 900; base opacity remained normalized, the separate Drop appeared only in Signal, and the layer panel appeared only in Deconstruction and System in Motion.
+- Fresh final browser console: zero errors.
+- Validation: `git diff --check`, `npm run test:navigation` (4/4), `npm run build`, and `npm run smoke:routes` (57/57) passed. The existing non-blocking Vite Three.js chunk-size warning remains unrelated.
+- Deployment status: local `Improvements` branch only; production was not changed during this repair.
+
+### Open Questions
+
+- None.
+
+final result: passed
+
+---
+
 ## Beyond The Glass — Cinematic Chapter QA
+
+Historical baseline: see **Beyond The Glass — Mobile Scene Composition Repair** above for the current portrait-mobile implementation and evidence.
 
 ### Comparison Target
 

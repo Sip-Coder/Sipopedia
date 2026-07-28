@@ -37,6 +37,19 @@ const CHARACTER_ROLES: Record<keyof typeof CHARACTER_ASSETS, string> = {
   Hummin: "Systems guide"
 };
 
+type StoryBaseLayer = "opening" | "mid" | "isolation" | "orbit" | "artifact" | "lobby";
+
+const SCENE_BASE_LAYERS: readonly StoryBaseLayer[] = [
+  "opening",
+  "opening",
+  "mid",
+  "isolation",
+  "orbit",
+  "orbit",
+  "artifact",
+  "lobby"
+];
+
 function smoothstep(value: number): number {
   const progress = Math.min(1, Math.max(0, value));
   return progress * progress * (3 - 2 * progress);
@@ -156,7 +169,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     sectionRef,
     chapter.scenes
   );
-  const [captionsVisible, setCaptionsVisible] = useState(true);
+  const [captionsVisible, setCaptionsVisible] = useState(false);
   const [narratedLineIndex, setNarratedLineIndex] = useState<number | null>(null);
 
   const layerProgress = progressBetween(progress, 0.52, 0.86);
@@ -170,32 +183,53 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
       : null;
   const activeLayerIndex = narratedLayerIndex ?? scrollLayerIndex;
   const activeLayer = chapter.knowledgeLayers[Math.max(0, activeLayerIndex)];
+  const layerFocusVisible =
+    activeScene.id === "deconstruction" || activeScene.id === "system-in-motion";
 
-  const openingDive = smoothstep(progressBetween(progress, 0.03, 0.43));
-  const openingOpacity = 1 - smoothstep(progressBetween(progress, 0.34, 0.5));
-  const midAltitudeOpacity =
-    smoothstep(progressBetween(progress, 0.16, 0.27)) *
-    (1 - smoothstep(progressBetween(progress, 0.39, 0.49)));
+  const currentBaseLayer = SCENE_BASE_LAYERS[sceneIndex] ?? "opening";
+  const previousBaseLayer =
+    SCENE_BASE_LAYERS[Math.max(0, sceneIndex - 1)] ?? currentBaseLayer;
+  const sceneEntryBlend =
+    sceneIndex === 0 ? 1 : smoothstep(progressBetween(sceneProgress, 0, 0.08));
+  const baseLayerOpacity = (layer: StoryBaseLayer) => {
+    if (layer === currentBaseLayer && layer === previousBaseLayer) return 1;
+    if (layer === currentBaseLayer) return sceneEntryBlend;
+    if (layer === previousBaseLayer) return 1 - sceneEntryBlend;
+    return 0;
+  };
+
+  const openingDive =
+    sceneIndex === 0
+      ? smoothstep(sceneProgress)
+      : sceneIndex === 1
+        ? 1 + smoothstep(sceneProgress) * 0.12
+        : 1;
+  const openingOpacity = baseLayerOpacity("opening");
+  const midAltitudeOpacity = baseLayerOpacity("mid");
   const centralSubjectOpacity =
-    smoothstep(progressBetween(progress, 0.1, 0.16)) *
-    (1 - smoothstep(progressBetween(progress, 0.39, 0.46)));
-  const centralSubjectTravel = smoothstep(progressBetween(progress, 0.14, 0.42));
-  const isolationOpacity =
-    smoothstep(progressBetween(progress, 0.32, 0.47)) *
-    (1 - smoothstep(progressBetween(progress, 0.69, 0.8)));
-  const orbitOpacity =
-    smoothstep(progressBetween(progress, 0.5, 0.59)) *
-    (1 - smoothstep(progressBetween(progress, 0.82, 0.9)));
-  const artifactOpacity =
-    smoothstep(progressBetween(progress, 0.82, 0.89)) *
-    (1 - smoothstep(progressBetween(progress, 0.94, 0.99)));
-  const lobbyOpacity = smoothstep(progressBetween(progress, 0.93, 0.985));
+    sceneIndex === 1
+      ? smoothstep(progressBetween(sceneProgress, 0.08, 0.28)) *
+        (1 - smoothstep(progressBetween(sceneProgress, 0.78, 0.96)))
+      : 0;
+  const centralSubjectTravel =
+    sceneIndex === 1 ? smoothstep(progressBetween(sceneProgress, 0.08, 0.82)) : 0;
+  const isolationOpacity = baseLayerOpacity("isolation");
+  const orbitOpacity = baseLayerOpacity("orbit");
+  const artifactOpacity = baseLayerOpacity("artifact");
+  const lobbyOpacity = baseLayerOpacity("lobby");
   const noiseOpacity =
-    smoothstep(progressBetween(progress, 0.42, 0.48)) *
-    (1 - smoothstep(progressBetween(progress, 0.5, 0.56)));
+    sceneIndex === 3
+      ? smoothstep(progressBetween(sceneProgress, 0.05, 0.24)) *
+        (1 - smoothstep(progressBetween(sceneProgress, 0.74, 0.96)))
+      : 0;
   const characterOpacity =
-    smoothstep(progressBetween(progress, 0.1, 0.2)) *
-    (1 - smoothstep(progressBetween(progress, 0.89, 0.97)));
+    sceneIndex === 1
+      ? smoothstep(progressBetween(sceneProgress, 0, 0.12))
+      : sceneIndex >= 2 && sceneIndex < 5
+        ? 1
+        : sceneIndex === 5
+          ? 1 - smoothstep(progressBetween(sceneProgress, 0.82, 1))
+          : 0;
 
   const stageStyle = {
     "--btg-progress": progress.toFixed(4),
@@ -278,7 +312,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
             width={1600}
             style={{
               opacity: midAltitudeOpacity,
-              transform: `scale(${1.04 + smoothstep(progressBetween(progress, 0.18, 0.43)) * 0.18})`
+              transform: `scale(${1.04 + smoothstep(sceneProgress) * 0.18})`
             }}
           />
           <StoryImage
@@ -302,7 +336,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
             width={1672}
             style={{
               opacity: isolationOpacity,
-              transform: `scale(${0.92 + smoothstep(progressBetween(progress, 0.35, 0.62)) * 0.14})`
+              transform: `scale(${0.92 + smoothstep(sceneProgress) * 0.14})`
             }}
           />
           <StoryImage
@@ -324,7 +358,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
             width={1672}
             style={{
               opacity: artifactOpacity,
-              transform: `scale(${0.88 + smoothstep(progressBetween(progress, 0.84, 0.94)) * 0.12})`
+              transform: `scale(${0.88 + smoothstep(sceneProgress) * 0.12})`
             }}
           />
           <StoryImage
@@ -403,16 +437,18 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
           ) : null}
         </div>
 
-        {progress >= 0.52 && progress < 0.88 ? (
+        {layerFocusVisible ? (
           <aside className="btg-layer-focus">
             <div className="btg-layer-focus__index">{activeLayer.number}</div>
             <div>
-              <p>
+              <p className="btg-layer-focus__object">
                 {activeLayer.guide} guides · {activeLayer.object}
               </p>
               <h2>{activeLayer.title}</h2>
-              <p>{activeLayer.explanation}</p>
-              <strong>Consider this: {activeLayer.question}</strong>
+              <p className="btg-layer-focus__explanation">{activeLayer.explanation}</p>
+              <strong className="btg-layer-focus__question">
+                Consider this: {activeLayer.question}
+              </strong>
             </div>
           </aside>
         ) : null}
