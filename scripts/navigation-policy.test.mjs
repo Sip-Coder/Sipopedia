@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { isBossNavigationUser } from "../src/lib/adminAccess.ts";
 import { WORKSPACE_NAV_ITEMS } from "../src/lib/workspaceNavigation.ts";
@@ -79,4 +80,28 @@ test("The Journey of a Drop chapter data is complete and internally linked", () 
       assert.ok(sourceIds.has(sourceId), `${layer.id} source ${sourceId} resolves`);
     }
   }
+});
+
+test("The terminology fallback remains inside Replit's deployable source tree", async () => {
+  const terminologySource = await readFile(
+    new URL("../src/lib/terminology.ts", import.meta.url),
+    "utf8"
+  );
+  const fallbackSource = JSON.parse(
+    await readFile(
+      new URL("../src/data/terminologyCuratedV2Terms.json", import.meta.url),
+      "utf8"
+    )
+  );
+
+  assert.match(
+    terminologySource,
+    /from\s+["']\.\.\/data\/terminologyCuratedV2Terms\.json["']/
+  );
+  assert.doesNotMatch(
+    terminologySource,
+    /from\s+["'][^"']*(?:\.\.\/)+output\//
+  );
+  assert.ok(Array.isArray(fallbackSource));
+  assert.ok(fallbackSource.length > 0);
 });
