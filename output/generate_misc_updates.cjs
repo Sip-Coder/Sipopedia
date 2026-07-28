@@ -2,7 +2,7 @@ const fs = require("fs");
 
 const sourceTitle = "Sip Studies Original Editorial Glossary Curated v2";
 const rows = JSON.parse(
-  fs.readFileSync("output/terminology_curated_v2_terms.json", "utf8")
+  fs.readFileSync("src/data/terminologyCuratedV2Terms.json", "utf8")
 ).filter((row) =>
   ["coffee", "kombucha", "juice", "milk", "water"].includes(row.beverage_type)
 );
