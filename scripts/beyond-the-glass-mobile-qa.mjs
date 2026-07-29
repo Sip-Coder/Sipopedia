@@ -299,6 +299,14 @@ async function inspectStage(client, sessionId, expectedScene) {
       const fallbackCount = Array.from(stage.querySelectorAll(".btg-story-image--fallback")).filter(visible).length;
       const guideNote = stage.querySelector(".btg-guide-note");
       const guideNoteExpected = ${JSON.stringify(expectedScene)} !== "academy-plaza";
+      const mobileStoryRegions = [regions.copy, regions.notes].filter(Boolean);
+      const mobileStoryHeight =
+        mobileStoryRegions.length > 0
+          ? Math.max(...mobileStoryRegions.map((value) => value.bottom)) -
+            Math.min(...mobileStoryRegions.map((value) => value.top))
+          : 0;
+      const mobileStoryHeightRatio =
+        window.innerWidth <= 640 && stageRect.height > 0 ? mobileStoryHeight / stageRect.height : 0;
       const documentOverflow = Math.max(
         0,
         document.documentElement.scrollWidth - window.innerWidth,
@@ -325,6 +333,13 @@ async function inspectStage(client, sessionId, expectedScene) {
             : "guide field note is visible on Academy Plaza"
         );
       }
+      if (guideNoteExpected && mobileStoryHeightRatio > 0.36) {
+        failures.push(
+          "mobile story overlays occupy " +
+          Math.round(mobileStoryHeightRatio * 100) +
+          "% of the stage height"
+        );
+      }
       if (activeImageFailures.length > 0) failures.push("active images failed: " + activeImageFailures.join(", "));
       if (fallbackCount > 0) failures.push("visible archive-image fallback");
       return {
@@ -332,6 +347,7 @@ async function inspectStage(client, sessionId, expectedScene) {
         documentOverflow,
         failures,
         guideNoteVisible: visible(guideNote),
+        mobileStoryHeightRatio,
         overlaps,
         regions,
         scene: stage.dataset.scene,

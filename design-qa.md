@@ -2,6 +2,8 @@
 
 Status: Passed
 
+Final result: passed
+
 ## Visual target
 
 - Reference: `C:\Users\TwoKn\Desktop\Sip Academy 02.png`
@@ -25,3 +27,14 @@ Status: Passed
 - Moved portrait scene framing upward so the full landscape image sits below the compact header rather than behind the lower note stack.
 - Reduced overlays in short landscape mode to one guide note plus concise scene copy.
 - Kept the active academy landmark glow motion while disabling it for reduced-motion users.
+
+## July 29 mobile and crush-house correction
+
+- User reference: `C:\Users\TwoKn\Documents\Codex\2026-07-20\prior-conversation-with-codex-conversation-role\.codex-remote-attachments\019f825f-f49a-7c40-adb0-1dc18d096e82\0d147890-c434-48c0-bcc7-a1da50bbc0e7\1-Photo-1.jpg`
+- Updated implementation capture: `C:\Users\TwoKn\AppData\Local\Temp\sipopedia-btg-visual-qa\crush-house-mobile-after.png`
+- Direct comparison: `C:\Users\TwoKn\AppData\Local\Temp\sipopedia-btg-visual-qa\crush-house-before-after.png`
+- The unrelated portrait-style crush-house artwork was replaced with a complete SIP Academy production-floor illustration showing grape intake, sorting, destemming, separated stems, must, pressing, pumps, adult workers, and Hummin.
+- At 390 × 844, the scene artwork is now fully visible above compact two-column story overlays. The old stacked text treatment occupied most of the screen; the revised overlay occupies less than 36% of stage height.
+- Guide narration remains readable on a paper layer, while the first field-note title remains visible and its longer detail stays available in the field notebook below the cinematic stage.
+- The same compact treatment was visually checked on “Rain Finds the Roots,” “Harvest Run,” and “Inside the Crush House.”
+- Automated mobile QA passed all 104 viewport-and-scene states, including the new maximum-overlay-height regression guard.

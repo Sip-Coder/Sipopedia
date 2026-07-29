@@ -4,7 +4,6 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type ImgHTMLAttributes,
   type SyntheticEvent
 } from "react";
 import type {
@@ -107,13 +106,14 @@ function StoryImage({
   }
 
   const fetchPriority = eager ? "high" : "auto";
+  const fetchPriorityAttribute = { fetchpriority: fetchPriority };
 
   return (
     <img
       alt={alt}
       className={className}
       decoding="async"
-      fetchPriority={fetchPriority as ImgHTMLAttributes<HTMLImageElement>["fetchPriority"]}
+      {...fetchPriorityAttribute}
       loading={eager ? "eager" : "lazy"}
       onError={handleError}
       sizes={sizes}
