@@ -38,3 +38,13 @@ Final result: passed
 - Guide narration remains readable on a paper layer, while the first field-note title remains visible and its longer detail stays available in the field notebook below the cinematic stage.
 - The same compact treatment was visually checked on “Rain Finds the Roots,” “Harvest Run,” and “Inside the Crush House.”
 - Automated mobile QA passed all 104 viewport-and-scene states, including the new maximum-overlay-height regression guard.
+
+## July 29 composition-blending refinement
+
+- Before capture: `C:\Users\TwoKn\AppData\Local\Temp\sipopedia-btg-blend-qa\crush-house-before-blend.png`
+- Final capture: `C:\Users\TwoKn\AppData\Local\Temp\sipopedia-btg-blend-qa\crush-house-after-blend-final-v2.png`
+- Direct comparison: `C:\Users\TwoKn\AppData\Local\Temp\sipopedia-btg-blend-qa\crush-house-before-after-blend.png`
+- The former mobile layout split the title, guide dialogue, and field note into three independent rectangles. The revised layout uses one cinematic story panel with the parchment dialogue and field-note label joined into a single overlapping strip.
+- Landscape artwork now fades into the dark stage instead of ending as a hard isolated block. The water-drop protagonist visually bridges the artwork and the story panel.
+- The title and guide strip no longer overlap at 360 × 800. “Rain Finds the Roots,” “Inside the Crush House,” and “Time in the Cellar” were included in the automated regression pass.
+- Automated mobile QA passed all 104 viewport-and-scene states after the refinement.
