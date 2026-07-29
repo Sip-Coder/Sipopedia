@@ -13,14 +13,19 @@ const viewports = [
   { width: 412, height: 915 }
 ];
 const scenes = [
-  { id: "living-landscape", number: "01", range: [0, 0.12] },
-  { id: "signal", number: "02", range: [0.12, 0.25] },
-  { id: "aerial-dive", number: "03", range: [0.25, 0.42] },
-  { id: "isolation", number: "04", range: [0.42, 0.52] },
-  { id: "deconstruction", number: "05", range: [0.52, 0.75] },
-  { id: "system-in-motion", number: "06", range: [0.75, 0.86] },
-  { id: "reassembly", number: "07", range: [0.86, 0.94] },
-  { id: "invitation", number: "08", range: [0.94, 1] }
+  { id: "academy-plaza", number: "01", range: [0, 0.07] },
+  { id: "guides-at-sunrise", number: "02", range: [0.07, 0.14] },
+  { id: "rain-and-roots", number: "03", range: [0.14, 0.22] },
+  { id: "vine-and-berry", number: "04", range: [0.22, 0.3] },
+  { id: "harvest", number: "05", range: [0.3, 0.38] },
+  { id: "crush-house", number: "06", range: [0.38, 0.46] },
+  { id: "fermentation", number: "07", range: [0.46, 0.54] },
+  { id: "laboratory", number: "08", range: [0.54, 0.62] },
+  { id: "barrel-aging", number: "09", range: [0.62, 0.7] },
+  { id: "bottling", number: "10", range: [0.7, 0.78] },
+  { id: "market", number: "11", range: [0.78, 0.86] },
+  { id: "restaurant", number: "12", range: [0.86, 0.93] },
+  { id: "first-sip", number: "13", range: [0.93, 1] }
 ];
 
 function sleep(milliseconds) {
@@ -258,10 +263,12 @@ async function inspectStage(client, sessionId, expectedScene) {
       const stageRect = rect(stage);
       const regionEntries = [
         ["header", stage.querySelector(".btg-stage__header")],
+        ["map", stage.querySelector(".btg-academy-map")],
         ["copy", stage.querySelector(".btg-stage__copy")],
-        ["layer", stage.querySelector(".btg-layer-focus")],
-        ["characters", stage.querySelector(".btg-characters")],
-        ["narration", stage.querySelector(".btg-narration")]
+        ["notes", stage.querySelector(".btg-note-stack")],
+        ["characters", stage.querySelector(".btg-character-party")],
+        ["dock", stage.querySelector(".btg-journey-dock")],
+        ["plaza-entry", stage.querySelector(".btg-plaza-node--active")]
       ].filter(([, element]) => visible(element));
       const regions = Object.fromEntries(regionEntries.map(([name, element]) => [name, rect(element)]));
       const contained = (value) =>
@@ -290,8 +297,8 @@ async function inspectStage(client, sessionId, expectedScene) {
         .filter((image) => !image.complete || image.naturalWidth <= 0 || image.naturalHeight <= 0)
         .map((image) => image.getAttribute("src") ?? "(missing src)");
       const fallbackCount = Array.from(stage.querySelectorAll(".btg-story-image--fallback")).filter(visible).length;
-      const layer = stage.querySelector(".btg-layer-focus");
-      const layerAllowed = ["deconstruction", "system-in-motion"].includes(${JSON.stringify(expectedScene)});
+      const guideNote = stage.querySelector(".btg-guide-note");
+      const guideNoteExpected = ${JSON.stringify(expectedScene)} !== "academy-plaza";
       const documentOverflow = Math.max(
         0,
         document.documentElement.scrollWidth - window.innerWidth,
@@ -311,11 +318,11 @@ async function inspectStage(client, sessionId, expectedScene) {
           " (" + Math.round(control.rect.width) + "×" + Math.round(control.rect.height) + ")"
         );
       }
-      if (Boolean(layer) !== layerAllowed) {
+      if (visible(guideNote) !== guideNoteExpected) {
         failures.push(
-          layerAllowed
-            ? "knowledge-layer panel is missing"
-            : "knowledge-layer panel is visible outside Deconstruction/System in Motion"
+          guideNoteExpected
+            ? "guide field note is missing"
+            : "guide field note is visible on Academy Plaza"
         );
       }
       if (activeImageFailures.length > 0) failures.push("active images failed: " + activeImageFailures.join(", "));
@@ -324,7 +331,7 @@ async function inspectStage(client, sessionId, expectedScene) {
         activeImageFailures,
         documentOverflow,
         failures,
-        layerVisible: Boolean(layer),
+        guideNoteVisible: visible(guideNote),
         overlaps,
         regions,
         scene: stage.dataset.scene,

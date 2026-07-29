@@ -57,28 +57,25 @@ test("Beyond The Glass follows Sip Game and opens as a public Lobby experience",
   );
 });
 
-test("The Journey of a Drop chapter data is complete and internally linked", () => {
-  assert.equal(journeyOfADrop.scenes.length, 8);
+test("The From Rain to First Sip chapter data is complete and internally linked", () => {
+  assert.equal(journeyOfADrop.scenes.length, 13);
   assert.equal(journeyOfADrop.scenes[0]?.range[0], 0);
   assert.equal(journeyOfADrop.scenes[journeyOfADrop.scenes.length - 1]?.range[1], 1);
 
   for (const [index, scene] of journeyOfADrop.scenes.entries()) {
     assert.ok(scene.range[1] > scene.range[0], `${scene.id} has a positive scroll range`);
+    assert.ok(scene.fieldNotes.length > 0, `${scene.id} has at least one field note`);
+    assert.ok(scene.narration.length > 0, `${scene.id} has at least one narration line`);
+    assert.ok(scene.artwork.alt.length > 0, `${scene.id} has descriptive artwork text`);
     if (index > 0) {
       assert.equal(scene.range[0], journeyOfADrop.scenes[index - 1].range[1], `${scene.id} begins where the previous scene ends`);
     }
   }
 
-  const layerIds = journeyOfADrop.knowledgeLayers.map((layer) => layer.id);
-  assert.equal(layerIds.length, 10);
-  assert.equal(new Set(layerIds).size, 10);
-
-  const sourceIds = new Set(journeyOfADrop.sources.map((source) => source.id));
-  for (const layer of journeyOfADrop.knowledgeLayers) {
-    assert.ok(layer.sourceIds.length > 0, `${layer.id} has at least one source`);
-    for (const sourceId of layer.sourceIds) {
-      assert.ok(sourceIds.has(sourceId), `${layer.id} source ${sourceId} resolves`);
-    }
+  const sourceIds = journeyOfADrop.sources.map((source) => source.id);
+  assert.equal(new Set(sourceIds).size, sourceIds.length);
+  for (const source of journeyOfADrop.sources) {
+    assert.match(source.url, /^https:\/\//, `${source.id} uses an HTTPS source`);
   }
 });
 

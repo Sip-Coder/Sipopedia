@@ -6,6 +6,21 @@ export type BeyondTheGlassNarrationLine = {
   durationSeconds: number;
 };
 
+export type BeyondTheGlassMotion =
+  | "establish"
+  | "push-in"
+  | "orbit"
+  | "cutaway"
+  | "rotate"
+  | "glide"
+  | "reassemble";
+
+export type BeyondTheGlassFieldNote = {
+  eyebrow: string;
+  title: string;
+  detail: string;
+};
+
 export type BeyondTheGlassScene = {
   id: string;
   number: string;
@@ -13,20 +28,27 @@ export type BeyondTheGlassScene = {
   range: readonly [number, number];
   eyebrow: string;
   summary: string;
-  emotionalPurpose: string;
-  visualCue: string;
+  checkpoint: string;
+  motion: BeyondTheGlassMotion;
+  artwork: {
+    src: string;
+    srcSet?: string;
+    alt: string;
+    fit?: "cover" | "contain";
+    position?: string;
+  };
+  landmark: {
+    label: string;
+    x: number;
+    y: number;
+  };
+  drop: {
+    x: number;
+    y: number;
+    size: number;
+  };
+  fieldNotes: BeyondTheGlassFieldNote[];
   narration: BeyondTheGlassNarrationLine[];
-};
-
-export type BeyondTheGlassLayer = {
-  id: string;
-  number: string;
-  title: string;
-  guide: BeyondTheGlassSpeaker;
-  object: string;
-  explanation: string;
-  question: string;
-  sourceIds: string[];
 };
 
 export type BeyondTheGlassSource = {
@@ -45,477 +67,615 @@ export type BeyondTheGlassChapter = {
   description: string;
   coreMessage: string;
   assets: {
-    opening: string;
-    midAltitude: string;
-    centralSubject: string;
-    isolation: string;
-    orbit: string;
-    noise: string;
-    finalArtifact: string;
-    lobby: string;
+    academyMap: string;
+    academyMapSet: string;
+    centralDrop: string;
     reducedMotionPoster: string;
-    socialShare: string;
   };
   scenes: BeyondTheGlassScene[];
-  knowledgeLayers: BeyondTheGlassLayer[];
   sources: BeyondTheGlassSource[];
   primaryCta: { label: string; route: string };
-  secondaryCta: { label: string; href: string };
 };
+
+const scenes: BeyondTheGlassScene[] = [
+  {
+    id: "academy-plaza",
+    number: "01",
+    title: "Academy Plaza",
+    range: [0, 0.07],
+    eyebrow: "Choose the active journey",
+    summary: "Wine is open. The next SIP Academy field trips are still under construction.",
+    checkpoint: "Wine adventure ready",
+    motion: "establish",
+    artwork: {
+      src: "/beyond-the-glass/sip-academy-1600.webp",
+      srcSet:
+        "/beyond-the-glass/sip-academy-960.webp 960w, /beyond-the-glass/sip-academy-1600.webp 1600w",
+      alt:
+        "A complete aerial view of SIP Academy, with vineyards and warm brass-and-glass craft halls connected by luminous blue waterways.",
+      fit: "contain"
+    },
+    landmark: { label: "Wine journey", x: 50, y: 49 },
+    drop: { x: 50, y: 49, size: 9 },
+    fieldNotes: [
+      {
+        eyebrow: "Active field trip",
+        title: "Wine · From Rain to First Sip",
+        detail:
+          "Enter the glowing center to follow one drop across vineyard, winery, market, service, and the final table."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Sippy",
+        durationSeconds: 7,
+        text:
+          "The plaza is awake. Wine is today’s active field trip; the other academy wings are still being built."
+      }
+    ]
+  },
+  {
+    id: "guides-at-sunrise",
+    number: "02",
+    title: "Meet the Field Team",
+    range: [0.07, 0.14],
+    eyebrow: "Sunrise",
+    summary: "The academy doors open and three distinct guides step into the vineyard.",
+    checkpoint: "Academy to field",
+    motion: "glide",
+    artwork: {
+      src: "/beyond-the-glass/wine-guides-sunrise-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-guides-sunrise-960.webp 960w, /beyond-the-glass/wine-guides-sunrise-1600.webp 1600w",
+      alt:
+        "Sippy, Roma, and Hummin emerge from a luminous SIP Academy doorway at sunrise and walk toward vineyard rows.",
+      position: "center"
+    },
+    landmark: { label: "Sunrise gate", x: 50, y: 43 },
+    drop: { x: 78, y: 78, size: 8 },
+    fieldNotes: [
+      {
+        eyebrow: "Sippy",
+        title: "Leads the way",
+        detail: "Sipopedia’s guide keeps the adventure moving and connects every stop."
+      },
+      {
+        eyebrow: "Roma",
+        title: "Flavor detective",
+        detail: "Roma spots sensory clues and turns tasting into playful discovery."
+      },
+      {
+        eyebrow: "Hummin",
+        title: "Memory keeper",
+        detail: "Hummin protects, connects, and recalls the data behind each decision."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Sippy",
+        durationSeconds: 7,
+        text:
+          "We each watch the journey differently. I’ll lead; Roma will chase flavor clues; Hummin will guard the system’s memory."
+      }
+    ]
+  },
+  {
+    id: "rain-and-roots",
+    number: "03",
+    title: "Rain Finds the Roots",
+    range: [0.14, 0.22],
+    eyebrow: "Water",
+    summary: "Rain enters soil, meets the root system, and supports the vine above.",
+    checkpoint: "Cloud to root",
+    motion: "cutaway",
+    artwork: {
+      src: "/beyond-the-glass/wine-rain-roots-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-rain-roots-960.webp 960w, /beyond-the-glass/wine-rain-roots-1600.webp 1600w",
+      alt:
+        "A vineyard cutaway with rain moving through soil toward roots, while grape clusters remain correctly attached to vines above ground.",
+      position: "center"
+    },
+    landmark: { label: "Vineyard water", x: 10, y: 23 },
+    drop: { x: 48, y: 58, size: 10 },
+    fieldNotes: [
+      {
+        eyebrow: "Vineyard technique",
+        title: "Water is managed, not guessed",
+        detail:
+          "Growers read soil, weather, vine water status, and growth before deciding when and how much to irrigate."
+      },
+      {
+        eyebrow: "Look closer",
+        title: "Roots stay below. Fruit stays above.",
+        detail:
+          "Roots absorb water and minerals underground; grape clusters develop on the canopy in sunlight."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Sippy",
+        durationSeconds: 10,
+        text:
+          "Before there is a grape, a drop crosses leaf, soil, and root. The vineyard has already begun shaping the wine."
+      },
+      {
+        speaker: "Hummin",
+        durationSeconds: 8,
+        text:
+          "Water decisions connect climate, soil, vine health, fruit development, and responsible farming."
+      }
+    ]
+  },
+  {
+    id: "vine-and-berry",
+    number: "04",
+    title: "The Vine Builds a Berry",
+    range: [0.22, 0.3],
+    eyebrow: "Growth",
+    summary: "Trellising, canopy, sunlight, and season turn water and sugar into fruit.",
+    checkpoint: "Root to berry",
+    motion: "orbit",
+    artwork: {
+      src: "/beyond-the-glass/wine-vineyard-growth-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-vineyard-growth-960.webp 960w, /beyond-the-glass/wine-vineyard-growth-1600.webp 1600w",
+      alt:
+        "A SIP adventure vineyard with trained vine rows, workers, grape clusters, and the academy visible beyond the vines.",
+      position: "center"
+    },
+    landmark: { label: "Vineyard rows", x: 87, y: 24 },
+    drop: { x: 67, y: 45, size: 8 },
+    fieldNotes: [
+      {
+        eyebrow: "Vine architecture",
+        title: "Trellising changes exposure",
+        detail:
+          "Posts and wires position shoots and fruit. Canopy choices affect light, airflow, ripening, and disease pressure."
+      },
+      {
+        eyebrow: "Vineyard watch",
+        title: "Pests leave clues",
+        detail:
+          "Insects, birds, mildew, rot, and damaged berries can change yield and fruit condition before harvest."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Roma",
+        durationSeconds: 11,
+        text:
+          "Circle the cluster. Shade, airflow, heat, and time change what the berry can become—and what we may later taste."
+      }
+    ]
+  },
+  {
+    id: "harvest",
+    number: "05",
+    title: "Harvest Run",
+    range: [0.3, 0.38],
+    eyebrow: "People",
+    summary: "Ripe fruit moves quickly from the row toward the crush house.",
+    checkpoint: "Berry to bin",
+    motion: "glide",
+    artwork: {
+      src: "/beyond-the-glass/wine-harvest-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-harvest-960.webp 960w, /beyond-the-glass/wine-harvest-1600.webp 1600w",
+      alt:
+        "A diverse vineyard team harvesting ripe grape clusters by hand into shallow bins at sunrise, with SIP Academy beyond the rows.",
+      position: "center"
+    },
+    landmark: { label: "Harvest gate", x: 18, y: 35 },
+    drop: { x: 29, y: 48, size: 7 },
+    fieldNotes: [
+      {
+        eyebrow: "Timing",
+        title: "Picking is a production decision",
+        detail:
+          "Sugar, acidity, flavor, weather, fruit condition, crew timing, and winery capacity all meet at harvest."
+      },
+      {
+        eyebrow: "Fruit care",
+        title: "Damage changes the starting line",
+        detail:
+          "Broken berries release juice early, giving microbes access before the fruit reaches the winery."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Sippy",
+        durationSeconds: 8,
+        text:
+          "Harvest turns a season of slow growth into a fast-moving relay. Fruit condition now matters minute by minute."
+      }
+    ]
+  },
+  {
+    id: "crush-house",
+    number: "06",
+    title: "Inside the Crush House",
+    range: [0.38, 0.46],
+    eyebrow: "Equipment",
+    summary: "Sorting, destemming, crushing, and pressing open different winemaking paths.",
+    checkpoint: "Bin to must",
+    motion: "rotate",
+    artwork: {
+      src: "/beyond-the-glass/wine-crush-house-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-crush-house-960.webp 960w, /beyond-the-glass/wine-crush-house-1600.webp 1600w",
+      alt:
+        "Sippy beside a detailed winery crusher-destemmer inside a warm industrial SIP Academy production hall.",
+      position: "center"
+    },
+    landmark: { label: "Crush house", x: 18, y: 51 },
+    drop: { x: 56, y: 52, size: 8 },
+    fieldNotes: [
+      {
+        eyebrow: "Machine anatomy",
+        title: "Destemmer before crusher",
+        detail:
+          "Removing stems and gently breaking berries creates must. A press separates liquid from skins and seeds when the style calls for it."
+      },
+      {
+        eyebrow: "Choice point",
+        title: "Skin contact changes the route",
+        detail:
+          "Keeping juice with skins extracts color, tannin, and flavor; separating them early sends the wine down a different path."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Hummin",
+        durationSeconds: 10,
+        text:
+          "Watch the machine turn. Every opening, roller, screen, and pump makes a physical choice about what enters fermentation."
+      }
+    ]
+  },
+  {
+    id: "fermentation",
+    number: "07",
+    title: "The Fermentation Hall",
+    range: [0.46, 0.54],
+    eyebrow: "Transformation",
+    summary: "Yeast converts grape sugar while the cellar team watches temperature and progress.",
+    checkpoint: "Sugar to wine",
+    motion: "push-in",
+    artwork: {
+      src: "/beyond-the-glass/wine-fermentation-hall-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-fermentation-hall-960.webp 960w, /beyond-the-glass/wine-fermentation-hall-1600.webp 1600w",
+      alt:
+        "A glowing SIP Academy fermentation hall with stainless steel tanks, active cellar work, and illuminated process paths.",
+      position: "center"
+    },
+    landmark: { label: "Fermentation hall", x: 81, y: 49 },
+    drop: { x: 54, y: 45, size: 9 },
+    fieldNotes: [
+      {
+        eyebrow: "Core science",
+        title: "Yeast changes the energy",
+        detail:
+          "During alcoholic fermentation, yeast consumes grape sugars and produces ethanol, carbon dioxide, heat, and flavor-active compounds."
+      },
+      {
+        eyebrow: "Cellar watch",
+        title: "Temperature and cap management",
+        detail:
+          "Cooling, pump-overs, punch-downs, nutrients, oxygen, and sanitation help the team guide a healthy fermentation."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Hummin",
+        durationSeconds: 11,
+        text:
+          "Push into the tank. Sugar falls, heat rises, carbon dioxide escapes, and yeast drives the fastest transformation in the journey."
+      }
+    ]
+  },
+  {
+    id: "laboratory",
+    number: "08",
+    title: "The Quality Lab",
+    range: [0.54, 0.62],
+    eyebrow: "Evidence",
+    summary: "Sensory judgment and measurements help the team decide what the wine needs next.",
+    checkpoint: "Wine to decision",
+    motion: "orbit",
+    artwork: {
+      src: "/beyond-the-glass/wine-lab-cellar-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-lab-cellar-960.webp 960w, /beyond-the-glass/wine-lab-cellar-1600.webp 1600w",
+      alt:
+        "A SIP Academy wine laboratory and cellar with glassware, samples, tanks, barrels, and luminous guide channels.",
+      position: "center"
+    },
+    landmark: { label: "Quality lab", x: 75, y: 22 },
+    drop: { x: 43, y: 49, size: 8 },
+    fieldNotes: [
+      {
+        eyebrow: "Winemaker toolkit",
+        title: "Measure, taste, compare",
+        detail:
+          "Sugar, pH, titratable acidity, temperature, sulfur dioxide, aroma, texture, and stability each reveal a different part of the wine."
+      },
+      {
+        eyebrow: "Choice point",
+        title: "SO₂ and acidification",
+        detail:
+          "Sulfur dioxide can help protect wine from oxidation and unwanted microbes. Acid additions may adjust balance and stability where allowed and needed."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Roma",
+        durationSeconds: 10,
+        text:
+          "In the lab, numbers and senses work together. A result is not the answer—it is evidence for the next decision."
+      }
+    ]
+  },
+  {
+    id: "barrel-aging",
+    number: "09",
+    title: "Time in the Cellar",
+    range: [0.62, 0.7],
+    eyebrow: "Aging",
+    summary: "Vessel, oxygen, lees, temperature, and time reshape aroma and texture.",
+    checkpoint: "Wine to maturity",
+    motion: "orbit",
+    artwork: {
+      src: "/beyond-the-glass/wine-barrel-cellar-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-barrel-cellar-960.webp 960w, /beyond-the-glass/wine-barrel-cellar-1600.webp 1600w",
+      alt:
+        "A vaulted SIP Academy barrel cellar with stacked oak barrels, cellar workers, and warm pools of light.",
+      position: "center"
+    },
+    landmark: { label: "Barrel cellar", x: 81, y: 75 },
+    drop: { x: 57, y: 44, size: 7 },
+    fieldNotes: [
+      {
+        eyebrow: "Slow transformation",
+        title: "Oak is one possible vessel",
+        detail:
+          "Barrel size, age, toast, origin, time, topping, and cellar conditions can influence oxygen exposure, aroma, and texture."
+      },
+      {
+        eyebrow: "Sensory watch",
+        title: "Fault or cellar clue?",
+        detail:
+          "Cork taint can mute fruit and suggest damp cardboard. Reduction, oxidation, volatile acidity, and sulfur notes each require a different diagnosis."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Roma",
+        durationSeconds: 11,
+        text:
+          "Circle the barrel room slowly. Here the action is quiet: oxygen, wood, lees, temperature, and time redraw the wine."
+      }
+    ]
+  },
+  {
+    id: "bottling",
+    number: "10",
+    title: "The Bottling Run",
+    range: [0.7, 0.78],
+    eyebrow: "Protection",
+    summary: "The finished wine moves through a final controlled handoff into bottle.",
+    checkpoint: "Cellar to bottle",
+    motion: "rotate",
+    artwork: {
+      src: "/beyond-the-glass/wine-bottling-line-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-bottling-line-960.webp 960w, /beyond-the-glass/wine-bottling-line-1600.webp 1600w",
+      alt:
+        "A SIP Academy bottling hall with bottles moving through a clean, luminous production line.",
+      position: "center"
+    },
+    landmark: { label: "Bottling hall", x: 19, y: 75 },
+    drop: { x: 60, y: 52, size: 7 },
+    fieldNotes: [
+      {
+        eyebrow: "Line sequence",
+        title: "Fill, close, inspect, pack",
+        detail:
+          "Oxygen control, clean equipment, fill height, closure performance, label accuracy, and case handling protect the final wine."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Hummin",
+        durationSeconds: 9,
+        text:
+          "The line accelerates, but the tolerances tighten. The bottle must carry the cellar’s work without adding a new problem."
+      }
+    ]
+  },
+  {
+    id: "market",
+    number: "11",
+    title: "Into the Market",
+    range: [0.78, 0.86],
+    eyebrow: "Context",
+    summary: "A bottle gains a place, price, story, and audience beyond the winery.",
+    checkpoint: "Bottle to choice",
+    motion: "glide",
+    artwork: {
+      src: "/beyond-the-glass/wine-wine-market-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-wine-market-960.webp 960w, /beyond-the-glass/wine-wine-market-1600.webp 1600w",
+      alt:
+        "A warm SIP Academy wine market where students and professionals organize bottles and help guests choose.",
+      position: "center"
+    },
+    landmark: { label: "Academy market", x: 49, y: 19 },
+    drop: { x: 45, y: 54, size: 7 },
+    fieldNotes: [
+      {
+        eyebrow: "Guest translation",
+        title: "Labels are only the beginning",
+        detail:
+          "Origin, grape, producer, vintage, style, price, storage, and occasion help turn a shelf of bottles into a useful recommendation."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Sippy",
+        durationSeconds: 9,
+        text:
+          "The bottle leaves production and enters a new system: distribution, storage, price, language, trust, and choice."
+      }
+    ]
+  },
+  {
+    id: "restaurant",
+    number: "12",
+    title: "The Table Handoff",
+    range: [0.86, 0.93],
+    eyebrow: "Service",
+    summary: "Storage, presentation, glassware, temperature, and hospitality carry the story to a guest.",
+    checkpoint: "Bottle to table",
+    motion: "push-in",
+    artwork: {
+      src: "/beyond-the-glass/wine-restaurant-service-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-restaurant-service-960.webp 960w, /beyond-the-glass/wine-restaurant-service-1600.webp 1600w",
+      alt:
+        "A welcoming SIP Academy restaurant terrace with attentive wine service and guests at the table.",
+      position: "center"
+    },
+    landmark: { label: "Restaurant terrace", x: 50, y: 77 },
+    drop: { x: 61, y: 45, size: 8 },
+    fieldNotes: [
+      {
+        eyebrow: "Service sequence",
+        title: "Protect the final meter",
+        detail:
+          "Correct bottle, sound storage, suitable temperature, clean glassware, careful opening, and guest-friendly language preserve the journey."
+      },
+      {
+        eyebrow: "Fault response",
+        title: "TCA is handled, not debated",
+        detail:
+          "If a guest reports a musty or damp-cardboard character, acknowledge the concern, assess the bottle, and replace it when appropriate."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Roma",
+        durationSeconds: 10,
+        text:
+          "The last handoff is human. Service can reveal the wine’s work—or cover it with the wrong temperature, glass, language, or response."
+      }
+    ]
+  },
+  {
+    id: "first-sip",
+    number: "13",
+    title: "The First Sip",
+    range: [0.93, 1],
+    eyebrow: "Reconnection",
+    summary: "The drop returns as wine, poured at a table connected to the entire academy.",
+    checkpoint: "Rain to memory",
+    motion: "reassemble",
+    artwork: {
+      src: "/beyond-the-glass/wine-first-sip-1600.webp",
+      srcSet:
+        "/beyond-the-glass/wine-first-sip-960.webp 960w, /beyond-the-glass/wine-first-sip-1600.webp 1600w",
+      alt:
+        "An intimate hosted winery dinner on the SIP Academy terrace as red wine is poured into a glass and the glowing waterways connect the table to the campus.",
+      position: "center"
+    },
+    landmark: { label: "Winemaker's table", x: 50, y: 77 },
+    drop: { x: 33, y: 76, size: 10 },
+    fieldNotes: [
+      {
+        eyebrow: "Journey complete",
+        title: "The glass is a living map",
+        detail:
+          "Water, vine, people, equipment, microbes, time, transport, service, and memory now meet in one sensory moment."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Sippy",
+        durationSeconds: 11,
+        text:
+          "The drop has crossed the entire academy. What looks like one glass is now a map you know how to read."
+      },
+      {
+        speaker: "Roma",
+        durationSeconds: 7,
+        text:
+          "Taste slowly. You are not memorizing a product—you are recognizing a connected process."
+      }
+    ]
+  }
+];
 
 export const journeyOfADrop: BeyondTheGlassChapter = {
   slug: "journey-of-a-drop",
   title: "Beyond The Glass",
-  chapterTitle: "The Journey of a Drop",
-  subject: "A single drop of water",
+  chapterTitle: "From Rain to First Sip",
+  subject: "One drop moving through the complete life of wine",
   description:
-    "Follow Sippy, Roma, and Hummin through the connected origins, ingredients, processes, people, and responsibilities inside every beverage.",
-  coreMessage: "Every sip contains a system. Every system contains a story.",
+    "Fly through SIP Academy with Sippy, Roma, and Hummin. Follow wine from vineyard water to the crush house, cellar, bottle, market, and final table.",
+  coreMessage:
+    "A bottle begins long before the glass. Every stage leaves a clue you can learn to recognize.",
   assets: {
-    opening: "/beyond-the-glass/landscape-living-archive.webp",
-    midAltitude: "/beyond-the-glass/landscape-mid-altitude.webp",
-    centralSubject: "/beyond-the-glass/central-drop.webp",
-    isolation: "/beyond-the-glass/drop-isolation.webp",
-    orbit: "/beyond-the-glass/knowledge-orbit.webp",
-    noise: "/beyond-the-glass/noise-fragments.webp",
-    finalArtifact: "/beyond-the-glass/living-knowledge-card.webp",
-    lobby: "/beyond-the-glass/living-archive-lobby.webp",
-    reducedMotionPoster: "/beyond-the-glass/poster-reduced-motion.webp",
-    socialShare: "/beyond-the-glass/social-beyond-the-glass.webp"
+    academyMap: "/beyond-the-glass/sip-academy-1600.webp",
+    academyMapSet:
+      "/beyond-the-glass/sip-academy-960.webp 960w, /beyond-the-glass/sip-academy-1600.webp 1600w",
+    centralDrop: "/beyond-the-glass/central-drop.webp",
+    reducedMotionPoster: "/beyond-the-glass/sip-academy-960.webp"
   },
-  scenes: [
-    {
-      id: "living-landscape",
-      number: "01",
-      title: "The Living Landscape",
-      range: [0, 0.12],
-      eyebrow: "Wonder",
-      summary: "An entire beverage world comes into view, connected by water.",
-      emotionalPurpose: "Reveal scale and connection.",
-      visualCue: "Aerial ecosystem with illuminated waterways.",
-      narration: [
-        {
-          speaker: "Sippy",
-          durationSeconds: 24,
-          text:
-            "From a distance, a beverage can appear simple. But every sip begins inside a much larger world: clouds and watersheds, soil and roots, growers and makers, cellars and cafés, laboratories, service rooms, and the communities that keep them connected."
-        }
-      ]
-    },
-    {
-      id: "signal",
-      number: "02",
-      title: "The Signal",
-      range: [0.12, 0.25],
-      eyebrow: "Curiosity",
-      summary: "Roma senses a ripple. Hummin discovers that its records are incomplete.",
-      emotionalPurpose: "Focus the learner on one precise subject.",
-      visualCue: "A warm signal travels through the landscape and stops at the Drop.",
-      narration: [
-        {
-          speaker: "Sippy",
-          durationSeconds: 8,
-          text: "To understand the whole system, we can begin with something small."
-        },
-        {
-          speaker: "Roma",
-          durationSeconds: 12,
-          text:
-            "There—one cool ripple carrying stone, leaf, metal, and memory. But taste alone cannot tell us who brought it here."
-        },
-        {
-          speaker: "Hummin",
-          durationSeconds: 11,
-          text:
-            "Signal confirmed. Origin record incomplete. Mineral, energy, labor, and access pathways are disconnected."
-        }
-      ]
-    },
-    {
-      id: "aerial-dive",
-      number: "03",
-      title: "The Aerial Dive",
-      range: [0.25, 0.42],
-      eyebrow: "Discovery",
-      summary: "The guides follow water from landscape into beverage systems.",
-      emotionalPurpose: "Replace magnification with relationship tracing.",
-      visualCue: "Crossfaded aerial, mid-altitude, and macro layers.",
-      narration: [
-        {
-          speaker: "Sippy",
-          durationSeconds: 20,
-          text:
-            "Look closer—not only at what water is, but at everything required for it to reach an ingredient, move through a process, enter a glass, and become part of someone’s experience."
-        },
-        {
-          speaker: "Roma",
-          durationSeconds: 10,
-          text:
-            "Along the way, place leaves clues: temperature, minerals, plants, vessels, and the choices people make."
-        },
-        {
-          speaker: "Hummin",
-          durationSeconds: 10,
-          text:
-            "The route is physical, chemical, biological, economic, and human. No single measurement explains it."
-        }
-      ]
-    },
-    {
-      id: "isolation",
-      number: "04",
-      title: "Isolation",
-      range: [0.42, 0.52],
-      eyebrow: "The Noise",
-      summary: "Unsupported labels replace origins, people, and evidence.",
-      emotionalPurpose: "Challenge the assumption that an object explains itself.",
-      visualCue: "The Drop floats alone while archive pathways fragment.",
-      narration: [
-        {
-          speaker: "Sippy",
-          durationSeconds: 16,
-          text:
-            "A drop alone tells us almost nothing. Pure, natural, and premium may sound complete, but meaning lives in origins, evidence, consequences, and people."
-        },
-        {
-          speaker: "Roma",
-          durationSeconds: 7,
-          text: "Sensation without context can become a guess."
-        },
-        {
-          speaker: "Hummin",
-          durationSeconds: 7,
-          text: "Data without people can become a blind spot."
-        },
-        {
-          speaker: "Sippy",
-          durationSeconds: 8,
-          text: "Then we do not hide the missing pieces. We learn how to reconnect them."
-        }
-      ]
-    },
-    {
-      id: "deconstruction",
-      number: "05",
-      title: "Deconstruction",
-      range: [0.52, 0.75],
-      eyebrow: "Ten connected layers",
-      summary: "The Drop opens into origin, ingredients, process, science, culture, people, access, service, technology, and responsibility.",
-      emotionalPurpose: "Give complexity an understandable structure.",
-      visualCue: "Ten tactile archive objects form a connected orbit.",
-      narration: [
-        {
-          speaker: "Sippy",
-          durationSeconds: 13,
-          text:
-            "The Drop is opening into ten connected layers. Each one adds a question, a consequence, and a relationship to the final glass."
-        },
-        {
-          speaker: "Sippy",
-          durationSeconds: 13,
-          text:
-            "This is Origin. It asks where the water began, which landscapes shaped its path, and what changed before it reached the beverage system."
-        },
-        {
-          speaker: "Roma",
-          durationSeconds: 13,
-          text:
-            "This is Ingredients. Water carries and extracts compounds that can influence texture, aroma, balance, and the way another ingredient expresses itself."
-        },
-        {
-          speaker: "Hummin",
-          durationSeconds: 13,
-          text:
-            "This is Process. Filtration, heating, cooling, fermentation, cleaning, dilution, and storage each change what the system can produce safely and consistently."
-        },
-        {
-          speaker: "Hummin",
-          durationSeconds: 14,
-          text:
-            "This is Science. Chemistry, biology, physics, and sensory perception explain why water dissolves, transports, reacts, cools, cleans, and changes what we perceive."
-        },
-        {
-          speaker: "Roma",
-          durationSeconds: 13,
-          text:
-            "This is Culture. Language, ritual, hospitality, identity, and memory shape how water and beverages are prepared, valued, and shared."
-        },
-        {
-          speaker: "Sippy",
-          durationSeconds: 14,
-          text:
-            "This is People. Farmers, water workers, producers, cleaners, transporters, educators, and service teams make the final glass possible."
-        },
-        {
-          speaker: "Sippy",
-          durationSeconds: 15,
-          text:
-            "This is Access. A resource has different meaning when people cannot safely receive it, afford it, understand it, or participate in the knowledge built around it."
-        },
-        {
-          speaker: "Roma",
-          durationSeconds: 13,
-          text:
-            "This is Service. Storage, temperature, cleanliness, glassware, language, and the final handoff can protect—or undo—everything that came before."
-        },
-        {
-          speaker: "Hummin",
-          durationSeconds: 14,
-          text:
-            "This is Technology. Sensors, data, automation, and artificial intelligence can reveal patterns and support decisions, but they do not remove the need for human judgment."
-        },
-        {
-          speaker: "Hummin",
-          durationSeconds: 15,
-          text:
-            "This is Responsibility. Sources must be checked, uncertainty disclosed, safety protected, environmental cost considered, and mistakes made visible enough to improve."
-        }
-      ]
-    },
-    {
-      id: "system-in-motion",
-      number: "06",
-      title: "The System in Motion",
-      range: [0.75, 0.86],
-      eyebrow: "Cause and effect",
-      summary: "Every layer begins changing the layers around it.",
-      emotionalPurpose: "Show that knowledge becomes useful through connection.",
-      visualCue: "Pathways illuminate between the ten objects.",
-      narration: [
-        { speaker: "Roma", durationSeconds: 8, text: "Water changes the ingredient." },
-        { speaker: "Hummin", durationSeconds: 8, text: "The ingredient changes the process." },
-        {
-          speaker: "Sippy",
-          durationSeconds: 16,
-          text:
-            "The process changes flavor, labor, energy, waste, service, and who can share the final glass. Knowledge becomes useful when these pieces can speak to one another."
-        }
-      ]
-    },
-    {
-      id: "reassembly",
-      number: "07",
-      title: "Reassembly",
-      range: [0.86, 0.94],
-      eyebrow: "Understanding",
-      summary: "The system becomes a Living Knowledge Card with sources and pathways.",
-      emotionalPurpose: "Transform insight into a reusable learning artifact.",
-      visualCue: "The orbit folds into a complete archive object.",
-      narration: [
-        {
-          speaker: "Roma",
-          durationSeconds: 8,
-          text: "We remember more when sensation has a story."
-        },
-        {
-          speaker: "Hummin",
-          durationSeconds: 8,
-          text: "We trust more when the story has evidence."
-        },
-        {
-          speaker: "Sippy",
-          durationSeconds: 18,
-          text:
-            "When we reconnect the pieces, we do not return to the same object. Now it is more than a drop. It is a story we can question, verify, remember, and pass forward."
-        }
-      ]
-    },
-    {
-      id: "invitation",
-      number: "08",
-      title: "The Living Archive",
-      range: [0.94, 1],
-      eyebrow: "Action",
-      summary: "The completed artifact unlocks the next room.",
-      emotionalPurpose: "Give the learner agency and hope.",
-      visualCue: "The Living Archive opens behind the artifact.",
-      narration: [
-        {
-          speaker: "Sippy",
-          durationSeconds: 15,
-          text:
-            "Every sip contains a system. Every system contains a story. The archive is alive—choose what we explore next."
-        }
-      ]
-    }
-  ],
-  knowledgeLayers: [
-    {
-      id: "origin",
-      number: "01",
-      title: "Origin",
-      guide: "Sippy",
-      object: "Watershed and spring topography",
-      explanation:
-        "Origin asks where water began, which landscapes shaped its path, and what changed before it entered a beverage system.",
-      question: "What part of a water source would you verify first?",
-      sourceIds: ["usgs-water-cycle", "who-water-quality"]
-    },
-    {
-      id: "ingredients",
-      number: "02",
-      title: "Ingredients",
-      guide: "Roma",
-      object: "Mineral and botanical vessel",
-      explanation:
-        "Water carries and extracts compounds that can influence texture, aroma, balance, and how another ingredient expresses itself.",
-      question: "Which ingredient-water relationship most changes the beverage you know?",
-      sourceIds: ["usgs-water-properties"]
-    },
-    {
-      id: "process",
-      number: "03",
-      title: "Process",
-      guide: "Hummin",
-      object: "Filter, pipe, and fermentation vessel",
-      explanation:
-        "Filtration, heating, cooling, fermentation, cleaning, dilution, and storage affect safety, consistency, and sensory outcomes.",
-      question: "Where could one process decision alter both quality and safety?",
-      sourceIds: ["who-water-quality", "fda-food-code"]
-    },
-    {
-      id: "science",
-      number: "04",
-      title: "Science",
-      guide: "Hummin",
-      object: "Molecular and sensory prism",
-      explanation:
-        "Chemistry, biology, physics, and sensory perception explain why water dissolves, transports, reacts, cools, and cleans.",
-      question: "Which measurable property could help explain a sensory change?",
-      sourceIds: ["usgs-water-properties"]
-    },
-    {
-      id: "culture",
-      number: "05",
-      title: "Culture",
-      guide: "Roma",
-      object: "Ritual cup and memory ribbon",
-      explanation:
-        "Language, ritual, hospitality, identity, and memory shape how water and beverages are prepared, valued, and shared.",
-      question: "What ritual changes the meaning of a familiar beverage?",
-      sourceIds: ["unesco-foodways"]
-    },
-    {
-      id: "people",
-      number: "06",
-      title: "People",
-      guide: "Sippy",
-      object: "Connected hands and working tools",
-      explanation:
-        "Farmers, water workers, producers, cleaners, transporters, educators, and service teams make the final glass possible.",
-      question: "Whose work is usually invisible when this beverage is served?",
-      sourceIds: ["fao-water"]
-    },
-    {
-      id: "access",
-      number: "07",
-      title: "Access",
-      guide: "Sippy",
-      object: "Tap, bridge, and open pathway",
-      explanation:
-        "A resource has different meaning when people cannot safely receive it, afford it, understand it, or participate in its knowledge.",
-      question: "Who benefits from this system, and who may still be excluded?",
-      sourceIds: ["jmp-water-access", "who-drinking-water"]
-    },
-    {
-      id: "service",
-      number: "08",
-      title: "Service",
-      guide: "Roma",
-      object: "Tray, glass, and temperature tool",
-      explanation:
-        "Storage, temperature, cleanliness, glassware, language, and the final handoff can protect—or undo—everything that came before.",
-      question: "Which service choice most changes the guest’s experience?",
-      sourceIds: ["fda-food-code"]
-    },
-    {
-      id: "technology",
-      number: "09",
-      title: "Technology",
-      guide: "Hummin",
-      object: "Sensor and data instrument",
-      explanation:
-        "Sensors, data, automation, and AI can reveal patterns and support decisions without removing the need for human judgment.",
-      question: "What should a tool measure, and what must a person still decide?",
-      sourceIds: ["nist-ai-rmf"]
-    },
-    {
-      id: "responsibility",
-      number: "10",
-      title: "Responsibility",
-      guide: "Hummin",
-      object: "Protective verification ring",
-      explanation:
-        "Sources must be checked, uncertainty disclosed, safety protected, environmental cost considered, and mistakes made visible enough to improve.",
-      question: "What claim in this system deserves stronger evidence?",
-      sourceIds: ["who-water-quality", "nist-ai-rmf"]
-    }
-  ],
+  scenes,
   sources: [
     {
-      id: "usgs-water-cycle",
-      organization: "U.S. Geological Survey",
-      title: "Water Science School",
-      url: "https://www.usgs.gov/water-science-school",
-      note: "Water-cycle, surface-water, groundwater, water-use, and education resources."
+      id: "jlohr-field-trip",
+      organization: "J. Lohr Vineyards & Wines",
+      title: "Winery visit and podcast reference",
+      url: "https://youtu.be/zm2ECFtViXA",
+      note:
+        "Experiential reference for the vineyard-to-table field-trip structure supplied by the project owner."
     },
     {
-      id: "usgs-water-properties",
-      organization: "U.S. Geological Survey",
-      title: "Properties of water",
-      url: "https://www.usgs.gov/water-science-school/properties-water",
-      note: "Physical and chemical properties of water."
+      id: "jlohr-water",
+      organization: "J. Lohr Vineyards & Wines",
+      title: "Sustainable Water Management Practices for Vineyards",
+      url: "https://www.jlohr.com/athome/talk-water-podcast-51",
+      note: "Reference for vineyard water monitoring and responsible irrigation."
     },
     {
-      id: "who-water-quality",
-      organization: "World Health Organization",
-      title: "Guidelines for drinking-water quality",
-      url: "https://www.who.int/teams/environment-climate-change-and-health/water-sanitation-and-health/water-safety-and-quality/drinking-water-quality-guidelines",
-      note: "Risk-based drinking-water quality guidance from catchment to consumer."
+      id: "ucd-fermentation",
+      organization: "UC Davis Viticulture and Enology",
+      title: "Overview of Grape Juice Fermentation",
+      url:
+        "https://wineserver.ucdavis.edu/industry-info/enology/fermentation-management-guides/wine-fermentation/overview",
+      note: "Reference for yeast, grape sugar, ethanol, carbon dioxide, and fermentation management."
     },
     {
-      id: "who-drinking-water",
-      organization: "World Health Organization",
-      title: "Drinking-water",
-      url: "https://www.who.int/en/news-room/fact-sheets/detail/drinking-water",
-      note: "Public-health context for safe and readily available drinking water."
+      id: "ucd-harvest",
+      organization: "UC Davis Viticulture and Enology",
+      title: "Harvesting Conditions",
+      url:
+        "https://wineserver.ucdavis.edu/industry-info/enology/fermentation-management-guides/wine-fermentation/harvesting-conditions",
+      note: "Reference for fruit condition, juice exposure, microbial populations, pH, and temperature."
     },
     {
-      id: "jmp-water-access",
-      organization: "WHO/UNICEF Joint Monitoring Programme",
-      title: "WASH data",
-      url: "https://washdata.org/",
-      note: "Global monitoring of water, sanitation, and hygiene access."
-    },
-    {
-      id: "fao-water",
-      organization: "Food and Agriculture Organization",
-      title: "Land, soil and water",
-      url: "https://www.fao.org/land-water/en",
-      note: "Integrated land, soil, water, agriculture, and food-system resources."
-    },
-    {
-      id: "fda-food-code",
-      organization: "U.S. Food and Drug Administration",
-      title: "Food Code 2022",
-      url: "https://www.fda.gov/food/fda-food-code/food-code-2022",
-      note: "Model food-service safety and handling provisions."
-    },
-    {
-      id: "nist-ai-rmf",
-      organization: "National Institute of Standards and Technology",
-      title: "AI Risk Management Framework",
-      url: "https://www.nist.gov/itl/ai-risk-management-framework",
-      note: "Human-centered risk, transparency, verification, and accountability guidance."
-    },
-    {
-      id: "unesco-foodways",
-      organization: "UNESCO",
-      title: "Foodways as living heritage",
-      url: "https://ich.unesco.org/",
-      note: "Cultural practices, knowledge, and identity connected to foodways."
+      id: "awri-winemaking",
+      organization: "Australian Wine Research Institute",
+      title: "WIC Winemaking Services",
+      url: "https://www.awri.com.au/wic-winemaking-services/",
+      note:
+        "Reference for crushers, destemmers, presses, fermenters, laboratory trials, barrel storage, and bottling."
     }
   ],
-  primaryCta: { label: "Enter Sipopedia", route: "sipopedia" },
-  secondaryCta: { label: "Explore future chapters", href: "#btg-archive-title" }
+  primaryCta: { label: "Enter Sipopedia", route: "sipopedia" }
 };
+
+export const beyondTheGlassChapters = [journeyOfADrop] as const;
