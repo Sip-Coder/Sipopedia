@@ -310,6 +310,25 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
           {sceneIndex > 0 ? (
             <StoryImage
               alt=""
+              className="btg-scene-backdrop btg-scene-backdrop--previous"
+              sizes="100vw"
+              src={previousScene.artwork.src}
+              srcSet={previousScene.artwork.srcSet}
+              style={{ opacity: 0.82 * (1 - sceneEntryBlend) }}
+            />
+          ) : null}
+          <StoryImage
+            alt=""
+            className="btg-scene-backdrop btg-scene-backdrop--active"
+            eager
+            sizes="100vw"
+            src={activeScene.artwork.src}
+            srcSet={activeScene.artwork.srcSet}
+            style={{ opacity: 0.82 * sceneEntryBlend }}
+          />
+          {sceneIndex > 0 ? (
+            <StoryImage
+              alt=""
               className="btg-scene-art btg-scene-art--previous"
               sizes="100vw"
               src={previousScene.artwork.src}
@@ -325,7 +344,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
           <StoryImage
             alt={activeScene.artwork.alt}
             className="btg-scene-art btg-scene-art--active"
-            eager={sceneIndex === 0}
+            eager
             sizes="100vw"
             src={activeScene.artwork.src}
             srcSet={activeScene.artwork.srcSet}
