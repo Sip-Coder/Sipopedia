@@ -48,3 +48,13 @@ Final result: passed
 - Landscape artwork now fades into the dark stage instead of ending as a hard isolated block. The water-drop protagonist visually bridges the artwork and the story panel.
 - The title and guide strip no longer overlap at 360 × 800. “Rain Finds the Roots,” “Inside the Crush House,” and “Time in the Cellar” were included in the automated regression pass.
 - Automated mobile QA passed all 104 viewport-and-scene states after the refinement.
+
+## July 29 continuous-scene refinement
+
+- Previous capture: `C:\Users\TwoKn\AppData\Local\Temp\sipopedia-btg-blend-qa\crush-house-after-blend-final-v2.png`
+- Final capture: `C:\Users\TwoKn\AppData\Local\Temp\sipopedia-btg-blend-qa-2\crush-house-continuous-after.png`
+- Direct comparison: `C:\Users\TwoKn\AppData\Local\Temp\sipopedia-btg-blend-qa-2\crush-house-before-after-continuity.png`
+- The contained landscape artwork now supplies a softly blurred, dimmed continuation behind the water drop, title, and joined paper note. The full production-floor composition remains visible while the letterboxed area inherits the same color and architectural detail instead of becoming a separate black block.
+- The primary artwork and the background continuation crossfade together between scenes. Active scene images load eagerly once their chapter becomes current, preventing a fast scroll from briefly showing the preceding scene.
+- At 390 × 844, “Inside the Crush House” reads as one visual composition from artwork through field notes, while the educational overlay remains compact and legible.
+- Automated mobile QA passed all 104 viewport-and-scene states after the continuous-scene refinement.

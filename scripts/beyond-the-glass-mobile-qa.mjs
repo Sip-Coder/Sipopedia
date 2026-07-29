@@ -114,14 +114,26 @@ function killChromeProfileProcesses(userDataDir) {
   );
 }
 
-function safelyRemoveChromeProfile(userDataDir) {
+async function safelyRemoveChromeProfile(userDataDir) {
   const resolved = path.resolve(userDataDir);
   if (
-    path.dirname(resolved) === path.resolve(os.tmpdir()) &&
-    path.basename(resolved).startsWith("sipopedia-btg-qa-chrome-")
+    path.dirname(resolved) !== path.resolve(os.tmpdir()) ||
+    !path.basename(resolved).startsWith("sipopedia-btg-qa-chrome-")
   ) {
-    fs.rmSync(resolved, { force: true, recursive: true });
+    return;
   }
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      fs.rmSync(resolved, { force: true, recursive: true });
+      return;
+    } catch (error) {
+      if (!["EBUSY", "EPERM"].includes(error?.code)) throw error;
+      await sleep(200 * (attempt + 1));
+    }
+  }
+
+  console.warn(`QA passed, but Windows is still releasing the temporary Chrome profile: ${resolved}`);
 }
 
 class CdpClient {
@@ -504,7 +516,7 @@ async function main() {
     killProcessTree(chrome);
     killChromeProfileProcesses(userDataDir);
     await sleep(100);
-    safelyRemoveChromeProfile(userDataDir);
+    await safelyRemoveChromeProfile(userDataDir);
   }
 }
 
