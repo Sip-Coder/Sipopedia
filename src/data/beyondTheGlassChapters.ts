@@ -301,9 +301,9 @@ const scenes: BeyondTheGlassScene[] = [
     checkpoint: "Bin to must",
     motion: "rotate",
     artwork: {
-      src: "/beyond-the-glass/wine-crush-house-1600.webp",
+      src: "/beyond-the-glass/wine-crush-house-academy-2026-1600.webp",
       srcSet:
-        "/beyond-the-glass/wine-crush-house-960.webp 960w, /beyond-the-glass/wine-crush-house-1600.webp 1600w",
+        "/beyond-the-glass/wine-crush-house-academy-2026-960.webp 960w, /beyond-the-glass/wine-crush-house-academy-2026-1600.webp 1600w",
       alt:
         "Adult winery workers and Hummin follow grapes from a sorting table through a crusher-destemmer and press inside the SIP Academy crush house.",
       position: "center"
