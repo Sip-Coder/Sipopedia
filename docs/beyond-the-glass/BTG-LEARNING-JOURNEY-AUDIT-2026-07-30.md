@@ -16,7 +16,7 @@ Three transitions were educationally missing from the primary story:
 
 Those are now primary adventure stops rather than hidden text lessons.
 
-## Twenty-stop route audit
+## Twenty-two-stop route audit
 
 | Stop | Learning purpose | Audit status |
 |---|---|---|
@@ -37,9 +37,11 @@ Those are now primary adventure stops rather than hidden text lessons.
 | 15 Bottling Run | Teach fill, closure, oxygen, inspection, labels, and case handling. | Strong packaging handoff. |
 | 16 Bottle Passport | Teach compulsory versus optional label clues and origin claims. | **New; opens the Regions and wine-law pathway without twelve country lectures.** |
 | 17 Tasting Room Flight | Teach flight order, systematic tasting, comparison, and note-taking. | Strong sensory-evaluation bridge. |
-| 18 Into the Market | Teach distribution, storage, price, audience, trust, and recommendation context. | Appropriate commercial overview. |
-| 19 Table Handoff | Teach storage, temperature, glassware, opening, fault response, and responsible hospitality. | Strengthened with a responsible-participation note. |
-| 20 First Sip | Reassemble the process into one connected sensory memory. | Strong emotional and educational closure. |
+| 18 The Protected Journey | Teach lot identity, storage exposure, transport responsibility, and the commercial chain of custody. | **New; closes the producer-to-market logistics gap.** |
+| 19 Into the Market | Teach retail placement, storage, stock rotation, price, audience, trust, and recommendation context. | Strengthened as a distinct retail stop. |
+| 20 The Wine List Workshop | Teach restaurant buying, bottle versus by-the-glass planning, cellar fit, pricing context, staff preparation, and pairing language. | **New; closes the market-to-service planning gap.** |
+| 21 Table Handoff | Teach storage, temperature, glassware, opening, fault response, and responsible hospitality. | Strengthened with a responsible-participation note. |
+| 22 First Sip | Reassemble the process into one connected sensory memory. | Strong emotional and educational closure. |
 
 ## What remains intentionally outside the fast route
 

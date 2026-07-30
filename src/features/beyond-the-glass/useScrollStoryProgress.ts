@@ -51,6 +51,7 @@ export function useScrollStoryProgress(
 
     let frame = 0;
     let latestProgress = -1;
+    let resizeFrame = 0;
 
     const measure = () => {
       frame = 0;
@@ -67,13 +68,32 @@ export function useScrollStoryProgress(
       frame = window.requestAnimationFrame(measure);
     };
 
+    const preserveProgressOnResize = () => {
+      if (resizeFrame !== 0) window.cancelAnimationFrame(resizeFrame);
+      const preservedProgress = latestProgress < 0 ? 0 : latestProgress;
+      resizeFrame = window.requestAnimationFrame(() => {
+        resizeFrame = window.requestAnimationFrame(() => {
+          resizeFrame = 0;
+          const nextRect = section.getBoundingClientRect();
+          const nextSectionTop = window.scrollY + nextRect.top;
+          const nextTravel = Math.max(1, nextRect.height - window.innerHeight);
+          window.scrollTo({
+            behavior: "auto",
+            top: Math.max(0, nextSectionTop + nextTravel * preservedProgress)
+          });
+          measure();
+        });
+      });
+    };
+
     measure();
     window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule, { passive: true });
+    window.addEventListener("resize", preserveProgressOnResize, { passive: true });
     return () => {
       window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
+      window.removeEventListener("resize", preserveProgressOnResize);
       if (frame !== 0) window.cancelAnimationFrame(frame);
+      if (resizeFrame !== 0) window.cancelAnimationFrame(resizeFrame);
     };
   }, [reducedMotion, sectionRef]);
 
