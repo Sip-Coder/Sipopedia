@@ -33,6 +33,8 @@ export type BeyondTheGlassScene = {
   artwork: {
     src: string;
     srcSet?: string;
+    portraitSrc?: string;
+    portraitSrcSet?: string;
     alt: string;
     fit?: "cover" | "contain";
     position?: string;
@@ -82,7 +84,7 @@ const scenes: BeyondTheGlassScene[] = [
     id: "academy-plaza",
     number: "01",
     title: "Academy Plaza",
-    range: [0, 0.07],
+    range: [0, 0.05],
     eyebrow: "Choose the active journey",
     summary: "Wine is open. The next SIP Academy field trips are still under construction.",
     checkpoint: "Wine adventure ready",
@@ -118,7 +120,7 @@ const scenes: BeyondTheGlassScene[] = [
     id: "guides-at-sunrise",
     number: "02",
     title: "Meet the Field Team",
-    range: [0.07, 0.14],
+    range: [0.05, 0.1],
     eyebrow: "Sunrise",
     summary: "The academy doors open and three distinct guides step into the vineyard.",
     checkpoint: "Academy to field",
@@ -160,20 +162,74 @@ const scenes: BeyondTheGlassScene[] = [
     ]
   },
   {
-    id: "rain-and-roots",
+    id: "two-regions",
     number: "03",
+    title: "Two Regions, Two Programs",
+    range: [0.1, 0.15],
+    eyebrow: "Place",
+    summary:
+      "Cool coastal vineyards and warmer inland hills lead fruit toward different winery decisions.",
+    checkpoint: "Coast to inland",
+    motion: "glide",
+    artwork: {
+      src: "/beyond-the-glass/winery-tour/two-regions-1600.webp",
+      srcSet:
+        "/beyond-the-glass/winery-tour/two-regions-960.webp 960w, /beyond-the-glass/winery-tour/two-regions-1600.webp 1600w",
+      alt:
+        "A continuous SIP Academy wine landscape connecting cool foggy coastal vineyards to warmer inland limestone hills with a luminous blue water path.",
+      fit: "contain",
+      position: "center"
+    },
+    landmark: { label: "Coast and inland", x: 50, y: 26 },
+    drop: { x: 49, y: 57, size: 7 },
+    fieldNotes: [
+      {
+        eyebrow: "Cool-climate route",
+        title: "Coast, wind, and a longer season",
+        detail:
+          "Coastal influence can moderate heat and preserve acidity, helping varieties such as Chardonnay and Pinot Noir develop along a slower flavor clock."
+      },
+      {
+        eyebrow: "Warm-climate route",
+        title: "Sun, cool nights, and structure",
+        detail:
+          "Warmer inland days can build ripeness while cool nights and site conditions help retain balance in Cabernet Sauvignon and Rhône varieties."
+      },
+      {
+        eyebrow: "Winery program",
+        title: "One winery, more than one route",
+        detail:
+          "White-wine programs often protect juice and manage solids, temperature, vessel, lees, and oxygen differently from red programs built around skin contact and cap management."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Sippy",
+        durationSeconds: 10,
+        text:
+          "Before we follow one drop, look at the route around it. Coast, wind, soil, elevation, and temperature send each vineyard toward a different wine."
+      }
+    ]
+  },
+  {
+    id: "rain-and-roots",
+    number: "04",
     title: "Rain Finds the Roots",
-    range: [0.14, 0.22],
+    range: [0.15, 0.2],
     eyebrow: "Water",
     summary: "Rain enters soil, meets the root system, and supports the vine above.",
     checkpoint: "Cloud to root",
     motion: "cutaway",
     artwork: {
-      src: "/beyond-the-glass/wine-rain-roots-1600.webp",
+      src: "/beyond-the-glass/curriculum/vine-family-rootstock-1600.webp",
       srcSet:
-        "/beyond-the-glass/wine-rain-roots-960.webp 960w, /beyond-the-glass/wine-rain-roots-1600.webp 1600w",
+        "/beyond-the-glass/curriculum/vine-family-rootstock-960.webp 960w, /beyond-the-glass/curriculum/vine-family-rootstock-1600.webp 1600w",
+      portraitSrc: "/beyond-the-glass/curriculum/vine-family-rootstock-portrait-960.webp",
+      portraitSrcSet:
+        "/beyond-the-glass/curriculum/vine-family-rootstock-portrait-600.webp 600w, /beyond-the-glass/curriculum/vine-family-rootstock-portrait-960.webp 960w",
       alt:
-        "A vineyard cutaway with rain moving through soil toward roots, while grape clusters remain correctly attached to vines above ground.",
+        "A SIP Academy vine-family workshop showing a living grapevine above ground, graft and rootstock below ground, and water moving through a scientifically correct root system.",
+      fit: "contain",
       position: "center"
     },
     landmark: { label: "Vineyard water", x: 10, y: 23 },
@@ -209,51 +265,71 @@ const scenes: BeyondTheGlassScene[] = [
   },
   {
     id: "vine-and-berry",
-    number: "04",
+    number: "05",
     title: "The Vine Builds a Berry",
-    range: [0.22, 0.3],
+    range: [0.2, 0.25],
     eyebrow: "Growth",
-    summary: "Trellising, canopy, sunlight, and season turn water and sugar into fruit.",
+    summary:
+      "Pull the vine apart, orbit every living layer, then rejoin permanent wood, fruiting wood, canopy, and berry.",
     checkpoint: "Root to berry",
     motion: "orbit",
     artwork: {
-      src: "/beyond-the-glass/wine-vineyard-growth-1600.webp",
+      src: "/beyond-the-glass/vine-anatomy/vine-anatomy-front-1600.webp",
       srcSet:
-        "/beyond-the-glass/wine-vineyard-growth-960.webp 960w, /beyond-the-glass/wine-vineyard-growth-1600.webp 1600w",
+        "/beyond-the-glass/vine-anatomy/vine-anatomy-front-960.webp 960w, /beyond-the-glass/vine-anatomy/vine-anatomy-front-1600.webp 1600w",
       alt:
-        "A SIP adventure vineyard with trained vine rows, workers, grape clusters, and the academy visible beyond the vines.",
+        "A complete mature grapevine in the SIP Academy conservatory, with roots visible below the soil and trunk, cordons, canes, shoots, canopy, flowers, and grape clusters visible above.",
+      fit: "contain",
       position: "center"
     },
     landmark: { label: "Vineyard rows", x: 87, y: 24 },
     drop: { x: 67, y: 45, size: 8 },
     fieldNotes: [
       {
-        eyebrow: "Vine architecture",
-        title: "Trellising changes exposure",
+        eyebrow: "Permanent architecture",
+        title: "Roots → trunk → cordon",
         detail:
-          "Posts and wires position shoots and fruit. Canopy choices affect light, airflow, ripening, and disease pressure."
+          "Roots and trunk support the vine. A cordon is a permanent horizontal extension of the trunk that can carry fruiting spurs."
       },
       {
-        eyebrow: "Vineyard watch",
-        title: "Pests leave clues",
+        eyebrow: "Fruiting architecture",
+        title: "Cane → spur → bud → shoot",
         detail:
-          "Insects, birds, mildew, rot, and damaged berries can change yield and fruit condition before harvest."
+          "A mature one-year shoot becomes a cane. Pruning retains canes or shorter spurs so selected buds can open into fruiting shoots."
+      },
+      {
+        eyebrow: "Annual growth cycle",
+        title: "Bud break → flowering → berry set → véraison",
+        detail:
+          "Shoots and leaves expand, flowers set berries, véraison begins ripening, and the cluster moves toward physiological maturity and harvest."
       }
     ],
     narration: [
       {
+        speaker: "Sippy",
+        durationSeconds: 10,
+        text:
+          "Start below the soil. Climb from root to trunk, then follow the cordon until the fruiting wood begins."
+      },
+      {
+        speaker: "Hummin",
+        durationSeconds: 12,
+        text:
+          "A shoot grows green this season and hardens into a cane. A spur is shorter, but both retain buds that can build next season’s crop."
+      },
+      {
         speaker: "Roma",
         durationSeconds: 11,
         text:
-          "Circle the cluster. Shade, airflow, heat, and time change what the berry can become—and what we may later taste."
+          "Now follow the flavor clock: bud break, flowers, tiny green berries, véraison, and finally a ripe cluster ready to taste."
       }
     ]
   },
   {
     id: "harvest",
-    number: "05",
+    number: "06",
     title: "Harvest Run",
-    range: [0.3, 0.38],
+    range: [0.25, 0.3],
     eyebrow: "People",
     summary: "Ripe fruit moves quickly from the row toward the crush house.",
     checkpoint: "Berry to bin",
@@ -293,9 +369,9 @@ const scenes: BeyondTheGlassScene[] = [
   },
   {
     id: "crush-house",
-    number: "06",
+    number: "07",
     title: "Inside the Crush House",
-    range: [0.38, 0.46],
+    range: [0.3, 0.35],
     eyebrow: "Equipment",
     summary: "Sorting, destemming, crushing, and pressing open different winemaking paths.",
     checkpoint: "Bin to must",
@@ -335,9 +411,9 @@ const scenes: BeyondTheGlassScene[] = [
   },
   {
     id: "fermentation",
-    number: "07",
+    number: "08",
     title: "The Fermentation Hall",
-    range: [0.46, 0.54],
+    range: [0.35, 0.4],
     eyebrow: "Transformation",
     summary: "Yeast converts grape sugar while the cellar team watches temperature and progress.",
     checkpoint: "Sugar to wine",
@@ -376,20 +452,77 @@ const scenes: BeyondTheGlassScene[] = [
     ]
   },
   {
+    id: "wine-crossroads",
+    number: "09",
+    title: "The Wine Crossroads",
+    range: [0.4, 0.45],
+    eyebrow: "Style paths",
+    summary:
+      "One fermented wine can continue as still wine or enter a specialized sparkling or fortified production path.",
+    checkpoint: "One wine, three routes",
+    motion: "orbit",
+    artwork: {
+      src: "/beyond-the-glass/curriculum/wine-crossroads-1600.webp",
+      srcSet:
+        "/beyond-the-glass/curriculum/wine-crossroads-960.webp 960w, /beyond-the-glass/curriculum/wine-crossroads-1600.webp 1600w",
+      alt:
+        "A connected SIP Academy wine hall where one central base wine branches toward still-wine vessels, pressure-rated sparkling-wine equipment and secondary-fermentation bottles, and a measured fortified-wine spirit addition.",
+      fit: "contain",
+      position: "center"
+    },
+    landmark: { label: "Wine crossroads", x: 57, y: 47 },
+    drop: { x: 51, y: 55, size: 8 },
+    fieldNotes: [
+      {
+        eyebrow: "Still wine path",
+        title: "Finish without retained pressure",
+        detail:
+          "The core journey continues toward vessel choice, maturation, blending, stabilization, filtration when needed, and packaging."
+      },
+      {
+        eyebrow: "Sparkling wine path",
+        title: "Build and retain carbon dioxide",
+        detail:
+          "A prepared base wine may undergo secondary fermentation in bottle or closed tank. Pressure, yeast sediment, clarification, dosage choices, and pressure-safe packaging shape the result."
+      },
+      {
+        eyebrow: "Fortified wine path",
+        title: "Add wine spirit at a deliberate moment",
+        detail:
+          "Fortification adds wine spirit or another permitted vitivinicultural alcohol. Timing can stop fermentation or strengthen a finished wine, changing alcohol, sweetness, and style."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Sippy",
+        durationSeconds: 12,
+        text:
+          "The cellar splits here. Our drop follows still wine, but sparkling wine traps a second fermentation’s carbon dioxide, while fortified wine meets a measured addition of wine spirit."
+      },
+      {
+        speaker: "Hummin",
+        durationSeconds: 8,
+        text:
+          "Different regions regulate these routes differently. Remember the production principle first, then read the local rule."
+      }
+    ]
+  },
+  {
     id: "laboratory",
-    number: "08",
+    number: "10",
     title: "The Quality Lab",
-    range: [0.54, 0.62],
+    range: [0.45, 0.5],
     eyebrow: "Evidence",
     summary: "Sensory judgment and measurements help the team decide what the wine needs next.",
     checkpoint: "Wine to decision",
     motion: "orbit",
     artwork: {
-      src: "/beyond-the-glass/wine-lab-cellar-1600.webp",
+      src: "/beyond-the-glass/winery-tour/quality-lab-1600.webp",
       srcSet:
-        "/beyond-the-glass/wine-lab-cellar-960.webp 960w, /beyond-the-glass/wine-lab-cellar-1600.webp 1600w",
+        "/beyond-the-glass/winery-tour/quality-lab-960.webp 960w, /beyond-the-glass/winery-tour/quality-lab-1600.webp 1600w",
       alt:
-        "A SIP Academy wine laboratory and cellar with glassware, samples, tanks, barrels, and luminous guide channels.",
+        "An adult winery laboratory technician uses a pH meter, titration glassware, pipettes, color analysis, automated sample equipment, and sensory glasses beside the production floor.",
+      fit: "contain",
       position: "center"
     },
     landmark: { label: "Quality lab", x: 75, y: 22 },
@@ -397,9 +530,9 @@ const scenes: BeyondTheGlassScene[] = [
     fieldNotes: [
       {
         eyebrow: "Winemaker toolkit",
-        title: "Measure, taste, compare",
+        title: "Sample, measure, taste, compare",
         detail:
-          "Sugar, pH, titratable acidity, temperature, sulfur dioxide, aroma, texture, and stability each reveal a different part of the wine."
+          "Pipettes, pH probes, titration glassware, density tools, color analysis, sample racks, and sensory glasses each reveal a different part of the wine."
       },
       {
         eyebrow: "Choice point",
@@ -419,9 +552,9 @@ const scenes: BeyondTheGlassScene[] = [
   },
   {
     id: "barrel-aging",
-    number: "09",
-    title: "Time in the Cellar",
-    range: [0.62, 0.7],
+    number: "11",
+    title: "Enter the Barrel Room",
+    range: [0.5, 0.55],
     eyebrow: "Aging",
     summary: "Vessel, oxygen, lees, temperature, and time reshape aroma and texture.",
     checkpoint: "Wine to maturity",
@@ -431,7 +564,8 @@ const scenes: BeyondTheGlassScene[] = [
       srcSet:
         "/beyond-the-glass/wine-barrel-cellar-960.webp 960w, /beyond-the-glass/wine-barrel-cellar-1600.webp 1600w",
       alt:
-        "A vaulted SIP Academy barrel cellar with stacked oak barrels, cellar workers, and warm pools of light.",
+        "A complete SIP Academy barrel cellar with oak barrels, stainless vessels, clay vessels, a sampling table, and warm stone architecture.",
+      fit: "contain",
       position: "center"
     },
     landmark: { label: "Barrel cellar", x: 81, y: 75 },
@@ -444,10 +578,16 @@ const scenes: BeyondTheGlassScene[] = [
           "Barrel size, age, toast, origin, time, topping, and cellar conditions can influence oxygen exposure, aroma, and texture."
       },
       {
-        eyebrow: "Sensory watch",
-        title: "Fault or cellar clue?",
+        eyebrow: "Cellar conditions",
+        title: "Humidity, temperature, and headspace",
         detail:
-          "Cork taint can mute fruit and suggest damp cardboard. Reduction, oxidation, volatile acidity, and sulfur notes each require a different diagnosis."
+          "Cellar temperature, humidity, evaporation, topping, sulfur-dioxide checks, sanitation, and vessel condition shape how safely the wine ages."
+      },
+      {
+        eyebrow: "Component tasting",
+        title: "Compare barrel to barrel",
+        detail:
+          "Sampling parallel lots can reveal the effects of vessel material, oak origin, toast, barrel age, lees contact, and malolactic fermentation before a blending decision."
       }
     ],
     narration: [
@@ -460,10 +600,160 @@ const scenes: BeyondTheGlassScene[] = [
     ]
   },
   {
+    id: "barrel-workbench",
+    number: "12",
+    title: "The Barrel Workbench",
+    range: [0.55, 0.6],
+    eyebrow: "Cellar craft",
+    summary:
+      "Sampling, topping, stirring, racking, cleaning, and recording keep every barrel connected to the team.",
+    checkpoint: "Vessel to evidence",
+    motion: "rotate",
+    artwork: {
+      src: "/beyond-the-glass/winery-tour/barrel-workbench-1600.webp",
+      srcSet:
+        "/beyond-the-glass/winery-tour/barrel-workbench-960.webp 960w, /beyond-the-glass/winery-tour/barrel-workbench-1600.webp 1600w",
+      alt:
+        "A coherent winery barrel workbench showing a wine thief, bung and mallet, topping vessel and wand, lees-stirring baton, hoses, pump, racking wand, flashlight, sample bottles, and barrel washer.",
+      fit: "contain",
+      position: "center"
+    },
+    landmark: { label: "Barrel workbench", x: 77, y: 75 },
+    drop: { x: 39, y: 47, size: 7 },
+    fieldNotes: [
+      {
+        eyebrow: "Sample and protect",
+        title: "Wine thief → glass → cellar log",
+        detail:
+          "A wine thief pulls a small sample. The team tastes, measures, records, and returns with a topping plan, sulfur decision, or next analysis."
+      },
+      {
+        eyebrow: "Move and maintain",
+        title: "Bung, topping, bâtonnage, racking",
+        detail:
+          "Bungs seal the bunghole; topping replaces wine lost to evaporation; a baton can stir lees; pumps, hoses, and a racking wand move clearer wine away from sediment."
+      },
+      {
+        eyebrow: "Clean between lots",
+        title: "Washer, hot water, inspection",
+        detail:
+          "A rotating spray head, appropriate hot-water or steam sanitation, visual inspection, and disciplined hose care reduce cross-contamination risk."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Hummin",
+        durationSeconds: 12,
+        text:
+          "The barrel room is not passive storage. Every thief, bung, hose, baton, pump, washer, sample bottle, and log protects a chain of evidence."
+      }
+    ]
+  },
+  {
+    id: "finishing-bench",
+    number: "13",
+    title: "The Finishing Bench",
+    range: [0.6, 0.65],
+    eyebrow: "Preparation",
+    summary:
+      "Blending and final stability work prepare the chosen wine for a clean, reliable handoff to bottle.",
+    checkpoint: "Components to final blend",
+    motion: "rotate",
+    artwork: {
+      src: "/beyond-the-glass/curriculum/finishing-bench-1600.webp",
+      srcSet:
+        "/beyond-the-glass/curriculum/finishing-bench-960.webp 960w, /beyond-the-glass/curriculum/finishing-bench-1600.webp 1600w",
+      alt:
+        "A coherent SIP Academy finishing hall with adult winemakers evaluating blending trials beside blending tanks, clarification equipment, a cold-stability vessel, filtration housings, and a final laboratory check.",
+      fit: "contain",
+      position: "center"
+    },
+    landmark: { label: "Finishing bench", x: 60, y: 63 },
+    drop: { x: 49, y: 54, size: 7 },
+    fieldNotes: [
+      {
+        eyebrow: "Blend with a purpose",
+        title: "Lots become the final wine",
+        detail:
+          "Winemakers compare trial blends for aroma, structure, balance, consistency, and intended style before committing cellar volumes."
+      },
+      {
+        eyebrow: "Clarify and stabilize",
+        title: "Prevent avoidable haze and deposits",
+        detail:
+          "Settling, racking, fining, protein-stability work, and tartrate-stability work are selected by wine and need—not applied automatically to every lot."
+      },
+      {
+        eyebrow: "Final protection",
+        title: "Filter when the risk calls for it",
+        detail:
+          "Filtration can remove particles and, with an appropriate validated system, reduce microorganisms. The final blend is checked again before packaging."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Roma",
+        durationSeconds: 11,
+        text:
+          "The wine is nearly ready, but nearly is not bottled. We compare components, protect the intended texture, and remove only what threatens clarity or stability."
+      },
+      {
+        speaker: "Hummin",
+        durationSeconds: 8,
+        text:
+          "Sequence matters. Blending, malolactic status, fining, and acid decisions belong upstream of the final stability check."
+      }
+    ]
+  },
+  {
+    id: "sustainability-loop",
+    number: "14",
+    title: "The Winery Gives Back",
+    range: [0.65, 0.7],
+    eyebrow: "Systems",
+    summary:
+      "Energy, water, pomace, packaging, habitat, and people continue moving after the wine leaves a tank.",
+    checkpoint: "Resource to renewal",
+    motion: "cutaway",
+    artwork: {
+      src: "/beyond-the-glass/winery-tour/sustainability-loop-1600.webp",
+      srcSet:
+        "/beyond-the-glass/winery-tour/sustainability-loop-960.webp 960w, /beyond-the-glass/winery-tour/sustainability-loop-1600.webp 1600w",
+      alt:
+        "A complete SIP Academy winery utility loop connecting solar energy, water recovery and reuse, cellar cleaning, grape pomace and compost, packaging recycling, pollinator habitat, and vineyard cover crops.",
+      fit: "contain",
+      position: "center"
+    },
+    landmark: { label: "Resource loop", x: 27, y: 66 },
+    drop: { x: 49, y: 59, size: 7 },
+    fieldNotes: [
+      {
+        eyebrow: "Water and energy",
+        title: "Measure use before claiming progress",
+        detail:
+          "Solar power can reduce purchased electricity. Recovery systems, efficient cleaning, and wastewater management can reduce and redirect water use."
+      },
+      {
+        eyebrow: "Soil and materials",
+        title: "Pomace, compost, habitat, packaging",
+        detail:
+          "Grape solids, cover crops, compost, recycling, pallet reuse, and habitat work form separate systems. Each needs its own measurements and safeguards."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Hummin",
+        durationSeconds: 11,
+        text:
+          "Follow what usually disappears from the story: water after cleaning, energy behind cooling, pomace after pressing, and materials after delivery."
+      }
+    ]
+  },
+  {
     id: "bottling",
-    number: "10",
+    number: "15",
     title: "The Bottling Run",
-    range: [0.7, 0.78],
+    range: [0.7, 0.75],
     eyebrow: "Protection",
     summary: "The finished wine moves through a final controlled handoff into bottle.",
     checkpoint: "Cellar to bottle",
@@ -496,10 +786,116 @@ const scenes: BeyondTheGlassScene[] = [
     ]
   },
   {
+    id: "bottle-passport",
+    number: "16",
+    title: "The Bottle Passport",
+    range: [0.75, 0.8],
+    eyebrow: "Identity",
+    summary:
+      "A label connects the finished wine to product category, origin, producer, vintage, variety, volume, alcohol, and the rules of its market.",
+    checkpoint: "Bottle to identity",
+    motion: "orbit",
+    artwork: {
+      src: "/beyond-the-glass/curriculum/bottle-passport-1600.webp",
+      srcSet:
+        "/beyond-the-glass/curriculum/bottle-passport-960.webp 960w, /beyond-the-glass/curriculum/bottle-passport-1600.webp 1600w",
+      alt:
+        "An unlabeled bottle rotates on a brass pedestal in the SIP Academy world-wine archive, connected to blank label plates, vineyard and parcel views, grape identity, producer seal, measurement clues, supply route, geographic boundary map, and a world map of wine regions.",
+      fit: "contain",
+      position: "center"
+    },
+    landmark: { label: "World wine archive", x: 50, y: 47 },
+    drop: { x: 49, y: 48, size: 8 },
+    fieldNotes: [
+      {
+        eyebrow: "Compulsory clues",
+        title: "First identify the product and origin",
+        detail:
+          "Required information depends on the destination market. Product category, country or geographic origin, alcohol, net contents, and responsible business details are core clues to verify."
+      },
+      {
+        eyebrow: "Optional clues",
+        title: "Vintage and variety need legal permission",
+        detail:
+          "A vintage, grape name, vineyard, or geographic indication is meaningful only within the rules governing that claim. Never assume every front label uses the same system."
+      },
+      {
+        eyebrow: "World wine route",
+        title: "Use the label as a map key",
+        detail:
+          "France, Italy, Spain, Portugal, Germany, the Americas, Africa, Asia, Australia, New Zealand, and neighboring regions organize origin differently. The Regions atlas continues that journey."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Hummin",
+        durationSeconds: 12,
+        text:
+          "A label is a compact legal passport. Separate what the market requires from what the producer chooses, then test every origin, vintage, and variety claim against its rules."
+      },
+      {
+        speaker: "Sippy",
+        durationSeconds: 8,
+        text:
+          "You do not need twelve country lectures here. Learn to read the key, then carry it into the Regions atlas."
+      }
+    ]
+  },
+  {
+    id: "tasting-flight",
+    number: "17",
+    title: "The Tasting Room Flight",
+    range: [0.8, 0.85],
+    eyebrow: "Sensory translation",
+    summary:
+      "Five small pours turn vineyard sites, varieties, vessels, and cellar choices into a side-by-side lesson.",
+    checkpoint: "Wine to comparison",
+    motion: "push-in",
+    artwork: {
+      src: "/beyond-the-glass/winery-tour/tasting-flight-1600.webp",
+      srcSet:
+        "/beyond-the-glass/winery-tour/tasting-flight-960.webp 960w, /beyond-the-glass/winery-tour/tasting-flight-1600.webp 1600w",
+      alt:
+        "An adult winery host guides a five-wine flight from pale white to deeper red, with water, a spittoon, plain crackers, pencils, and a sommelier note card overlooking vineyards.",
+      fit: "contain",
+      position: "center"
+    },
+    landmark: { label: "Tasting salon", x: 51, y: 79 },
+    drop: { x: 61, y: 53, size: 7 },
+    fieldNotes: [
+      {
+        eyebrow: "Flight order",
+        title: "Move from delicate to structured",
+        detail:
+          "A learning flight can begin with lighter aromatic whites, then move through rosé or lighter reds toward fuller, more tannic wines so earlier samples are not overwhelmed."
+      },
+      {
+        eyebrow: "Sommelier note card",
+        title: "See → smell → taste → conclude",
+        detail:
+          "Record appearance, aroma, palate structure, flavor, finish, quality, and readiness. Water, neutral crackers, modest pours, and a spittoon support clear comparison."
+      },
+      {
+        eyebrow: "Tour lesson",
+        title: "Compare place and process",
+        detail:
+          "Ask what changes across the flight: region, variety, vintage, fermentation vessel, oak, blending, alcohol, acidity, tannin, or residual sugar."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Roma",
+        durationSeconds: 12,
+        text:
+          "This is where the tour becomes visible in your senses. Taste in sequence, write before discussing, and compare each clue to the vineyard and cellar choices you just saw."
+      }
+    ]
+  },
+  {
     id: "market",
-    number: "11",
+    number: "18",
     title: "Into the Market",
-    range: [0.78, 0.86],
+    range: [0.85, 0.9],
     eyebrow: "Context",
     summary: "A bottle gains a place, price, story, and audience beyond the winery.",
     checkpoint: "Bottle to choice",
@@ -533,9 +929,9 @@ const scenes: BeyondTheGlassScene[] = [
   },
   {
     id: "restaurant",
-    number: "12",
+    number: "19",
     title: "The Table Handoff",
-    range: [0.86, 0.93],
+    range: [0.9, 0.95],
     eyebrow: "Service",
     summary: "Storage, presentation, glassware, temperature, and hospitality carry the story to a guest.",
     checkpoint: "Bottle to table",
@@ -562,6 +958,12 @@ const scenes: BeyondTheGlassScene[] = [
         title: "TCA is handled, not debated",
         detail:
           "If a guest reports a musty or damp-cardboard character, acknowledge the concern, assess the bottle, and replace it when appropriate."
+      },
+      {
+        eyebrow: "Responsible hospitality",
+        title: "Learning wine never requires drinking more",
+        detail:
+          "Use small pours, water, food, spit cups, pacing, and alcohol-free participation. Never encourage a guest to drink for health, and never serve someone who should not drink."
       }
     ],
     narration: [
@@ -575,9 +977,9 @@ const scenes: BeyondTheGlassScene[] = [
   },
   {
     id: "first-sip",
-    number: "13",
+    number: "20",
     title: "The First Sip",
-    range: [0.93, 1],
+    range: [0.95, 1],
     eyebrow: "Reconnection",
     summary: "The drop returns as wine, poured at a table connected to the entire academy.",
     checkpoint: "Rain to memory",
@@ -623,7 +1025,7 @@ export const journeyOfADrop: BeyondTheGlassChapter = {
   chapterTitle: "From Rain to First Sip",
   subject: "One drop moving through the complete life of wine",
   description:
-    "Fly through SIP Academy with Sippy, Roma, and Hummin. Follow wine from vineyard water to the crush house, cellar, bottle, market, and final table.",
+    "Fly through SIP Academy with Sippy, Roma, and Hummin. Follow wine across contrasting vineyard sites, production tools, style crossroads, the lab, barrel work, finishing decisions, labels and regions, a guided tasting flight, responsible service, and the final table.",
   coreMessage:
     "A bottle begins long before the glass. Every stage leaves a clue you can learn to recognize.",
   assets: {
@@ -636,12 +1038,71 @@ export const journeyOfADrop: BeyondTheGlassChapter = {
   scenes,
   sources: [
     {
+      id: "swe-csw-standards",
+      organization: "Society of Wine Educators",
+      title: "Certified Specialist of Wine",
+      url:
+        "https://societyofwineeducators.org/education-certifications/certified-specialist-of-wine/",
+      note:
+        "Official program reference confirming that CSW candidates are tested on viticulture and enology using the current CSW Study Guide."
+    },
+    {
+      id: "swe-vine-cycle",
+      organization: "Society of Wine Educators",
+      title: "CSW Workbook Answer Key: Growth Cycle of the Vine",
+      url:
+        "https://winewitandwisdomswe.com/wp-content/uploads/2014/01/2015-CSW-WorkBook-Answer-Key1.pdf",
+      note:
+        "Public SWE study resource used for the foundational sequence from dormancy and bud break through shoot growth, flowering, berry set, véraison, physiological maturity, and harvest."
+    },
+    {
+      id: "swe-cwe-viticulture-vocabulary",
+      organization: "Society of Wine Educators",
+      title: "CWE Recommended Reading List: Viticulture Vocabulary",
+      url:
+        "https://societyofwineeducators.org/wp-content/uploads/CWE-Recommended-Reading-List-2025-1.pdf",
+      note:
+        "Official advanced-study vocabulary reference for cane, node, spur, photosynthesis, respiration, translocation, transpiration, and véraison."
+    },
+    {
+      id: "psu-cane-spur",
+      organization: "Penn State Extension",
+      title: "Grapevine Cane and Spur Pruning Fundamentals",
+      url: "https://extension.psu.edu/grapevine-cane-and-spur-pruning-fundamentals",
+      note:
+        "Viticulture extension reference for one-year canes, shorter spurs, buds, fruiting shoots, cordons, and the distinction between cane and spur pruning."
+    },
+    {
       id: "jlohr-field-trip",
       organization: "J. Lohr Vineyards & Wines",
       title: "Winery visit and podcast reference",
       url: "https://youtu.be/zm2ECFtViXA",
       note:
-        "Experiential reference for the vineyard-to-table field-trip structure supplied by the project owner."
+        "Experiential reference for the multi-day field-trip structure: contrasting Central Coast sites, white- and red-wine programs, analytical labs, sustainability systems, tasting education, vineyard regeneration, and hosted meals."
+    },
+    {
+      id: "jlohr-winery-tour",
+      organization: "J. Lohr Vineyards & Wines",
+      title: "A Winery Tour with Kristen Barnhisel",
+      url: "https://www.jlohr.com/latest-news/a-winery-tour-with-kristen-barnhisel",
+      note:
+        "Primary winery reference for barrel-room scale, stainless and acacia barrel comparison, barrel sampling, Chardonnay component tasting, oak-origin trials, lees stirring, and malolactic context."
+    },
+    {
+      id: "jlohr-sustainability",
+      organization: "J. Lohr Vineyards & Wines",
+      title: "Sustainability from Vineyard to Bottle and Beyond",
+      url: "https://www.jlohr.com/growingsustainability",
+      note:
+        "Primary winery reference for solar energy, water conservation, wastewater performance, packaging and operational recycling, biodiversity, and habitat work."
+    },
+    {
+      id: "jlohr-tasting-room",
+      organization: "J. Lohr Vineyards & Wines",
+      title: "Paso Robles Wine Center Tastings",
+      url: "https://www.jlohr.com/visit/paso-robles",
+      note:
+        "Primary winery reference for a seated five-wine flight that includes both white and red wines, seasonal selections, winery-exclusive releases, and vineyard-facing hospitality."
     },
     {
       id: "jlohr-water",
@@ -673,6 +1134,171 @@ export const journeyOfADrop: BeyondTheGlassChapter = {
       url: "https://www.awri.com.au/wic-winemaking-services/",
       note:
         "Reference for crushers, destemmers, presses, fermenters, laboratory trials, barrel storage, and bottling."
+    },
+    {
+      id: "awri-barrel-care",
+      organization: "Australian Wine Research Institute",
+      title: "Cleaning, storage and maintenance of barrels",
+      url:
+        "https://www.awri.com.au/industry_support/winemaking_resources/storage-and-packaging/packaging-operations/barrel-cleaning-storage-and-maintenance/",
+      note:
+        "Technical reference for barrel inspection, cleaning with a rotating spray head, hot-water or steam sanitation, topping, sulfur-dioxide checks, storage, and cellar humidity."
+    },
+    {
+      id: "awri-lees-contact",
+      organization: "Australian Wine Research Institute",
+      title: "Winemaking treatment: Lees contact",
+      url:
+        "https://www.awri.com.au/industry_support/winemaking_resources/winemaking-practices/winemaking-treatment-lees-contact/",
+      note:
+        "Technical reference for post-fermentation lees contact, bâtonnage, oxygen exposure, texture, aroma, sulfur compounds, and the risks of excessive stirring or topping."
+    },
+    {
+      id: "awri-sensory",
+      organization: "Australian Wine Research Institute",
+      title: "Practical sensory evaluation considerations",
+      url:
+        "https://www.awri.com.au/industry_support/winemaking_resources/sensory_assessment/considerations/",
+      note:
+        "Technical reference for controlled tasting volumes and temperatures, independent written judgments, tasting sheets, palate fatigue, and rigorous comparison practices."
+    },
+    {
+      id: "oiv-analytical-parameters",
+      organization: "International Organisation of Vine and Wine",
+      title: "Commonly used analytical parameters for wines and sparkling wines",
+      url: "https://www.oiv.int/index.php/node/3813",
+      note:
+        "Primary reference for alcohol, glucose and fructose, sulfur dioxide, total acidity, volatile acidity, pH, and carbon dioxide as distinct analytical parameters."
+    },
+    {
+      id: "oiv-wine-sugars",
+      organization: "International Organisation of Vine and Wine",
+      title: "Glucose, fructose and saccharose analysis",
+      url:
+        "https://www.oiv.int/de/standards/annex-a-methods-of-analysis-of-wines-and-musts/section-3-chemical-analysis/section-3-1-organic-compounds/section-3-1-1-sugars/glucose%2C-fructose-and-saccharose-%28phmetry%29-%28type-iv%29",
+      note:
+        "Primary reference for distinguishing glucose, fructose, and possible traces of saccharose in wine analysis."
+    },
+    {
+      id: "awri-wine-faults",
+      organization: "Australian Wine Research Institute",
+      title: "Wine flavours, faults and taints",
+      url:
+        "https://www.awri.com.au/industry_support/winemaking_resources/sensory_assessment/recognition-of-wine-faults-and-taints/wine_faults/",
+      note:
+        "Primary technical reference for oxidation, volatile acidity, ethyl acetate, reductive sulfur compounds, Brettanomyces, and TCA sensory context."
+    },
+    {
+      id: "awri-sensory-fault-panel",
+      organization: "Australian Wine Research Institute",
+      title: "Technical Sensory Assessment",
+      url: "https://www.awri.com.au/files/attachment/sensory_assessment_fact_sheet/",
+      note:
+        "Reference for the practical sensory descriptors used to screen common wine faults."
+    },
+    {
+      id: "uc-ipm-phylloxera",
+      organization: "University of California Statewide IPM Program",
+      title: "Grape Phylloxera",
+      url: "https://ipm.ucanr.edu/agriculture/grape/grape-phylloxera/",
+      note:
+        "Primary extension reference for root-feeding damage, Vitis vinifera susceptibility, and resistant-rootstock management."
+    },
+    {
+      id: "umn-grape-anatomy",
+      organization: "University of Minnesota Extension",
+      title: "Cold-climate grapes: grapevine anatomy and terminology",
+      url: "https://extension.umn.edu/commercial-fruit-production/cold-climate-grapes",
+      note:
+        "Extension reference for grape species context and the distinction among shoots, canes, cordons, spurs, buds, clusters, trunks, and roots."
+    },
+    {
+      id: "osu-grape-training",
+      organization: "Oregon State University Extension Service",
+      title: "Growing table grapes: training systems",
+      url: "https://extension.oregonstate.edu/catalog/ec-1639-growing-table-grapes",
+      note:
+        "Extension reference for cane and spur pruning, vertical hedgerow or Guyot/VSP, and canopy light management."
+    },
+    {
+      id: "uc-ipm-pruning",
+      organization: "University of California Statewide IPM Program",
+      title: "Training and Pruning Grapes",
+      url: "https://ipm.ucanr.edu/home-and-landscape/training-and-pruning-grapes/",
+      note:
+        "Extension reference for cane-pruned and spur-pruned vine structure and trellis goals."
+    },
+    {
+      id: "dwi-must-weight",
+      organization: "German Wine Institute",
+      title: "Must Weights",
+      url:
+        "https://symphonia-typo3-prod.deutscheweine.de/en/our-wine/quality-standards/quality-standard/182/must-weights",
+      note:
+        "Official reference for degrees Oechsle, must density, and its relationship to grape sugar and potential alcohol."
+    },
+    {
+      id: "austrian-wine-kmw",
+      organization: "Austrian Wine",
+      title: "Seven Elements of Austrian Wine",
+      url:
+        "https://www.austrianwine.com/fileadmin/user_upload/PDF/Broschueren/7_Elemente_DE_202405_web.pdf",
+      note:
+        "Official reference for Klosterneuburger Mostwaage (KMW) and Austrian must-weight context."
+    },
+    {
+      id: "oiv-sparkling-wines",
+      organization: "International Organisation of Vine and Wine",
+      title: "Sparkling wines",
+      url:
+        "https://www.oiv.int/standards/international-code-of-oenological-practices/part-i-definitions/special-wines/sparkling-wines",
+      note:
+        "Primary definition for sparkling wine, endogenous carbon dioxide, and secondary fermentation in bottle or closed tank."
+    },
+    {
+      id: "oiv-fortification",
+      organization: "International Organisation of Vine and Wine",
+      title: "Fortification",
+      url:
+        "https://www.oiv.int/index.php/fr/standards/code-international-des-pratiques-oenologiques/part-ii-oenological-treatments-and-practices/wines/fortification",
+      note:
+        "Primary reference defining fortification as the addition of wine spirit or permitted alcohol for special-wine production."
+    },
+    {
+      id: "awri-cold-stability",
+      organization: "Australian Wine Research Institute",
+      title: "Measurement of cold stability of wine",
+      url:
+        "https://www.awri.com.au/industry_support/winemaking_resources/laboratory_methods/chemical/cold_stab/",
+      note:
+        "Technical reference for testing the final blend and evaluating tartrate stability before packaging."
+    },
+    {
+      id: "awri-filtration",
+      organization: "Australian Wine Research Institute",
+      title: "Filtration: physical removal of microorganisms",
+      url:
+        "https://www.awri.com.au/industry_support/winemaking_resources/storage-and-packaging/pre-packaging-preparation/filtration-physical-removal-of-microorganisms/",
+      note:
+        "Technical reference for wine clarification and the validated filtration systems used to reduce particles or microorganisms before packaging."
+    },
+    {
+      id: "oiv-wine-labelling",
+      organization: "International Organisation of Vine and Wine",
+      title: "International Standard for the Labelling of Wines",
+      url:
+        "https://www.oiv.int/standards/international-standard-for-the-labelling-of-wines",
+      note:
+        "Primary international reference separating compulsory and optional wine-label information, including origin and varietal indications."
+    },
+    {
+      id: "niaaa-drinking-less",
+      organization: "National Institute on Alcohol Abuse and Alcoholism",
+      title: "The Basics: Defining How Much Alcohol is Too Much",
+      url:
+        "https://www.niaaa.nih.gov/health-professionals-communities/core-resource-on-alcohol/basics-defining-how-much-alcohol-too-much",
+      note:
+        "Public-health reference for lower-risk education: less alcohol is better for health, non-drinkers should not start for health, and some people should not drink at all."
     }
   ],
   primaryCta: { label: "Enter Sipopedia", route: "sipopedia" }

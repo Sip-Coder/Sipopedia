@@ -246,8 +246,16 @@ export function NarrationControls({
           type="button"
           onClick={handlePlayPause}
           disabled={!supported || muted}
+          aria-label={
+            status === "playing"
+              ? "Pause optional narration"
+              : status === "paused"
+                ? "Resume optional narration"
+                : "Listen to optional guide narration"
+          }
         >
-          {status === "playing" ? "Pause narration" : status === "paused" ? "Resume narration" : "Begin narrated journey"}
+          <span aria-hidden="true">{status === "playing" ? "Ⅱ" : "♪"}</span>
+          {status === "playing" ? "Pause guide" : status === "paused" ? "Resume guide" : "Listen · optional"}
         </button>
         <button
           className="btg-control btg-control--stop"
@@ -271,6 +279,7 @@ export function NarrationControls({
           onClick={() => onCaptionsChange(!captionsVisible)}
           aria-pressed={captionsVisible}
         >
+          <span aria-hidden="true">CC</span>
           {captionsVisible ? "Hide captions" : "Show captions"}
         </button>
         <button
@@ -285,7 +294,9 @@ export function NarrationControls({
           className="btg-control btg-control--transcript"
           type="button"
           onClick={onTranscriptRequest}
+          aria-label="Open the complete accessible transcript"
         >
+          <span aria-hidden="true">≡</span>
           Transcript
         </button>
       </div>

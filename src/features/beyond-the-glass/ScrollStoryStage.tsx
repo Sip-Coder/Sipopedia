@@ -4,15 +4,24 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type SyntheticEvent
+  type SyntheticEvent,
+  type UIEvent
 } from "react";
 import type {
   BeyondTheGlassChapter,
   BeyondTheGlassMotion,
   BeyondTheGlassSpeaker
 } from "../../data/beyondTheGlassChapters";
+import { beyondTheGlassCurriculumLabs } from "../../data/beyondTheGlassCurriculum";
+import { CurriculumLab } from "./CurriculumLab";
+import { GuideSprite } from "./GuideSprite";
 import { NarrationControls } from "./NarrationControls";
 import { progressBetween, useScrollStoryProgress } from "./useScrollStoryProgress";
+import {
+  VineAnatomyParallax,
+  VineAnatomyReadout,
+  VineAnatomyStudyList
+} from "./VineAnatomyParallax";
 
 type ScrollStoryStageProps = {
   chapter: BeyondTheGlassChapter;
@@ -23,17 +32,15 @@ type StoryImageProps = {
   alt: string;
   className: string;
   eager?: boolean;
+  portraitSrc?: string;
+  portraitSrcSet?: string;
   sizes?: string;
   src: string;
   srcSet?: string;
   style?: CSSProperties;
 };
 
-const CHARACTER_ASSETS: Record<BeyondTheGlassSpeaker, string> = {
-  Sippy: "/game/sprites/characters/main-5.png",
-  Roma: "/game/sprites/characters/roma-2.png",
-  Hummin: "/game/sprites/characters/main-3.png"
-};
+const GUIDE_ORDER: BeyondTheGlassSpeaker[] = ["Sippy", "Roma", "Hummin"];
 
 const CHARACTER_ROLES: Record<BeyondTheGlassSpeaker, string> = {
   Sippy: "Sipopedia lead",
@@ -82,6 +89,8 @@ function StoryImage({
   alt,
   className,
   eager,
+  portraitSrc,
+  portraitSrcSet,
   sizes,
   src,
   srcSet,
@@ -108,7 +117,7 @@ function StoryImage({
   const fetchPriority = eager ? "high" : "auto";
   const fetchPriorityAttribute = { fetchpriority: fetchPriority };
 
-  return (
+  const image = (
     <img
       alt={alt}
       className={className}
@@ -121,6 +130,19 @@ function StoryImage({
       srcSet={srcSet}
       style={style}
     />
+  );
+
+  if (!portraitSrc && !portraitSrcSet) return image;
+
+  return (
+    <picture className="btg-story-picture">
+      <source
+        media="(max-width: 640px) and (orientation: portrait)"
+        sizes="100vw"
+        srcSet={portraitSrcSet ?? portraitSrc}
+      />
+      {image}
+    </picture>
   );
 }
 
@@ -144,6 +166,46 @@ function motionTransform(motion: BeyondTheGlassMotion, progress: number): string
   }
 }
 
+function noteDeckPosition(
+  sceneProgress: number,
+  cardCount: number,
+  start: number,
+  end: number
+): number {
+  if (cardCount <= 1) return 0;
+  return smoothstep(progressBetween(sceneProgress, start, end)) * (cardCount - 1);
+}
+
+function noteCardState(index: number, position: number): "active" | "future" | "past" {
+  const offset = index - position;
+  if (Math.abs(offset) < 0.5) return "active";
+  return offset < 0 ? "past" : "future";
+}
+
+function noteCardStyle(index: number, position: number): CSSProperties {
+  const offset = index - position;
+
+  if (offset < 0) {
+    const sweep = clamp(-offset, 0, 1.15);
+    return {
+      filter: `brightness(${(1 - sweep * 0.08).toFixed(3)})`,
+      opacity: clamp(1 - sweep * 1.08, 0, 1),
+      pointerEvents: sweep > 0.48 ? "none" : "auto",
+      transform: `translate3d(${(-sweep * 108).toFixed(2)}%, ${(-sweep * 0.9).toFixed(2)}rem, 0) rotate(${(-sweep * 9).toFixed(2)}deg) scale(${(1 - sweep * 0.035).toFixed(3)})`,
+      zIndex: 120 - index
+    };
+  }
+
+  const depth = Math.min(offset, 3);
+  return {
+    filter: `brightness(${(1 - depth * 0.045).toFixed(3)})`,
+    opacity: clamp(1 - Math.max(0, depth - 1.8) * 0.7, 0.16, 1),
+    pointerEvents: depth < 0.5 ? "auto" : "none",
+    transform: `translate3d(${(depth * 0.58).toFixed(2)}rem, ${(depth * 0.5).toFixed(2)}rem, ${(-depth * 34).toFixed(2)}px) rotate(${(depth * 1.75).toFixed(2)}deg) scale(${(1 - depth * 0.028).toFixed(3)})`,
+    zIndex: 120 - index
+  };
+}
+
 function ReducedMotionStory({ chapter, transcriptId }: ScrollStoryStageProps) {
   const [captionsVisible, setCaptionsVisible] = useState(true);
   const [sceneIndex, setSceneIndex] = useState(0);
@@ -160,6 +222,8 @@ function ReducedMotionStory({ chapter, transcriptId }: ScrollStoryStageProps) {
         alt={activeScene.artwork.alt}
         className="btg-reduced__poster"
         eager
+        portraitSrc={activeScene.artwork.portraitSrc}
+        portraitSrcSet={activeScene.artwork.portraitSrcSet}
         sizes="(max-width: 760px) 100vw, 58vw"
         src={activeScene.artwork.src}
         srcSet={activeScene.artwork.srcSet}
@@ -190,6 +254,7 @@ function ReducedMotionStory({ chapter, transcriptId }: ScrollStoryStageProps) {
             </article>
           ))}
         </div>
+        {activeScene.id === "vine-and-berry" ? <VineAnatomyStudyList /> : null}
         <section aria-label="Optional narration and captions" className="btg-optional-audio">
           <NarrationControls
             captionsVisible={captionsVisible}
@@ -208,15 +273,51 @@ function ReducedMotionStory({ chapter, transcriptId }: ScrollStoryStageProps) {
 
 export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProps) {
   const sectionRef = useRef<HTMLElement>(null);
+  const storyPanelRef = useRef<HTMLDivElement>(null);
   const { activeScene, progress, reducedMotion, sceneIndex, sceneProgress } =
     useScrollStoryProgress(sectionRef, chapter.scenes);
   const [captionsVisible, setCaptionsVisible] = useState(false);
+  const [activeNarrationLineIndex, setActiveNarrationLineIndex] = useState<number | null>(null);
+  const [panelControlsCards, setPanelControlsCards] = useState(false);
+  const [panelNoteProgress, setPanelNoteProgress] = useState(0);
   const [resumeSceneIndex, setResumeSceneIndex] = useState<number | null>(null);
+  const [activeLabId, setActiveLabId] = useState<string | null>(null);
 
   const previousScene = chapter.scenes[Math.max(0, sceneIndex - 1)] ?? activeScene;
   const sceneEntryBlend =
     sceneIndex === 0 ? 1 : smoothstep(progressBetween(sceneProgress, 0, 0.13));
   const activeSpeaker = activeScene.narration[0]?.speaker ?? "Sippy";
+  const activeCaptionLine =
+    activeNarrationLineIndex === null
+      ? null
+      : (activeScene.narration[activeNarrationLineIndex] ?? activeScene.narration[0] ?? null);
+  const cardInteractionProgress = panelControlsCards ? panelNoteProgress : sceneProgress;
+  const guideScrollPosition = noteDeckPosition(
+    cardInteractionProgress,
+    activeScene.narration.length,
+    0.14,
+    0.62
+  );
+  const fieldNoteScrollPosition = noteDeckPosition(
+    cardInteractionProgress,
+    activeScene.fieldNotes.length,
+    0.36,
+    0.88
+  );
+  const guideDeckPosition =
+    captionsVisible && activeNarrationLineIndex !== null
+      ? activeNarrationLineIndex
+      : guideScrollPosition;
+  const visibleStudyCardIndex =
+    Math.min(
+      Math.max(0, Math.round(guideDeckPosition)),
+      Math.max(0, activeScene.narration.length - 1)
+    );
+  const visibleFieldNoteIndex = Math.min(
+    Math.max(0, Math.round(fieldNoteScrollPosition)),
+    Math.max(0, activeScene.fieldNotes.length - 1)
+  );
+  const activeLab = beyondTheGlassCurriculumLabs[activeScene.id];
   const journeyPercent = Math.round(progress * 100);
 
   const sceneOffsets = useMemo(
@@ -239,6 +340,44 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
       behavior: reducedMotion ? "auto" : "smooth",
       top: sectionTop + travel * target.progress
     });
+  };
+
+  const requestGuideCard = (index: number) => {
+    const section = sectionRef.current;
+    const storyPanel = storyPanelRef.current;
+    const scene = chapter.scenes[sceneIndex];
+    const cardCount = activeScene.narration.length;
+    if (!scene || cardCount <= 1 || typeof window === "undefined") return;
+    const cardProgress = index / (cardCount - 1);
+    const localProgress = 0.14 + cardProgress * (0.62 - 0.14);
+    const panelTravel = storyPanel
+      ? Math.max(0, storyPanel.scrollHeight - storyPanel.clientHeight)
+      : 0;
+    if (storyPanel && panelTravel > 1) {
+      setPanelControlsCards(true);
+      storyPanel.scrollTo({
+        behavior: reducedMotion ? "auto" : "smooth",
+        top: panelTravel * localProgress
+      });
+      return;
+    }
+    if (!section) return;
+    const rect = section.getBoundingClientRect();
+    const sectionTop = window.scrollY + rect.top;
+    const travel = Math.max(1, rect.height - window.innerHeight);
+    const targetProgress = scene.range[0] + localProgress * (scene.range[1] - scene.range[0]);
+    window.scrollTo({
+      behavior: reducedMotion ? "auto" : "smooth",
+      top: sectionTop + travel * targetProgress
+    });
+  };
+
+  const handleStoryPanelScroll = (event: UIEvent<HTMLDivElement>) => {
+    const panel = event.currentTarget;
+    const travel = panel.scrollHeight - panel.clientHeight;
+    if (travel <= 1) return;
+    setPanelControlsCards(true);
+    setPanelNoteProgress(clamp(panel.scrollTop / travel));
   };
 
   useEffect(() => {
@@ -284,6 +423,14 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     });
   }, [chapter.scenes, sceneIndex]);
 
+  useEffect(() => {
+    setActiveLabId(null);
+    setActiveNarrationLineIndex(null);
+    setPanelControlsCards(false);
+    setPanelNoteProgress(0);
+    if (storyPanelRef.current) storyPanelRef.current.scrollTop = 0;
+  }, [activeScene.id]);
+
   if (reducedMotion) {
     return <ReducedMotionStory chapter={chapter} transcriptId={transcriptId} />;
   }
@@ -310,26 +457,9 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
           {sceneIndex > 0 ? (
             <StoryImage
               alt=""
-              className="btg-scene-backdrop btg-scene-backdrop--previous"
-              sizes="100vw"
-              src={previousScene.artwork.src}
-              srcSet={previousScene.artwork.srcSet}
-              style={{ opacity: 0.82 * (1 - sceneEntryBlend) }}
-            />
-          ) : null}
-          <StoryImage
-            alt=""
-            className="btg-scene-backdrop btg-scene-backdrop--active"
-            eager
-            sizes="100vw"
-            src={activeScene.artwork.src}
-            srcSet={activeScene.artwork.srcSet}
-            style={{ opacity: 0.82 * sceneEntryBlend }}
-          />
-          {sceneIndex > 0 ? (
-            <StoryImage
-              alt=""
               className="btg-scene-art btg-scene-art--previous"
+              portraitSrc={previousScene.artwork.portraitSrc}
+              portraitSrcSet={previousScene.artwork.portraitSrcSet}
               sizes="100vw"
               src={previousScene.artwork.src}
               srcSet={previousScene.artwork.srcSet}
@@ -341,30 +471,38 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
               }}
             />
           ) : null}
-          <StoryImage
-            alt={activeScene.artwork.alt}
-            className="btg-scene-art btg-scene-art--active"
-            eager
-            sizes="100vw"
-            src={activeScene.artwork.src}
-            srcSet={activeScene.artwork.srcSet}
-            style={{
-              objectFit: activeScene.artwork.fit ?? "contain",
-              objectPosition: activeScene.artwork.position ?? "center",
-              opacity: sceneEntryBlend,
-              transform: motionTransform(activeScene.motion, sceneProgress)
-            }}
-          />
+          {activeScene.id === "vine-and-berry" ? (
+            <VineAnatomyParallax opacity={sceneEntryBlend} progress={sceneProgress} />
+          ) : (
+            <StoryImage
+              alt={activeScene.artwork.alt}
+              className="btg-scene-art btg-scene-art--active"
+              eager
+              portraitSrc={activeScene.artwork.portraitSrc}
+              portraitSrcSet={activeScene.artwork.portraitSrcSet}
+              sizes="100vw"
+              src={activeScene.artwork.src}
+              srcSet={activeScene.artwork.srcSet}
+              style={{
+                objectFit: activeScene.artwork.fit ?? "contain",
+                objectPosition: activeScene.artwork.position ?? "center",
+                opacity: sceneEntryBlend,
+                transform: motionTransform(activeScene.motion, sceneProgress)
+              }}
+            />
+          )}
           <div className="btg-stage__wash" aria-hidden="true" />
-          <StoryImage
-            alt=""
-            className="btg-drop-protagonist"
-            src={chapter.assets.centralDrop}
-            style={{
-              opacity: sceneIndex === 0 ? 0.68 : 0.88,
-              transform: `translate(-50%, -50%) scale(${(0.82 + Math.sin(sceneProgress * Math.PI) * 0.18).toFixed(3)})`
-            }}
-          />
+          {activeScene.id === "vine-and-berry" ? null : (
+            <StoryImage
+              alt=""
+              className="btg-drop-protagonist"
+              src={chapter.assets.centralDrop}
+              style={{
+                opacity: sceneIndex === 0 ? 0.68 : 0.88,
+                transform: `translate(-50%, -50%) scale(${(0.82 + Math.sin(sceneProgress * Math.PI) * 0.18).toFixed(3)})`
+              }}
+            />
+          )}
         </div>
 
         <div className="btg-stage__hud">
@@ -464,32 +602,121 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
             </p>
           </aside>
 
-          <div className="btg-story-panel">
+          <div
+            aria-label={`${activeScene.title} illustrated scene notes`}
+            className="btg-story-panel"
+            onScroll={handleStoryPanelScroll}
+            ref={storyPanelRef}
+            tabIndex={0}
+          >
             <div className="btg-stage__copy">
               <p className="btg-kicker">
                 {activeScene.number} · {activeScene.eyebrow}
               </p>
               <h1>{activeScene.title}</h1>
               <p>{activeScene.summary}</p>
+              {activeScene.id === "vine-and-berry" ? (
+                <VineAnatomyReadout progress={sceneProgress} />
+              ) : null}
+              {activeLab ? (
+                <button
+                  className="btg-open-lab"
+                  onClick={() => setActiveLabId(activeLab.id)}
+                  type="button"
+                >
+                  Open visual lab · {activeLab.title}
+                </button>
+              ) : null}
             </div>
 
             <div className="btg-note-stack">
-              <blockquote className="btg-guide-note">
-                <img alt="" decoding="async" src={CHARACTER_ASSETS[activeSpeaker]} />
-                <div>
-                  <strong>{activeSpeaker}</strong>
-                  <p>{activeScene.narration[0]?.text}</p>
-                </div>
-              </blockquote>
-              <div className="btg-field-notes" aria-label={`${activeScene.title} field notes`}>
+              <aside
+                aria-label={`${activeScene.title} guide study cards`}
+                className="btg-guide-card-deck"
+              >
+                {activeScene.narration.map((studyCard, index) => {
+                  const isActive = index === visibleStudyCardIndex;
+                  const speaker = studyCard.speaker;
+                  return (
+                    <blockquote
+                      aria-hidden={!isActive}
+                      className="btg-guide-note"
+                      data-card-state={noteCardState(index, guideDeckPosition)}
+                      data-speaker={speaker}
+                      key={`${activeScene.id}-${speaker}-${index}`}
+                      style={noteCardStyle(index, guideDeckPosition)}
+                    >
+                      <span aria-hidden="true" className="btg-guide-note__pin" />
+                      <div className="btg-guide-note__guide">
+                        <GuideSprite
+                          active={isActive}
+                          cue={`${activeScene.id}:${index}`}
+                          reducedMotion={reducedMotion}
+                          speaker={speaker}
+                        />
+                        <span>{CHARACTER_ROLES[speaker]}</span>
+                      </div>
+                      <div className="btg-guide-note__body">
+                        <header>
+                          <span>Sommelier field card</span>
+                          <strong>{speaker}</strong>
+                        </header>
+                        <p aria-live={isActive && captionsVisible && activeCaptionLine ? "polite" : "off"}>
+                          {studyCard.text}
+                        </p>
+                        <footer>
+                          <span>
+                            Note {index + 1} of {activeScene.narration.length}
+                          </span>
+                          {isActive && activeScene.narration.length > 1 && !captionsVisible ? (
+                            <nav aria-label="Guide study cards">
+                              <button
+                                aria-label="Show the previous guide note"
+                                disabled={index === 0}
+                                onClick={() => requestGuideCard(Math.max(0, index - 1))}
+                                type="button"
+                              >
+                                ←
+                              </button>
+                              <button
+                                aria-label="Show the next guide note"
+                                disabled={index === activeScene.narration.length - 1}
+                                onClick={() =>
+                                  requestGuideCard(
+                                    Math.min(activeScene.narration.length - 1, index + 1)
+                                  )
+                                }
+                                type="button"
+                              >
+                                →
+                              </button>
+                            </nav>
+                          ) : null}
+                        </footer>
+                      </div>
+                    </blockquote>
+                  );
+                })}
+              </aside>
+              <div
+                aria-label={`${activeScene.title} field notes`}
+                className="btg-field-notes"
+                data-card-count={activeScene.fieldNotes.length}
+              >
                 {activeScene.fieldNotes.map((note, index) => (
                   <article
+                    aria-hidden={index !== visibleFieldNoteIndex}
                     className={`btg-field-note btg-field-note--${FIELD_NOTE_MATERIALS[index % FIELD_NOTE_MATERIALS.length]}`}
+                    data-card-state={noteCardState(index, fieldNoteScrollPosition)}
                     key={`${activeScene.id}-${note.title}`}
+                    style={noteCardStyle(index, fieldNoteScrollPosition)}
                   >
                     <header>
                       <span>{note.eyebrow}</span>
                       <strong>{note.title}</strong>
+                      <small>
+                        Card {index + 1} of {activeScene.fieldNotes.length}
+                      </small>
                     </header>
                     <p>{note.detail}</p>
                   </article>
@@ -499,12 +726,17 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
           </div>
 
           <div className="btg-character-party" aria-label="Your SIP Academy guides">
-            {(Object.keys(CHARACTER_ASSETS) as BeyondTheGlassSpeaker[]).map((speaker) => (
+            {GUIDE_ORDER.map((speaker) => (
               <figure
                 className={speaker === activeSpeaker || sceneIndex <= 1 ? "is-active" : ""}
                 key={speaker}
               >
-                <img alt="" decoding="async" src={CHARACTER_ASSETS[speaker]} />
+                <GuideSprite
+                  active={speaker === activeSpeaker || sceneIndex <= 1}
+                  cue={`${activeScene.id}:${speaker}`}
+                  reducedMotion={reducedMotion}
+                  speaker={speaker}
+                />
                 <figcaption>
                   <strong>{speaker}</strong>
                   <span>{CHARACTER_ROLES[speaker]}</span>
@@ -513,28 +745,64 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
             ))}
           </div>
 
-          <footer className="btg-journey-dock">
-            <button
-              disabled={sceneIndex === 0}
-              onClick={() => requestScene(Math.max(0, sceneIndex - 1))}
-              type="button"
-            >
-              Back
-            </button>
-            <div aria-live="polite">
-              <span>{activeScene.number}</span>
-              <strong>{activeScene.title}</strong>
+          <footer aria-label="Wine adventure journey controls" className="btg-journey-dock">
+            <div className="btg-journey-path">
+              <button
+                aria-label={
+                  sceneIndex === 0
+                    ? "Already at the first stop"
+                    : `Go back to ${chapter.scenes[sceneIndex - 1]?.title ?? "the previous stop"}`
+                }
+                className="btg-dock-action btg-dock-action--back"
+                disabled={sceneIndex === 0}
+                onClick={() => requestScene(Math.max(0, sceneIndex - 1))}
+                type="button"
+              >
+                <span aria-hidden="true">←</span>
+                <span>Back</span>
+              </button>
+              <div className="btg-dock-status" aria-live="polite">
+                <div>
+                  <span>
+                    Stop {sceneIndex + 1} of {chapter.scenes.length}
+                  </span>
+                  <strong>{activeScene.title}</strong>
+                </div>
+                <div
+                  aria-label={`Wine adventure progress: stop ${sceneIndex + 1} of ${chapter.scenes.length}`}
+                  aria-valuemax={chapter.scenes.length}
+                  aria-valuemin={1}
+                  aria-valuenow={sceneIndex + 1}
+                  className="btg-dock-progress"
+                  role="progressbar"
+                >
+                  <span
+                    style={{
+                      width: `${((sceneIndex + 1) / chapter.scenes.length) * 100}%`
+                    }}
+                  />
+                </div>
+              </div>
+              <button
+                aria-label={
+                  sceneIndex === chapter.scenes.length - 1
+                    ? "Already at the final stop"
+                    : `Continue to ${chapter.scenes[sceneIndex + 1]?.title ?? "the next stop"}`
+                }
+                className="btg-dock-action btg-dock-action--continue"
+                disabled={sceneIndex === chapter.scenes.length - 1}
+                onClick={() => requestScene(Math.min(chapter.scenes.length - 1, sceneIndex + 1))}
+                type="button"
+              >
+                <span>Continue</span>
+                <span aria-hidden="true">→</span>
+              </button>
             </div>
-            <button
-              disabled={sceneIndex === chapter.scenes.length - 1}
-              onClick={() => requestScene(Math.min(chapter.scenes.length - 1, sceneIndex + 1))}
-              type="button"
-            >
-              Continue
-            </button>
             <section aria-label="Optional narration" className="btg-optional-audio">
+              <span className="btg-dock-tools-label">Field kit</span>
               <NarrationControls
                 captionsVisible={captionsVisible}
+                onActiveLineChange={setActiveNarrationLineIndex}
                 onCaptionsChange={setCaptionsVisible}
                 onSceneRequest={requestScene}
                 onTranscriptRequest={() => focusJourneySection(transcriptId)}
@@ -545,6 +813,13 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
             </section>
           </footer>
         </div>
+        {activeLab && activeLabId === activeLab.id ? (
+          <CurriculumLab
+            lab={activeLab}
+            onClose={() => setActiveLabId(null)}
+            reducedMotion={reducedMotion}
+          />
+        ) : null}
       </div>
     </section>
   );

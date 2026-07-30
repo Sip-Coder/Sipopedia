@@ -58,7 +58,7 @@ test("Beyond The Glass follows Sip Game and opens as a public Lobby experience",
 });
 
 test("The From Rain to First Sip chapter data is complete and internally linked", () => {
-  assert.equal(journeyOfADrop.scenes.length, 13);
+  assert.equal(journeyOfADrop.scenes.length, 20);
   assert.equal(journeyOfADrop.scenes[0]?.range[0], 0);
   assert.equal(journeyOfADrop.scenes[journeyOfADrop.scenes.length - 1]?.range[1], 1);
 

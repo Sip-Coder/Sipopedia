@@ -157,6 +157,53 @@ type BeyondTheGlassChapter = {
 8. Commit to `Improvements`.
 9. Push, open/refresh the PR, run RGRD, merge only when authorized, and verify deployment.
 
+## CSW curriculum integration
+
+The 20-stop **From Rain to First Sip** journey remains the fast narrative spine. Three missing transitions now live in the primary route: the Wine Crossroads, the Finishing Bench, and the Bottle Passport. Deeper CSW detail remains available as optional, reversible learning routes rather than turning every primary scene into a lecture.
+
+The full coverage audit and content plan are maintained in
+[`CSW-CURRICULUM-AUDIT.md`](./CSW-CURRICULUM-AUDIT.md).
+
+### Authorized first expansion set
+
+- Stop 9: **Inside the Glass** composition-and-chemistry deconstruction.
+- Stop 10: **Roma’s Fault Detective** sensory/fault layer.
+- Stop 4: **Vine Family Tree** for species, varieties, clones, mutations, crossings, hybrids, rootstocks, and phylloxera.
+- Stops 4–6: **Explorable Vineyard** for anatomy, phenology, physiology, climate, soils, training, pruning, diseases, pests, ripeness, and must-weight systems.
+- Context-sensitive, validated detours to `grapes/grapes` and `grapes/grains`, with a stored return scene and no dead-end destinations.
+
+## Winery-tour integration
+
+The J. Lohr field-trip podcast and primary winery sources were used to audit the main path. The expanded journey adds:
+
+- a place-led transition between cool coastal and warmer inland vineyard programs;
+- an actual production laboratory on the primary route while preserving the abstract chemistry lab as an optional deep dive;
+- a visible barrel room instead of the previous fault-lab artwork;
+- a barrel workbench that separates the wine thief, bung, topping tools, lees-stirring baton, hoses, pump, racking wand, inspection tools, samples, log, and barrel washer;
+- a winery-wide solar, water, pomace, compost, recycling, and habitat loop;
+- a five-wine guided tasting flight with sommelier note cards and accessible sensory practice.
+
+The complete gap analysis is maintained in
+[`WINERY-TOUR-GAP-AUDIT.md`](./WINERY-TOUR-GAP-AUDIT.md).
+
+### Curriculum navigation pattern
+
+- Main journey: always sufficient to understand the lifecycle.
+- Field note: concise, high-contrast, scene-specific explanation.
+- Deep dive: optional parallax/cutaway/orbit route inside Beyond the Glass.
+- Reference detour: valid existing Sipopedia route with temporary return context.
+- Return: restore the learner to the meaningful scene saved by the existing BTG progress system.
+
+### Publication gate
+
+Do not publish the curriculum expansion until:
+
+1. The user has completed the content briefing.
+2. The applicable CSW edition has been confirmed.
+3. Chemistry, fault, taxonomy, viticulture, must-weight, law, and health claims have source-level review.
+4. Every external detour and return path has browser QA.
+5. Landscape, mobile, reduced-motion, keyboard, contrast, and performance checks pass.
+
 ## Non-goals for chapter one
 
 - No forced orientation changes.
