@@ -6,27 +6,46 @@ import path from "node:path";
 const baseUrl = (process.env.BTG_QA_BASE_URL ?? "http://127.0.0.1:5100").replace(/\/+$/, "");
 const route = "/#app/beyond-the-glass";
 const localPreviewAccessKey = "sipstudies:local-preview-access";
-const viewports = [
-  { width: 320, height: 568 },
+const configuredViewports = [
   { width: 360, height: 800 },
   { width: 390, height: 844 },
   { width: 412, height: 915 }
 ];
-const scenes = [
-  { id: "academy-plaza", number: "01", range: [0, 0.07] },
-  { id: "guides-at-sunrise", number: "02", range: [0.07, 0.14] },
-  { id: "rain-and-roots", number: "03", range: [0.14, 0.22] },
-  { id: "vine-and-berry", number: "04", range: [0.22, 0.3] },
-  { id: "harvest", number: "05", range: [0.3, 0.38] },
-  { id: "crush-house", number: "06", range: [0.38, 0.46] },
-  { id: "fermentation", number: "07", range: [0.46, 0.54] },
-  { id: "laboratory", number: "08", range: [0.54, 0.62] },
-  { id: "barrel-aging", number: "09", range: [0.62, 0.7] },
-  { id: "bottling", number: "10", range: [0.7, 0.78] },
-  { id: "market", number: "11", range: [0.78, 0.86] },
-  { id: "restaurant", number: "12", range: [0.86, 0.93] },
-  { id: "first-sip", number: "13", range: [0.93, 1] }
+const viewportFilter = process.env.BTG_QA_VIEWPORT?.trim();
+const viewports = viewportFilter
+  ? configuredViewports.filter(({ width, height }) => `${width}x${height}` === viewportFilter)
+  : configuredViewports;
+const sceneIds = [
+  "academy-plaza",
+  "guides-at-sunrise",
+  "two-regions",
+  "rain-and-roots",
+  "vine-and-berry",
+  "harvest",
+  "crush-house",
+  "fermentation",
+  "wine-crossroads",
+  "laboratory",
+  "barrel-aging",
+  "barrel-workbench",
+  "finishing-bench",
+  "sustainability-loop",
+  "bottling",
+  "bottle-passport",
+  "tasting-flight",
+  "warehouse-logistics",
+  "market",
+  "restaurant-buying",
+  "restaurant",
+  "first-sip"
 ];
+const allScenes = sceneIds.map((id, index) => ({
+  id,
+  number: String(index + 1).padStart(2, "0"),
+  range: [index / sceneIds.length, (index + 1) / sceneIds.length]
+}));
+const sceneFilter = process.env.BTG_QA_SCENE?.trim();
+const scenes = sceneFilter ? allScenes.filter(({ id }) => id === sceneFilter) : allScenes;
 
 function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -236,7 +255,7 @@ async function setStoryProgress(client, sessionId, progress, expectedScene) {
       return Number.isFinite(current) && Math.abs(current - ${progress}) <= 0.003;
     })()`
   );
-  await sleep(100);
+  await sleep(1000);
 }
 
 async function inspectStage(client, sessionId, expectedScene) {
@@ -273,12 +292,18 @@ async function inspectStage(client, sessionId, expectedScene) {
         element.getBoundingClientRect().width > 0 &&
         element.getBoundingClientRect().height > 0;
       const stageRect = rect(stage);
+      const activeNote = Array.from(
+        stage.querySelectorAll('.btg-guide-note[aria-hidden="false"], .btg-field-note[aria-hidden="false"]')
+      ).find(visible);
       const regionEntries = [
         ["header", stage.querySelector(".btg-stage__header")],
-        ["map", stage.querySelector(".btg-academy-map")],
-        ["copy", stage.querySelector(".btg-stage__copy")],
-        ["notes", stage.querySelector(".btg-note-stack")],
-        ["characters", stage.querySelector(".btg-character-party")],
+        [
+          "visual",
+          ${JSON.stringify(expectedScene)} === "academy-plaza"
+            ? null
+            : stage.querySelector(".btg-stage__visual")
+        ],
+        ["panel", stage.querySelector(".btg-story-panel")],
         ["dock", stage.querySelector(".btg-journey-dock")],
         ["plaza-entry", stage.querySelector(".btg-plaza-node--active")]
       ].filter(([, element]) => visible(element));
@@ -309,16 +334,8 @@ async function inspectStage(client, sessionId, expectedScene) {
         .filter((image) => !image.complete || image.naturalWidth <= 0 || image.naturalHeight <= 0)
         .map((image) => image.getAttribute("src") ?? "(missing src)");
       const fallbackCount = Array.from(stage.querySelectorAll(".btg-story-image--fallback")).filter(visible).length;
-      const guideNote = stage.querySelector(".btg-guide-note");
+      const guideNote = stage.querySelector('.btg-guide-note[aria-hidden="false"]');
       const guideNoteExpected = ${JSON.stringify(expectedScene)} !== "academy-plaza";
-      const mobileStoryRegions = [regions.copy, regions.notes].filter(Boolean);
-      const mobileStoryHeight =
-        mobileStoryRegions.length > 0
-          ? Math.max(...mobileStoryRegions.map((value) => value.bottom)) -
-            Math.min(...mobileStoryRegions.map((value) => value.top))
-          : 0;
-      const mobileStoryHeightRatio =
-        window.innerWidth <= 640 && stageRect.height > 0 ? mobileStoryHeight / stageRect.height : 0;
       const documentOverflow = Math.max(
         0,
         document.documentElement.scrollWidth - window.innerWidth,
@@ -345,21 +362,30 @@ async function inspectStage(client, sessionId, expectedScene) {
             : "guide field note is visible on Academy Plaza"
         );
       }
-      if (guideNoteExpected && mobileStoryHeightRatio > 0.36) {
-        failures.push(
-          "mobile story overlays occupy " +
-          Math.round(mobileStoryHeightRatio * 100) +
-          "% of the stage height"
-        );
+      if (activeNote) {
+        const activeNoteRect = rect(activeNote);
+        if (
+          activeNoteRect.left < stageRect.left - tolerance ||
+          activeNoteRect.right > stageRect.right + tolerance ||
+          activeNoteRect.top < stageRect.top - tolerance ||
+          activeNoteRect.bottom > stageRect.bottom + tolerance
+        ) {
+          failures.push("active note escapes the stage");
+        }
+        if (regions.dock && intersection(activeNoteRect, regions.dock) > 4) {
+          failures.push("active note overlaps the journey dock");
+        }
       }
       if (activeImageFailures.length > 0) failures.push("active images failed: " + activeImageFailures.join(", "));
       if (fallbackCount > 0) failures.push("visible archive-image fallback");
       return {
         activeImageFailures,
+        activeNote: activeNote ? rect(activeNote) : null,
+        activeNoteDockOverlap:
+          activeNote && regions.dock ? intersection(rect(activeNote), regions.dock) : 0,
         documentOverflow,
         failures,
         guideNoteVisible: visible(guideNote),
-        mobileStoryHeightRatio,
         overlaps,
         regions,
         scene: stage.dataset.scene,

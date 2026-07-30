@@ -892,30 +892,86 @@ const scenes: BeyondTheGlassScene[] = [
     ]
   },
   {
+    id: "warehouse-logistics",
+    number: "19",
+    title: "The Protected Journey",
+    range: [0.9, 0.93],
+    eyebrow: "Warehousing and distribution",
+    summary:
+      "Cases leave the winery with a lot identity, storage history, and chain of responsibility.",
+    checkpoint: "Winery to route",
+    motion: "glide",
+    artwork: {
+      src: "/beyond-the-glass/commercial-chain/warehouse-logistics-1600.webp",
+      srcSet:
+        "/beyond-the-glass/commercial-chain/warehouse-logistics-960.webp 960w, /beyond-the-glass/commercial-chain/warehouse-logistics-1600.webp 1600w",
+      alt:
+        "Adult winery logistics specialists verify packaged wine against a traceability tablet before protected cases move from a brass-and-stone warehouse into a delivery vehicle.",
+      fit: "contain",
+      position: "center"
+    },
+    landmark: { label: "Distribution gate", x: 30, y: 66 },
+    drop: { x: 49, y: 54, size: 7 },
+    fieldNotes: [
+      {
+        eyebrow: "Traceability",
+        title: "The case keeps its identity",
+        detail:
+          "Lot codes, case counts, destinations, and retained comparison samples help a producer investigate a problem without confusing one shipment with another."
+      },
+      {
+        eyebrow: "Storage conditions",
+        title: "Heat and light can rewrite the wine",
+        detail:
+          "Finished wine should be protected from prolonged heat, temperature extremes, and damaging light. The risk belongs to the route, warehouse, package, and time—not only the bottle."
+      },
+      {
+        eyebrow: "Commercial handoff",
+        title: "Responsibility travels with the cases",
+        detail:
+          "A distributor, importer, warehouse, retailer, or restaurant may receive the wine next. Each transfer should preserve condition, records, and a clear owner for the decision."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Hummin",
+        durationSeconds: 11,
+        text:
+          "I follow the case, not only the bottle. Lot identity, route, temperature, light, time, and responsibility must remain connected until the wine reaches its next keeper."
+      }
+    ]
+  },
+  {
     id: "market",
-    number: "18",
+    number: "20",
     title: "Into the Market",
-    range: [0.85, 0.9],
-    eyebrow: "Context",
+    range: [0.93, 0.95],
+    eyebrow: "Retail context",
     summary: "A bottle gains a place, price, story, and audience beyond the winery.",
-    checkpoint: "Bottle to choice",
+    checkpoint: "Route to choice",
     motion: "glide",
     artwork: {
       src: "/beyond-the-glass/wine-wine-market-1600.webp",
       srcSet:
         "/beyond-the-glass/wine-wine-market-960.webp 960w, /beyond-the-glass/wine-wine-market-1600.webp 1600w",
       alt:
-        "A warm SIP Academy wine market where students and professionals organize bottles and help guests choose.",
+        "A warm SIP Academy wine market where adult students and professionals organize bottles and help guests choose.",
       position: "center"
     },
     landmark: { label: "Academy market", x: 49, y: 19 },
     drop: { x: 45, y: 54, size: 7 },
     fieldNotes: [
       {
-        eyebrow: "Guest translation",
-        title: "Labels are only the beginning",
+        eyebrow: "Shelf context",
+        title: "Placement changes what a guest can discover",
         detail:
           "Origin, grape, producer, vintage, style, price, storage, and occasion help turn a shelf of bottles into a useful recommendation."
+      },
+      {
+        eyebrow: "Retail stewardship",
+        title: "The store protects condition and trust",
+        detail:
+          "Sound storage, stock rotation, accurate shelf information, and a clear response to faults or damage keep the commercial story connected to the producer."
       }
     ],
     narration: [
@@ -923,7 +979,57 @@ const scenes: BeyondTheGlassScene[] = [
         speaker: "Sippy",
         durationSeconds: 9,
         text:
-          "The bottle leaves production and enters a new system: distribution, storage, price, language, trust, and choice."
+          "The bottle enters a choice system. Placement, price, language, storage, and trust decide whether the right guest can understand what the winery made."
+      }
+    ]
+  },
+  {
+    id: "restaurant-buying",
+    number: "21",
+    title: "The Wine List Workshop",
+    range: [0.95, 0.97],
+    eyebrow: "Buying and listing",
+    summary:
+      "Before service begins, a restaurant team decides whether a wine fits its food, guests, cellar, format, and price.",
+    checkpoint: "List to service plan",
+    motion: "orbit",
+    artwork: {
+      src: "/beyond-the-glass/commercial-chain/restaurant-buying-1600.webp",
+      srcSet:
+        "/beyond-the-glass/commercial-chain/restaurant-buying-960.webp 960w, /beyond-the-glass/commercial-chain/restaurant-buying-1600.webp 1600w",
+      alt:
+        "Adult sommelier, chef, and server prepare a responsible restaurant wine program with measured tasting pours, food pairing ingredients, inventory tools, and a blank wine-list folio.",
+      fit: "contain",
+      position: "center"
+    },
+    landmark: { label: "Wine list studio", x: 57, y: 72 },
+    drop: { x: 78, y: 72, size: 7 },
+    fieldNotes: [
+      {
+        eyebrow: "Buying decision",
+        title: "Fit comes before fame",
+        detail:
+          "A buyer weighs style, quality, food compatibility, guest needs, availability, storage, staff knowledge, bottle cost, and intended selling price."
+      },
+      {
+        eyebrow: "List architecture",
+        title: "Bottle and by-the-glass are different promises",
+        detail:
+          "A by-the-glass wine needs a realistic sales pace and preservation plan. A bottle listing can support deeper cellaring, rarer styles, or a more specific guest occasion."
+      },
+      {
+        eyebrow: "Pre-service",
+        title: "The team rehearses the handoff",
+        detail:
+          "Before service, staff confirm location, vintage, temperature, glassware, opening method, pairing language, fault response, and an alcohol-free path for every guest."
+      }
+    ],
+    narration: [
+      {
+        speaker: "Roma",
+        durationSeconds: 11,
+        text:
+          "The list is a sensory map with a budget and a promise. We taste, compare, pair, price, store, and teach before a guest ever sees the bottle."
       }
     ]
   },
@@ -1019,13 +1125,19 @@ const scenes: BeyondTheGlassScene[] = [
   }
 ];
 
+const sequencedScenes: BeyondTheGlassScene[] = scenes.map((scene, index) => ({
+  ...scene,
+  number: String(index + 1).padStart(2, "0"),
+  range: [index / scenes.length, (index + 1) / scenes.length]
+}));
+
 export const journeyOfADrop: BeyondTheGlassChapter = {
   slug: "journey-of-a-drop",
   title: "Beyond The Glass",
   chapterTitle: "From Rain to First Sip",
   subject: "One drop moving through the complete life of wine",
   description:
-    "Fly through SIP Academy with Sippy, Roma, and Hummin. Follow wine across contrasting vineyard sites, production tools, style crossroads, the lab, barrel work, finishing decisions, labels and regions, a guided tasting flight, responsible service, and the final table.",
+    "Fly through SIP Academy with Sippy, Roma, and Hummin. Follow wine across vineyard sites, production tools, cellar choices, finishing and packaging, traceable distribution, retail, restaurant buying, responsible service, and the final table.",
   coreMessage:
     "A bottle begins long before the glass. Every stage leaves a clue you can learn to recognize.",
   assets: {
@@ -1035,7 +1147,7 @@ export const journeyOfADrop: BeyondTheGlassChapter = {
     centralDrop: "/beyond-the-glass/central-drop.webp",
     reducedMotionPoster: "/beyond-the-glass/sip-academy-960.webp"
   },
-  scenes,
+  scenes: sequencedScenes,
   sources: [
     {
       id: "swe-csw-standards",
@@ -1290,6 +1402,32 @@ export const journeyOfADrop: BeyondTheGlassChapter = {
         "https://www.oiv.int/standards/international-standard-for-the-labelling-of-wines",
       note:
         "Primary international reference separating compulsory and optional wine-label information, including origin and varietal indications."
+    },
+    {
+      id: "awri-packaging",
+      organization: "Australian Wine Research Institute",
+      title: "Packaging",
+      url:
+        "https://www.awri.com.au/industry_support/winemaking_resources/storage-and-packaging/",
+      note:
+        "Technical reference connecting pre-packaging preparation, bottling operations, closures, package choices, and the storage and transport of finished wine."
+    },
+    {
+      id: "awri-transport-storage",
+      organization: "Australian Wine Research Institute",
+      title: "Transport and storage",
+      url:
+        "https://www.awri.com.au/industry_support/winemaking_resources/storage-and-packaging/post-packaging/transport-and-storage/",
+      note:
+        "Technical reference for packaged-wine temperature, light exposure, transport responsibility, storage orientation, and retained comparison samples."
+    },
+    {
+      id: "psu-restaurant-route",
+      organization: "Penn State Extension",
+      title: "Getting Wines Into Local Restaurants",
+      url: "https://extension.psu.edu/getting-wines-into-local-restaurants",
+      note:
+        "Applied extension reference for the producer-to-restaurant handoff, buyer appointments, technical tasting information, menu fit, pricing context, and restaurant wine-list placement."
     },
     {
       id: "niaaa-drinking-less",

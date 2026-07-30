@@ -68,3 +68,22 @@ The first production pass uses the composite `knowledge-orbit.webp` so the ten o
 3. Load the final artifact and lobby only for the late scenes.
 4. Load the reduced-motion poster only for the reduced-motion presentation.
 5. Every rendered image receives explicit dimensions, decoding hints, and a visible fallback.
+
+## 2026-07-30 commercial-chain additions
+
+| Production filename | Purpose | Source | Production dimensions | Transparency | Format | Alt text |
+| --- | --- | --- | --- | --- | --- | --- |
+| `commercial-chain/warehouse-logistics-1600.webp` | Main-path warehousing, traceability, and distribution stop | Built-in image generation | 1600 px wide | No | WebP | Adult winery logistics specialists verify packaged wine against a traceability tablet before protected cases move from a brass-and-stone warehouse into a delivery vehicle |
+| `commercial-chain/warehouse-logistics-960.webp` | Responsive mobile/laptop derivative | Local optimized derivative of the selected source | 960 px wide | No | WebP | Same as the 1600 px source |
+| `commercial-chain/restaurant-buying-1600.webp` | Main-path restaurant buying and wine-list planning stop | Built-in image generation | 1600 px wide | No | WebP | Adult sommelier, chef, and server prepare a responsible restaurant wine program with measured tasting pours, food-pairing ingredients, inventory tools, and a blank wine-list folio |
+| `commercial-chain/restaurant-buying-960.webp` | Responsive mobile/laptop derivative | Local optimized derivative of the selected source | 960 px wide | No | WebP | Same as the 1600 px source |
+
+Selected source files:
+
+- Warehouse and logistics: `C:/Users/TwoKn/.codex/generated_images/019f825f-f49a-7c40-adb0-1dc18d096e82/call_Zg7F0x0yzixHpN6KNeG453vx.png`
+- Restaurant buying: `C:/Users/TwoKn/.codex/generated_images/019f825f-f49a-7c40-adb0-1dc18d096e82/call_krw0vYJg812uEjVRgw6xYFXA.png`
+
+Prompt briefs:
+
+- **Warehouse and logistics:** original 16:9 SIP Academy distribution hall, adult specialists, wine cases and traceability workflow, protected transport, warm brass-and-stone architecture, luminous blue water-drop protagonist, no branding or readable text, clear composition-safe zones.
+- **Restaurant buying:** original 16:9 SIP Academy restaurant planning room, adult sommelier/chef/server collaboration, measured wine tasting, inventory and pairing tools, blank folio, vineyard terrace, water-drop protagonist, no branding or readable text, clear composition-safe zones.

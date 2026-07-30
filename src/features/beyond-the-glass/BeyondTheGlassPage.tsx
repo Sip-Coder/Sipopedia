@@ -60,7 +60,9 @@ export function BeyondTheGlassPage({ onNavigate }: BeyondTheGlassPageProps) {
       <section className="btg-finale" aria-labelledby="btg-finale-title">
         <div>
           <p className="btg-kicker">Field trip complete</p>
-          <h2 id="btg-finale-title">Twenty stops. One connected glass.</h2>
+          <h2 id="btg-finale-title">
+            {chapter.scenes.length} stops. One connected glass.
+          </h2>
           <p>{chapter.coreMessage}</p>
         </div>
         <div className="btg-finale__actions">
