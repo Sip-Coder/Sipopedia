@@ -224,9 +224,6 @@ const scenes: BeyondTheGlassScene[] = [
       src: "/beyond-the-glass/curriculum/vine-family-rootstock-1600.webp",
       srcSet:
         "/beyond-the-glass/curriculum/vine-family-rootstock-960.webp 960w, /beyond-the-glass/curriculum/vine-family-rootstock-1600.webp 1600w",
-      portraitSrc: "/beyond-the-glass/curriculum/vine-family-rootstock-portrait-960.webp",
-      portraitSrcSet:
-        "/beyond-the-glass/curriculum/vine-family-rootstock-portrait-600.webp 600w, /beyond-the-glass/curriculum/vine-family-rootstock-portrait-960.webp 960w",
       alt:
         "A SIP Academy vine-family workshop showing a living grapevine above ground, graft and rootstock below ground, and water moving through a scientifically correct root system.",
       fit: "contain",
@@ -246,6 +243,24 @@ const scenes: BeyondTheGlassScene[] = [
         title: "Roots stay below. Fruit stays above.",
         detail:
           "Roots absorb water and minerals underground; grape clusters develop on the canopy in sunlight."
+      },
+      {
+        eyebrow: "Soil texture",
+        title: "Clay, silt, sand, and gravel hold water differently",
+        detail:
+          "Particle size and structure influence drainage, aeration, water retention, root penetration, and nutrient availability. Soil affects vine growth; it does not simply transfer a flavor into the grape."
+      },
+      {
+        eyebrow: "Vine partnership",
+        title: "Rootstock supports the fruiting scion",
+        detail:
+          "Many vines join a Vitis vinifera fruiting variety above the graft to a selected rootstock below it for phylloxera resistance, site adaptation, or vigor management."
+      },
+      {
+        eyebrow: "Water status",
+        title: "Stress can concentrate or stop growth",
+        detail:
+          "Moderate, well-timed water limitation may slow vegetative growth, but severe or poorly timed stress can reduce photosynthesis, berry development, yield, and vine health."
       }
     ],
     narration: [
@@ -356,6 +371,24 @@ const scenes: BeyondTheGlassScene[] = [
         title: "Damage changes the starting line",
         detail:
           "Broken berries release juice early, giving microbes access before the fruit reaches the winery."
+      },
+      {
+        eyebrow: "Harvest method",
+        title: "Hand picking protects selectivity",
+        detail:
+          "A trained crew can choose individual clusters and work on steep or irregular sites, but the result depends on careful handling, labor, time, and weather."
+      },
+      {
+        eyebrow: "Harvest method",
+        title: "Machines trade selectivity for speed",
+        detail:
+          "Mechanical harvesters remove berries rapidly and can work during cool night hours. Vineyard layout, fruit integrity, sorting capacity, and wine style determine whether that speed helps."
+      },
+      {
+        eyebrow: "Cold chain",
+        title: "Shallow bins and cooling buy time",
+        detail:
+          "Small clean containers reduce crushing under the fruit’s own weight. Shade, short transport, and cooling can slow oxidation and microbial growth before processing."
       }
     ],
     narration: [
@@ -398,6 +431,24 @@ const scenes: BeyondTheGlassScene[] = [
         title: "Skin contact changes the route",
         detail:
           "Keeping juice with skins extracts color, tannin, and flavor; separating them early sends the wine down a different path."
+      },
+      {
+        eyebrow: "Sorting table",
+        title: "Remove what should not ferment",
+        detail:
+          "Leaves, damaged fruit, insects, stones, and unripe material can be removed by hand or optical sorting before the lot enters the production line."
+      },
+      {
+        eyebrow: "Press cycle",
+        title: "Pressure separates liquid from solids",
+        detail:
+          "A pneumatic press inflates an internal membrane against a perforated drum. Gentle staged cycles help manage yield, solids, bitterness, and phenolic extraction."
+      },
+      {
+        eyebrow: "Transfer path",
+        title: "Pumps and gravity move must",
+        detail:
+          "Gravity, must pumps, hoses, and receiving vessels move juice, skins, and seeds. Every transfer introduces choices about shear, oxygen, sanitation, and separation."
       }
     ],
     narration: [
@@ -440,6 +491,24 @@ const scenes: BeyondTheGlassScene[] = [
         title: "Temperature and cap management",
         detail:
           "Cooling, pump-overs, punch-downs, nutrients, oxygen, and sanitation help the team guide a healthy fermentation."
+      },
+      {
+        eyebrow: "Closed tank",
+        title: "Stainless steel controls the environment",
+        detail:
+          "A closed stainless tank is easy to clean and can use a cooling jacket to manage heat. Valves and sampling ports let the team follow density, temperature, and aroma."
+      },
+      {
+        eyebrow: "Open fermenter",
+        title: "Open tops make the cap reachable",
+        detail:
+          "Open fermenters give direct access for punch-downs and observation. They also require disciplined sanitation and protection while carbon dioxide and heat escape."
+      },
+      {
+        eyebrow: "Fermentation signal",
+        title: "Sugar falls as carbon dioxide rises",
+        detail:
+          "Density or Brix readings track sugar depletion while temperature and sensory checks reveal pace. A stalled or stressed fermentation calls for diagnosis, not guesswork."
       }
     ],
     narration: [
@@ -539,6 +608,24 @@ const scenes: BeyondTheGlassScene[] = [
         title: "SO₂ and acidification",
         detail:
           "Sulfur dioxide can help protect wine from oxidation and unwanted microbes. Acid additions may adjust balance and stability where allowed and needed."
+      },
+      {
+        eyebrow: "Acid balance",
+        title: "pH and titratable acidity answer different questions",
+        detail:
+          "pH relates to acid strength and affects microbial and sulfur-dioxide behavior; titratable acidity estimates the quantity of acids that shape sourness and balance."
+      },
+      {
+        eyebrow: "Fermentation record",
+        title: "Density and alcohol verify the conversion",
+        detail:
+          "Must density or Brix helps follow sugar before and during fermentation. Finished-wine analysis checks alcohol and residual glucose plus fructose against the intended style."
+      },
+      {
+        eyebrow: "Quality screen",
+        title: "Oxygen, microbes, and aroma must agree",
+        detail:
+          "Dissolved oxygen, volatile acidity, sulfur compounds, microbial risk, and sensory comparison can expose a developing fault before a cellar decision becomes irreversible."
       }
     ],
     narration: [
@@ -588,6 +675,18 @@ const scenes: BeyondTheGlassScene[] = [
         title: "Compare barrel to barrel",
         detail:
           "Sampling parallel lots can reveal the effects of vessel material, oak origin, toast, barrel age, lees contact, and malolactic fermentation before a blending decision."
+      },
+      {
+        eyebrow: "Barrel anatomy",
+        title: "Staves, heads, hoops, and bung form the vessel",
+        detail:
+          "Curved oak staves and flat heads are held by metal hoops; the bung closes the sampling and topping opening. Construction quality affects leakage, cleaning, and oxygen ingress."
+      },
+      {
+        eyebrow: "Vessel comparison",
+        title: "Steel, concrete, clay, and oak speak differently",
+        detail:
+          "Stainless steel is inert and tightly controlled. Concrete and clay may shape temperature and oxygen exchange, while oak can add extractable compounds as well as gradual oxygen exposure."
       }
     ],
     narration: [
@@ -638,6 +737,18 @@ const scenes: BeyondTheGlassScene[] = [
         title: "Washer, hot water, inspection",
         detail:
           "A rotating spray head, appropriate hot-water or steam sanitation, visual inspection, and disciplined hose care reduce cross-contamination risk."
+      },
+      {
+        eyebrow: "Lees work",
+        title: "Bâtonnage changes contact, not just texture",
+        detail:
+          "Stirring fine lees resuspends settled yeast material and may influence mouthfeel and aroma. It also changes oxygen exposure and must be judged lot by lot."
+      },
+      {
+        eyebrow: "Racking",
+        title: "Move clear wine away from sediment",
+        detail:
+          "A pump or gravity moves wine off settled solids into a clean vessel. The cellar team manages oxygen pickup, turbidity, losses, and sanitation during the transfer."
       }
     ],
     narration: [
@@ -774,6 +885,30 @@ const scenes: BeyondTheGlassScene[] = [
         title: "Fill, close, inspect, pack",
         detail:
           "Oxygen control, clean equipment, fill height, closure performance, label accuracy, and case handling protect the final wine."
+      },
+      {
+        eyebrow: "Bottle preparation",
+        title: "Rinse or air-clean before filling",
+        detail:
+          "Clean bottles enter a controlled line and are inspected before use. The exact preparation depends on the bottle supply, line design, and winery quality plan."
+      },
+      {
+        eyebrow: "Closure choice",
+        title: "Cork, technical cork, and screwcap manage oxygen differently",
+        detail:
+          "Closure performance, bottle compatibility, intended aging, market expectation, and taint risk all shape the choice. No closure rescues poor filling or storage."
+      },
+      {
+        eyebrow: "Oxygen control",
+        title: "Headspace is part of the package",
+        detail:
+          "Inert gas, accurate fill height, sound closures, and dissolved-oxygen monitoring reduce avoidable oxygen pickup during the final cellar handoff."
+      },
+      {
+        eyebrow: "Traceability",
+        title: "Labels and lot codes connect the bottle",
+        detail:
+          "A correct label, legible lot identity, case record, and retained sample help connect a packaged wine to its production history and destination."
       }
     ],
     narration: [
@@ -930,6 +1065,18 @@ const scenes: BeyondTheGlassScene[] = [
         title: "Responsibility travels with the cases",
         detail:
           "A distributor, importer, warehouse, retailer, or restaurant may receive the wine next. Each transfer should preserve condition, records, and a clear owner for the decision."
+      },
+      {
+        eyebrow: "Warehouse practice",
+        title: "Rotation keeps old cases from disappearing",
+        detail:
+          "Clear locations, inventory records, first-in/first-out logic where appropriate, and regular condition checks help avoid forgotten, damaged, or misidentified stock."
+      },
+      {
+        eyebrow: "Delivery risk",
+        title: "The hottest hour can undo a careful route",
+        detail:
+          "Loading docks, parked vehicles, exposed pallets, and delayed delivery can create damaging heat or light exposure even when the warehouse itself is well managed."
       }
     ],
     narration: [
@@ -972,6 +1119,24 @@ const scenes: BeyondTheGlassScene[] = [
         title: "The store protects condition and trust",
         detail:
           "Sound storage, stock rotation, accurate shelf information, and a clear response to faults or damage keep the commercial story connected to the producer."
+      },
+      {
+        eyebrow: "Buying cue",
+        title: "A useful recommendation starts with occasion",
+        detail:
+          "Budget, food, flavor preference, experience level, bottle size, and timing narrow the choice more helpfully than prestige alone."
+      },
+      {
+        eyebrow: "Shelf truth",
+        title: "Price and description must match the bottle",
+        detail:
+          "Vintage, origin, producer, variety, and style language should be checked against the actual stock so the guest can make an informed choice."
+      },
+      {
+        eyebrow: "Fault pathway",
+        title: "Returns become quality evidence",
+        detail:
+          "A sound process records damaged, heat-affected, oxidized, or cork-tainted bottles and routes the information back to the responsible seller or supplier."
       }
     ],
     narration: [
@@ -1022,6 +1187,18 @@ const scenes: BeyondTheGlassScene[] = [
         title: "The team rehearses the handoff",
         detail:
           "Before service, staff confirm location, vintage, temperature, glassware, opening method, pairing language, fault response, and an alcohol-free path for every guest."
+      },
+      {
+        eyebrow: "Cellar fit",
+        title: "A listing needs a storage plan",
+        detail:
+          "Bottle orientation where appropriate, temperature, light, inventory rotation, access, and preservation equipment must support the format and expected sales pace."
+      },
+      {
+        eyebrow: "Margin and value",
+        title: "Price carries operating reality and guest trust",
+        detail:
+          "A responsible program balances acquisition cost, labor, waste, glassware, preservation, taxes, and business needs without disguising what the guest is receiving."
       }
     ],
     narration: [
@@ -1070,6 +1247,18 @@ const scenes: BeyondTheGlassScene[] = [
         title: "Learning wine never requires drinking more",
         detail:
           "Use small pours, water, food, spit cups, pacing, and alcohol-free participation. Never encourage a guest to drink for health, and never serve someone who should not drink."
+      },
+      {
+        eyebrow: "Presentation",
+        title: "Confirm the bottle before opening",
+        detail:
+          "Present the label, producer, wine, vintage, and bottle condition to the host so an incorrect selection can be caught before the closure is removed."
+      },
+      {
+        eyebrow: "Glass and temperature",
+        title: "Clean, suitable service reveals the wine",
+        detail:
+          "Odor-free glassware, a practical serving temperature, appropriate pour size, and careful handling let aroma, structure, and condition be assessed clearly."
       }
     ],
     narration: [

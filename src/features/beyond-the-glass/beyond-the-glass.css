@@ -3744,7 +3744,7 @@ body:has(.btg-page),
   inset: auto;
   min-height: 0;
   position: relative;
-  align-self: center;
+  align-self: start;
   aspect-ratio: 16 / 9;
   width: 100%;
 }
@@ -3752,6 +3752,9 @@ body:has(.btg-page),
 .btg-stage:not([data-scene="academy-plaza"]) .btg-scene-art {
   background: transparent;
   object-fit: contain !important;
+  transition:
+    transform 620ms cubic-bezier(0.2, 0.75, 0.22, 1),
+    transform-origin 620ms cubic-bezier(0.2, 0.75, 0.22, 1);
 }
 
 .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__wash {
@@ -4290,10 +4293,8 @@ body:has(.btg-page),
     display: none;
   }
 
-  .btg-note-switcher button {
-    font-size: 0.56rem;
-    min-height: 1.8rem;
-    padding: 0.28rem 0.4rem;
+  .btg-note-switcher {
+    display: none !important;
   }
 
   .btg-stage:not([data-scene="academy-plaza"])
@@ -4407,4 +4408,679 @@ body:has(.btg-page),
   .btg-note-switcher button {
     transition: none !important;
   }
+}
+
+/* Reusable interactive field-atlas nodes for the main wine journey. */
+.btg-scene-atlas {
+  inset: clamp(0.7rem, 2vw, 1.35rem);
+  pointer-events: none;
+  position: absolute;
+  z-index: 7;
+}
+
+.btg-scene-atlas button {
+  align-items: center;
+  appearance: none;
+  background: rgba(3, 20, 27, 0.9);
+  border: 2px solid var(--btg-water);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 0.18rem rgba(3, 20, 27, 0.68),
+    0 0 1.1rem rgba(86, 220, 233, 0.48);
+  color: var(--btg-white);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 900;
+  height: clamp(2.15rem, 3.4vw, 2.85rem);
+  justify-content: center;
+  padding: 0;
+  pointer-events: auto;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transition: left 420ms ease, top 420ms ease, transform 220ms ease;
+  width: clamp(2.15rem, 3.4vw, 2.85rem);
+}
+
+.btg-scene-atlas button:hover,
+.btg-scene-atlas button:focus-visible,
+.btg-scene-atlas button.is-active {
+  background: linear-gradient(135deg, rgba(23, 79, 73, 0.98), rgba(112, 76, 34, 0.95));
+  border-color: var(--btg-brass-soft);
+  box-shadow:
+    0 0 0 0.24rem rgba(3, 20, 27, 0.78),
+    0 0 1.5rem var(--btg-water);
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.btg-scene-atlas button:focus-visible {
+  outline: 3px solid var(--btg-white);
+  outline-offset: 3px;
+}
+
+.btg-scene-atlas__readout {
+  background: #f4e4bf;
+  border: 1px solid rgba(94, 58, 25, 0.72);
+  color: #1e2929;
+  display: grid;
+  gap: 0.14rem;
+  margin-top: 0.55rem;
+  padding: 0.58rem 0.68rem;
+}
+
+.btg-scene-atlas__readout > span {
+  color: #46615f;
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.btg-scene-atlas__readout > strong {
+  color: #482d1d;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(0.9rem, 1.25vw, 1.12rem);
+}
+
+.btg-scene-atlas__readout > p {
+  color: #263837 !important;
+  font-size: clamp(0.68rem, 0.78vw, 0.78rem) !important;
+  line-height: 1.34 !important;
+  margin: 0.16rem 0 0 !important;
+}
+
+.btg-scene-atlas__readout nav {
+  display: grid;
+  gap: 0.28rem;
+  grid-template-columns: auto minmax(5rem, 1fr) auto;
+  margin-top: 0.36rem;
+}
+
+.btg-scene-atlas__readout nav button {
+  background: rgba(37, 67, 69, 0.08);
+  border: 1px solid rgba(37, 67, 69, 0.48);
+  color: #26434a;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.6rem;
+  font-weight: 900;
+  min-height: 2.35rem;
+  padding: 0.32rem 0.48rem;
+}
+
+.btg-scene-atlas__readout nav button:focus-visible {
+  outline: 3px solid #17443d;
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .btg-scene-atlas {
+    inset: 0.45rem;
+  }
+
+  .btg-scene-atlas button {
+    font-size: 0.62rem;
+    height: 2.75rem;
+    width: 2.75rem;
+  }
+
+  .btg-scene-atlas__readout {
+    margin-top: 0.38rem;
+    padding: 0.48rem 0.55rem;
+  }
+
+  .btg-scene-atlas__readout > p {
+    font-size: 0.68rem !important;
+  }
+}
+
+/* Compact devices show either the selected atlas note or the guide's card.
+   Keeping both in the same frame caused the note card to collide with the dock. */
+@media (max-width: 1199px), (max-height: 820px) {
+  .btg-scene-atlas button {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    transition: transform 220ms ease;
+  }
+
+  .btg-stage[data-atlas-selection="selected"] .btg-note-switcher,
+  .btg-stage[data-atlas-selection="selected"] .btg-note-stack {
+    display: none !important;
+  }
+
+  .btg-stage[data-atlas-selection="overview"] .btg-scene-atlas__readout {
+    display: none;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Vine anatomy responsive atlas
+   The scene opens as a full cinematic plate. Guide notes are a deliberate,
+   non-overlapping second view instead of a permanent column that crushes art.
+   ------------------------------------------------------------------------- */
+
+.btg-vine-notes-toggle {
+  align-items: center;
+  background: rgba(159, 232, 242, 0.08);
+  border: 1px solid rgba(159, 232, 242, 0.48);
+  color: var(--btg-white);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 2.45rem;
+  padding: 0.42rem 0.72rem;
+  white-space: nowrap;
+}
+
+.btg-vine-notes-toggle:focus-visible {
+  outline: 3px solid var(--btg-water);
+  outline-offset: 2px;
+}
+
+.btg-vine-anatomy {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(30, 92, 91, 0.38), transparent 58%),
+    #08272e;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  pointer-events: auto;
+}
+
+.btg-vine-anatomy__header {
+  align-content: center;
+  background:
+    linear-gradient(90deg, rgba(3, 20, 27, 0.98), rgba(3, 20, 27, 0.88) 62%, rgba(3, 20, 27, 0.7)),
+    #03141b;
+  border: 0;
+  border-bottom: 1px solid rgba(159, 232, 242, 0.48);
+  border-left: 0.28rem solid var(--btg-brass);
+  gap: 0.08rem;
+  left: 0;
+  max-width: none;
+  min-height: clamp(4.7rem, 9vh, 5.75rem);
+  padding: 0.55rem clamp(0.75rem, 2vw, 1.4rem);
+  position: relative;
+  right: 0;
+  top: 0;
+}
+
+.btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__header {
+  display: none;
+}
+
+.btg-vine-anatomy__header span {
+  font-size: clamp(0.52rem, 0.68vw, 0.62rem);
+}
+
+.btg-vine-anatomy__header strong {
+  font-size: clamp(1rem, 1.55vw, 1.42rem);
+}
+
+.btg-vine-anatomy__header small {
+  color: var(--btg-brass-soft);
+  font-size: clamp(0.5rem, 0.68vw, 0.62rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.btg-vine-anatomy__canvas {
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.btg-vine-anatomy__parts {
+  inset: 0;
+}
+
+.btg-vine-part {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  left: clamp(13%, var(--btg-part-x), 87%);
+  min-width: 0;
+  padding: 0;
+  pointer-events: auto;
+  top: clamp(12%, var(--btg-part-y), 88%);
+}
+
+.btg-vine-part[data-side="east"] {
+  flex-direction: row-reverse;
+}
+
+.btg-vine-part__label {
+  display: none;
+  min-width: 7.2rem;
+  opacity: 0;
+  transform: translateY(0.25rem);
+  transition: opacity 180ms ease, transform 180ms ease;
+  visibility: hidden;
+}
+
+.btg-vine-part.is-active .btg-vine-part__label {
+  display: grid;
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.btg-vine-part:focus-visible {
+  outline: 3px solid var(--btg-water);
+  outline-offset: 0.32rem;
+}
+
+.btg-vine-part:not(.is-active) .btg-vine-part__glyph {
+  opacity: 0.54;
+}
+
+.btg-vine-part.is-neighbor .btg-vine-part__glyph {
+  opacity: 0.8;
+}
+
+.btg-vine-anatomy__timeline {
+  background: rgba(3, 20, 27, 0.96);
+  border-inline: 0;
+  bottom: auto;
+  left: auto;
+  max-width: none;
+  min-height: clamp(2.7rem, 6vh, 3.35rem);
+  padding: 0.42rem clamp(0.5rem, 2vw, 1.3rem);
+  position: relative;
+  transform: none;
+  width: 100%;
+}
+
+.btg-vine-anatomy__timeline span {
+  align-items: center;
+  color: var(--btg-muted);
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  padding: 0.18rem 0.24rem;
+}
+
+.btg-vine-anatomy__timeline span.is-active {
+  background: linear-gradient(135deg, rgba(23, 79, 73, 0.96), rgba(112, 76, 34, 0.92));
+  color: var(--btg-white);
+  outline: 1px solid var(--btg-brass);
+}
+
+.btg-vine-anatomy__detail {
+  align-items: stretch;
+  background: #03141b;
+  border-top: 1px solid rgba(159, 232, 242, 0.48);
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: minmax(18rem, 0.92fr) minmax(20rem, 1.35fr) auto;
+  min-height: 5.65rem;
+  padding: 0.5rem clamp(0.55rem, 1.4vw, 1rem);
+  position: relative;
+  z-index: 15;
+}
+
+.btg-vine-anatomy__field-note {
+  align-content: center;
+  background: #f4e4bf;
+  border: 1px solid rgba(94, 58, 25, 0.72);
+  color: #1e2929;
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  padding: 0.48rem 0.68rem;
+}
+
+.btg-vine-anatomy__field-note span {
+  color: #46615f;
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.btg-vine-anatomy__field-note strong {
+  color: #482d1d;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(0.86rem, 1.18vw, 1.08rem);
+}
+
+.btg-vine-anatomy__field-note p {
+  color: #263837;
+  font-size: clamp(0.62rem, 0.74vw, 0.74rem);
+  line-height: 1.32;
+  margin: 0.12rem 0 0;
+}
+
+.btg-vine-anatomy__detail nav {
+  align-content: center;
+  display: grid;
+  gap: 0.3rem;
+  grid-template-columns: repeat(3, auto);
+}
+
+.btg-vine-anatomy__detail nav button {
+  background: rgba(159, 232, 242, 0.08);
+  border: 1px solid rgba(159, 232, 242, 0.45);
+  color: var(--btg-white);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.58rem;
+  font-weight: 900;
+  min-height: 2.55rem;
+  padding: 0.38rem 0.52rem;
+}
+
+.btg-vine-anatomy__detail nav button:focus-visible {
+  outline: 3px solid var(--btg-water);
+  outline-offset: 2px;
+}
+
+@media (min-width: 761px) {
+  .btg-stage[data-scene="vine-and-berry"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-stage__header {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-stage__visual {
+    align-self: stretch;
+    aspect-ratio: auto;
+    grid-column: 1;
+    height: 100%;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"][data-study-panel="closed"] .btg-story-panel {
+    display: none;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"][data-study-panel="open"] {
+    grid-template-columns: minmax(0, 1.68fr) minmax(20rem, 0.72fr);
+  }
+
+  .btg-stage[data-scene="vine-and-berry"][data-study-panel="open"] .btg-stage__visual {
+    grid-column: 1;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"][data-study-panel="open"] .btg-story-panel {
+    display: flex;
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .btg-stage[data-scene="vine-and-berry"] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 4rem minmax(0, 1fr) auto;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-stage__header {
+    display: grid;
+    gap: 0.22rem 0.5rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-stage__header > div:first-child {
+    min-width: 0;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-progress {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 6.6rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-notes-toggle {
+    font-size: 0.56rem;
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 1.8rem;
+    padding: 0.22rem 0.45rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-stage__visual {
+    aspect-ratio: auto;
+    grid-row: 2;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-orbit__frame {
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__header {
+    display: none;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__header strong {
+    font-size: clamp(0.96rem, 5.1vw, 1.22rem);
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part {
+    left: clamp(17%, var(--btg-part-x), 83%);
+    top: clamp(10%, var(--btg-part-y), 90%);
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part__glyph {
+    height: clamp(2.05rem, 11vw, 2.8rem);
+    width: clamp(2.05rem, 11vw, 2.8rem);
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part__label {
+    display: none;
+    min-width: 6.4rem;
+    padding: 0.28rem 0.34rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part__label strong {
+    font-size: 0.62rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part__label small {
+    font-size: 0.42rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__timeline {
+    display: grid;
+    font-size: clamp(0.38rem, 2.05vw, 0.48rem);
+    gap: 0.12rem;
+    min-height: 3.2rem;
+    padding: 0.38rem 0.32rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__detail {
+    gap: 0.35rem;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 9.4rem;
+    padding: 0.38rem 0.42rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__timeline {
+    min-height: 2.65rem;
+    order: 1;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__field-note {
+    min-height: 4.4rem;
+    order: 2;
+    padding: 0.38rem 0.52rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__field-note p {
+    font-size: 0.62rem;
+    line-height: 1.25;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__detail nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    order: 3;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__detail nav button {
+    min-height: 2.35rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__detail nav button span {
+    display: none;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__timeline span {
+    letter-spacing: 0.015em;
+    line-height: 1.05;
+    padding-inline: 0.08rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"][data-study-panel="closed"] .btg-story-panel {
+    display: none;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"][data-study-panel="closed"] .btg-journey-dock {
+    grid-row: 3;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"][data-study-panel="open"] {
+    grid-template-rows: 4rem minmax(13rem, 31svh) minmax(0, 1fr) auto;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"][data-study-panel="open"] .btg-story-panel {
+    display: flex;
+    grid-row: 3;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"][data-study-panel="open"] .btg-journey-dock {
+    grid-row: 4;
+  }
+}
+
+@media (min-width: 641px) and (max-height: 540px) {
+  .btg-stage[data-scene="vine-and-berry"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-stage__header {
+    display: grid;
+    gap: 0.45rem;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-stage__visual {
+    grid-column: 1;
+    height: 100%;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"][data-study-panel="closed"] .btg-story-panel {
+    display: none;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__header {
+    display: none;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy {
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.56fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__canvas {
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__detail {
+    border-left: 1px solid rgba(159, 232, 242, 0.48);
+    border-top: 0;
+    grid-column: 2;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part {
+    left: clamp(10%, var(--btg-part-x), 90%);
+    top: clamp(12%, var(--btg-part-y), 88%);
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part__label {
+    display: none !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__timeline {
+    font-size: 0.38rem;
+    min-height: 2.1rem;
+    order: 1;
+    padding: 0.24rem 0.28rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__field-note p {
+    font-size: 0.55rem;
+    line-height: 1.18;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__field-note {
+    min-height: 0;
+    order: 2;
+    padding: 0.3rem 0.4rem;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__detail nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    order: 3;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__detail nav button span {
+    display: none;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__detail nav button {
+    min-height: 1.85rem;
+    padding: 0.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btg-vine-part__label,
+  .btg-scene-atlas button {
+    transition: none;
+  }
+}
+
+@media (min-width: 641px) and (max-height: 540px) {
+  .btg-stage:not([data-scene="academy-plaza"])
+    .btg-guide-card-deck
+    .btg-guide-note
+    .btg-guide-note__body {
+    min-height: 0;
+    padding-block: 0.16rem 0.18rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])
+    .btg-guide-card-deck
+    .btg-guide-note
+    .btg-guide-note__body
+    p {
+    font-size: 0.58rem;
+    line-height: 1.2;
+    margin-top: 0.14rem;
+  }
+}
+
+/* Calm field-guide cadence: long idle breathing, occasional authored gesture. */
+.btg-guide-sprite[data-motion="idle"] {
+  animation: btg-pet-hover 9.6s ease-in-out infinite;
+}
+
+.btg-guide-sprite:not([data-motion="idle"]):not([data-motion="still"]) {
+  animation: none;
 }
