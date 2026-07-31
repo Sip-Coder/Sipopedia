@@ -4873,6 +4873,91 @@ body:has(.btg-page),
     top: clamp(10%, var(--btg-part-y), 90%);
   }
 
+  /*
+   * The anatomy atlas has fourteen independent touch targets. On a narrow
+   * portrait canvas the desktop exploded coordinates put a few neighboring
+   * targets on top of one another, so the phone composition uses a deliberate
+   * perimeter layout around the intact vine. The artwork stays unobstructed
+   * while every layer remains directly selectable.
+   */
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part {
+    --btg-part-scale: 0.88 !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part.is-active {
+    --btg-part-scale: 1 !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="tendril"] {
+    --btg-part-x: 17% !important;
+    --btg-part-y: 10% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="canopy"] {
+    --btg-part-x: 39% !important;
+    --btg-part-y: 10% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="cane"] {
+    --btg-part-x: 61% !important;
+    --btg-part-y: 10% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="flowering"] {
+    --btg-part-x: 83% !important;
+    --btg-part-y: 10% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="cordon"] {
+    --btg-part-x: 17% !important;
+    --btg-part-y: 29% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="node-bud"] {
+    --btg-part-x: 83% !important;
+    --btg-part-y: 29% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="trunk"] {
+    --btg-part-x: 17% !important;
+    --btg-part-y: 49% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="spur"] {
+    --btg-part-x: 83% !important;
+    --btg-part-y: 49% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="roots"] {
+    --btg-part-x: 17% !important;
+    --btg-part-y: 69% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="shoot"] {
+    --btg-part-x: 83% !important;
+    --btg-part-y: 69% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="graft-union"] {
+    --btg-part-x: 17% !important;
+    --btg-part-y: 90% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="ripe-cluster"] {
+    --btg-part-x: 39% !important;
+    --btg-part-y: 90% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="veraison"] {
+    --btg-part-x: 61% !important;
+    --btg-part-y: 90% !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="berry-set"] {
+    --btg-part-x: 83% !important;
+    --btg-part-y: 90% !important;
+  }
+
   .btg-stage[data-scene="vine-and-berry"] .btg-vine-part__glyph {
     height: clamp(2.05rem, 11vw, 2.8rem);
     width: clamp(2.05rem, 11vw, 2.8rem);

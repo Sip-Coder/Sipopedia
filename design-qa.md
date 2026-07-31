@@ -77,3 +77,10 @@ Final result: passed
 - The traversal found zero document overflow, off-canvas nodes, node collisions, guide/dock collisions, broken images, or clipped essential text at all four target viewports.
 - Pointer selection, explicit Enter activation, selected-state announcement, previous/next node controls, and Overview reset were checked on both the generic field atlas and the custom vine anatomy study.
 - Browser console error check returned no errors on the final local preview.
+
+## July 31 production phone-node correction
+
+- A final production measurement found four vine-anatomy touch targets sharing a few pixels at the narrowest portrait breakpoint even though their labels remained hidden.
+- The phone composition now gives all fourteen anatomy nodes deliberate, evenly spaced perimeter positions around the intact vine rather than compressing the desktop exploded coordinates.
+- The focused node uses a restrained scale on phones, keeping its touch target prominent without colliding with neighboring layers.
+- Re-checking the portrait atlas found all fourteen buttons inside the viewport with zero target overlap, zero broken images, and no horizontal document overflow.
