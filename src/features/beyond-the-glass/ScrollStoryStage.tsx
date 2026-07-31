@@ -323,6 +323,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
   const [noteView, setNoteView] = useState<NoteDeckView>("guide");
   const [vineNotesOpen, setVineNotesOpen] = useState(false);
   const [atlasNodeIndex, setAtlasNodeIndex] = useState<number | null>(null);
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const manualCardAnchorRef = useRef<number | null>(null);
 
   const activeSpeaker = activeScene.narration[0]?.speaker ?? "Sippy";
@@ -502,6 +503,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     setNoteView("guide");
     manualCardAnchorRef.current = null;
     setVineNotesOpen(false);
+    setMobileToolsOpen(false);
     try {
       const storedIndex = Number.parseInt(
         window.localStorage.getItem(`sipopedia:btg:atlas:${activeScene.id}:v1`) ?? "",
@@ -1064,11 +1066,26 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                 onClick={() => requestScene(Math.min(chapter.scenes.length - 1, sceneIndex + 1))}
                 type="button"
               >
-                <span>Continue</span>
+                <span className="btg-desktop-label">Continue</span>
+                <span className="btg-mobile-label">Next</span>
                 <span aria-hidden="true">→</span>
               </button>
+              <button
+                aria-controls="btg-mobile-field-kit"
+                aria-expanded={mobileToolsOpen}
+                className="btg-mobile-field-kit-toggle"
+                onClick={() => setMobileToolsOpen((open) => !open)}
+                type="button"
+              >
+                {mobileToolsOpen ? "Close" : "Field kit"}
+              </button>
             </div>
-            <section aria-label="Optional narration" className="btg-optional-audio">
+            <section
+              aria-label="Optional narration"
+              className="btg-optional-audio"
+              data-mobile-open={mobileToolsOpen ? "true" : "false"}
+              id="btg-mobile-field-kit"
+            >
               <span className="btg-dock-tools-label">Field kit</span>
               <NarrationControls
                 captionsVisible={captionsVisible}

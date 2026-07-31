@@ -84,3 +84,38 @@ Final result: passed
 - The phone composition now gives all fourteen anatomy nodes deliberate, evenly spaced perimeter positions around the intact vine rather than compressing the desktop exploded coordinates.
 - The focused node uses a restrained scale on phones, keeping its touch target prominent without colliding with neighboring layers.
 - Re-checking the portrait atlas found all fourteen buttons inside the viewport with zero target overlap, zero broken images, and no horizontal document overflow.
+
+## July 31 mobile three-zone navigation correction
+
+- Source visual truth: `C:\Users\TwoKn\Documents\Codex\2026-07-20\prior-conversation-with-codex-conversation-role\.codex-remote-attachments\019f825f-f49a-7c40-adb0-1dc18d096e82\d7f816ab-88a6-4ea9-9622-550b37a7885b\1-Photo-1.jpg` (596 × 1280 source pixels, live phone state).
+- Browser-rendered implementation: `C:\Codebase\actual\Sipopedia\qa\btg-mobile-after-390x700.png` (390 × 700 pixels, 390 × 700 CSS viewport, DPR 1, local Tasting Room Flight guide-note state).
+- Normalized full-view comparison: `C:\Codebase\actual\Sipopedia\qa\btg-mobile-before-after.png`. The source application region was cropped to 533 × 996 and normalized to 375 × 700 beside the 390 × 700 implementation.
+- Focused card/navigation comparison: `C:\Codebase\actual\Sipopedia\qa\btg-mobile-dock-before-after.png`.
+
+### Comparison history
+
+- Earlier P0: the two-row journey dock occupied the active note-card area on short phone viewports, masking essential copy and intercepting taps.
+- Earlier P1: scene art, heading, and notes were visually stacked but did not have protected grid space; long guide notes overflowed the story panel and collided with navigation.
+- Fix: mobile portrait now reserves three uninterrupted content zones—scene art, scene heading, and note deck—plus a separate 3.35rem route rail. Compact Back and Next controls, the current-stop label, and Field Kit each receive their own grid track.
+- Fix: optional Listen, Captions, and Notebook controls replace the route rail only when Field Kit is deliberately opened; they no longer float over the active card. Changing scenes closes Field Kit automatically.
+- Fix: short-phone headings use a two-line description limit while preserving the full title, and guide/study cards use their reserved note area with readable internal overflow only when content genuinely exceeds it.
+- Post-fix evidence: at 390 × 700, the active guide card ends at 609.6px and the dock begins at 624.3px. Back, Next, and Field Kit are unobstructed 45.2px-high touch targets. Their center-point hit tests resolve to the intended button.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the existing SIP display and body faces are preserved. The scene heading remains the primary mobile title; dock typography is deliberately secondary and the redundant dock title may truncate only after the full title has already appeared above.
+- Spacing and layout rhythm: art, heading, notes, and navigation have independent rows with visible separation. No content or controls overlap at 360 × 640, 390 × 700, 390 × 844, 844 × 390, 1024 × 768, or 1440 × 900.
+- Colors and tokens: the existing forest, water-blue, cream-paper, and brass states are unchanged; the compact Field Kit uses the same dock tokens and focus treatment.
+- Image quality and asset fidelity: scene artwork and character assets are unchanged, fully visible in their existing responsive art direction, and no generated or placeholder assets were introduced.
+- Copy and content: full guide-note copy remains visible in the tested Tasting Room Flight state. Study-card copy remains readable in the Bottle Passport and Protected Journey states.
+
+### Interaction and accessibility checks
+
+- Back, Next, and Field Kit were exercised in the in-app browser. Next advanced from Tasting Room Flight to The Protected Journey, and Field Kit opened and closed without covering the note card.
+- Field Kit exposes `aria-expanded` and `aria-controls`; the full Back/Next accessible names continue to announce their destination even though the visible mobile labels are compact.
+- Document-level horizontal overflow: none at every tested breakpoint.
+- Broken scene images: zero in the tested phone, landscape, laptop, and desktop states.
+- Browser console errors: zero on the final local preview.
+- Reduced-motion behavior remains unchanged; this correction does not introduce new motion.
+
+Final result: passed
