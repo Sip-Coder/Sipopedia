@@ -24,9 +24,9 @@ const GUIDE_REACTIONS: Record<BeyondTheGlassSpeaker, GuideMotion[]> = {
 };
 
 const GUIDE_TIMING: Record<BeyondTheGlassSpeaker, { pause: number; reaction: number }> = {
-  Sippy: { pause: 30_000, reaction: 3_200 },
-  Roma: { pause: 36_000, reaction: 3_400 },
-  Hummin: { pause: 42_000, reaction: 3_600 }
+  Sippy: { pause: 500, reaction: 500 },
+  Roma: { pause: 500, reaction: 500 },
+  Hummin: { pause: 500, reaction: 500 }
 };
 
 function cueIndex(cue: GuideSpriteProps["cue"], length: number): number {

@@ -3422,7 +3422,7 @@ body:has(.btg-page),
 }
 
 .btg-guide-sprite:not([data-motion="idle"]):not([data-motion="still"]) {
-  animation: btg-pet-react 3.4s ease-in-out 1;
+  animation: btg-pet-react 500ms ease-in-out 1;
 }
 
 .btg-guide-sprite[data-motion="idle"][data-speaker="Roma"] {
@@ -5190,7 +5190,7 @@ body:has(.btg-page),
 
 .btg-guide-sprite:not([data-motion="idle"]):not([data-motion="still"]) {
   animation-name: btg-pet-react;
-  animation-duration: 3.4s;
+  animation-duration: 500ms;
   animation-timing-function: ease-in-out;
   animation-iteration-count: 1;
 }
