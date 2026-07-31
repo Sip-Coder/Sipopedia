@@ -191,3 +191,35 @@ Final result: passed
 - Production build, navigation policy tests, accent-specific voice tests, and security guard tests passed.
 
 Final result: passed
+
+## July 31 continuous note-deck spacing correction
+
+- Source visual truth: `C:\Users\TwoKn\AppData\Local\Temp\codex-clipboard-58814b4c-36a1-43a4-b32c-c87f5372e7bf.png` (450 × 374 pixels), showing the unintended empty band between the Guide note / Study card selector and Hummin's paper card.
+- Browser-rendered implementation: `C:\Codebase\actual\Sipopedia\qa\btg-guide-card-spacing\after-gap-settled-390x700.png` (375 × 673 captured pixels at a 390 × 700 CSS viewport, DPR 1).
+- Focused normalized comparison: `C:\Codebase\actual\Sipopedia\qa\btg-guide-card-spacing\gap-before-after.png`. The implementation's selector-and-card region was cropped from the full browser capture and scaled to the source height for a direct vertical-rhythm comparison.
+- Additional responsive evidence: `after-gap-390x700.png`, `after-gap-844x390.png`, and `after-gap-1440x900.png` in the same QA folder.
+- State: The Finishing Bench and adjacent cellar scenes, with manual settled guide/study cards plus reversible scroll-driven page turns.
+
+### Comparison history
+
+- Earlier P1: the reference showed roughly 149 pixels of empty dark space after the deck selector before the authored paper began, making the card feel disconnected and wasting most of the study area.
+- Root cause: the story panel's flexible remainder could behave as an unstructured vertical region, and selecting a deck retained fractional scroll progress that could leave an individual page visibly half-turned.
+- Fix: the story panel now owns three explicit rows—lesson heading, deck selector, and a `minmax(0, 1fr)` paper deck. The guide and study pages fill the immediately adjacent third row from top to bottom.
+- Fix: manually selecting Guide note or Study card now snaps the visible page to its nearest complete card. Scroll-driven turns remain continuous and reversible, but an intentional tap never strands the reader on a fractional page.
+- Post-fix evidence: the settled selector-to-paper separation is 3.52 pixels at 390 × 700, with no document-level horizontal overflow. Scroll sampling found no positive empty-band regression during forward or reverse page turns.
+
+### Required fidelity surfaces
+
+- Fonts and typography: no type family, weight, line-height, or hierarchy changed. Guide handwriting accents and readable instructional copy remain intact.
+- Spacing and layout rhythm: the paper begins immediately below the two deck controls. Heading, selector, paper, and compact journey rail retain distinct safe zones without an artificial blank panel.
+- Colors and tokens: the existing cream paper, ruled lines, botanical/brass selection state, and water-blue focus outline are unchanged.
+- Image quality and asset fidelity: approved Roma and Hummin assets remain at their authored proportions and fully contained on the paper.
+- Copy and content: complete guide messages and study-card content remain visible; manual deck selection now resolves to a complete page rather than a partial transition state.
+
+### Interaction and accessibility checks
+
+- Guide note and Study card were activated at 390 × 700. Both settled with an identity transform and a 3.52-pixel selector-to-paper rhythm.
+- Responsive checks covered 320 × 568 portrait, 390 × 700 portrait, 844 × 390 phone landscape, 1024 × 768 laptop, and 1440 × 900 desktop. Sprite containment and zero horizontal overflow passed in all five states.
+- The scrolling page-turn sequence still alternates guide and study decks and reverses with reverse scrolling. Reduced-motion behavior is unchanged.
+
+Final result: passed

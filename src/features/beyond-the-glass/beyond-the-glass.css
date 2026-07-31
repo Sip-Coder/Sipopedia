@@ -5955,3 +5955,51 @@ body:has(.btg-page),
     padding-left: 5.35rem;
   }
 }
+
+/* -------------------------------------------------------------------------
+   Continuous note-deck rhythm
+   The story panel is three deliberate rows: lesson heading, deck selector,
+   and the turning paper. Keeping the paper in the immediately adjacent grid
+   row prevents a tall flex remainder from appearing as an empty page between
+   the selector and the authored guide/study card.
+   ------------------------------------------------------------------------- */
+
+.btg-stage:not([data-scene="academy-plaza"]) .btg-story-panel {
+  align-content: stretch;
+  display: grid;
+  gap: 0.22rem;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.btg-stage:not([data-scene="academy-plaza"]) .btg-stage__copy {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.btg-stage:not([data-scene="academy-plaza"]) .btg-note-switcher {
+  align-self: stretch;
+  grid-column: 1;
+  grid-row: 2;
+  margin-block: 0;
+}
+
+.btg-stage:not([data-scene="academy-plaza"]) .btg-note-stack {
+  align-self: stretch;
+  grid-column: 1;
+  grid-row: 3;
+  height: 100%;
+  margin-block: 0;
+  min-height: 0;
+}
+
+.btg-stage:not([data-scene="academy-plaza"]) .btg-guide-card-deck,
+.btg-stage:not([data-scene="academy-plaza"]) .btg-field-notes,
+.btg-stage:not([data-scene="academy-plaza"])
+  .btg-guide-card-deck
+  .btg-guide-note,
+.btg-stage:not([data-scene="academy-plaza"]) .btg-field-note {
+  bottom: 0;
+  height: 100%;
+  top: 0;
+}

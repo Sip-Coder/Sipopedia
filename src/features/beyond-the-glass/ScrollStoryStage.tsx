@@ -455,8 +455,17 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
   };
 
   const requestNoteView = (view: NoteDeckView) => {
+    const cardCount =
+      view === "guide" ? activeScene.narration.length : activeScene.fieldNotes.length;
+    const visibleIndex = view === "guide" ? visibleStudyCardIndex : visibleFieldNoteIndex;
+    const rangeStart = view === "guide" ? 0.14 : 0.36;
+    const rangeEnd = view === "guide" ? 0.62 : 0.88;
+    const snappedProgress =
+      cardCount <= 1
+        ? rangeStart
+        : rangeStart + (visibleIndex / (cardCount - 1)) * (rangeEnd - rangeStart);
     setPanelControlsCards(true);
-    setPanelNoteProgress(sceneProgress);
+    setPanelNoteProgress(snappedProgress);
     setNoteView(view);
     manualCardAnchorRef.current = sceneProgress;
   };
