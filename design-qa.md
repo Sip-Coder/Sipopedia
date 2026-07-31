@@ -223,3 +223,14 @@ Final result: passed
 - The scrolling page-turn sequence still alternates guide and study decks and reverses with reverse scrolling. Reduced-motion behavior is unchanged.
 
 Final result: passed
+
+## July 31 calm guide-motion correction
+
+- User feedback: Sippy, Roma, and Hummin still appeared to move at a fast-forward rate even after the earlier wrapper slowdown.
+- Root cause: each idle guide continued loading a continuously animated GIF beneath the slower CSS hover. The wrapper moved slowly, but the character artwork itself never rested.
+- Fix: idle guides now render their approved still frame and receive one restrained CSS breathing/attention movement over a long speaker-specific cadence: Sippy 20 seconds, Roma 24 seconds, and Hummin 28 seconds.
+- Fix: authored animated reactions now occur only after long staggered pauses—30 seconds for Sippy, 36 seconds for Roma, and 42 seconds for Hummin—rather than every 12.8–15.6 seconds. Reaction windows are 3.2–3.6 seconds and do not use a fast repeating wrapper loop.
+- Browser verification: the active Hummin field-card guide resolved to `hummin-still.png`, a 28-second `btg-pet-hover` wrapper, and no image-level CSS animation. Sippy resolved to the still asset with a 20-second wrapper. No hidden 3.4-second or 900-millisecond animation remained on the inspected guide image.
+- Accessibility: the existing reduced-motion path still selects the still asset and collapses animation/transition duration to a single effectively static frame.
+
+Final result: passed

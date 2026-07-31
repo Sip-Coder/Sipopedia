@@ -3380,22 +3380,30 @@ body:has(.btg-page),
 
 @keyframes btg-pet-hover {
   0%,
+  34%,
+  66%,
   100% {
     transform: translate3d(0, 0, 0);
   }
-  45%,
+  45% {
+    transform: translate3d(0, -0.12rem, 0) rotate(-0.35deg);
+  }
   55% {
-    transform: translate3d(0, -0.22rem, 0);
+    transform: translate3d(0, -0.04rem, 0) rotate(0.25deg);
   }
 }
 
 @keyframes btg-pet-react {
   0%,
+  12%,
   100% {
     transform: translate3d(0, 0, 0) scale(1);
   }
-  40% {
-    transform: translate3d(0, -0.32rem, 0) scale(1.035);
+  48% {
+    transform: translate3d(0, -0.14rem, 0) scale(1.015);
+  }
+  72% {
+    transform: translate3d(0, -0.03rem, 0) scale(1.005);
   }
 }
 
@@ -3410,11 +3418,21 @@ body:has(.btg-page),
 }
 
 .btg-guide-sprite[data-motion="idle"] {
-  animation: btg-pet-hover 3.8s ease-in-out infinite;
+  animation: btg-pet-hover 20s ease-in-out infinite;
 }
 
 .btg-guide-sprite:not([data-motion="idle"]):not([data-motion="still"]) {
-  animation: btg-pet-react 900ms ease-in-out infinite;
+  animation: btg-pet-react 3.4s ease-in-out 1;
+}
+
+.btg-guide-sprite[data-motion="idle"][data-speaker="Roma"] {
+  animation-duration: 24s;
+  animation-delay: -7s;
+}
+
+.btg-guide-sprite[data-motion="idle"][data-speaker="Hummin"] {
+  animation-duration: 28s;
+  animation-delay: -13s;
 }
 
 .btg-guide-sprite > img {
@@ -5165,11 +5183,16 @@ body:has(.btg-page),
 
 /* Calm field-guide cadence: long idle breathing, occasional authored gesture. */
 .btg-guide-sprite[data-motion="idle"] {
-  animation: btg-pet-hover 9.6s ease-in-out infinite;
+  animation-name: btg-pet-hover;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }
 
 .btg-guide-sprite:not([data-motion="idle"]):not([data-motion="still"]) {
-  animation: none;
+  animation-name: btg-pet-react;
+  animation-duration: 3.4s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 1;
 }
 
 /* -------------------------------------------------------------------------
