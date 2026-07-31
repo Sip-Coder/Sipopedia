@@ -216,6 +216,34 @@ function noteCardStyle(index: number, position: number): CSSProperties {
   };
 }
 
+type NoteDeckView = "guide" | "study";
+
+const NOTE_DECK_TRANSITIONS = [0.2, 0.4, 0.6, 0.8] as const;
+
+function guideDeckWeight(sceneProgress: number, hasStudyCards: boolean): number {
+  if (!hasStudyCards) return 1;
+
+  const progress = clamp(sceneProgress);
+  const states = [1, 0, 1, 0, 1] as const;
+  const transitionRadius = 0.045;
+  let currentState: number = states[0];
+
+  for (let index = 0; index < NOTE_DECK_TRANSITIONS.length; index += 1) {
+    const boundary = NOTE_DECK_TRANSITIONS[index];
+    const nextState = states[index + 1];
+    if (progress < boundary - transitionRadius) return currentState;
+    if (progress <= boundary + transitionRadius) {
+      const transition = smoothstep(
+        progressBetween(progress, boundary - transitionRadius, boundary + transitionRadius)
+      );
+      return currentState + (nextState - currentState) * transition;
+    }
+    currentState = nextState;
+  }
+
+  return currentState;
+}
+
 function ReducedMotionStory({ chapter, transcriptId }: ScrollStoryStageProps) {
   const [captionsVisible, setCaptionsVisible] = useState(true);
   const [sceneIndex, setSceneIndex] = useState(0);
@@ -292,9 +320,10 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
   const [panelNoteProgress, setPanelNoteProgress] = useState(0);
   const [resumeSceneIndex, setResumeSceneIndex] = useState<number | null>(null);
   const [activeLabId, setActiveLabId] = useState<string | null>(null);
-  const [noteView, setNoteView] = useState<"guide" | "study">("guide");
+  const [noteView, setNoteView] = useState<NoteDeckView>("guide");
   const [vineNotesOpen, setVineNotesOpen] = useState(false);
   const [atlasNodeIndex, setAtlasNodeIndex] = useState<number | null>(null);
+  const manualCardAnchorRef = useRef<number | null>(null);
 
   const activeSpeaker = activeScene.narration[0]?.speaker ?? "Sippy";
   const activeCaptionLine =
@@ -327,6 +356,27 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     Math.max(0, Math.round(fieldNoteScrollPosition)),
     Math.max(0, activeScene.fieldNotes.length - 1)
   );
+  const automaticGuideWeight = guideDeckWeight(
+    sceneProgress,
+    activeScene.fieldNotes.length > 0
+  );
+  const guideWeight = panelControlsCards
+    ? noteView === "guide"
+      ? 1
+      : 0
+    : automaticGuideWeight;
+  const studyWeight = 1 - guideWeight;
+  const effectiveNoteView: NoteDeckView = guideWeight >= 0.5 ? "guide" : "study";
+  const guideDeckStyle = {
+    opacity: Math.pow(guideWeight, 0.82).toFixed(3),
+    pointerEvents: effectiveNoteView === "guide" ? "auto" : "none",
+    transform: `perspective(1100px) translate3d(${((1 - guideWeight) * -7).toFixed(2)}%, 0, 0) rotateY(${((1 - guideWeight) * -92).toFixed(2)}deg) scale(${(0.965 + guideWeight * 0.035).toFixed(3)})`
+  } as CSSProperties;
+  const studyDeckStyle = {
+    opacity: Math.pow(studyWeight, 0.82).toFixed(3),
+    pointerEvents: effectiveNoteView === "study" ? "auto" : "none",
+    transform: `perspective(1100px) translate3d(${((1 - studyWeight) * 7).toFixed(2)}%, 0, 0) rotateY(${((1 - studyWeight) * 92).toFixed(2)}deg) scale(${(0.965 + studyWeight * 0.035).toFixed(3)})`
+  } as CSSProperties;
   const activeLab = beyondTheGlassCurriculumLabs[activeScene.id];
   const atlasEnabled =
     activeScene.id !== "academy-plaza" &&
@@ -372,7 +422,16 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     const cardProgress = index / (cardCount - 1);
     const localProgress = 0.14 + cardProgress * (0.62 - 0.14);
     setPanelControlsCards(true);
+    setNoteView("guide");
     setPanelNoteProgress(localProgress);
+    manualCardAnchorRef.current = sceneProgress;
+  };
+
+  const requestNoteView = (view: NoteDeckView) => {
+    setPanelControlsCards(true);
+    setPanelNoteProgress(sceneProgress);
+    setNoteView(view);
+    manualCardAnchorRef.current = sceneProgress;
   };
 
   const handleStoryPanelScroll = (event: UIEvent<HTMLDivElement>) => {
@@ -381,7 +440,16 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     if (travel <= 1) return;
     setPanelControlsCards(true);
     setPanelNoteProgress(clamp(panel.scrollTop / travel));
+    manualCardAnchorRef.current = sceneProgress;
   };
+
+  useEffect(() => {
+    const anchor = manualCardAnchorRef.current;
+    if (!panelControlsCards || anchor === null) return;
+    if (Math.abs(sceneProgress - anchor) < 0.018) return;
+    setPanelControlsCards(false);
+    manualCardAnchorRef.current = null;
+  }, [panelControlsCards, sceneProgress]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -432,6 +500,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     setPanelControlsCards(false);
     setPanelNoteProgress(0);
     setNoteView("guide");
+    manualCardAnchorRef.current = null;
     setVineNotesOpen(false);
     try {
       const storedIndex = Number.parseInt(
@@ -754,32 +823,38 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
 
             <div className="btg-note-switcher" aria-label="Choose a field-note deck">
               <button
-                aria-pressed={noteView === "guide"}
-                onClick={() => setNoteView("guide")}
+                aria-pressed={effectiveNoteView === "guide"}
+                onClick={() => requestNoteView("guide")}
                 type="button"
               >
                 Guide note
               </button>
               <button
-                aria-pressed={noteView === "study"}
-                onClick={() => setNoteView("study")}
+                aria-pressed={effectiveNoteView === "study"}
+                onClick={() => requestNoteView("study")}
                 type="button"
               >
                 Study card
               </button>
             </div>
 
-            <div className="btg-note-stack" data-note-view={noteView}>
+            <div
+              className="btg-note-stack"
+              data-note-motion={panelControlsCards ? "manual" : "scroll"}
+              data-note-view={effectiveNoteView}
+            >
               <aside
+                aria-hidden={effectiveNoteView !== "guide"}
                 aria-label={`${activeScene.title} guide study cards`}
                 className="btg-guide-card-deck"
+                style={guideDeckStyle}
               >
                 {activeScene.narration.map((studyCard, index) => {
                   const isActive = index === visibleStudyCardIndex;
                   const speaker = studyCard.speaker;
                   return (
                     <blockquote
-                      aria-hidden={!isActive}
+                      aria-hidden={!isActive || effectiveNoteView !== "guide"}
                       className="btg-guide-note"
                       data-card-state={noteCardState(index, guideDeckPosition)}
                       data-speaker={speaker}
@@ -808,7 +883,10 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                           <span>
                             Note {index + 1} of {activeScene.narration.length}
                           </span>
-                          {isActive && activeScene.narration.length > 1 && !captionsVisible ? (
+                          {isActive &&
+                          effectiveNoteView === "guide" &&
+                          activeScene.narration.length > 1 &&
+                          !captionsVisible ? (
                             <nav aria-label="Guide study cards">
                               <button
                                 aria-label="Show the previous guide note"
@@ -839,15 +917,17 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                 })}
               </aside>
               <div
+                aria-hidden={effectiveNoteView !== "study"}
                 aria-label={`${activeScene.title} field notes`}
                 className="btg-field-notes"
                 data-card-count={activeScene.fieldNotes.length}
+                style={studyDeckStyle}
               >
                 {activeScene.fieldNotes.map((note, index) => {
                   const isActive = index === visibleFieldNoteIndex;
                   return (
                     <article
-                      aria-hidden={!isActive}
+                      aria-hidden={!isActive || effectiveNoteView !== "study"}
                       className={`btg-field-note btg-field-note--${FIELD_NOTE_MATERIALS[index % FIELD_NOTE_MATERIALS.length]}`}
                       data-card-state={noteCardState(index, fieldNoteScrollPosition)}
                       key={`${activeScene.id}-${note.title}`}
@@ -861,13 +941,14 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                         </small>
                       </header>
                       <p>{note.detail}</p>
-                      {isActive && activeScene.fieldNotes.length > 1 ? (
+                      {isActive && effectiveNoteView === "study" && activeScene.fieldNotes.length > 1 ? (
                         <nav aria-label="Study cards">
                           <button
                             aria-label="Show the previous study card"
                             disabled={index === 0}
                             onClick={() => {
                               setPanelControlsCards(true);
+                              setNoteView("study");
                               setPanelNoteProgress(
                                 activeScene.fieldNotes.length <= 1
                                   ? 0
@@ -876,6 +957,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                                         (activeScene.fieldNotes.length - 1)) *
                                         (0.88 - 0.36)
                               );
+                              manualCardAnchorRef.current = sceneProgress;
                             }}
                             type="button"
                           >
@@ -886,6 +968,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                             disabled={index === activeScene.fieldNotes.length - 1}
                             onClick={() => {
                               setPanelControlsCards(true);
+                              setNoteView("study");
                               setPanelNoteProgress(
                                 activeScene.fieldNotes.length <= 1
                                   ? 0
@@ -897,6 +980,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                                         (activeScene.fieldNotes.length - 1)) *
                                         (0.88 - 0.36)
                               );
+                              manualCardAnchorRef.current = sceneProgress;
                             }}
                             type="button"
                           >

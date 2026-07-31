@@ -3808,7 +3808,7 @@ body:has(.btg-page),
 }
 
 .btg-note-switcher {
-  display: none;
+  display: flex;
   flex: 0 0 auto;
   gap: 0.35rem;
 }
@@ -3844,15 +3844,27 @@ body:has(.btg-page),
   flex: 1 1 auto;
   gap: 0.62rem;
   grid-template-columns: 1fr;
-  min-height: 0;
+  min-height: clamp(10.25rem, 23vh, 13rem);
+  perspective: 1100px;
+  transform-style: preserve-3d;
 }
 
 .btg-stage:not([data-scene="academy-plaza"]) .btg-guide-card-deck,
 .btg-stage:not([data-scene="academy-plaza"]) .btg-field-notes {
+  backface-visibility: hidden;
+  display: block;
+  grid-column: 1;
+  grid-row: 1;
   min-height: 0;
   padding: 0;
   perspective: none;
   position: relative;
+  transform-origin: 12% 50%;
+  transform-style: preserve-3d;
+  transition:
+    opacity 260ms linear,
+    transform 360ms cubic-bezier(0.2, 0.76, 0.24, 1);
+  will-change: opacity, transform;
 }
 
 .btg-stage:not([data-scene="academy-plaza"])
@@ -3870,13 +3882,10 @@ body:has(.btg-page),
 .btg-stage:not([data-scene="academy-plaza"])
   .btg-field-note:nth-child(n + 2) {
   display: block;
-  filter: none !important;
   inset: auto;
   margin: 0;
   min-height: 0;
-  opacity: 1 !important;
   position: relative;
-  transform: none !important;
   width: 100%;
 }
 
@@ -3985,15 +3994,6 @@ body:has(.btg-page),
 @media (max-width: 1199px), (max-height: 820px) {
   .btg-note-switcher {
     display: flex;
-  }
-
-  .btg-stage:not([data-scene="academy-plaza"])
-    .btg-note-stack[data-note-view="guide"]
-    .btg-field-notes,
-  .btg-stage:not([data-scene="academy-plaza"])
-    .btg-note-stack[data-note-view="study"]
-    .btg-guide-card-deck {
-    display: none;
   }
 }
 
@@ -4405,6 +4405,8 @@ body:has(.btg-page),
 @media (prefers-reduced-motion: reduce) {
   .btg-stage:not([data-scene="academy-plaza"])
     :is(.btg-guide-note, .btg-field-note),
+  .btg-stage:not([data-scene="academy-plaza"])
+    :is(.btg-guide-card-deck, .btg-field-notes),
   .btg-note-switcher button {
     transition: none !important;
   }
