@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { clamp, progressBetween } from "./useScrollStoryProgress";
 
 export type VineAnatomyPart = {
@@ -73,7 +73,7 @@ export const vineAnatomyParts: readonly VineAnatomyPart[] = [
     definition:
       "A cane is a mature, woody shoot from the previous growing season. Its retained buds can produce this season’s fruiting shoots.",
     assembled: [38, 35],
-    exploded: [8, 28],
+    exploded: [38, 20],
     glyph: "cane"
   },
   {
@@ -93,7 +93,7 @@ export const vineAnatomyParts: readonly VineAnatomyPart[] = [
     definition:
       "A bud sits at a node on a cane or shoot. At bud break, its primary growing point usually opens into a new shoot.",
     assembled: [35, 28],
-    exploded: [90, 19],
+    exploded: [90, 10],
     glyph: "bud"
   },
   {
@@ -169,6 +169,7 @@ export const vineAnatomyParts: readonly VineAnatomyPart[] = [
 ] as const;
 
 const lerp = (from: number, to: number, amount: number) => from + (to - from) * amount;
+const VINE_SELECTION_STORAGE_KEY = "sipopedia:btg:vine-anatomy:selected:v1";
 
 const triangle = (value: number, center: number, width: number) =>
   clamp(1 - Math.abs(value - center) / width);
@@ -327,29 +328,65 @@ function VinePartGlyph({ type }: { type: VineAnatomyPart["glyph"] }) {
 }
 
 type VineAnatomyParallaxProps = {
-  progress: number;
   opacity?: number;
 };
 
 export function VineAnatomyParallax({
-  progress,
   opacity = 1
 }: VineAnatomyParallaxProps) {
-  const orbitProgress = progressBetween(progress, 0.08, 0.9);
+  const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
+  const activeIndex = selectedPartId
+    ? vineAnatomyParts.findIndex((part) => part.id === selectedPartId)
+    : -1;
+  const activePart = activeIndex >= 0 ? vineAnatomyParts[activeIndex] : null;
+  const orbitProgress =
+    activeIndex >= 0 ? activeIndex / Math.max(1, vineAnatomyParts.length - 1) : 0;
   const leftFrameOpacity = triangle(orbitProgress, 0.22, 0.2);
   const rightFrameOpacity = triangle(orbitProgress, 0.64, 0.2);
   const frontFrameOpacity = clamp(1 - Math.max(leftFrameOpacity, rightFrameOpacity));
-  const activePart = vineAnatomyPartForProgress(progress);
-  const activeIndex = vineAnatomyParts.findIndex((part) => part.id === activePart.id);
+  const activeTimelineIndex =
+    activeIndex < 0
+      ? -1
+      : activeIndex <= 1
+        ? 0
+        : activeIndex <= 3
+          ? 1
+          : activeIndex <= 6
+            ? 2
+            : activeIndex <= 9
+              ? 3
+              : 4;
 
-  const phase =
-    progress < 0.1
-      ? "One vine · assembled"
-      : progress < 0.42
-        ? "Separate the architecture"
-        : progress < 0.78
-          ? "Orbit each living layer"
-          : "Rejoin · structure becomes season";
+  useEffect(() => {
+    try {
+      const storedPartId = window.localStorage.getItem(VINE_SELECTION_STORAGE_KEY);
+      if (storedPartId && vineAnatomyParts.some((part) => part.id === storedPartId)) {
+        setSelectedPartId(storedPartId);
+      }
+    } catch {
+      // The atlas stays fully usable when local storage is unavailable.
+    }
+  }, []);
+
+  const selectPart = (partId: string | null) => {
+    setSelectedPartId(partId);
+    try {
+      if (partId) window.localStorage.setItem(VINE_SELECTION_STORAGE_KEY, partId);
+      else window.localStorage.removeItem(VINE_SELECTION_STORAGE_KEY);
+    } catch {
+      // Selection still works for the current visit.
+    }
+  };
+
+  const moveSelection = (direction: -1 | 1) => {
+    const nextIndex =
+      activeIndex < 0
+        ? direction > 0
+          ? 0
+          : vineAnatomyParts.length - 1
+        : (activeIndex + direction + vineAnatomyParts.length) % vineAnatomyParts.length;
+    selectPart(vineAnatomyParts[nextIndex]?.id ?? null);
+  };
 
   return (
     <div
@@ -358,86 +395,93 @@ export function VineAnatomyParallax({
       role="img"
       style={{ opacity } as CSSProperties}
     >
-      <div aria-hidden="true" className="btg-vine-orbit">
-        <picture>
-          <source
-            media="(max-width: 960px)"
-            srcSet="/beyond-the-glass/vine-anatomy/vine-anatomy-front-960.webp"
-          />
-          <img
-            alt=""
-            className="btg-vine-orbit__frame btg-vine-orbit__frame--front"
-            decoding="async"
-            src="/beyond-the-glass/vine-anatomy/vine-anatomy-front-1600.webp"
-            style={{ opacity: frontFrameOpacity }}
-          />
-        </picture>
-        <picture>
-          <source
-            media="(max-width: 960px)"
-            srcSet="/beyond-the-glass/vine-anatomy/vine-anatomy-orbit-left-960.webp"
-          />
-          <img
-            alt=""
-            className="btg-vine-orbit__frame btg-vine-orbit__frame--left"
-            decoding="async"
-            src="/beyond-the-glass/vine-anatomy/vine-anatomy-orbit-left-1600.webp"
-            style={{ opacity: leftFrameOpacity }}
-          />
-        </picture>
-        <picture>
-          <source
-            media="(max-width: 960px)"
-            srcSet="/beyond-the-glass/vine-anatomy/vine-anatomy-orbit-right-960.webp"
-          />
-          <img
-            alt=""
-            className="btg-vine-orbit__frame btg-vine-orbit__frame--right"
-            decoding="async"
-            src="/beyond-the-glass/vine-anatomy/vine-anatomy-orbit-right-1600.webp"
-            style={{ opacity: rightFrameOpacity }}
-          />
-        </picture>
-      </div>
-
       <header className="btg-vine-anatomy__header">
-        <span>03B · Vine anatomy</span>
-        <strong>{phase}</strong>
+        <span>Stop 05 · Vine anatomy</span>
+        <strong>The Vine Builds a Berry</strong>
+        <small>{activePart ? `Focused layer · ${activePart.label}` : "Overview · choose a node"}</small>
       </header>
 
-      <div aria-hidden="true" className="btg-vine-anatomy__parts">
-        {vineAnatomyParts.map((part, index) => {
-          const separate = progressBetween(
-            progress,
-            0.08 + index * 0.012,
-            0.32 + index * 0.008
-          );
-          const rejoin = progressBetween(
-            progress,
-            0.73 + (vineAnatomyParts.length - index - 1) * 0.007,
-            0.96
-          );
-          const amount = separate * (1 - rejoin);
+      <div className="btg-vine-anatomy__canvas">
+        <div aria-hidden="true" className="btg-vine-orbit">
+          <picture>
+            <source
+              media="(max-width: 960px)"
+              srcSet="/beyond-the-glass/vine-anatomy/vine-anatomy-front-960.webp"
+            />
+            <img
+              alt=""
+              className="btg-vine-orbit__frame btg-vine-orbit__frame--front"
+              decoding="async"
+              src="/beyond-the-glass/vine-anatomy/vine-anatomy-front-1600.webp"
+              style={{ opacity: frontFrameOpacity }}
+            />
+          </picture>
+          <picture>
+            <source
+              media="(max-width: 960px)"
+              srcSet="/beyond-the-glass/vine-anatomy/vine-anatomy-orbit-left-960.webp"
+            />
+            <img
+              alt=""
+              className="btg-vine-orbit__frame btg-vine-orbit__frame--left"
+              decoding="async"
+              src="/beyond-the-glass/vine-anatomy/vine-anatomy-orbit-left-1600.webp"
+              style={{ opacity: leftFrameOpacity }}
+            />
+          </picture>
+          <picture>
+            <source
+              media="(max-width: 960px)"
+              srcSet="/beyond-the-glass/vine-anatomy/vine-anatomy-orbit-right-960.webp"
+            />
+            <img
+              alt=""
+              className="btg-vine-orbit__frame btg-vine-orbit__frame--right"
+              decoding="async"
+              src="/beyond-the-glass/vine-anatomy/vine-anatomy-orbit-right-1600.webp"
+              style={{ opacity: rightFrameOpacity }}
+            />
+          </picture>
+        </div>
+
+        <div className="btg-vine-anatomy__parts">
+          {vineAnatomyParts.map((part, index) => {
+          const amount = 1;
           const turn = orbitProgress * Math.PI * 2 + index * 0.68;
           const depth = Math.sin(turn) * 68 * amount;
           const rotation = Math.cos(turn) * 16 * amount;
           const isActive = index === activeIndex;
+          const isNeighbor = Math.abs(index - activeIndex) === 1;
+          const x = isActive ? 50 : lerp(part.assembled[0], part.exploded[0], amount);
+          const y = isActive ? 51 : lerp(part.assembled[1], part.exploded[1], amount);
           const style = {
-            "--btg-part-depth": `${depth}px`,
-            "--btg-part-label-opacity": `${isActive ? 1 : clamp(1 - rejoin * 1.35)}`,
+            "--btg-part-depth": `${isActive ? 82 : depth}px`,
+            "--btg-part-label-opacity": `${isActive ? 1 : 0}`,
             "--btg-part-rotation": `${rotation}deg`,
-            "--btg-part-scale": `${0.72 + amount * 0.28 + (isActive ? 0.12 : 0)}`,
-            left: `${lerp(part.assembled[0], part.exploded[0], amount)}%`,
-            opacity: isActive ? 0.96 : 0.03 + separate * (1 - rejoin * 0.95) * 0.97,
-            top: `${lerp(part.assembled[1], part.exploded[1], amount)}%`
+            "--btg-part-scale": `${isActive ? 1.22 : 0.78}`,
+            "--btg-part-x": `${x}%`,
+            opacity: activeIndex < 0 ? 0.9 : isActive ? 1 : isNeighbor ? 0.72 : 0.42,
+            "--btg-part-y": `${y}%`
           } as CSSProperties;
 
           return (
-            <div
-              className={`btg-vine-part${isActive ? " is-active" : ""}`}
+            <button
+              aria-label={`Focus ${part.label}: ${part.definition}`}
+              aria-pressed={isActive}
+              className={`btg-vine-part${isActive ? " is-active" : ""}${isNeighbor ? " is-neighbor" : ""}`}
               data-group={part.group}
+              data-part={part.id}
+              data-side={x >= 56 ? "east" : "west"}
               key={part.id}
+              onClick={() => selectPart(part.id)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  selectPart(part.id);
+                }
+              }}
               style={style}
+              type="button"
             >
               <span className="btg-vine-part__glyph">
                 <VinePartGlyph type={part.glyph} />
@@ -446,18 +490,42 @@ export function VineAnatomyParallax({
                 <strong>{part.label}</strong>
                 <small>{part.group}</small>
               </span>
-            </div>
+            </button>
           );
-        })}
+          })}
+        </div>
       </div>
 
-      <div aria-hidden="true" className="btg-vine-anatomy__timeline">
-        <span>Root</span>
-        <span>Permanent wood</span>
-        <span>One-year wood</span>
-        <span>Green growth</span>
-        <span>Berry</span>
-      </div>
+      <aside aria-live="polite" className="btg-vine-anatomy__detail">
+        <div className="btg-vine-anatomy__timeline" aria-label="Vine study groups">
+          {["Root", "Permanent wood", "One-year wood", "Green growth", "Berry"].map(
+            (label, index) => (
+              <span className={index === activeTimelineIndex ? "is-active" : ""} key={label}>
+                {label}
+              </span>
+            )
+          )}
+        </div>
+        <div className="btg-vine-anatomy__field-note">
+          <span>{activePart?.group ?? "Complete vine"}</span>
+          <strong>{activePart?.label ?? "Choose any glowing anatomy node"}</strong>
+          <p>
+            {activePart?.definition ??
+              "Explore rootstock, permanent wood, fruiting wood, green growth, and berry development at your own pace."}
+          </p>
+        </div>
+        <nav aria-label="Vine anatomy node controls">
+          <button aria-label="Focus the previous vine anatomy node" onClick={() => moveSelection(-1)} type="button">
+            ← <span>Previous</span>
+          </button>
+          <button onClick={() => selectPart(null)} type="button">
+            Overview
+          </button>
+          <button aria-label="Focus the next vine anatomy node" onClick={() => moveSelection(1)} type="button">
+            <span>Next</span> →
+          </button>
+        </nav>
+      </aside>
     </div>
   );
 }

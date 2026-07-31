@@ -19,7 +19,6 @@ import { NarrationControls } from "./NarrationControls";
 import { progressBetween, useScrollStoryProgress } from "./useScrollStoryProgress";
 import {
   VineAnatomyParallax,
-  VineAnatomyReadout,
   VineAnatomyStudyList
 } from "./VineAnatomyParallax";
 
@@ -56,6 +55,17 @@ const ACADEMY_ROADMAP = [
   { label: "Coffee ecosystem", note: "Under construction · third", x: 20, y: 75 },
   { label: "Tea ecosystem", note: "Under construction · fourth", x: 75, y: 22 },
   { label: "Future journeys", note: "Academy expansion", x: 49, y: 18 }
+] as const;
+const ATLAS_NODE_POSITIONS = [
+  [18, 20],
+  [50, 18],
+  [82, 22],
+  [18, 54],
+  [82, 54],
+  [18, 84],
+  [50, 82],
+  [82, 82],
+  [50, 50]
 ] as const;
 
 function clamp(value: number, minimum = 0, maximum = 1): number {
@@ -283,10 +293,9 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
   const [resumeSceneIndex, setResumeSceneIndex] = useState<number | null>(null);
   const [activeLabId, setActiveLabId] = useState<string | null>(null);
   const [noteView, setNoteView] = useState<"guide" | "study">("guide");
+  const [vineNotesOpen, setVineNotesOpen] = useState(false);
+  const [atlasNodeIndex, setAtlasNodeIndex] = useState<number | null>(null);
 
-  const previousScene = chapter.scenes[Math.max(0, sceneIndex - 1)] ?? activeScene;
-  const sceneEntryBlend =
-    sceneIndex === 0 ? 1 : smoothstep(progressBetween(sceneProgress, 0, 0.13));
   const activeSpeaker = activeScene.narration[0]?.speaker ?? "Sippy";
   const activeCaptionLine =
     activeNarrationLineIndex === null
@@ -319,6 +328,20 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     Math.max(0, activeScene.fieldNotes.length - 1)
   );
   const activeLab = beyondTheGlassCurriculumLabs[activeScene.id];
+  const atlasEnabled =
+    activeScene.id !== "academy-plaza" &&
+    activeScene.id !== "guides-at-sunrise" &&
+    activeScene.id !== "vine-and-berry" &&
+    activeScene.fieldNotes.length > 0;
+  const activeAtlasNote =
+    atlasNodeIndex === null ? null : (activeScene.fieldNotes[atlasNodeIndex] ?? null);
+  const activeAtlasOrigin =
+    atlasNodeIndex === null
+      ? null
+      : (ATLAS_NODE_POSITIONS[atlasNodeIndex % ATLAS_NODE_POSITIONS.length] ?? [50, 50]);
+  const atlasFocusTransform = activeAtlasOrigin
+    ? ` translate3d(${((50 - activeAtlasOrigin[0]) * 0.12).toFixed(2)}%, ${((50 - activeAtlasOrigin[1]) * 0.12).toFixed(2)}%, 0) scale(1.055)`
+    : "";
   const journeyPercent = Math.round(progress * 100);
 
   const sceneOffsets = useMemo(
@@ -409,8 +432,47 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     setPanelControlsCards(false);
     setPanelNoteProgress(0);
     setNoteView("guide");
+    setVineNotesOpen(false);
+    try {
+      const storedIndex = Number.parseInt(
+        window.localStorage.getItem(`sipopedia:btg:atlas:${activeScene.id}:v1`) ?? "",
+        10
+      );
+      setAtlasNodeIndex(
+        Number.isInteger(storedIndex) &&
+          storedIndex >= 0 &&
+          storedIndex < activeScene.fieldNotes.length
+          ? storedIndex
+          : null
+      );
+    } catch {
+      setAtlasNodeIndex(null);
+    }
     if (storyPanelRef.current) storyPanelRef.current.scrollTop = 0;
-  }, [activeScene.id]);
+  }, [activeScene.fieldNotes.length, activeScene.id]);
+
+  const selectAtlasNode = (index: number | null) => {
+    setAtlasNodeIndex(index);
+    try {
+      const storageKey = `sipopedia:btg:atlas:${activeScene.id}:v1`;
+      if (index === null) window.localStorage.removeItem(storageKey);
+      else window.localStorage.setItem(storageKey, String(index));
+    } catch {
+      // The field atlas remains usable for this visit.
+    }
+  };
+
+  const moveAtlasNode = (direction: -1 | 1) => {
+    const nodeCount = activeScene.fieldNotes.length;
+    if (!nodeCount) return;
+    const nextIndex =
+      atlasNodeIndex === null
+        ? direction > 0
+          ? 0
+          : nodeCount - 1
+        : (atlasNodeIndex + direction + nodeCount) % nodeCount;
+    selectAtlasNode(nextIndex);
+  };
 
   if (reducedMotion) {
     return <ReducedMotionStory chapter={chapter} transcriptId={transcriptId} />;
@@ -433,27 +495,19 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
       ref={sectionRef}
       style={stageStyle}
     >
-      <div className="btg-stage" data-motion={activeScene.motion} data-scene={activeScene.id}>
+      <div
+        className="btg-stage"
+        data-art-fit={activeScene.artwork.fit ?? "cinematic"}
+        data-atlas-selection={atlasNodeIndex === null ? "overview" : "selected"}
+        data-motion={activeScene.motion}
+        data-scene={activeScene.id}
+        data-study-panel={
+          activeScene.id === "vine-and-berry" && vineNotesOpen ? "open" : "closed"
+        }
+      >
         <div className="btg-stage__visual">
-          {sceneIndex > 0 ? (
-            <StoryImage
-              alt=""
-              className="btg-scene-art btg-scene-art--previous"
-              portraitSrc={previousScene.artwork.portraitSrc}
-              portraitSrcSet={previousScene.artwork.portraitSrcSet}
-              sizes="100vw"
-              src={previousScene.artwork.src}
-              srcSet={previousScene.artwork.srcSet}
-              style={{
-                objectFit: previousScene.artwork.fit ?? "contain",
-                objectPosition: previousScene.artwork.position ?? "center",
-                opacity: 1 - sceneEntryBlend,
-                transform: motionTransform(previousScene.motion, 1)
-              }}
-            />
-          ) : null}
           {activeScene.id === "vine-and-berry" ? (
-            <VineAnatomyParallax opacity={sceneEntryBlend} progress={sceneProgress} />
+            <VineAnatomyParallax opacity={1} />
           ) : (
             <StoryImage
               alt={activeScene.artwork.alt}
@@ -467,8 +521,11 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
               style={{
                 objectFit: activeScene.artwork.fit ?? "contain",
                 objectPosition: activeScene.artwork.position ?? "center",
-                opacity: sceneEntryBlend,
-                transform: motionTransform(activeScene.motion, sceneProgress)
+                opacity: 1,
+                transform: `${motionTransform(activeScene.motion, sceneProgress)}${atlasFocusTransform}`,
+                transformOrigin: activeAtlasOrigin
+                  ? `${activeAtlasOrigin[0]}% ${activeAtlasOrigin[1]}%`
+                  : "50% 50%"
               }}
             />
           )}
@@ -484,6 +541,49 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
               }}
             />
           )}
+          {atlasEnabled ? (
+            <div
+              aria-label={`${activeScene.title} interactive field atlas`}
+              className="btg-scene-atlas"
+            >
+              {activeScene.fieldNotes.map((note, index) => {
+                const basePosition =
+                  ATLAS_NODE_POSITIONS[index % ATLAS_NODE_POSITIONS.length] ??
+                  ATLAS_NODE_POSITIONS[0];
+                const isActive = index === atlasNodeIndex;
+                const position =
+                  !isActive &&
+                  atlasNodeIndex !== null &&
+                  basePosition[0] === 50 &&
+                  basePosition[1] === 50 &&
+                  activeAtlasOrigin
+                    ? activeAtlasOrigin
+                    : basePosition;
+                return (
+                  <button
+                    aria-label={`Focus ${note.title}: ${note.detail}`}
+                    aria-pressed={isActive}
+                    className={isActive ? "is-active" : ""}
+                    key={`${activeScene.id}-atlas-${note.title}`}
+                    onClick={() => selectAtlasNode(index)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        selectAtlasNode(index);
+                      }
+                    }}
+                    style={{
+                      left: `${isActive ? 50 : position[0]}%`,
+                      top: `${isActive ? 50 : position[1]}%`
+                    }}
+                    type="button"
+                  >
+                    <span>{index + 1}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
 
         <div className="btg-stage__hud">
@@ -491,13 +591,26 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
             <div>
               <p className="btg-kicker">Beyond The Glass · From Rain to First Sip</p>
               <strong>
-                Stop {sceneIndex + 1} of {chapter.scenes.length}
+                {activeScene.id === "vine-and-berry"
+                  ? `${activeScene.number} · ${activeScene.title}`
+                  : `Stop ${sceneIndex + 1} of ${chapter.scenes.length}`}
               </strong>
             </div>
             <div className="btg-progress">
               <span>{activeScene.checkpoint}</span>
               <progress aria-label="Journey progress" max={100} value={journeyPercent} />
             </div>
+            {activeScene.id === "vine-and-berry" ? (
+              <button
+                aria-controls="btg-vine-study-panel"
+                aria-expanded={vineNotesOpen}
+                className="btg-vine-notes-toggle"
+                onClick={() => setVineNotesOpen((isOpen) => !isOpen)}
+                type="button"
+              >
+                {vineNotesOpen ? "Return to full vine" : "Open guide notes"}
+              </button>
+            ) : null}
           </header>
 
           {sceneIndex === 0 ? (
@@ -586,6 +699,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
           <div
             aria-label={`${activeScene.title} illustrated scene notes`}
             className="btg-story-panel"
+            id={activeScene.id === "vine-and-berry" ? "btg-vine-study-panel" : undefined}
             onScroll={handleStoryPanelScroll}
             ref={storyPanelRef}
             tabIndex={0}
@@ -596,8 +710,36 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
               </p>
               <h1>{activeScene.title}</h1>
               <p>{activeScene.summary}</p>
-              {activeScene.id === "vine-and-berry" ? (
-                <VineAnatomyReadout progress={sceneProgress} />
+              {atlasEnabled ? (
+                <aside aria-live="polite" className="btg-scene-atlas__readout">
+                  <span>
+                    {activeAtlasNote?.eyebrow ?? `Field atlas · ${activeScene.fieldNotes.length} nodes`}
+                  </span>
+                  <strong>{activeAtlasNote?.title ?? "Choose a glowing scene node"}</strong>
+                  <p>
+                    {activeAtlasNote?.detail ??
+                      "Inspect this stop at your own pace. Each node opens one production clue without covering the scene."}
+                  </p>
+                  <nav aria-label={`${activeScene.title} atlas node controls`}>
+                    <button
+                      aria-label={`Focus the previous ${activeScene.title} node`}
+                      onClick={() => moveAtlasNode(-1)}
+                      type="button"
+                    >
+                      ←
+                    </button>
+                    <button onClick={() => selectAtlasNode(null)} type="button">
+                      Overview
+                    </button>
+                    <button
+                      aria-label={`Focus the next ${activeScene.title} node`}
+                      onClick={() => moveAtlasNode(1)}
+                      type="button"
+                    >
+                      →
+                    </button>
+                  </nav>
+                </aside>
               ) : null}
               {activeLab ? (
                 <button

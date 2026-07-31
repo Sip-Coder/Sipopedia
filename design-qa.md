@@ -58,3 +58,22 @@ Final result: passed
 - The primary artwork and the background continuation crossfade together between scenes. Active scene images load eagerly once their chapter becomes current, preventing a fast scroll from briefly showing the preceding scene.
 - At 390 × 844, “Inside the Crush House” reads as one visual composition from artwork through field notes, while the educational overlay remains compact and legible.
 - Automated mobile QA passed all 104 viewport-and-scene states after the continuous-scene refinement.
+
+## July 31 interactive field-atlas release pass
+
+- User mobile reference: `C:\Users\TwoKn\Documents\Codex\2026-07-20\prior-conversation-with-codex-conversation-role\.codex-remote-attachments\019f825f-f49a-7c40-adb0-1dc18d096e82\0d147890-c434-48c0-bcc7-a1da50bbc0e7\2-Photo-2.jpg`
+- Final mobile rain-and-roots capture: `C:\Users\TwoKn\Documents\Codex\btg-field-atlas-qa\rain-phone-390x844-final.png`
+- Direct mobile comparison: `C:\Users\TwoKn\Documents\Codex\btg-field-atlas-qa\rain-mobile-before-after.png`
+- Final desktop vine-anatomy capture: `C:\Users\TwoKn\Documents\Codex\btg-field-atlas-qa\vine-desktop-1440x900.png`
+- Final mobile vine-anatomy capture: `C:\Users\TwoKn\Documents\Codex\btg-field-atlas-qa\vine-phone-390x844.png`
+- Final laptop field-atlas capture: `C:\Users\TwoKn\Documents\Codex\btg-field-atlas-qa\harvest-laptop-full-1024x768.png`
+- Final phone-landscape guide capture: `C:\Users\TwoKn\Documents\Codex\btg-field-atlas-qa\two-regions-phone-landscape-844x390.png`
+- All substantive main-path stops now expose their visual clues as keyboard-accessible field-atlas buttons. A selected clue receives visual focus while its explanation appears in a reserved study panel outside the art.
+- The vine-anatomy stop uses the complete landscape composition on desktop and a dedicated portrait reflow on phones. Roots, canopy, title rail, selector, selected detail, and journey dock remain visible without the former black side gutters or clipped labels.
+- Mobile “Rain Finds the Roots” now uses the complete landscape study plate instead of constraining a portrait asset inside a shallow landscape slot. This keeps the full vine/root composition visible and removes the empty side bars.
+- Selected study notes and guide cards are mutually exclusive on compact layouts, preventing narration, content, sprites, and the journey dock from obscuring one another.
+- Sippy, Roma, and Hummin use a calm pet-like idle cadence with brief occasional gestures; the jump loop was removed. Reduced-motion users retain still guide art.
+- Full 22-stop in-app traversal passed at 1440 × 900 desktop, 1024 × 768 laptop, 390 × 844 phone portrait, and 844 × 390 phone landscape.
+- The traversal found zero document overflow, off-canvas nodes, node collisions, guide/dock collisions, broken images, or clipped essential text at all four target viewports.
+- Pointer selection, explicit Enter activation, selected-state announcement, previous/next node controls, and Overview reset were checked on both the generic field atlas and the custom vine anatomy study.
+- Browser console error check returned no errors on the final local preview.

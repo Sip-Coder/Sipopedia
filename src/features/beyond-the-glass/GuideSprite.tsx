@@ -18,15 +18,15 @@ const GUIDE_SLUGS: Record<BeyondTheGlassSpeaker, string> = {
 };
 
 const GUIDE_REACTIONS: Record<BeyondTheGlassSpeaker, GuideMotion[]> = {
-  Sippy: ["waving", "review", "jumping"],
-  Roma: ["jumping", "waving", "review"],
-  Hummin: ["running", "review", "waiting"]
+  Sippy: ["waving", "review"],
+  Roma: ["review", "waving"],
+  Hummin: ["review", "waiting"]
 };
 
 const GUIDE_TIMING: Record<BeyondTheGlassSpeaker, { pause: number; reaction: number }> = {
-  Sippy: { pause: 5_600, reaction: 1_450 },
-  Roma: { pause: 6_400, reaction: 1_550 },
-  Hummin: { pause: 7_100, reaction: 1_650 }
+  Sippy: { pause: 12_800, reaction: 1_900 },
+  Roma: { pause: 14_200, reaction: 2_000 },
+  Hummin: { pause: 15_600, reaction: 2_100 }
 };
 
 function cueIndex(cue: GuideSpriteProps["cue"], length: number): number {
@@ -79,13 +79,8 @@ export function GuideSprite({
       }, delay);
     };
 
-    setMotion(reactions[reactionIndex % reactions.length]);
-    reactionIndex += 1;
-    reactionTimer = window.setTimeout(() => {
-      if (cancelled) return;
-      setMotion("idle");
-      scheduleReaction(timing.pause);
-    }, timing.reaction);
+    setMotion("idle");
+    scheduleReaction(timing.pause);
 
     return () => {
       cancelled = true;
