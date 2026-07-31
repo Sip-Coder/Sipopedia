@@ -844,7 +844,8 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                   onClick={() => setActiveLabId(activeLab.id)}
                   type="button"
                 >
-                  Open visual lab · {activeLab.title}
+                  <span className="btg-desktop-label">Open visual lab · {activeLab.title}</span>
+                  <span className="btg-mobile-label">Open visual lab</span>
                 </button>
               ) : null}
             </div>

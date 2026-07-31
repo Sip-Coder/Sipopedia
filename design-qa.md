@@ -155,3 +155,39 @@ Final result: passed
 - Focused crop was not required because the full comparison presents the complete native-width card and dock at readable scale; separate mid-turn captures document the interaction state.
 
 Final result: passed
+
+## July 31 guide-card centering and spacing correction
+
+- Source visual truth: `C:\Users\TwoKn\Documents\Codex\2026-07-20\prior-conversation-with-codex-conversation-role\.codex-remote-attachments\019f825f-f49a-7c40-adb0-1dc18d096e82\d7f816ab-88a6-4ea9-9622-550b37a7885b\3-Photo-3.jpg` (1200 × 1200 source photograph; focused crop uses the narrow BTG browser preview and its hovering Roma field-note card).
+- Browser-rendered implementations: `C:\Codebase\actual\Sipopedia\qa\btg-guide-card-spacing\after-phone-320x568.png`, `after-phone-390x700.png`, `after-phone-landscape-844x390.png`, `after-laptop-1024x768.png`, and `after-desktop-1440x900.png` (matching CSS viewports, DPR 1).
+- Full-view normalized comparison: `C:\Codebase\actual\Sipopedia\qa\btg-guide-card-spacing\source-vs-after.png` (focused source crop and the 390 × 700 browser implementation normalized side by side).
+- Motion-state evidence: `C:\Codebase\actual\Sipopedia\qa\btg-guide-card-spacing\page-turn-phone-390x700.png` and `study-card-phone-390x700.png`.
+- State: representative Hummin and Roma guide notes, study-card view, and guide-to-study page turn across Crush House, Quality Lab, and Barrel Room scenes.
+
+### Comparison history
+
+- Earlier P1: the negative character offset placed the guide image 12.4px above the active paper card at 390 × 700. The page-turn safety clipping therefore removed part of the sprite instead of letting the full character hover on the paper.
+- Earlier P2: guide copy occupied the top of a stretched ruled card while a large unused region remained below it; laptop cards also left the note counter stranded above a large unstructured gap.
+- Fix: each guide now occupies a vertically centered, reserved character rail inside the paper boundary. Sippy, Roma, and Hummin retain their calm hover animation, but their full image remains inside the turning page at every checked viewport.
+- Fix: the guide body and study card now use the complete paper height intentionally. Mobile copy is vertically balanced; laptop/desktop note counters and card controls anchor to the bottom rule rather than floating above unused space.
+- Fix: compact phones use a shorter scene rail, one-line visual-lab label, tighter paper header, and a proportionate character rail. This increased the 320 × 568 active paper area from 88.8px to 160.1px while keeping the sprite and full message visible.
+- Post-fix evidence: sprite containment passed at 320 × 568, 360 × 640, 390 × 700, 844 × 390, 1024 × 768, and 1440 × 900. The guide paragraph no longer requires internal scrolling in the checked states, and the page turn remains visible in both directions.
+
+### Required fidelity surfaces
+
+- Fonts and typography: the established handwriting accent, SIP display face, and readable companion body type are unchanged. Essential guide messages wrap without ellipsis; the smallest phone uses the compact speaker heading only where vertical space is genuinely constrained.
+- Spacing and layout rhythm: image, heading, note deck, and journey dock retain separate safe zones. The character rail, copy, counter, and controls now use the ruled-paper area as one composed card rather than unrelated top-aligned fragments.
+- Colors and tokens: cream paper, ruled blue lines, botanical/brass accents, shadows, pin, and focus states remain consistent with the accepted sommelier note-card direction.
+- Image quality and asset fidelity: the approved animated character assets are reused at their natural proportions. No sprite is cropped, stretched, substituted, or replaced.
+- Copy and content: the complete Roma and Hummin messages are visible in the tested guide states; the study card retains its full title, detail, card count, and previous/next controls.
+
+### Interaction and accessibility checks
+
+- Guide note and Study card controls were activated in the in-app browser. The 520ms manual page turn and settled study-card state both remained inside the protected note region.
+- The guide image stays `aria-hidden`, while authored message copy and card navigation remain available to assistive technology.
+- Reduced-motion behavior is preserved: motion rules still disable transitions and hide inactive visual pages.
+- Document-level horizontal overflow: none at all six checked responsive sizes.
+- Browser console warnings/errors: zero on the final local preview.
+- Production build, navigation policy tests, accent-specific voice tests, and security guard tests passed.
+
+Final result: passed
