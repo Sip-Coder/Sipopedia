@@ -5505,6 +5505,151 @@ body:has(.btg-page),
   }
 }
 
+/* -------------------------------------------------------------------------
+   Book-page note turns
+   Restore the tactile study-deck motion after the responsive scene split.
+   Scroll progress turns individual cards, then alternates between the guide
+   and study decks. The reverse scroll direction reverses every page turn.
+   ------------------------------------------------------------------------- */
+
+.btg-stage:not([data-scene="academy-plaza"]) .btg-note-stack {
+  bottom: auto;
+  isolation: isolate;
+  left: auto;
+  overflow: visible;
+  perspective: 1250px;
+  position: relative;
+  right: auto;
+  top: auto;
+  transform: none;
+  transform-style: preserve-3d;
+  width: 100%;
+}
+
+.btg-stage:not([data-scene="academy-plaza"]) .btg-guide-card-deck,
+.btg-stage:not([data-scene="academy-plaza"]) .btg-field-notes {
+  align-self: stretch;
+  backface-visibility: hidden;
+  bottom: 0;
+  grid-column: 1;
+  grid-row: 1;
+  height: auto;
+  left: 0;
+  min-height: 0;
+  overflow: visible;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition:
+    opacity 120ms linear,
+    transform 90ms linear;
+  will-change: opacity, transform;
+}
+
+.btg-stage:not([data-scene="academy-plaza"])
+  :is(.btg-guide-note, .btg-field-note)[aria-hidden="true"] {
+  display: block !important;
+}
+
+.btg-stage:not([data-scene="academy-plaza"])
+  .btg-guide-card-deck
+  .btg-guide-note,
+.btg-stage:not([data-scene="academy-plaza"]) .btg-field-note,
+.btg-stage:not([data-scene="academy-plaza"]) .btg-field-note:nth-child(even),
+.btg-stage:not([data-scene="academy-plaza"]) .btg-field-note:nth-child(n + 2) {
+  backface-visibility: hidden;
+  inset: 0;
+  margin: 0;
+  position: absolute;
+  transform-style: preserve-3d;
+  transition:
+    filter 100ms linear,
+    opacity 100ms linear,
+    transform 120ms linear;
+  width: 100%;
+  will-change: filter, opacity, transform;
+}
+
+.btg-stage:not([data-scene="academy-plaza"])
+  :is(.btg-guide-note, .btg-field-note)[data-card-state="future"] {
+  box-shadow:
+    0.35rem 0.5rem 0 rgba(223, 201, 152, 0.72),
+    0.7rem 0.9rem 0 rgba(234, 218, 181, 0.56),
+    0 1.15rem 2rem rgba(0, 0, 0, 0.28);
+}
+
+.btg-stage:not([data-scene="academy-plaza"])
+  :is(.btg-guide-note, .btg-field-note)[data-card-state="active"] {
+  box-shadow:
+    0.12rem 0.24rem 0 rgba(223, 201, 152, 0.62),
+    0 1.05rem 2rem rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(255, 245, 216, 0.36);
+}
+
+.btg-note-stack[data-note-motion="manual"] .btg-guide-card-deck,
+.btg-note-stack[data-note-motion="manual"] .btg-field-notes {
+  transition:
+    opacity 250ms linear,
+    transform 520ms cubic-bezier(0.2, 0.78, 0.2, 1);
+}
+
+.btg-note-stack[data-note-motion="manual"]
+  :is(.btg-guide-note, .btg-field-note) {
+  transition:
+    filter 320ms ease,
+    opacity 320ms ease,
+    transform 520ms cubic-bezier(0.2, 0.78, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-guide-card-deck,
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-notes,
+  .btg-stage:not([data-scene="academy-plaza"])
+    :is(.btg-guide-note, .btg-field-note) {
+    transition: none !important;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])
+    :is(.btg-guide-note, .btg-field-note)[aria-hidden="true"] {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) and (orientation: portrait) {
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-note-stack {
+    overflow: hidden;
+  }
+}
+
+@media (min-width: 641px) and (max-height: 540px) {
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-story-panel,
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-note-stack {
+    overflow: hidden;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-note-stack {
+    height: auto;
+    min-height: 0;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])
+    .btg-guide-card-deck
+    .btg-guide-note,
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-note {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-guide-note__body p,
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-note > p {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
 @media (max-width: 640px) and (orientation: portrait) and (max-height: 740px) {
   .btg-stage:not([data-scene="academy-plaza"]) {
     grid-template-rows: 3.05rem minmax(7.1rem, 18svh) minmax(0, 1fr) 3.35rem;

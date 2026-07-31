@@ -119,3 +119,39 @@ Final result: passed
 - Reduced-motion behavior remains unchanged; this correction does not introduce new motion.
 
 Final result: passed
+
+## July 31 sommelier book-page card restoration
+
+- Source visual truth: `C:\Codebase\actual\Sipopedia\qa\btg-mobile-after-390x700.png` (375 × 673 captured pixels from the previously accepted 390 × 700 Tasting Room Flight guide-card state) plus the user's explicit requirement that guide notes and study cards turn like pages while scrolling forward and backward.
+- Browser-rendered settled implementation: `C:\Codebase\actual\Sipopedia\qa\btg-card-turn-mobile-settled.png` (375 × 679 captured pixels at a 390 × 700 CSS viewport, DPR 1).
+- Density-normalized implementation: `C:\Codebase\actual\Sipopedia\qa\btg-card-turn-mobile-settled-375x673.png` (375 × 673 pixels).
+- Full-view comparison evidence: `C:\Codebase\actual\Sipopedia\qa\btg-card-turn-before-after.png` (750 × 673 pixels, source and normalized implementation shown together).
+- Motion-state evidence: `C:\Codebase\actual\Sipopedia\qa\btg-card-turn-mobile-mid.png`, `C:\Codebase\actual\Sipopedia\qa\btg-card-turn-desktop-mid.png`, `C:\Codebase\actual\Sipopedia\qa\btg-card-turn-phone-landscape.png`, and `C:\Codebase\actual\Sipopedia\qa\btg-card-turn-manual-mid.png`.
+- State: Tasting Room Flight, settled Roma guide card and guide-to-study/page-sifting transitions.
+
+### Comparison history
+
+- Earlier P1: the responsive scene split preserved the paper styling but later cascade rules hid inactive cards and converted the deck to one flat relative card, removing the visible stacked-page and page-turn behavior.
+- Fix: inactive but non-interactive cards remain visually present beneath the active card, with screen-reader-hidden content and pointer events disabled. Their scroll-bound transforms now pivot around the left edge with perspective, depth, paper shadows, and reversible forward/backward motion.
+- Fix: guide and study decks alternate throughout each scene using opposing page-turn transforms. Manual Guide note and Study card controls retain a slower authored turn, while reduced-motion users receive a complete static card.
+- Fix: the page faces are absolutely sized by the reserved note region. Portrait and short-landscape containers clip decorative page overhang inside that region, preventing the animation from covering the lesson header or journey dock.
+- Post-fix evidence: forward scrolling changed the Tasting Room Flight deck from guide at local progress 0.5663 to study at 0.6979; reverse scrolling restored guide. Manual deck selection also reached the requested destination without overlap.
+
+### Required fidelity surfaces
+
+- Fonts and typography: existing SIP Academy display, handwriting accent, and highly readable body faces remain unchanged. Settled card text is fully legible; partial occlusion occurs only during the purposeful page-turn transition.
+- Spacing and layout rhythm: the accepted photo, header, note-card, and compact navigation zones remain intact. Note/deck collision checks passed at 360 × 640 portrait, 844 × 390 phone landscape, 1024 × 768 laptop, and 1440 × 900 desktop.
+- Colors and tokens: the existing cream paper, botanical green, brass, ruled-line, and water-blue focus treatments are preserved.
+- Image quality and asset fidelity: all existing winery artwork and guide sprites remain unchanged; the restoration uses the authored card assets already present in the interface and introduces no placeholders.
+- Copy and content: full Roma guide copy and all Tasting Room Flight study-card content remain available. Hidden cards are removed from the accessibility tree until active.
+
+### Interaction and accessibility checks
+
+- Scroll forward and backward both update the deck and reverse the same page-turn sequence.
+- Guide note and Study card controls were activated in the in-app browser; the selected deck remained keyboard-accessible and did not collide with navigation.
+- Reduced-motion rules remove card/deck transitions and hide inactive visual pages.
+- Document-level horizontal overflow: none at the four tested responsive targets.
+- Broken images: zero in the tested states.
+- Focused crop was not required because the full comparison presents the complete native-width card and dock at readable scale; separate mid-turn captures document the interaction state.
+
+Final result: passed

@@ -198,20 +198,36 @@ function noteCardStyle(index: number, position: number): CSSProperties {
   if (offset < 0) {
     const sweep = clamp(-offset, 0, 1.15);
     return {
-      filter: `brightness(${(1 - sweep * 0.08).toFixed(3)})`,
-      opacity: clamp(1 - sweep * 1.08, 0, 1),
+      backfaceVisibility: "hidden",
+      filter: `brightness(${(1 - sweep * 0.1).toFixed(3)}) drop-shadow(${(
+        sweep * 0.55
+      ).toFixed(2)}rem 0.35rem 0.55rem rgba(0, 0, 0, 0.22))`,
+      opacity: clamp(1 - Math.max(0, sweep - 0.72) * 3.6, 0, 1),
       pointerEvents: sweep > 0.48 ? "none" : "auto",
-      transform: `translate3d(${(-sweep * 108).toFixed(2)}%, ${(-sweep * 0.9).toFixed(2)}rem, 0) rotate(${(-sweep * 9).toFixed(2)}deg) scale(${(1 - sweep * 0.035).toFixed(3)})`,
-      zIndex: 120 - index
+      transform: `perspective(1250px) translate3d(${(-sweep * 7).toFixed(2)}%, ${(
+        -sweep * 0.24
+      ).toFixed(2)}rem, ${(sweep * 44).toFixed(2)}px) rotateY(${(
+        -sweep * 164
+      ).toFixed(2)}deg) rotateZ(${(-sweep * 2.25).toFixed(2)}deg)`,
+      transformOrigin: "left center",
+      zIndex: 160 - index
     };
   }
 
   const depth = Math.min(offset, 3);
   return {
+    backfaceVisibility: "hidden",
     filter: `brightness(${(1 - depth * 0.045).toFixed(3)})`,
     opacity: clamp(1 - Math.max(0, depth - 1.8) * 0.7, 0.16, 1),
     pointerEvents: depth < 0.5 ? "auto" : "none",
-    transform: `translate3d(${(depth * 0.58).toFixed(2)}rem, ${(depth * 0.5).toFixed(2)}rem, ${(-depth * 34).toFixed(2)}px) rotate(${(depth * 1.75).toFixed(2)}deg) scale(${(1 - depth * 0.028).toFixed(3)})`,
+    transform: `perspective(1250px) translate3d(${(depth * 0.48).toFixed(2)}rem, ${(
+      depth * 0.42
+    ).toFixed(2)}rem, ${(-depth * 32).toFixed(2)}px) rotateY(${(
+      depth * 1.8
+    ).toFixed(2)}deg) rotateZ(${(depth * 1.35).toFixed(2)}deg) scale(${(
+      1 - depth * 0.026
+    ).toFixed(3)})`,
+    transformOrigin: "left center",
     zIndex: 120 - index
   };
 }
@@ -369,14 +385,24 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
   const studyWeight = 1 - guideWeight;
   const effectiveNoteView: NoteDeckView = guideWeight >= 0.5 ? "guide" : "study";
   const guideDeckStyle = {
-    opacity: Math.pow(guideWeight, 0.82).toFixed(3),
+    opacity: clamp(guideWeight * 1.45, 0, 1).toFixed(3),
     pointerEvents: effectiveNoteView === "guide" ? "auto" : "none",
-    transform: `perspective(1100px) translate3d(${((1 - guideWeight) * -7).toFixed(2)}%, 0, 0) rotateY(${((1 - guideWeight) * -92).toFixed(2)}deg) scale(${(0.965 + guideWeight * 0.035).toFixed(3)})`
+    transform: `perspective(1250px) translate3d(${((1 - guideWeight) * -5).toFixed(
+      2
+    )}%, 0, ${((1 - guideWeight) * 34).toFixed(2)}px) rotateY(${(
+      (1 - guideWeight) * -162
+    ).toFixed(2)}deg) rotateZ(${((1 - guideWeight) * -1.5).toFixed(2)}deg)`,
+    zIndex: effectiveNoteView === "guide" ? 4 : 2
   } as CSSProperties;
   const studyDeckStyle = {
-    opacity: Math.pow(studyWeight, 0.82).toFixed(3),
+    opacity: clamp(studyWeight * 1.45, 0, 1).toFixed(3),
     pointerEvents: effectiveNoteView === "study" ? "auto" : "none",
-    transform: `perspective(1100px) translate3d(${((1 - studyWeight) * 7).toFixed(2)}%, 0, 0) rotateY(${((1 - studyWeight) * 92).toFixed(2)}deg) scale(${(0.965 + studyWeight * 0.035).toFixed(3)})`
+    transform: `perspective(1250px) translate3d(${((1 - studyWeight) * 5).toFixed(
+      2
+    )}%, 0, ${((1 - studyWeight) * 34).toFixed(2)}px) rotateY(${(
+      (1 - studyWeight) * 162
+    ).toFixed(2)}deg) rotateZ(${((1 - studyWeight) * 1.5).toFixed(2)}deg)`,
+    zIndex: effectiveNoteView === "study" ? 4 : 2
   } as CSSProperties;
   const activeLab = beyondTheGlassCurriculumLabs[activeScene.id];
   const atlasEnabled =
