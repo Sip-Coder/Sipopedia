@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
+import { resolve } from "node:path";
 import test from "node:test";
 import { isBossNavigationUser } from "../src/lib/adminAccess.ts";
 import { WORKSPACE_NAV_ITEMS } from "../src/lib/workspaceNavigation.ts";
 import { journeyOfADrop } from "../src/data/beyondTheGlassChapters.ts";
+import { ATLAS_SCENE_DESIGNS } from "../src/features/beyond-the-glass/fieldAtlasDesigns.ts";
 
 test("Boss navigation is limited to the Google-authenticated Sip Studies admin", () => {
   const cases = [
@@ -77,6 +79,42 @@ test("The From Rain to First Sip chapter data is complete and internally linked"
   assert.equal(new Set(sourceIds).size, sourceIds.length);
   for (const source of journeyOfADrop.sources) {
     assert.match(source.url, /^https:\/\//, `${source.id} uses an HTTPS source`);
+  }
+});
+
+test("Every substantive wine stop has a complete authored field atlas", async () => {
+  const sharedAtlasScenes = journeyOfADrop.scenes.filter(
+    (scene) => scene.id !== "academy-plaza" && scene.id !== "vine-and-berry"
+  );
+
+  assert.equal(sharedAtlasScenes.length, 20);
+  assert.equal(
+    sharedAtlasScenes.reduce((total, scene) => total + scene.fieldNotes.length, 0),
+    81,
+    "all 81 shared teaching nodes remain represented"
+  );
+
+  for (const scene of sharedAtlasScenes) {
+    const design = ATLAS_SCENE_DESIGNS[scene.id];
+    assert.ok(design, `${scene.id} has an authored field-atlas design`);
+    assert.equal(
+      design.nodes.length,
+      scene.fieldNotes.length,
+      `${scene.id} has one visual node per field note`
+    );
+
+    for (const [index, node] of design.nodes.entries()) {
+      assert.ok(node.label.trim().length > 0, `${scene.id} node ${index + 1} has a visible label`);
+      assert.ok(
+        node.focus[0] >= 0 && node.focus[0] <= 100 && node.focus[1] >= 0 && node.focus[1] <= 100,
+        `${scene.id} node ${index + 1} stays inside the normalized scene canvas`
+      );
+      if (node.art === "graphic") {
+        assert.match(node.graphic ?? "", /^\/beyond-the-glass\//);
+        const asset = await stat(resolve("public", (node.graphic ?? "").replace(/^\//, "")));
+        assert.ok(asset.isFile() && asset.size > 5_000, `${node.graphic} is a hydrated visual asset`);
+      }
+    }
   }
 });
 

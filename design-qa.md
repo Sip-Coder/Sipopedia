@@ -29,6 +29,43 @@ Final result: passed
 
 final result: passed
 
+## August 1 Stop-05 field-atlas fidelity pass
+
+- Source visual truth: `C:\Users\TwoKn\Documents\Codex\2026-07-20\prior-conversation-with-codex-conversation-role\.codex-remote-attachments\019f825f-f49a-7c40-adb0-1dc18d096e82\4e64f824-fe40-42f9-8774-9093b60177fa\1-Photo-1.jpg` (the accepted Stop 05 Vine Builds a Berry node interface).
+- Browser-rendered implementation: `C:\Codebase\actual\Sipopedia\qa\btg-node-atlas\vine-root-phone-390x844.png`.
+- Direct comparison evidence: `C:\Codebase\actual\Sipopedia\qa\btg-node-atlas\compare-stop05-phone.png`.
+- Asset manifest: `C:\Codebase\actual\Sipopedia\qa\btg-node-atlas\ASSET-MANIFEST.md`.
+
+### Comparison history
+
+- Earlier P0: Stop 05 had a cohesive educational plate, visual nodes, lesson rail, reserved explanation, and small study controls, while the other journey stops still mixed generic numbered circles, inconsistent crop behavior, or flat labels.
+- Earlier P1: inactive Vine anatomy layers could be visible but untouchable on some mobile engines because their transformed hit surfaces occupied a negative 3D plane.
+- Earlier P1: phone layouts could let a selected note, page-turn deck, or journey dock compete for the same vertical space; short landscape layouts could reduce the selected explanation to a zero-height paragraph.
+- Fix: all 20 substantive non-Plaza/non-Vine stops now share the Stop-05 field-atlas architecture: contained scene art, semantic selectable medallions, a concept rail, a protected parchment explanation, user-controlled previous/overview/next controls, and an optional deep-dive affordance where curriculum labs exist.
+- Fix: 81 shared-atlas nodes use deliberate commissioned-scene crops, maintained Phosphor symbols, or 24 original SIP Academy process medallions. The custom Vine study retains 14 additional anatomy nodes and its dimensional explode/rejoin motion.
+- Fix: Vine hit testing is now a stable 2D surface while visual orbit/rotation remains intact. Shared nodes support pointer activation plus Arrow, Home, End, and Escape keyboard behavior, with one roving visual-node tab stop.
+- Fix: portrait phones now sequence header, 4:3 contained art, concept rail, parchment explanation, small node controls, and compact route dock as independent rows. Open guide/study decks receive a protected paper region, and short landscape views expose a deliberately scrollable explanation rather than clipping it.
+
+### Required fidelity surfaces
+
+- Typography: the Stop-05 display/body hierarchy and cream-paper field-note treatment are reused throughout. Selected titles remain dominant, while supporting explanations use high-contrast body text and wrap without ellipsis.
+- Spacing and layout: all 22 stops were traversed at 390 × 844. There was zero document-level horizontal overflow, zero atlas-node clipping, zero pairwise node collision, zero broken scene image, and zero detail/dock collision. Representative equipment, production, lab, finishing, identity, logistics, Vine, and note-card states were also checked at 844 × 390, 1366 × 768, and 1600 × 1000.
+- Color and state: vineyard, production, cellar, commerce, service, and guide phases retain distinct water/brass/forest accents. Selected medallions scale and brighten without hiding neighboring nodes; inactive nodes remain readable but secondary.
+- Image quality: all 29 node assets returned HTTP 200 in the local preview. New medallions are 768 × 768 RGB WebP files, approximately 68–147 KB each, without generated text, logos, brands, or watermarks. Only the active stop mounts its medallions.
+- Copy and content: each medallion is paired to the stop's existing sourced field note. Specialized graphics cover root-zone water, harvest handling, crush equipment, fermentation, laboratory measurements, barrel/cellar work, finishing, label geography, and protected logistics rather than repeating one generic icon.
+
+### Interaction, accessibility, and responsive checks
+
+- Every shared visual node is a screen-reader-labelled button with `aria-pressed` and `aria-controls`; the selected explanation uses a reserved `aria-live` panel outside the art.
+- Arrow-key movement changed Harvest from Pick timing to Fruit care, and Escape restored the overview with no selected node. Pointer selection was verified on Vine, Crush House, Quality Lab, Finishing Bench, Bottle Passport, and Protected Journey nodes.
+- Guide-note and study-card page treatments remain separate from the atlas and navigation. Full character sprites stay on their paper card; the journey dock follows the content rather than floating over it.
+- Phone landscape shows selected lesson copy within a visible, keyboard-accessible scrolling parchment area when the full explanation exceeds the short viewport.
+- Reduced-motion rules preserve static art and remove atlas transitions. The reduced-motion tour retains all authored field-note content.
+- A clean reload after dependency optimization produced no new browser console warnings or errors.
+- TypeScript, production build, navigation tests, voice tests, security tests, secret scan, dependency audit, Supabase Edge checks, Replit dry-run, asset guard, RGRD manifest verification, and production route smoke checks passed.
+
+final result: passed
+
 ## Visual target
 
 - Reference: `C:\Users\TwoKn\Desktop\Sip Academy 02.png`

@@ -416,8 +416,15 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     const rect = section.getBoundingClientRect();
     const sectionTop = window.scrollY + rect.top;
     const travel = Math.max(1, rect.height - window.innerHeight);
+    const compactViewport =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(max-width: 760px)").matches;
     window.scrollTo({
-      behavior: reducedMotion ? "auto" : "smooth",
+      // Long smooth-scroll animations could cross more than one scene on a
+      // phone after the responsive stage changed height. Compact navigation
+      // now lands deterministically; direct user scrolling keeps the full
+      // reversible card-flip and scene-motion language.
+      behavior: reducedMotion || compactViewport ? "auto" : "smooth",
       top: sectionTop + travel * target.progress
     });
   };
@@ -552,18 +559,6 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     }
   };
 
-  const moveAtlasNode = (direction: -1 | 1) => {
-    const nodeCount = activeScene.fieldNotes.length;
-    if (!nodeCount) return;
-    const nextIndex =
-      atlasNodeIndex === null
-        ? direction > 0
-          ? 0
-          : nodeCount - 1
-        : (atlasNodeIndex + direction + nodeCount) % nodeCount;
-    selectAtlasNode(nextIndex);
-  };
-
   if (reducedMotion) {
     return <ReducedMotionStory chapter={chapter} transcriptId={transcriptId} />;
   }
@@ -599,7 +594,6 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
           ) : atlasEnabled ? (
             <FieldAtlasStudy
               artTransform={motionTransform(activeScene.motion, sceneProgress)}
-              onMove={moveAtlasNode}
               onOpenLab={activeLab ? () => setActiveLabId(activeLab.id) : undefined}
               onSelect={selectAtlasNode}
               scene={activeScene}

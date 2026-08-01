@@ -6516,3 +6516,351 @@ body:has(.btg-page),
 .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] .btg-stage__copy {
   display: none;
 }
+
+/* -------------------------------------------------------------------------
+   Field-atlas fidelity layer
+   Stop 05 is the visual source of truth: one cinematic teaching plate,
+   concept-specific medallions, a five-part lesson rail, a protected paper
+   explanation, and small user-controlled study steps. This late block is the
+   single authoritative atlas layer over the earlier experimental passes.
+   ------------------------------------------------------------------------- */
+
+.btg-field-atlas__nodes button {
+  left: clamp(7%, var(--btg-atlas-node-x), 93%);
+  top: clamp(9%, var(--btg-atlas-node-y), 91%);
+  transform: translate(-50%, -50%) scale(0.72);
+}
+
+.btg-field-atlas__nodes button:hover,
+.btg-field-atlas__nodes button:focus-visible {
+  transform: translate(-50%, -50%) scale(0.92);
+}
+
+.btg-field-atlas__nodes button.is-active {
+  filter: brightness(1.12) saturate(1.08);
+  transform: translate(-50%, -50%) scale(1.2);
+  z-index: 6;
+}
+
+.btg-field-atlas__nodes button:not(.is-active)[aria-pressed="false"] {
+  opacity: 0.64;
+}
+
+.btg-field-atlas__lens {
+  align-items: center;
+  background-color: #0b3540;
+  display: grid;
+  justify-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.btg-field-atlas__nodes button[data-art="icon"] .btg-field-atlas__lens {
+  background-image: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(240, 213, 143, 0.36),
+    inset 0 0 1.2rem rgba(48, 170, 184, 0.12);
+}
+
+.btg-field-atlas__symbol {
+  color: #f0d58f;
+  filter: drop-shadow(0 0 0.32rem rgba(106, 224, 236, 0.38));
+  height: 68%;
+  width: 68%;
+}
+
+.btg-field-atlas__crop-symbol {
+  background: rgba(3, 20, 27, 0.9);
+  border: 1px solid rgba(240, 213, 143, 0.8);
+  border-radius: 50%;
+  bottom: 0.06rem;
+  color: #f0d58f;
+  filter: drop-shadow(0 0 0.24rem rgba(0, 0, 0, 0.8));
+  height: 42%;
+  padding: 0.13rem;
+  position: absolute;
+  right: 0.06rem;
+  width: 42%;
+}
+
+.btg-field-atlas__rail {
+  grid-auto-columns: initial;
+  grid-auto-flow: row;
+  grid-template-columns: repeat(var(--btg-atlas-count), minmax(0, 1fr));
+  overflow-x: visible;
+}
+
+.btg-field-atlas__rail button {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.btg-field-atlas__detail {
+  border-top: 1px solid rgba(159, 232, 242, 0.38);
+}
+
+.btg-field-atlas__field-note > p {
+  max-width: 72ch;
+}
+
+/* Keep the Vine study's dimensional orbit while presenting a stable 2D hit
+   surface. Negative translateZ values made inactive anatomy nodes visible but
+   untouchable in some mobile engines. */
+.btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__parts {
+  pointer-events: none;
+}
+
+.btg-stage[data-scene="vine-and-berry"] .btg-vine-part {
+  pointer-events: auto;
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--btg-part-rotation))
+    scale(var(--btg-part-scale));
+  z-index: 9;
+}
+
+.btg-stage[data-scene="vine-and-berry"] .btg-vine-part.is-active {
+  z-index: 20;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .btg-stage:not([data-scene="academy-plaza"]) {
+    align-content: start;
+    grid-template-rows: 4rem auto auto;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__visual {
+    height: auto;
+    min-height: 0;
+  }
+
+  .btg-field-atlas {
+    align-content: start;
+    grid-template-rows: auto auto auto;
+    height: auto;
+  }
+
+  .btg-field-atlas__canvas {
+    aspect-ratio: 4 / 3;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(38, 104, 101, 0.28), transparent 58%),
+      #041820;
+    height: auto;
+    min-height: 0;
+  }
+
+  .btg-field-atlas__picture img {
+    object-fit: contain !important;
+  }
+
+  .btg-field-atlas__nodes button {
+    height: clamp(2.8rem, 11.4vw, 3.45rem);
+    left: clamp(8%, var(--btg-atlas-phone-x), 92%);
+    top: clamp(10%, var(--btg-atlas-phone-y), 90%);
+    width: clamp(2.8rem, 11.4vw, 3.45rem);
+  }
+
+  .btg-field-atlas__nodes button.is-active {
+    transform: translate(-50%, -50%) scale(1.16);
+  }
+
+  .btg-field-atlas__rail {
+    min-height: 3.1rem;
+    padding: 0.3rem;
+  }
+
+  .btg-field-atlas__rail button {
+    font-size: clamp(0.46rem, 1.9vw, 0.58rem);
+    min-height: 2.5rem;
+    padding: 0.2rem 0.12rem;
+  }
+
+  .btg-field-atlas__detail {
+    gap: 0.3rem;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding: 0.38rem 0.42rem 0.42rem;
+  }
+
+  .btg-field-atlas__field-note {
+    min-height: 4.8rem;
+  }
+
+  .btg-field-atlas__field-note > p {
+    font-size: clamp(0.72rem, 2.45vw, 0.86rem);
+    line-height: 1.3;
+  }
+
+  .btg-field-atlas__detail nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .btg-field-atlas__detail nav:has(.btg-field-atlas__lab) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .btg-field-atlas__detail nav .btg-field-atlas__lab {
+    grid-column: auto;
+  }
+
+  .btg-field-atlas__detail nav button {
+    min-height: 2.45rem;
+  }
+
+  .btg-field-atlas__detail nav .btg-desktop-label {
+    display: none;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] {
+    grid-template-rows: 4rem auto auto auto;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"]
+    .btg-field-atlas {
+    grid-template-rows: auto auto auto;
+    height: auto;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"]
+    .btg-story-panel {
+    grid-template-rows: auto auto minmax(clamp(12.5rem, 30svh, 16rem), auto);
+    height: auto;
+    min-height: 0;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"]
+    .btg-note-stack {
+    height: clamp(12.5rem, 30svh, 16rem);
+    min-height: clamp(12.5rem, 30svh, 16rem);
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-journey-dock {
+    bottom: auto;
+    grid-row: 3;
+    left: auto;
+    max-width: 100%;
+    position: relative;
+    right: auto;
+    width: 100%;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"]
+    .btg-journey-dock {
+    grid-row: 4;
+  }
+
+  /* The vine atlas owns absolutely positioned orbit layers, so it needs an
+     explicit portrait canvas after the shared scene shell becomes intrinsic. */
+  .btg-stage[data-scene="vine-and-berry"] .btg-stage__visual {
+    aspect-ratio: auto;
+    height: auto !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy {
+    grid-template-rows: auto auto;
+    height: auto;
+    inset: auto;
+    position: relative;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__canvas {
+    aspect-ratio: 4 / 3;
+    height: auto;
+    min-height: 0;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__field-note p {
+    font-size: 0.72rem;
+    line-height: 1.3;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  .btg-field-atlas {
+    grid-template-columns: minmax(0, 1.52fr) minmax(15rem, 0.72fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .btg-field-atlas__canvas {
+    grid-column: 1;
+    grid-row: 1 / -1;
+  }
+
+  .btg-field-atlas__rail {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .btg-field-atlas__detail {
+    grid-column: 2;
+    grid-row: 2;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .btg-field-atlas__field-note {
+    align-content: start;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0.3rem 0.44rem;
+    scrollbar-color: rgba(159, 232, 242, 0.5) transparent;
+  }
+
+  .btg-field-atlas__field-note > span {
+    font-size: 0.42rem;
+  }
+
+  .btg-field-atlas__field-note > strong {
+    font-size: 0.82rem;
+  }
+
+  .btg-field-atlas__field-note > p {
+    font-size: 0.62rem;
+    line-height: 1.2;
+  }
+
+  .btg-field-atlas__detail nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .btg-field-atlas__detail nav:has(.btg-field-atlas__lab) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .btg-field-atlas__detail nav .btg-field-atlas__lab {
+    grid-column: auto;
+  }
+
+  .btg-field-atlas__detail nav button {
+    min-height: 1.9rem;
+    padding: 0.2rem 0.32rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"]
+    .btg-field-atlas__detail {
+    display: none;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"]
+    .btg-field-atlas {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"]
+    .btg-field-atlas__canvas {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"]
+    .btg-field-atlas__rail {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}
