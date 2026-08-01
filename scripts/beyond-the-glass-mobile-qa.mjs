@@ -335,7 +335,11 @@ async function inspectStage(client, sessionId, expectedScene) {
         .map((image) => image.getAttribute("src") ?? "(missing src)");
       const fallbackCount = Array.from(stage.querySelectorAll(".btg-story-image--fallback")).filter(visible).length;
       const guideNote = stage.querySelector('.btg-guide-note[aria-hidden="false"]');
-      const guideNoteExpected = ${JSON.stringify(expectedScene)} !== "academy-plaza";
+      const atlas = stage.querySelector(".btg-field-atlas, .btg-vine-anatomy");
+      const atlasExpected = ${JSON.stringify(expectedScene)} !== "academy-plaza";
+      const atlasNodeCount = stage.querySelectorAll(
+        ".btg-field-atlas__nodes button, .btg-vine-anatomy__node"
+      ).length;
       const documentOverflow = Math.max(
         0,
         document.documentElement.scrollWidth - window.innerWidth,
@@ -355,12 +359,14 @@ async function inspectStage(client, sessionId, expectedScene) {
           " (" + Math.round(control.rect.width) + "×" + Math.round(control.rect.height) + ")"
         );
       }
-      if (visible(guideNote) !== guideNoteExpected) {
-        failures.push(
-          guideNoteExpected
-            ? "guide field note is missing"
-            : "guide field note is visible on Academy Plaza"
-        );
+      if (visible(guideNote)) {
+        failures.push("guide field note is visible before the learner opens guide notes");
+      }
+      if (visible(atlas) !== atlasExpected) {
+        failures.push(atlasExpected ? "interactive field atlas is missing" : "field atlas is visible on Academy Plaza");
+      }
+      if (atlasExpected && atlasNodeCount < 1) {
+        failures.push("interactive field atlas has no visible lesson nodes");
       }
       if (activeNote) {
         const activeNoteRect = rect(activeNote);
@@ -385,6 +391,8 @@ async function inspectStage(client, sessionId, expectedScene) {
           activeNote && regions.dock ? intersection(rect(activeNote), regions.dock) : 0,
         documentOverflow,
         failures,
+        atlasNodeCount,
+        atlasVisible: visible(atlas),
         guideNoteVisible: visible(guideNote),
         overlaps,
         regions,

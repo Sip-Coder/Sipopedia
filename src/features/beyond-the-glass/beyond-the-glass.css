@@ -6026,3 +6026,493 @@ body:has(.btg-page),
   height: 100%;
   top: 0;
 }
+
+/* -------------------------------------------------------------------------
+   SIP Academy field atlas
+   Every wine stop now uses the Vine Anatomy study rhythm: illustrated scene,
+   visual lesson nodes, a compact layer rail, and a protected detail card.
+   The existing guide/study page deck remains available as a second view.
+   ------------------------------------------------------------------------- */
+
+.btg-field-atlas {
+  background: #03141b;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  z-index: 4;
+}
+
+.btg-field-atlas__canvas {
+  background:
+    radial-gradient(circle at 50% 52%, rgba(48, 111, 112, 0.22), transparent 66%),
+    #020c11;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.btg-field-atlas__picture,
+.btg-field-atlas__picture img {
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.btg-field-atlas__picture img {
+  object-fit: cover;
+  transition:
+    transform 520ms cubic-bezier(0.2, 0.75, 0.22, 1),
+    transform-origin 520ms cubic-bezier(0.2, 0.75, 0.22, 1);
+}
+
+.btg-field-atlas__canvas::after {
+  background:
+    linear-gradient(180deg, rgba(2, 12, 17, 0.28), transparent 27%),
+    linear-gradient(0deg, rgba(2, 12, 17, 0.22), transparent 26%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.btg-field-atlas__nodes {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 4;
+}
+
+.btg-field-atlas__nodes button {
+  --btg-atlas-ring: #9fe8f2;
+  appearance: none;
+  background: rgba(3, 20, 27, 0.94);
+  border: 2px solid var(--btg-atlas-ring);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 0.2rem rgba(3, 20, 27, 0.82),
+    0 0 1rem color-mix(in srgb, var(--btg-atlas-ring) 58%, transparent);
+  cursor: pointer;
+  height: clamp(3.15rem, 5vw, 4.6rem);
+  left: var(--btg-atlas-node-x);
+  overflow: hidden;
+  padding: 0.24rem;
+  pointer-events: auto;
+  position: absolute;
+  top: var(--btg-atlas-node-y);
+  transform: translate(-50%, -50%) scale(0.88);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease,
+    transform 220ms ease;
+  width: clamp(3.15rem, 5vw, 4.6rem);
+}
+
+.btg-field-atlas[data-phase="vineyard"] .btg-field-atlas__nodes button {
+  --btg-atlas-ring: #d6c66c;
+}
+
+.btg-field-atlas[data-phase="production"] .btg-field-atlas__nodes button {
+  --btg-atlas-ring: #79dce6;
+}
+
+.btg-field-atlas[data-phase="cellar"] .btg-field-atlas__nodes button {
+  --btg-atlas-ring: #d2a55b;
+}
+
+.btg-field-atlas[data-phase="commerce"] .btg-field-atlas__nodes button {
+  --btg-atlas-ring: #a9d5c1;
+}
+
+.btg-field-atlas[data-phase="service"] .btg-field-atlas__nodes button {
+  --btg-atlas-ring: #e3c98f;
+}
+
+.btg-field-atlas__nodes button:hover,
+.btg-field-atlas__nodes button:focus-visible,
+.btg-field-atlas__nodes button.is-active {
+  border-color: var(--btg-cream);
+  box-shadow:
+    0 0 0 0.22rem rgba(3, 20, 27, 0.9),
+    0 0 1.45rem var(--btg-atlas-ring);
+  filter: brightness(1.1) saturate(1.08);
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.btg-field-atlas__nodes button:not(.is-active)[aria-pressed="false"] {
+  opacity: 0.78;
+}
+
+.btg-field-atlas__nodes button:focus-visible {
+  outline: 3px solid var(--btg-white);
+  outline-offset: 4px;
+}
+
+.btg-field-atlas__lens {
+  background-image: var(--btg-atlas-node-image);
+  background-position: var(--btg-atlas-node-position);
+  background-repeat: no-repeat;
+  background-size: var(--btg-atlas-node-size);
+  border: 1px solid rgba(255, 250, 240, 0.58);
+  border-radius: 50%;
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.btg-field-atlas__rail {
+  background: rgba(3, 20, 27, 0.985);
+  border-block: 1px solid rgba(159, 232, 242, 0.38);
+  display: grid;
+  grid-auto-columns: minmax(5.35rem, 1fr);
+  grid-auto-flow: column;
+  min-height: 3.25rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding: 0.45rem clamp(0.38rem, 1.1vw, 0.72rem);
+  scrollbar-color: rgba(159, 232, 242, 0.45) transparent;
+  scrollbar-width: thin;
+}
+
+.btg-field-atlas__rail button {
+  background: transparent;
+  border: 0;
+  border-right: 1px solid rgba(159, 232, 242, 0.28);
+  color: var(--btg-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: clamp(0.5rem, 0.72vw, 0.64rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1.08;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.38rem;
+  text-transform: uppercase;
+}
+
+.btg-field-atlas__rail button:last-child {
+  border-right: 0;
+}
+
+.btg-field-atlas__rail button[aria-pressed="true"] {
+  background: linear-gradient(135deg, rgba(23, 79, 73, 0.96), rgba(112, 76, 34, 0.92));
+  box-shadow: inset 0 0 0 1px var(--btg-brass);
+  color: var(--btg-white);
+}
+
+.btg-field-atlas__rail button:focus-visible {
+  outline: 3px solid var(--btg-water);
+  outline-offset: -3px;
+}
+
+.btg-field-atlas__detail {
+  align-items: stretch;
+  background: #03141b;
+  display: grid;
+  gap: 0.48rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 7.2rem;
+  padding: 0.5rem clamp(0.5rem, 1.2vw, 0.82rem);
+  position: relative;
+  z-index: 6;
+}
+
+.btg-field-atlas__field-note {
+  align-content: center;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0) 1.46rem,
+      rgba(69, 105, 100, 0.16) 1.5rem
+    ),
+    #f4e4bf;
+  border: 1px solid rgba(94, 58, 25, 0.72);
+  color: #1e2929;
+  display: grid;
+  gap: 0.12rem;
+  min-width: 0;
+  padding: 0.55rem 0.72rem;
+}
+
+.btg-field-atlas__field-note > span {
+  color: #46615f;
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.btg-field-atlas__field-note > strong {
+  color: #482d1d;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(0.94rem, 1.35vw, 1.22rem);
+  line-height: 1.08;
+}
+
+.btg-field-atlas__field-note > p {
+  color: #263837;
+  font-size: clamp(0.64rem, 0.78vw, 0.76rem);
+  line-height: 1.33;
+  margin: 0.14rem 0 0;
+}
+
+.btg-field-atlas__detail nav {
+  align-content: stretch;
+  display: grid;
+  gap: 0.3rem;
+  grid-template-columns: repeat(3, minmax(3.2rem, auto));
+}
+
+.btg-field-atlas__detail nav button {
+  background: rgba(159, 232, 242, 0.08);
+  border: 1px solid rgba(159, 232, 242, 0.45);
+  color: var(--btg-white);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.58rem;
+  font-weight: 900;
+  min-height: 2.55rem;
+  padding: 0.38rem 0.52rem;
+}
+
+.btg-field-atlas__detail nav button:focus-visible {
+  outline: 3px solid var(--btg-water);
+  outline-offset: 2px;
+}
+
+.btg-field-atlas__detail nav .btg-field-atlas__lab {
+  background: linear-gradient(135deg, rgba(23, 79, 73, 0.96), rgba(112, 76, 34, 0.92));
+  border-color: var(--btg-brass);
+  grid-column: 1 / -1;
+}
+
+/* All substantive stops use the same atlas-first shell as Stop 05. */
+@media (min-width: 761px) {
+  .btg-stage:not([data-scene="academy-plaza"]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__header {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__visual {
+    align-self: stretch;
+    aspect-ratio: auto;
+    grid-column: 1;
+    height: 100%;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="closed"] .btg-story-panel {
+    display: none;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] {
+    grid-template-columns: minmax(0, 1.68fr) minmax(20rem, 0.72fr);
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] .btg-stage__visual {
+    grid-column: 1;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] .btg-story-panel {
+    display: grid;
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .btg-stage:not([data-scene="academy-plaza"]) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 4rem minmax(0, 1fr) 3.35rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__header {
+    display: grid;
+    gap: 0.22rem 0.5rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__header > div:first-child {
+    grid-row: 1 / span 2;
+    min-width: 0;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__header .btg-kicker {
+    font-size: 0.62rem;
+    line-height: 1.22;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__header > div:first-child strong {
+    display: -webkit-box;
+    font-size: clamp(0.94rem, 3.8vw, 1.12rem);
+    line-height: 1.08;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-progress {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 6.6rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-progress span {
+    font-size: 0.56rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-vine-notes-toggle {
+    font-size: 0.54rem;
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 1.8rem;
+    padding: 0.2rem 0.42rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__visual {
+    aspect-ratio: auto;
+    grid-row: 2;
+    height: 100%;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="closed"] .btg-story-panel {
+    display: none;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="closed"] .btg-journey-dock {
+    grid-row: 3;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] {
+    grid-template-rows: 4rem minmax(12rem, 31svh) minmax(0, 1fr) 3.35rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] .btg-story-panel {
+    display: grid;
+    grid-row: 3;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] .btg-journey-dock {
+    grid-row: 4;
+  }
+
+  .btg-field-atlas__nodes button {
+    height: clamp(2.75rem, 12vw, 3.5rem);
+    left: var(--btg-atlas-phone-x);
+    top: var(--btg-atlas-phone-y);
+    width: clamp(2.75rem, 12vw, 3.5rem);
+  }
+
+  .btg-field-atlas__rail {
+    grid-auto-columns: minmax(4.65rem, 1fr);
+    min-height: 2.85rem;
+    padding: 0.32rem 0.3rem;
+  }
+
+  .btg-field-atlas__rail button {
+    font-size: 0.56rem;
+    min-height: 2.75rem;
+    padding: 0.22rem 0.28rem;
+  }
+
+  .btg-field-atlas__detail {
+    gap: 0.34rem;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 9.35rem;
+    padding: 0.38rem 0.42rem;
+  }
+
+  .btg-field-atlas__field-note {
+    min-height: 4.8rem;
+    padding: 0.4rem 0.52rem;
+  }
+
+  .btg-field-atlas__field-note > strong {
+    font-size: clamp(1rem, 4.8vw, 1.18rem);
+  }
+
+  .btg-field-atlas__field-note > p {
+    font-size: 0.82rem;
+    line-height: 1.32;
+  }
+
+  .btg-field-atlas__detail nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .btg-field-atlas__detail nav button {
+    font-size: 0.68rem;
+    min-height: 2.75rem;
+    padding: 0.3rem;
+  }
+
+  .btg-field-atlas__detail nav .btg-field-atlas__lab {
+    grid-column: 1 / -1;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] {
+    grid-template-rows: 4rem minmax(13rem, 40svh) minmax(0, 1fr) 3.35rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] .btg-field-atlas__detail {
+    display: none;
+  }
+}
+
+@media (min-width: 641px) and (max-height: 540px) {
+  .btg-field-atlas {
+    grid-template-columns: minmax(0, 1.5fr) minmax(17rem, 0.62fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .btg-field-atlas__canvas {
+    grid-column: 1;
+    grid-row: 1 / -1;
+  }
+
+  .btg-field-atlas__rail {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .btg-field-atlas__detail {
+    grid-column: 2;
+    grid-row: 2;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .btg-field-atlas__detail nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btg-field-atlas__picture img,
+  .btg-field-atlas__nodes button {
+    transition: none !important;
+  }
+}
+
+/* A stored node selection must never suppress the explicitly opened guide deck. */
+.btg-stage[data-study-panel="open"][data-atlas-selection="selected"] .btg-note-switcher {
+  display: flex !important;
+}
+
+.btg-stage[data-study-panel="open"][data-atlas-selection="selected"] .btg-note-stack {
+  display: grid !important;
+}
+
+.btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] .btg-stage__copy {
+  display: none;
+}

@@ -4,6 +4,31 @@ Status: Passed
 
 Final result: passed
 
+## August 1 shared field-atlas system
+
+- Source visual truth: `C:\Users\TwoKn\Documents\Codex\2026-07-20\prior-conversation-with-codex-conversation-role\.codex-remote-attachments\019f825f-f49a-7c40-adb0-1dc18d096e82\4e64f824-fe40-42f9-8774-9093b60177fa\1-Photo-1.jpg` (597 × 1280 phone capture of “The Vine Builds a Berry”).
+- Matched implementation: `C:\Codebase\actual\Sipopedia\qa\btg-shared-field-atlas\design-qa-implementation-597x1280.png` (597 × 1280 in-app browser capture of “Harvest Run”).
+- Direct comparison: `C:\Codebase\actual\Sipopedia\qa\btg-shared-field-atlas\design-qa-comparison.jpg`.
+- Additional evidence: `design-qa-phone.png`, `design-qa-phone-selected.png`, `design-qa-phone-guide.png`, `design-qa-phone-landscape-harvest.png`, `design-qa-laptop-harvest.png`, and `design-qa-desktop-harvest.png` in `qa\btg-shared-field-atlas`.
+
+### Fidelity and behavior
+
+- All substantive Beyond the Glass stops now use the accepted Vine Anatomy rhythm: protected title rail, full scene artwork, circular visual nodes, lesson-layer rail, cream study card, previous/overview/next controls, and the compact journey dock.
+- Node lenses use scene-specific semantic crops, approved guide artwork, existing curriculum artwork, and five new project-bound medallions where the source painting could not teach the concept clearly: mechanical harvest, fermentation conversion, cellar environment, closure/headspace, and transport heat/light.
+- Selecting a visual node highlights it, shifts the image focus toward that clue, selects the matching rail item, and updates the reserved study card outside the artwork. The selection is saved by stable field-note title.
+- The separate guide-note deck remains available on demand and does not replace or cover the atlas by default.
+- Mobile typography was increased from the earlier compressed treatment; essential field-note copy is not clamped or ellipsized.
+
+### Responsive and accessibility checks
+
+- Phone portrait checks: 485 × 910 and the source-matched 597 × 1280. Phone landscape: 844 × 390. Laptop: 1366 × 768. Wide desktop: 1440 × 900.
+- All checked states have zero document-level horizontal overflow. Art, node targets, the rail, study copy, and the journey dock occupy separate safe zones.
+- Pointer activation was verified on Roma’s guide node and the mechanical-harvest node; each updated `aria-pressed`, visual focus, and live study-card content.
+- Node controls and rail controls are semantic buttons with screen-reader labels, visible focus treatment, and reduced-motion transitions disabled.
+- The generated node assets are 768 × 768 WebP files between 91 KB and 122 KB, safe for circular cropping and lazy page delivery.
+
+final result: passed
+
 ## Visual target
 
 - Reference: `C:\Users\TwoKn\Desktop\Sip Academy 02.png`
@@ -232,3 +257,5 @@ Final result: passed
 - Accessibility: the existing reduced-motion path still selects the still asset and collapses animation/transition duration to a single effectively static frame.
 
 Final result: passed
+
+final result: passed
