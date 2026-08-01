@@ -24,9 +24,9 @@ const GUIDE_REACTIONS: Record<BeyondTheGlassSpeaker, GuideMotion[]> = {
 };
 
 const GUIDE_TIMING: Record<BeyondTheGlassSpeaker, { pause: number; reaction: number }> = {
-  Sippy: { pause: 12_800, reaction: 1_900 },
-  Roma: { pause: 14_200, reaction: 2_000 },
-  Hummin: { pause: 15_600, reaction: 2_100 }
+  Sippy: { pause: 500, reaction: 500 },
+  Roma: { pause: 500, reaction: 500 },
+  Hummin: { pause: 500, reaction: 500 }
 };
 
 function cueIndex(cue: GuideSpriteProps["cue"], length: number): number {
@@ -50,7 +50,10 @@ export function GuideSprite({
   const sources = useMemo(() => {
     const slug = GUIDE_SLUGS[speaker];
     return {
-      motion: `/beyond-the-glass/guides/animated/${slug}-${motion}.gif`,
+      motion:
+        motion === "idle"
+          ? `/beyond-the-glass/guides/animated/${slug}-still.png`
+          : `/beyond-the-glass/guides/animated/${slug}-${motion}.gif`,
       still: `/beyond-the-glass/guides/animated/${slug}-still.png`
     };
   }, [motion, speaker]);

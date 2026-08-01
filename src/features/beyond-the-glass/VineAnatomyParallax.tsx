@@ -392,7 +392,7 @@ export function VineAnatomyParallax({
     <div
       aria-label="A rotating, deconstructed grapevine anatomy study"
       className="btg-vine-anatomy"
-      role="img"
+      role="group"
       style={{ opacity } as CSSProperties}
     >
       <header className="btg-vine-anatomy__header">

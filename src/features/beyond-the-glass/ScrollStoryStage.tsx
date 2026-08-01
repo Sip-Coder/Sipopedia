@@ -14,6 +14,7 @@ import type {
 } from "../../data/beyondTheGlassChapters";
 import { beyondTheGlassCurriculumLabs } from "../../data/beyondTheGlassCurriculum";
 import { CurriculumLab } from "./CurriculumLab";
+import { FieldAtlasStudy } from "./FieldAtlasStudy";
 import { GuideSprite } from "./GuideSprite";
 import { NarrationControls } from "./NarrationControls";
 import { progressBetween, useScrollStoryProgress } from "./useScrollStoryProgress";
@@ -56,18 +57,6 @@ const ACADEMY_ROADMAP = [
   { label: "Tea ecosystem", note: "Under construction · fourth", x: 75, y: 22 },
   { label: "Future journeys", note: "Academy expansion", x: 49, y: 18 }
 ] as const;
-const ATLAS_NODE_POSITIONS = [
-  [18, 20],
-  [50, 18],
-  [82, 22],
-  [18, 54],
-  [82, 54],
-  [18, 84],
-  [50, 82],
-  [82, 82],
-  [50, 50]
-] as const;
-
 function clamp(value: number, minimum = 0, maximum = 1): number {
   return Math.min(maximum, Math.max(minimum, value));
 }
@@ -198,22 +187,66 @@ function noteCardStyle(index: number, position: number): CSSProperties {
   if (offset < 0) {
     const sweep = clamp(-offset, 0, 1.15);
     return {
-      filter: `brightness(${(1 - sweep * 0.08).toFixed(3)})`,
-      opacity: clamp(1 - sweep * 1.08, 0, 1),
+      backfaceVisibility: "hidden",
+      filter: `brightness(${(1 - sweep * 0.1).toFixed(3)}) drop-shadow(${(
+        sweep * 0.55
+      ).toFixed(2)}rem 0.35rem 0.55rem rgba(0, 0, 0, 0.22))`,
+      opacity: clamp(1 - Math.max(0, sweep - 0.72) * 3.6, 0, 1),
       pointerEvents: sweep > 0.48 ? "none" : "auto",
-      transform: `translate3d(${(-sweep * 108).toFixed(2)}%, ${(-sweep * 0.9).toFixed(2)}rem, 0) rotate(${(-sweep * 9).toFixed(2)}deg) scale(${(1 - sweep * 0.035).toFixed(3)})`,
-      zIndex: 120 - index
+      transform: `perspective(1250px) translate3d(${(-sweep * 7).toFixed(2)}%, ${(
+        -sweep * 0.24
+      ).toFixed(2)}rem, ${(sweep * 44).toFixed(2)}px) rotateY(${(
+        -sweep * 164
+      ).toFixed(2)}deg) rotateZ(${(-sweep * 2.25).toFixed(2)}deg)`,
+      transformOrigin: "left center",
+      zIndex: 160 - index
     };
   }
 
   const depth = Math.min(offset, 3);
   return {
+    backfaceVisibility: "hidden",
     filter: `brightness(${(1 - depth * 0.045).toFixed(3)})`,
     opacity: clamp(1 - Math.max(0, depth - 1.8) * 0.7, 0.16, 1),
     pointerEvents: depth < 0.5 ? "auto" : "none",
-    transform: `translate3d(${(depth * 0.58).toFixed(2)}rem, ${(depth * 0.5).toFixed(2)}rem, ${(-depth * 34).toFixed(2)}px) rotate(${(depth * 1.75).toFixed(2)}deg) scale(${(1 - depth * 0.028).toFixed(3)})`,
+    transform: `perspective(1250px) translate3d(${(depth * 0.48).toFixed(2)}rem, ${(
+      depth * 0.42
+    ).toFixed(2)}rem, ${(-depth * 32).toFixed(2)}px) rotateY(${(
+      depth * 1.8
+    ).toFixed(2)}deg) rotateZ(${(depth * 1.35).toFixed(2)}deg) scale(${(
+      1 - depth * 0.026
+    ).toFixed(3)})`,
+    transformOrigin: "left center",
     zIndex: 120 - index
   };
+}
+
+type NoteDeckView = "guide" | "study";
+
+const NOTE_DECK_TRANSITIONS = [0.2, 0.4, 0.6, 0.8] as const;
+
+function guideDeckWeight(sceneProgress: number, hasStudyCards: boolean): number {
+  if (!hasStudyCards) return 1;
+
+  const progress = clamp(sceneProgress);
+  const states = [1, 0, 1, 0, 1] as const;
+  const transitionRadius = 0.045;
+  let currentState: number = states[0];
+
+  for (let index = 0; index < NOTE_DECK_TRANSITIONS.length; index += 1) {
+    const boundary = NOTE_DECK_TRANSITIONS[index];
+    const nextState = states[index + 1];
+    if (progress < boundary - transitionRadius) return currentState;
+    if (progress <= boundary + transitionRadius) {
+      const transition = smoothstep(
+        progressBetween(progress, boundary - transitionRadius, boundary + transitionRadius)
+      );
+      return currentState + (nextState - currentState) * transition;
+    }
+    currentState = nextState;
+  }
+
+  return currentState;
 }
 
 function ReducedMotionStory({ chapter, transcriptId }: ScrollStoryStageProps) {
@@ -292,9 +325,11 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
   const [panelNoteProgress, setPanelNoteProgress] = useState(0);
   const [resumeSceneIndex, setResumeSceneIndex] = useState<number | null>(null);
   const [activeLabId, setActiveLabId] = useState<string | null>(null);
-  const [noteView, setNoteView] = useState<"guide" | "study">("guide");
-  const [vineNotesOpen, setVineNotesOpen] = useState(false);
+  const [noteView, setNoteView] = useState<NoteDeckView>("guide");
+  const [guideNotesOpen, setGuideNotesOpen] = useState(false);
   const [atlasNodeIndex, setAtlasNodeIndex] = useState<number | null>(null);
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
+  const manualCardAnchorRef = useRef<number | null>(null);
 
   const activeSpeaker = activeScene.narration[0]?.speaker ?? "Sippy";
   const activeCaptionLine =
@@ -327,21 +362,42 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     Math.max(0, Math.round(fieldNoteScrollPosition)),
     Math.max(0, activeScene.fieldNotes.length - 1)
   );
+  const automaticGuideWeight = guideDeckWeight(
+    sceneProgress,
+    activeScene.fieldNotes.length > 0
+  );
+  const guideWeight = panelControlsCards
+    ? noteView === "guide"
+      ? 1
+      : 0
+    : automaticGuideWeight;
+  const studyWeight = 1 - guideWeight;
+  const effectiveNoteView: NoteDeckView = guideWeight >= 0.5 ? "guide" : "study";
+  const guideDeckStyle = {
+    opacity: clamp(guideWeight * 1.45, 0, 1).toFixed(3),
+    pointerEvents: effectiveNoteView === "guide" ? "auto" : "none",
+    transform: `perspective(1250px) translate3d(${((1 - guideWeight) * -5).toFixed(
+      2
+    )}%, 0, ${((1 - guideWeight) * 34).toFixed(2)}px) rotateY(${(
+      (1 - guideWeight) * -162
+    ).toFixed(2)}deg) rotateZ(${((1 - guideWeight) * -1.5).toFixed(2)}deg)`,
+    zIndex: effectiveNoteView === "guide" ? 4 : 2
+  } as CSSProperties;
+  const studyDeckStyle = {
+    opacity: clamp(studyWeight * 1.45, 0, 1).toFixed(3),
+    pointerEvents: effectiveNoteView === "study" ? "auto" : "none",
+    transform: `perspective(1250px) translate3d(${((1 - studyWeight) * 5).toFixed(
+      2
+    )}%, 0, ${((1 - studyWeight) * 34).toFixed(2)}px) rotateY(${(
+      (1 - studyWeight) * 162
+    ).toFixed(2)}deg) rotateZ(${((1 - studyWeight) * 1.5).toFixed(2)}deg)`,
+    zIndex: effectiveNoteView === "study" ? 4 : 2
+  } as CSSProperties;
   const activeLab = beyondTheGlassCurriculumLabs[activeScene.id];
   const atlasEnabled =
     activeScene.id !== "academy-plaza" &&
-    activeScene.id !== "guides-at-sunrise" &&
     activeScene.id !== "vine-and-berry" &&
     activeScene.fieldNotes.length > 0;
-  const activeAtlasNote =
-    atlasNodeIndex === null ? null : (activeScene.fieldNotes[atlasNodeIndex] ?? null);
-  const activeAtlasOrigin =
-    atlasNodeIndex === null
-      ? null
-      : (ATLAS_NODE_POSITIONS[atlasNodeIndex % ATLAS_NODE_POSITIONS.length] ?? [50, 50]);
-  const atlasFocusTransform = activeAtlasOrigin
-    ? ` translate3d(${((50 - activeAtlasOrigin[0]) * 0.12).toFixed(2)}%, ${((50 - activeAtlasOrigin[1]) * 0.12).toFixed(2)}%, 0) scale(1.055)`
-    : "";
   const journeyPercent = Math.round(progress * 100);
 
   const sceneOffsets = useMemo(
@@ -360,8 +416,15 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     const rect = section.getBoundingClientRect();
     const sectionTop = window.scrollY + rect.top;
     const travel = Math.max(1, rect.height - window.innerHeight);
+    const compactViewport =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(max-width: 760px)").matches;
     window.scrollTo({
-      behavior: reducedMotion ? "auto" : "smooth",
+      // Long smooth-scroll animations could cross more than one scene on a
+      // phone after the responsive stage changed height. Compact navigation
+      // now lands deterministically; direct user scrolling keeps the full
+      // reversible card-flip and scene-motion language.
+      behavior: reducedMotion || compactViewport ? "auto" : "smooth",
       top: sectionTop + travel * target.progress
     });
   };
@@ -372,7 +435,25 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     const cardProgress = index / (cardCount - 1);
     const localProgress = 0.14 + cardProgress * (0.62 - 0.14);
     setPanelControlsCards(true);
+    setNoteView("guide");
     setPanelNoteProgress(localProgress);
+    manualCardAnchorRef.current = sceneProgress;
+  };
+
+  const requestNoteView = (view: NoteDeckView) => {
+    const cardCount =
+      view === "guide" ? activeScene.narration.length : activeScene.fieldNotes.length;
+    const visibleIndex = view === "guide" ? visibleStudyCardIndex : visibleFieldNoteIndex;
+    const rangeStart = view === "guide" ? 0.14 : 0.36;
+    const rangeEnd = view === "guide" ? 0.62 : 0.88;
+    const snappedProgress =
+      cardCount <= 1
+        ? rangeStart
+        : rangeStart + (visibleIndex / (cardCount - 1)) * (rangeEnd - rangeStart);
+    setPanelControlsCards(true);
+    setPanelNoteProgress(snappedProgress);
+    setNoteView(view);
+    manualCardAnchorRef.current = sceneProgress;
   };
 
   const handleStoryPanelScroll = (event: UIEvent<HTMLDivElement>) => {
@@ -381,7 +462,16 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     if (travel <= 1) return;
     setPanelControlsCards(true);
     setPanelNoteProgress(clamp(panel.scrollTop / travel));
+    manualCardAnchorRef.current = sceneProgress;
   };
+
+  useEffect(() => {
+    const anchor = manualCardAnchorRef.current;
+    if (!panelControlsCards || anchor === null) return;
+    if (Math.abs(sceneProgress - anchor) < 0.018) return;
+    setPanelControlsCards(false);
+    manualCardAnchorRef.current = null;
+  }, [panelControlsCards, sceneProgress]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -432,12 +522,16 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     setPanelControlsCards(false);
     setPanelNoteProgress(0);
     setNoteView("guide");
-    setVineNotesOpen(false);
+    manualCardAnchorRef.current = null;
+    setGuideNotesOpen(false);
+    setMobileToolsOpen(false);
     try {
-      const storedIndex = Number.parseInt(
-        window.localStorage.getItem(`sipopedia:btg:atlas:${activeScene.id}:v1`) ?? "",
-        10
-      );
+      const storedValue =
+        window.localStorage.getItem(`sipopedia:btg:atlas:${activeScene.id}:v1`) ?? "";
+      const legacyIndex = Number.parseInt(storedValue, 10);
+      const storedIndex = Number.isInteger(legacyIndex)
+        ? legacyIndex
+        : activeScene.fieldNotes.findIndex((note) => note.title === storedValue);
       setAtlasNodeIndex(
         Number.isInteger(storedIndex) &&
           storedIndex >= 0 &&
@@ -456,22 +550,13 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     try {
       const storageKey = `sipopedia:btg:atlas:${activeScene.id}:v1`;
       if (index === null) window.localStorage.removeItem(storageKey);
-      else window.localStorage.setItem(storageKey, String(index));
+      else {
+        const stableNodeId = activeScene.fieldNotes[index]?.title;
+        if (stableNodeId) window.localStorage.setItem(storageKey, stableNodeId);
+      }
     } catch {
       // The field atlas remains usable for this visit.
     }
-  };
-
-  const moveAtlasNode = (direction: -1 | 1) => {
-    const nodeCount = activeScene.fieldNotes.length;
-    if (!nodeCount) return;
-    const nextIndex =
-      atlasNodeIndex === null
-        ? direction > 0
-          ? 0
-          : nodeCount - 1
-        : (atlasNodeIndex + direction + nodeCount) % nodeCount;
-    selectAtlasNode(nextIndex);
   };
 
   if (reducedMotion) {
@@ -501,13 +586,19 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
         data-atlas-selection={atlasNodeIndex === null ? "overview" : "selected"}
         data-motion={activeScene.motion}
         data-scene={activeScene.id}
-        data-study-panel={
-          activeScene.id === "vine-and-berry" && vineNotesOpen ? "open" : "closed"
-        }
+        data-study-panel={guideNotesOpen ? "open" : "closed"}
       >
         <div className="btg-stage__visual">
           {activeScene.id === "vine-and-berry" ? (
             <VineAnatomyParallax opacity={1} />
+          ) : atlasEnabled ? (
+            <FieldAtlasStudy
+              artTransform={motionTransform(activeScene.motion, sceneProgress)}
+              onOpenLab={activeLab ? () => setActiveLabId(activeLab.id) : undefined}
+              onSelect={selectAtlasNode}
+              scene={activeScene}
+              selectedIndex={atlasNodeIndex}
+            />
           ) : (
             <StoryImage
               alt={activeScene.artwork.alt}
@@ -522,15 +613,13 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                 objectFit: activeScene.artwork.fit ?? "contain",
                 objectPosition: activeScene.artwork.position ?? "center",
                 opacity: 1,
-                transform: `${motionTransform(activeScene.motion, sceneProgress)}${atlasFocusTransform}`,
-                transformOrigin: activeAtlasOrigin
-                  ? `${activeAtlasOrigin[0]}% ${activeAtlasOrigin[1]}%`
-                  : "50% 50%"
+                transform: motionTransform(activeScene.motion, sceneProgress),
+                transformOrigin: "50% 50%"
               }}
             />
           )}
           <div className="btg-stage__wash" aria-hidden="true" />
-          {activeScene.id === "vine-and-berry" ? null : (
+          {activeScene.id === "academy-plaza" ? (
             <StoryImage
               alt=""
               className="btg-drop-protagonist"
@@ -540,49 +629,6 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                 transform: `translate(-50%, -50%) scale(${(0.82 + Math.sin(sceneProgress * Math.PI) * 0.18).toFixed(3)})`
               }}
             />
-          )}
-          {atlasEnabled ? (
-            <div
-              aria-label={`${activeScene.title} interactive field atlas`}
-              className="btg-scene-atlas"
-            >
-              {activeScene.fieldNotes.map((note, index) => {
-                const basePosition =
-                  ATLAS_NODE_POSITIONS[index % ATLAS_NODE_POSITIONS.length] ??
-                  ATLAS_NODE_POSITIONS[0];
-                const isActive = index === atlasNodeIndex;
-                const position =
-                  !isActive &&
-                  atlasNodeIndex !== null &&
-                  basePosition[0] === 50 &&
-                  basePosition[1] === 50 &&
-                  activeAtlasOrigin
-                    ? activeAtlasOrigin
-                    : basePosition;
-                return (
-                  <button
-                    aria-label={`Focus ${note.title}: ${note.detail}`}
-                    aria-pressed={isActive}
-                    className={isActive ? "is-active" : ""}
-                    key={`${activeScene.id}-atlas-${note.title}`}
-                    onClick={() => selectAtlasNode(index)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        selectAtlasNode(index);
-                      }
-                    }}
-                    style={{
-                      left: `${isActive ? 50 : position[0]}%`,
-                      top: `${isActive ? 50 : position[1]}%`
-                    }}
-                    type="button"
-                  >
-                    <span>{index + 1}</span>
-                  </button>
-                );
-              })}
-            </div>
           ) : null}
         </div>
 
@@ -590,25 +636,21 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
           <header className="btg-stage__header">
             <div>
               <p className="btg-kicker">Beyond The Glass · From Rain to First Sip</p>
-              <strong>
-                {activeScene.id === "vine-and-berry"
-                  ? `${activeScene.number} · ${activeScene.title}`
-                  : `Stop ${sceneIndex + 1} of ${chapter.scenes.length}`}
-              </strong>
+              <strong>{activeScene.number} · {activeScene.title}</strong>
             </div>
             <div className="btg-progress">
               <span>{activeScene.checkpoint}</span>
               <progress aria-label="Journey progress" max={100} value={journeyPercent} />
             </div>
-            {activeScene.id === "vine-and-berry" ? (
+            {activeScene.id !== "academy-plaza" ? (
               <button
-                aria-controls="btg-vine-study-panel"
-                aria-expanded={vineNotesOpen}
+                aria-controls="btg-guide-study-panel"
+                aria-expanded={guideNotesOpen}
                 className="btg-vine-notes-toggle"
-                onClick={() => setVineNotesOpen((isOpen) => !isOpen)}
+                onClick={() => setGuideNotesOpen((isOpen) => !isOpen)}
                 type="button"
               >
-                {vineNotesOpen ? "Return to full vine" : "Open guide notes"}
+                {guideNotesOpen ? "Return to field atlas" : "Open guide notes"}
               </button>
             ) : null}
           </header>
@@ -699,7 +741,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
           <div
             aria-label={`${activeScene.title} illustrated scene notes`}
             className="btg-story-panel"
-            id={activeScene.id === "vine-and-berry" ? "btg-vine-study-panel" : undefined}
+            id="btg-guide-study-panel"
             onScroll={handleStoryPanelScroll}
             ref={storyPanelRef}
             tabIndex={0}
@@ -710,76 +752,52 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
               </p>
               <h1>{activeScene.title}</h1>
               <p>{activeScene.summary}</p>
-              {atlasEnabled ? (
-                <aside aria-live="polite" className="btg-scene-atlas__readout">
-                  <span>
-                    {activeAtlasNote?.eyebrow ?? `Field atlas · ${activeScene.fieldNotes.length} nodes`}
-                  </span>
-                  <strong>{activeAtlasNote?.title ?? "Choose a glowing scene node"}</strong>
-                  <p>
-                    {activeAtlasNote?.detail ??
-                      "Inspect this stop at your own pace. Each node opens one production clue without covering the scene."}
-                  </p>
-                  <nav aria-label={`${activeScene.title} atlas node controls`}>
-                    <button
-                      aria-label={`Focus the previous ${activeScene.title} node`}
-                      onClick={() => moveAtlasNode(-1)}
-                      type="button"
-                    >
-                      ←
-                    </button>
-                    <button onClick={() => selectAtlasNode(null)} type="button">
-                      Overview
-                    </button>
-                    <button
-                      aria-label={`Focus the next ${activeScene.title} node`}
-                      onClick={() => moveAtlasNode(1)}
-                      type="button"
-                    >
-                      →
-                    </button>
-                  </nav>
-                </aside>
-              ) : null}
               {activeLab ? (
                 <button
                   className="btg-open-lab"
                   onClick={() => setActiveLabId(activeLab.id)}
                   type="button"
                 >
-                  Open visual lab · {activeLab.title}
+                  <span className="btg-desktop-label">Open visual lab · {activeLab.title}</span>
+                  <span className="btg-mobile-label">Open visual lab</span>
                 </button>
               ) : null}
             </div>
 
             <div className="btg-note-switcher" aria-label="Choose a field-note deck">
               <button
-                aria-pressed={noteView === "guide"}
-                onClick={() => setNoteView("guide")}
+                aria-pressed={effectiveNoteView === "guide"}
+                onClick={() => requestNoteView("guide")}
                 type="button"
               >
                 Guide note
               </button>
               <button
-                aria-pressed={noteView === "study"}
-                onClick={() => setNoteView("study")}
+                aria-pressed={effectiveNoteView === "study"}
+                onClick={() => requestNoteView("study")}
                 type="button"
               >
                 Study card
               </button>
             </div>
 
-            <div className="btg-note-stack" data-note-view={noteView}>
+            <div
+              className="btg-note-stack"
+              data-note-motion={panelControlsCards ? "manual" : "scroll"}
+              data-note-view={effectiveNoteView}
+            >
               <aside
+                aria-hidden={effectiveNoteView !== "guide"}
                 aria-label={`${activeScene.title} guide study cards`}
                 className="btg-guide-card-deck"
+                style={guideDeckStyle}
               >
                 {activeScene.narration.map((studyCard, index) => {
                   const isActive = index === visibleStudyCardIndex;
                   const speaker = studyCard.speaker;
                   return (
                     <blockquote
-                      aria-hidden={!isActive}
+                      aria-hidden={!isActive || effectiveNoteView !== "guide"}
                       className="btg-guide-note"
                       data-card-state={noteCardState(index, guideDeckPosition)}
                       data-speaker={speaker}
@@ -808,7 +826,10 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                           <span>
                             Note {index + 1} of {activeScene.narration.length}
                           </span>
-                          {isActive && activeScene.narration.length > 1 && !captionsVisible ? (
+                          {isActive &&
+                          effectiveNoteView === "guide" &&
+                          activeScene.narration.length > 1 &&
+                          !captionsVisible ? (
                             <nav aria-label="Guide study cards">
                               <button
                                 aria-label="Show the previous guide note"
@@ -839,15 +860,17 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                 })}
               </aside>
               <div
+                aria-hidden={effectiveNoteView !== "study"}
                 aria-label={`${activeScene.title} field notes`}
                 className="btg-field-notes"
                 data-card-count={activeScene.fieldNotes.length}
+                style={studyDeckStyle}
               >
                 {activeScene.fieldNotes.map((note, index) => {
                   const isActive = index === visibleFieldNoteIndex;
                   return (
                     <article
-                      aria-hidden={!isActive}
+                      aria-hidden={!isActive || effectiveNoteView !== "study"}
                       className={`btg-field-note btg-field-note--${FIELD_NOTE_MATERIALS[index % FIELD_NOTE_MATERIALS.length]}`}
                       data-card-state={noteCardState(index, fieldNoteScrollPosition)}
                       key={`${activeScene.id}-${note.title}`}
@@ -861,13 +884,14 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                         </small>
                       </header>
                       <p>{note.detail}</p>
-                      {isActive && activeScene.fieldNotes.length > 1 ? (
+                      {isActive && effectiveNoteView === "study" && activeScene.fieldNotes.length > 1 ? (
                         <nav aria-label="Study cards">
                           <button
                             aria-label="Show the previous study card"
                             disabled={index === 0}
                             onClick={() => {
                               setPanelControlsCards(true);
+                              setNoteView("study");
                               setPanelNoteProgress(
                                 activeScene.fieldNotes.length <= 1
                                   ? 0
@@ -876,6 +900,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                                         (activeScene.fieldNotes.length - 1)) *
                                         (0.88 - 0.36)
                               );
+                              manualCardAnchorRef.current = sceneProgress;
                             }}
                             type="button"
                           >
@@ -886,6 +911,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                             disabled={index === activeScene.fieldNotes.length - 1}
                             onClick={() => {
                               setPanelControlsCards(true);
+                              setNoteView("study");
                               setPanelNoteProgress(
                                 activeScene.fieldNotes.length <= 1
                                   ? 0
@@ -897,6 +923,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                                         (activeScene.fieldNotes.length - 1)) *
                                         (0.88 - 0.36)
                               );
+                              manualCardAnchorRef.current = sceneProgress;
                             }}
                             type="button"
                           >
@@ -980,11 +1007,26 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                 onClick={() => requestScene(Math.min(chapter.scenes.length - 1, sceneIndex + 1))}
                 type="button"
               >
-                <span>Continue</span>
+                <span className="btg-desktop-label">Continue</span>
+                <span className="btg-mobile-label">Next</span>
                 <span aria-hidden="true">→</span>
               </button>
+              <button
+                aria-controls="btg-mobile-field-kit"
+                aria-expanded={mobileToolsOpen}
+                className="btg-mobile-field-kit-toggle"
+                onClick={() => setMobileToolsOpen((open) => !open)}
+                type="button"
+              >
+                {mobileToolsOpen ? "Close" : "Field kit"}
+              </button>
             </div>
-            <section aria-label="Optional narration" className="btg-optional-audio">
+            <section
+              aria-label="Optional narration"
+              className="btg-optional-audio"
+              data-mobile-open={mobileToolsOpen ? "true" : "false"}
+              id="btg-mobile-field-kit"
+            >
               <span className="btg-dock-tools-label">Field kit</span>
               <NarrationControls
                 captionsVisible={captionsVisible}

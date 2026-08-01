@@ -32,6 +32,7 @@ const explicitRoutes = [
   "/#app/sip-academy",
   "/#app/sip-game",
   "/#app/beyond-the-glass",
+  "/#app/living-palate",
   "/#BTG",
   "/#btg",
   "/#app/BTG",
@@ -806,11 +807,29 @@ async function main() {
     await client.send("Network.enable", {}, sessionId);
     await client.send("Log.enable", {}, sessionId);
 
+    const initialDiagnostics = { consoleErrors: [], exceptions: [], failedRequests: [] };
+    const removeInitialDiagnostics = client.onEvent((message) => {
+      if (message.sessionId !== sessionId) return;
+      const params = message.params ?? {};
+      if (message.method === "Runtime.consoleAPICalled" && params.type === "error") {
+        initialDiagnostics.consoleErrors.push(textFromConsoleArgs(params.args));
+      } else if (message.method === "Runtime.exceptionThrown") {
+        initialDiagnostics.exceptions.push(params.exceptionDetails?.exception?.description ?? params.exceptionDetails?.text ?? "Runtime exception");
+      } else if (message.method === "Network.responseReceived") {
+        const responseUrl = params.response?.url ?? "";
+        const status = params.response?.status ?? 0;
+        if (status >= 400 && isSameOriginResource(baseUrl, responseUrl) && !responseUrl.endsWith(".map")) {
+          initialDiagnostics.failedRequests.push(`${status} ${responseUrl}`);
+        }
+      }
+    });
     await client.send("Page.navigate", { url: `${baseUrl}/#home` }, sessionId);
     const initialState = await waitForRouteSettled(client, sessionId, "/#home", options.routeTimeoutMs);
     if (initialState.hasErrorBoundary || initialState.hasWorkspaceLoading || initialState.timedOut) {
-      throw new Error(`Route smoke could not hydrate the initial page: ${JSON.stringify(initialState)}`);
+      removeInitialDiagnostics();
+      throw new Error(`Route smoke could not hydrate the initial page: ${JSON.stringify({ ...initialState, ...initialDiagnostics })}`);
     }
+    removeInitialDiagnostics();
     await evaluate(
       client,
       sessionId,

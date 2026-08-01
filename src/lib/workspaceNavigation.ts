@@ -4,6 +4,7 @@ export type WorkspaceStaticPage =
   | "sip-academy"
   | "sip-game"
   | "beyond-the-glass"
+  | "living-palate"
   | "sipopedia"
   | "beverage-quiz"
   | "study-sheets"
@@ -102,6 +103,18 @@ export const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
     keywords: ["beyond the glass", "journey", "story", "water", "cinematic", "systems"],
     previewBullets: ["Reversible scroll story", "Narrated learning layers", "Accessible chapter archive"],
     previewImage: "/beyond-the-glass/poster-reduced-motion.webp",
+    defaultRoom: "Lobby"
+  },
+  {
+    id: "living-palate",
+    route: "app/living-palate",
+    label: "Living Palate",
+    section: "learn",
+    signal: "Connected sensory academy",
+    description: "A living beverage-learning world that connects observation, contrast, cause, service, sources, and durable memory.",
+    keywords: ["living palate", "sensory", "tasting", "acidity", "worldglass", "academy", "practice"],
+    previewBullets: ["Cross-beverage daily flights", "Evidence-backed field notes", "Private mastery constellation"],
+    previewImage: "/beyond-the-glass/sip-academy-960.webp",
     defaultRoom: "Lobby"
   },
   {
