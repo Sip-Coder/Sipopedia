@@ -6,6 +6,13 @@ import { isBossNavigationUser } from "../src/lib/adminAccess.ts";
 import { WORKSPACE_NAV_ITEMS } from "../src/lib/workspaceNavigation.ts";
 import { journeyOfADrop } from "../src/data/beyondTheGlassChapters.ts";
 import { ATLAS_SCENE_DESIGNS } from "../src/features/beyond-the-glass/fieldAtlasDesigns.ts";
+import {
+  LIVING_PALATE_MASTERY,
+  LIVING_PALATE_PHASES,
+  LIVING_PALATE_SAFETY,
+  LIVING_PALATE_SOURCES,
+  LIVING_PALATE_SPECIMENS
+} from "../src/features/living-palate/livingPalateData.ts";
 
 test("Boss navigation is limited to the Google-authenticated Sip Studies admin", () => {
   const cases = [
@@ -57,6 +64,53 @@ test("Beyond The Glass follows Sip Game and opens as a public Lobby experience",
     { route: beyondTheGlass?.route, defaultRoom: beyondTheGlass?.defaultRoom },
     { route: "app/beyond-the-glass", defaultRoom: "Lobby" }
   );
+});
+
+test("Living Palate follows Beyond The Glass and opens as a public Lobby experience", () => {
+  const beyondTheGlassIndex = WORKSPACE_NAV_ITEMS.findIndex((item) => item.id === "beyond-the-glass");
+  const livingPalateIndex = WORKSPACE_NAV_ITEMS.findIndex((item) => item.id === "living-palate");
+  const livingPalate = WORKSPACE_NAV_ITEMS[livingPalateIndex];
+
+  assert.notEqual(beyondTheGlassIndex, -1);
+  assert.equal(livingPalateIndex, beyondTheGlassIndex + 1);
+  assert.deepEqual(
+    { route: livingPalate?.route, defaultRoom: livingPalate?.defaultRoom },
+    { route: "app/living-palate", defaultRoom: "Lobby" }
+  );
+});
+
+test("Living Palate ships a complete sourced cross-beverage learning loop", () => {
+  assert.equal(LIVING_PALATE_PHASES.length, 6);
+  assert.equal(LIVING_PALATE_SPECIMENS.length, 5);
+  assert.equal(new Set(LIVING_PALATE_SPECIMENS.map((item) => item.domain)).size, 5);
+
+  const phaseIds = new Set(LIVING_PALATE_PHASES.map((phase) => phase.id));
+  assert.equal(phaseIds.size, LIVING_PALATE_PHASES.length);
+  assert.deepEqual(
+    LIVING_PALATE_MASTERY.map((node) => node.phaseId),
+    LIVING_PALATE_PHASES.map((phase) => phase.id),
+    "mastery nodes map one-to-one to the actual completed phases"
+  );
+  assert.ok(
+    LIVING_PALATE_SAFETY.some((item) => item.includes("documented method and beverage matrix")),
+    "cross-category TA comparison guardrail is explicit"
+  );
+
+  const sourceIds = new Set(LIVING_PALATE_SOURCES.map((source) => source.id));
+  assert.equal(sourceIds.size, LIVING_PALATE_SOURCES.length);
+  for (const source of LIVING_PALATE_SOURCES) {
+    assert.match(source.url, /^https:\/\//, `${source.id} uses an HTTPS source`);
+    assert.notEqual(source.year, "Current", `${source.id} records a concrete year or access date`);
+  }
+  for (const specimen of LIVING_PALATE_SPECIMENS) {
+    assert.ok(specimen.dryLab.length > 0, `${specimen.id} has a documented dry-lab path`);
+    assert.ok(specimen.scales.length >= 4, `${specimen.id} separates at least four sensory dimensions`);
+    assert.ok(specimen.serviceChoices.some((choice) => choice.preferred), `${specimen.id} has a preferred hospitality response`);
+    assert.ok(specimen.sourceIds.length > 0, `${specimen.id} exposes at least one teaching receipt`);
+    for (const sourceId of specimen.sourceIds) {
+      assert.ok(sourceIds.has(sourceId), `${specimen.id} references a registered source: ${sourceId}`);
+    }
+  }
 });
 
 test("The From Rain to First Sip chapter data is complete and internally linked", () => {

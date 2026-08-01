@@ -24,12 +24,6 @@ export default defineConfig({
               priority: 30
             },
             {
-              name: "vendor-supabase",
-              test: /node_modules[\\/]@supabase[\\/]/,
-              minSize: 0,
-              priority: 30
-            },
-            {
               name: "vendor",
               test: /node_modules[\\/]/,
               minSize: 0,

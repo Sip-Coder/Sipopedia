@@ -61,6 +61,7 @@ import {
 const loadSipAcademyWineLessons = () => import("./components/SipAcademyWineLessons");
 const loadSipStudiosGame = () => import("./components/SipStudiosGame");
 const loadBeyondTheGlassPage = () => import("./features/beyond-the-glass/BeyondTheGlassPage");
+const loadLivingPalatePage = () => import("./features/living-palate/LivingPalatePage");
 const loadFlavorWheel = () => import("./components/FlavorWheel");
 const loadCellarScanner = () => import("./components/CellarScanner");
 const loadBeverageQuiz = () => import("./components/BeverageQuiz");
@@ -132,6 +133,9 @@ const SipStudiosGame = lazyRoute("sip-game", () => loadSipStudiosGame().then((mo
 const BeyondTheGlassPage = lazyRoute("beyond-the-glass", () =>
   loadBeyondTheGlassPage().then((module) => ({ default: module.BeyondTheGlassPage }))
 );
+const LivingPalatePage = lazyRoute("living-palate", () =>
+  loadLivingPalatePage().then((module) => ({ default: module.LivingPalatePage }))
+);
 const FlavorWheel = lazyRoute("flavor-wheel", () => loadFlavorWheel().then((module) => ({ default: module.FlavorWheel })));
 const CellarScanner = lazyRoute("cellar-scanner", () => loadCellarScanner().then((module) => ({ default: module.CellarScanner })));
 const BeverageQuiz = lazyRoute("beverage-quiz", () => loadBeverageQuiz().then((module) => ({ default: module.BeverageQuiz })));
@@ -164,6 +168,7 @@ type WorkspacePage =
   | "sip-academy"
   | "sip-game"
   | "beyond-the-glass"
+  | "living-palate"
   | "sipopedia"
   | "flavor-wheel"
   | "cellar-scanner"
@@ -272,6 +277,7 @@ function normalizeWorkspacePage(value: string): WorkspacePage {
   if (value === "sip-academy") return "sip-academy";
   if (value === "sip-game") return "sip-game";
   if (value === "beyond-the-glass" || value === "BTG" || value === "btg") return "beyond-the-glass";
+  if (value === "living-palate") return "living-palate";
   if (value === "sipopedia" || value === "terminology") return "sipopedia";
   if (value === "flavor-wheel") return "flavor-wheel";
   if (value === "cellar-scanner" || value === "scanner" || value === "label-scanner" || value === "cellar") return "cellar-scanner";
@@ -398,6 +404,10 @@ function preloadWorkspacePage(target: WorkspacePage): void {
   }
   if (target === "beyond-the-glass") {
     void loadBeyondTheGlassPage();
+    return;
+  }
+  if (target === "living-palate") {
+    void loadLivingPalatePage();
     return;
   }
   if (target === "sipopedia") {
@@ -1142,6 +1152,8 @@ function WorkspaceShell({
       <SipStudiosGame />
     ) : page === "beyond-the-glass" ? (
       <BeyondTheGlassPage onNavigate={(target) => onNavigate(target as WorkspacePage)} />
+    ) : page === "living-palate" ? (
+      <LivingPalatePage />
     ) : page === "sipopedia" ? (
       <Terminology />
     ) : page === "flavor-wheel" ? (
