@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { ArrowDown, ArrowUp, DotsSixVertical } from "@phosphor-icons/react";
 import { useAccess } from "../context/AccessContext";
 import { supabase } from "../lib/supabase";
 import { trackEvent } from "../lib/analytics";
@@ -10,6 +11,12 @@ import {
 } from "../lib/beverageNewsHealth";
 import {
   SITE_MAP_PAGES,
+  SITE_MAP_MENU_GROUPS,
+  defaultSortOrderForRoute,
+  isMainMenuRoute,
+  orderedSiteMapPages,
+  pageSortOrder,
+  siteMapMenuGroupForRoute,
   type PageStatusMap,
   type PageRoomAccess,
   type PagePublicationStatus,
@@ -88,8 +95,21 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "site-map" | "access" | "subscriptions" | "content">("overview");
   const [publishedPageStatuses, setPublishedPageStatuses] = useState<PageStatusMap>(() => readPageStatusMap());
   const [draftPageStatuses, setDraftPageStatuses] = useState<PageStatusMap>(() => readPageStatusMap());
-  const [siteMapNotice, setSiteMapNotice] = useState("No staged page visibility changes.");
+  const draftPageStatusesRef = useRef<PageStatusMap>(draftPageStatuses);
+  const [siteMapNotice, setSiteMapNotice] = useState("No staged Site Map changes.");
   const [siteMapPublishing, setSiteMapPublishing] = useState(false);
+  const [siteMapView, setSiteMapView] = useState<"settings" | "order">("settings");
+  const [draggedPageRoute, setDraggedPageRoute] = useState<string | null>(null);
+  const [dragTargetRoute, setDragTargetRoute] = useState<string | null>(null);
+  const dragPointer = useRef<{
+    route: string;
+    pointerId: number;
+    startX: number;
+    startY: number;
+    activated: boolean;
+    lastTargetRoute: string | null;
+    announcement: string | null;
+  } | null>(null);
   const [connectedPlatforms, setConnectedPlatforms] = useState<Record<SocialPlatformKey, boolean>>(initialConnectedPlatforms);
   const [targetPlatforms, setTargetPlatforms] = useState<Record<SocialPlatformKey, boolean>>(initialConnectedPlatforms);
   const [socialPostTopic, setSocialPostTopic] = useState("");
@@ -99,6 +119,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const [beverageNewsHealth, setBeverageNewsHealth] = useState<BeverageNewsHealth | null>(() =>
     readBeverageNewsHealth()
   );
+  draftPageStatusesRef.current = draftPageStatuses;
 
   useEffect(() => {
     if (!isAdmin || !supabase) return;
@@ -157,7 +178,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         if (!active) return;
         setPublishedPageStatuses(published);
         setDraftPageStatuses(published);
-        setSiteMapNotice("Published site map loaded. No staged page visibility changes.");
+        setSiteMapNotice("Published Site Map loaded. No staged changes.");
       })
       .catch((loadError: unknown) => {
         if (!active) return;
@@ -182,7 +203,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       SITE_MAP_PAGES.some((page) => {
         const published = publishedPageStatuses[page.route];
         const draft = draftPageStatuses[page.route];
-        return published?.room !== draft?.room || published?.status !== draft?.status;
+        return (
+          published?.room !== draft?.room ||
+          published?.status !== draft?.status ||
+          pageSortOrder(page.route, publishedPageStatuses) !== pageSortOrder(page.route, draftPageStatuses)
+        );
       }),
     [draftPageStatuses, publishedPageStatuses]
   );
@@ -190,7 +215,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const siteMapCounts = useMemo(() => {
     return SITE_MAP_PAGES.reduce(
       (acc, page) => {
-        const config = draftPageStatuses[page.route] ?? { room: page.defaultRoom, status: page.defaultStatus };
+        const config = draftPageStatuses[page.route] ?? {
+          room: page.defaultRoom,
+          status: page.defaultStatus,
+          sortOrder: defaultSortOrderForRoute(page.route)
+        };
         acc.rooms[config.room] += 1;
         acc.statuses[config.status] += 1;
         return acc;
@@ -201,6 +230,18 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       }
     );
   }, [draftPageStatuses]);
+
+  const orderedDraftPages = useMemo(() => orderedSiteMapPages(draftPageStatuses), [draftPageStatuses]);
+  const menuOrderGroups = useMemo(
+    () =>
+      SITE_MAP_MENU_GROUPS.filter((group) => group.id !== "other").map((group) => ({
+        ...group,
+        pages: orderedDraftPages.filter(
+          (page) => isMainMenuRoute(page.route) && siteMapMenuGroupForRoute(page.route) === group.id
+        )
+      })),
+    [orderedDraftPages]
+  );
 
   const roleCounts = useMemo(() => {
     const counts = { student: 0, mentor: 0, admin: 0 };
@@ -308,7 +349,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
 
   const updateDraftPageRoom = (route: string, room: PageRoomAccess) => {
     setDraftPageStatuses((current) => {
-      const currentConfig = current[route] ?? { room, status: "public" as const };
+      const currentConfig = current[route] ?? {
+        room,
+        status: "public" as const,
+        sortOrder: defaultSortOrderForRoute(route)
+      };
       return { ...current, [route]: { ...currentConfig, room } };
     });
     setSiteMapNotice("Page room change staged. Click Publish to apply all edits.");
@@ -316,10 +361,106 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
 
   const updateDraftPageStatus = (route: string, status: PagePublicationStatus) => {
     setDraftPageStatuses((current) => {
-      const currentConfig = current[route] ?? { room: "Lobby" as const, status };
+      const currentConfig = current[route] ?? {
+        room: "Lobby" as const,
+        status,
+        sortOrder: defaultSortOrderForRoute(route)
+      };
       return { ...current, [route]: { ...currentConfig, status } };
     });
     setSiteMapNotice("Page status change staged. Click Publish to apply all edits.");
+  };
+
+  const reorderDraftPage = (sourceRoute: string, targetRoute: string, announce = true): string | null => {
+    if (sourceRoute === targetRoute) return null;
+    const sourceGroup = siteMapMenuGroupForRoute(sourceRoute);
+    const targetGroup = siteMapMenuGroupForRoute(targetRoute);
+    if (sourceGroup !== targetGroup || sourceGroup === "other") return null;
+
+    const currentStatuses = draftPageStatusesRef.current;
+    const groupPages = orderedSiteMapPages(currentStatuses).filter(
+      (page) => isMainMenuRoute(page.route) && siteMapMenuGroupForRoute(page.route) === sourceGroup
+    );
+    const sourceIndex = groupPages.findIndex((page) => page.route === sourceRoute);
+    const targetIndex = groupPages.findIndex((page) => page.route === targetRoute);
+    if (sourceIndex < 0 || targetIndex < 0) return null;
+
+    const nextPages = [...groupPages];
+    const [movedPage] = nextPages.splice(sourceIndex, 1);
+    nextPages.splice(targetIndex, 0, movedPage);
+    const groupBase = Math.floor(defaultSortOrderForRoute(nextPages[0].route) / 1000) * 1000;
+
+    const next = { ...currentStatuses };
+    nextPages.forEach((page, index) => {
+      const currentConfig = currentStatuses[page.route] ?? {
+        room: page.defaultRoom,
+        status: page.defaultStatus,
+        sortOrder: defaultSortOrderForRoute(page.route)
+      };
+      next[page.route] = { ...currentConfig, sortOrder: groupBase + index * 10 };
+    });
+    draftPageStatusesRef.current = next;
+    setDraftPageStatuses(next);
+
+    const groupLabel = SITE_MAP_MENU_GROUPS.find((group) => group.id === sourceGroup)?.label ?? sourceGroup;
+    const message = `${movedPage.label} moved from ${sourceIndex + 1} to ${targetIndex + 1} in ${groupLabel}. Click Publish Globally to apply it.`;
+    if (announce) setSiteMapNotice(message);
+    return message;
+  };
+
+  const moveDraftPage = (route: string, direction: -1 | 1) => {
+    const group = siteMapMenuGroupForRoute(route);
+    const groupPages = orderedSiteMapPages(draftPageStatusesRef.current).filter(
+      (page) => isMainMenuRoute(page.route) && siteMapMenuGroupForRoute(page.route) === group
+    );
+    const currentIndex = groupPages.findIndex((page) => page.route === route);
+    const target = groupPages[currentIndex + direction];
+    if (target) reorderDraftPage(route, target.route);
+  };
+
+  const beginPageDrag = (event: ReactPointerEvent<HTMLButtonElement>, route: string) => {
+    if (siteMapPublishing || event.button !== 0) return;
+    dragPointer.current = {
+      route,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      activated: false,
+      lastTargetRoute: null,
+      announcement: null
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const continuePageDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const currentDrag = dragPointer.current;
+    if (!currentDrag || currentDrag.pointerId !== event.pointerId) return;
+    const distance = Math.hypot(event.clientX - currentDrag.startX, event.clientY - currentDrag.startY);
+    if (!currentDrag.activated && distance < 8) return;
+    if (!currentDrag.activated) {
+      currentDrag.activated = true;
+      setDraggedPageRoute(currentDrag.route);
+    }
+
+    event.preventDefault();
+    if (event.clientY < 88) window.scrollBy({ top: -14, behavior: "auto" });
+    if (event.clientY > window.innerHeight - 88) window.scrollBy({ top: 14, behavior: "auto" });
+    const targetElement = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement | null;
+    const targetRoute = targetElement?.closest<HTMLElement>("[data-site-map-order-route]")?.dataset.siteMapOrderRoute;
+    if (!targetRoute || targetRoute === currentDrag.route || targetRoute === currentDrag.lastTargetRoute) return;
+    currentDrag.lastTargetRoute = targetRoute;
+    setDragTargetRoute(targetRoute);
+    currentDrag.announcement = reorderDraftPage(currentDrag.route, targetRoute, false);
+  };
+
+  const finishPageDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const currentDrag = dragPointer.current;
+    if (!currentDrag || currentDrag.pointerId !== event.pointerId) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    if (currentDrag.announcement) setSiteMapNotice(currentDrag.announcement);
+    dragPointer.current = null;
+    setDraggedPageRoute(null);
+    setDragTargetRoute(null);
   };
 
   const publishSiteMapChanges = async () => {
@@ -331,7 +472,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       const published = await publishPageStatusMap(draftPageStatuses);
       setPublishedPageStatuses(published);
       setDraftPageStatuses(published);
-      setSiteMapNotice("Published globally. Navigation, module counts, previews, and route access are now synchronized.");
+      setSiteMapNotice("Published globally. Menu order, navigation, previews, and route access are synchronized on every device.");
       trackEvent("admin_site_map_publish", {
         pageCount: SITE_MAP_PAGES.length,
         lobby: siteMapCounts.rooms.Lobby,
@@ -352,7 +493,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
 
   const resetSiteMapDraft = () => {
     setDraftPageStatuses(publishedPageStatuses);
-    setSiteMapNotice("Discarded staged changes.");
+    setDraggedPageRoute(null);
+    setDragTargetRoute(null);
+    setSiteMapNotice("Discarded all staged Site Map changes.");
   };
 
   if (loading) {
@@ -524,14 +667,14 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       ) : null}
 
       {activeTab === "site-map" ? (
-        <article className="admin-card site-map-admin">
+        <article className={`admin-card site-map-admin ${siteMapView === "order" ? "site-map-admin--order" : ""}`}>
           <div className="site-map-admin-header">
             <div>
               <p className="admin-eyebrow">Page Access</p>
               <h3>Site Map</h3>
               <p>
-                Assign pages to a room for audience access, then set whether each page is public, edit-only, or off.
-                Published changes update navigation, module counts, previews, and route access for every device.
+                Manage page access and arrange the destinations inside each menu group. Changes remain staged until you
+                publish them globally.
               </p>
             </div>
             <div className="site-map-admin-counts" aria-label="Site map access counts">
@@ -550,80 +693,204 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
             </div>
           </div>
 
-          <div className="site-map-admin-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Page</th>
-                  <th>Room</th>
-                  <th>Section</th>
-                  <th>Route</th>
-                  <th>Status</th>
-                  <th>Preview</th>
-                </tr>
-              </thead>
-              <tbody>
-                {SITE_MAP_PAGES.map((page) => {
-                  const draftConfig = draftPageStatuses[page.route] ?? { room: page.defaultRoom, status: page.defaultStatus };
-                  const publishedConfig = publishedPageStatuses[page.route] ?? { room: page.defaultRoom, status: page.defaultStatus };
-                  const changed = draftConfig.room !== publishedConfig.room || draftConfig.status !== publishedConfig.status;
-                  return (
-                    <tr key={page.route} className={changed ? "changed" : ""}>
-                      <td>
-                        <strong>{page.label}</strong>
-                        <small>{page.description}</small>
-                      </td>
-                      <td>
-                        <div className="site-map-status-toggle" role="group" aria-label={`${page.label} room`}>
-                          {(["Lobby", "Game", "Boss"] as const).map((room) => (
-                            <button
-                              key={room}
-                              type="button"
-                              className={`site-map-status-btn status-${room.toLowerCase()} ${draftConfig.room === room ? "active" : ""}`}
-                              onClick={() => updateDraftPageRoom(page.route, room)}
-                              aria-pressed={draftConfig.room === room}
-                            >
-                              {room}
-                            </button>
-                          ))}
-                        </div>
-                      </td>
-                      <td><small>{page.section}</small></td>
-                      <td><code>{page.route}</code></td>
-                      <td>
-                        <div className="site-map-status-toggle" role="group" aria-label={`${page.label} visibility`}>
-                          {(["public", "edit", "off"] as const).map((status) => (
-                            <button
-                              key={status}
-                              type="button"
-                              className={`site-map-status-btn status-${status} ${draftConfig.status === status ? "active" : ""}`}
-                              onClick={() => updateDraftPageStatus(page.route, status)}
-                              aria-pressed={draftConfig.status === status}
-                            >
-                              {status}
-                            </button>
-                          ))}
-                        </div>
-                        {changed ? (
-                          <small className="site-map-change-note">
-                            staged from {publishedConfig.room} / {publishedConfig.status}
-                          </small>
-                        ) : null}
-                      </td>
-                      <td>
-                        <button className="btn btn-light" type="button" onClick={() => onNavigate(page.route)}>
-                          Open
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="site-map-view-switch" role="group" aria-label="Site Map view">
+            <button
+              type="button"
+              aria-pressed={siteMapView === "settings"}
+              className={siteMapView === "settings" ? "active" : ""}
+              onClick={() => setSiteMapView("settings")}
+            >
+              Page settings
+            </button>
+            <button
+              type="button"
+              aria-pressed={siteMapView === "order"}
+              className={siteMapView === "order" ? "active" : ""}
+              onClick={() => setSiteMapView("order")}
+            >
+              Menu order
+            </button>
           </div>
 
-          <div className="site-map-publish-bar">
-            <p>{siteMapNotice}</p>
+          {siteMapView === "settings" ? (
+            <div
+              id="site-map-settings-panel"
+              className="site-map-admin-table"
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th>Page</th>
+                    <th>Room</th>
+                    <th>Section</th>
+                    <th>Route</th>
+                    <th>Status</th>
+                    <th>Preview</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orderedDraftPages.map((page) => {
+                    const draftConfig = draftPageStatuses[page.route] ?? {
+                      room: page.defaultRoom,
+                      status: page.defaultStatus,
+                      sortOrder: defaultSortOrderForRoute(page.route)
+                    };
+                    const publishedConfig = publishedPageStatuses[page.route] ?? {
+                      room: page.defaultRoom,
+                      status: page.defaultStatus,
+                      sortOrder: defaultSortOrderForRoute(page.route)
+                    };
+                    const accessChanged =
+                      draftConfig.room !== publishedConfig.room || draftConfig.status !== publishedConfig.status;
+                    const orderChanged =
+                      pageSortOrder(page.route, draftPageStatuses) !== pageSortOrder(page.route, publishedPageStatuses);
+                    const changed = accessChanged || orderChanged;
+                    return (
+                      <tr key={page.route} className={changed ? "changed" : ""}>
+                        <td>
+                          <strong>{page.label}</strong>
+                          <small>{page.description}</small>
+                          {orderChanged ? <small className="site-map-change-note">Menu order staged</small> : null}
+                        </td>
+                        <td>
+                          <div className="site-map-status-toggle" role="group" aria-label={`${page.label} room`}>
+                            {(["Lobby", "Game", "Boss"] as const).map((room) => (
+                              <button
+                                key={room}
+                                type="button"
+                                className={`site-map-status-btn status-${room.toLowerCase()} ${draftConfig.room === room ? "active" : ""}`}
+                                onClick={() => updateDraftPageRoom(page.route, room)}
+                                aria-pressed={draftConfig.room === room}
+                              >
+                                {room}
+                              </button>
+                            ))}
+                          </div>
+                        </td>
+                        <td><small>{page.section}</small></td>
+                        <td><code>{page.route}</code></td>
+                        <td>
+                          <div className="site-map-status-toggle" role="group" aria-label={`${page.label} visibility`}>
+                            {(["public", "edit", "off"] as const).map((status) => (
+                              <button
+                                key={status}
+                                type="button"
+                                className={`site-map-status-btn status-${status} ${draftConfig.status === status ? "active" : ""}`}
+                                onClick={() => updateDraftPageStatus(page.route, status)}
+                                aria-pressed={draftConfig.status === status}
+                              >
+                                {status}
+                              </button>
+                            ))}
+                          </div>
+                          {accessChanged ? (
+                            <small className="site-map-change-note">
+                              staged from {publishedConfig.room} / {publishedConfig.status}
+                            </small>
+                          ) : null}
+                        </td>
+                        <td>
+                          <button className="btn btn-light" type="button" onClick={() => onNavigate(page.route)}>
+                            Open
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div
+              id="site-map-order-panel"
+              className="site-map-order-panel"
+            >
+              <div className="site-map-order-intro">
+                <div>
+                  <strong>Arrange the main menu</strong>
+                  <p>Drag from the grip, or use the arrow buttons. Pages stay inside their current menu group.</p>
+                </div>
+                <span>{SITE_MAP_PAGES.filter((page) => !isMainMenuRoute(page.route)).length} utility pages are not shown in the menu.</span>
+              </div>
+
+              <div className="site-map-order-groups">
+                {menuOrderGroups.map((group) => (
+                  <section className="site-map-order-group" key={group.id} aria-labelledby={`site-map-order-${group.id}`}>
+                    <header>
+                      <div>
+                        <p className="admin-eyebrow">Menu group</p>
+                        <h4 id={`site-map-order-${group.id}`}>{group.label}</h4>
+                      </div>
+                      <span>{group.pages.length} page{group.pages.length === 1 ? "" : "s"}</span>
+                    </header>
+                    <ol>
+                      {group.pages.map((page, pageIndex) => {
+                        const draftConfig = draftPageStatuses[page.route] ?? {
+                          room: page.defaultRoom,
+                          status: page.defaultStatus,
+                          sortOrder: defaultSortOrderForRoute(page.route)
+                        };
+                        const orderChanged =
+                          pageSortOrder(page.route, draftPageStatuses) !== pageSortOrder(page.route, publishedPageStatuses);
+                        return (
+                          <li
+                            key={page.route}
+                            data-site-map-order-route={page.route}
+                            className={`${draggedPageRoute === page.route ? "dragging" : ""} ${dragTargetRoute === page.route ? "drag-target" : ""} ${orderChanged ? "changed" : ""}`}
+                          >
+                            <button
+                              type="button"
+                              className="site-map-drag-handle"
+                              aria-label={`Drag ${page.label}, position ${pageIndex + 1} of ${group.pages.length} in ${group.label}`}
+                              tabIndex={-1}
+                              disabled={siteMapPublishing}
+                              onPointerDown={(event) => beginPageDrag(event, page.route)}
+                              onPointerMove={continuePageDrag}
+                              onPointerUp={finishPageDrag}
+                              onPointerCancel={finishPageDrag}
+                              onLostPointerCapture={finishPageDrag}
+                            >
+                              <DotsSixVertical weight="bold" aria-hidden="true" />
+                            </button>
+                            <span className="site-map-order-number" aria-hidden="true">{pageIndex + 1}</span>
+                            <div className="site-map-order-copy">
+                              <strong>{page.label}</strong>
+                              <small>{page.description}</small>
+                            </div>
+                            <div className="site-map-order-meta" aria-label={`${draftConfig.room}, ${draftConfig.status}`}>
+                              <span>{draftConfig.room}</span>
+                              <span className={`status-${draftConfig.status}`}>{draftConfig.status}</span>
+                            </div>
+                            <div className="site-map-order-actions" aria-label={`Move ${page.label}`}>
+                              <button
+                                type="button"
+                                onClick={() => moveDraftPage(page.route, -1)}
+                                disabled={pageIndex === 0 || siteMapPublishing}
+                                aria-label={`Move ${page.label} earlier in ${group.label}`}
+                              >
+                                <ArrowUp weight="bold" aria-hidden="true" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => moveDraftPage(page.route, 1)}
+                                disabled={pageIndex === group.pages.length - 1 || siteMapPublishing}
+                                aria-label={`Move ${page.label} later in ${group.label}`}
+                              >
+                                <ArrowDown weight="bold" aria-hidden="true" />
+                              </button>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  </section>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className={`site-map-publish-bar ${siteMapDirty ? "dirty" : "clean"}`}>
+            <p aria-live="polite">{siteMapNotice}</p>
             <div className="admin-actions">
               <button className="btn btn-light" type="button" onClick={resetSiteMapDraft} disabled={!siteMapDirty || siteMapPublishing}>
                 Discard Changes
