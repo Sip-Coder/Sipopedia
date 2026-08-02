@@ -255,7 +255,19 @@ async function setStoryProgress(client, sessionId, progress, expectedScene) {
       return Number.isFinite(current) && Math.abs(current - ${progress}) <= 0.003;
     })()`
   );
-  await sleep(1000);
+  await waitForEvaluation(
+    client,
+    sessionId,
+    `Array.from(document.querySelectorAll(".btg-stage__visual img"))
+      .filter((image) => {
+        const rect = image.getBoundingClientRect();
+        const style = getComputedStyle(image);
+        return rect.width > 0 && rect.height > 0 && style.display !== "none" && style.visibility !== "hidden" && Number.parseFloat(style.opacity || "1") > 0.02;
+      })
+      .every((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0)`,
+    15000
+  );
+  await sleep(250);
 }
 
 async function inspectStage(client, sessionId, expectedScene) {
@@ -338,7 +350,7 @@ async function inspectStage(client, sessionId, expectedScene) {
       const atlas = stage.querySelector(".btg-field-atlas, .btg-vine-anatomy");
       const atlasExpected = ${JSON.stringify(expectedScene)} !== "academy-plaza";
       const atlasNodeCount = stage.querySelectorAll(
-        ".btg-field-atlas__nodes button, .btg-vine-anatomy__node"
+        ".btg-field-atlas__nodes button, .btg-vine-part"
       ).length;
       const documentOverflow = Math.max(
         0,

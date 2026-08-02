@@ -38,6 +38,14 @@ export type BeyondTheGlassScene = {
     alt: string;
     fit?: "cover" | "contain";
     position?: string;
+    /** Authored scene-art ratio used by the shared field-atlas artboard. */
+    aspectRatio?: string;
+    /** Optional ratio override when a dedicated portrait asset is supplied. */
+    portraitAspectRatio?: string;
+    /** Optional portrait-only crop behavior; falls back to `fit`. */
+    portraitFit?: "cover" | "contain";
+    /** Optional portrait-only focal position; falls back to `position`. */
+    portraitPosition?: string;
   };
   landmark: {
     label: string;

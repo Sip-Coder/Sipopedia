@@ -151,17 +151,17 @@ function motionTransform(motion: BeyondTheGlassMotion, progress: number): string
     case "establish":
       return `scale(${(0.965 + eased * 0.035).toFixed(4)})`;
     case "push-in":
-      return `scale(${(1 + eased * 0.09).toFixed(4)}) translate3d(0, ${(-eased * 1.5).toFixed(2)}%, 0)`;
+      return `scale(${(0.965 + eased * 0.035).toFixed(4)}) translate3d(0, ${((0.5 - eased) * 1.2).toFixed(2)}%, 0)`;
     case "orbit":
-      return `perspective(1200px) rotateY(${((-3 + eased * 6)).toFixed(2)}deg) scale(${(1.025 + Math.sin(eased * Math.PI) * 0.035).toFixed(4)})`;
+      return `perspective(1200px) rotateY(${((-3 + eased * 6)).toFixed(2)}deg) scale(${(0.965 + Math.sin(eased * Math.PI) * 0.02).toFixed(4)})`;
     case "cutaway":
-      return `scale(1.035) translate3d(0, ${((0.5 - eased) * 3.5).toFixed(2)}%, 0)`;
+      return `scale(0.97) translate3d(0, ${((0.5 - eased) * 1.6).toFixed(2)}%, 0)`;
     case "rotate":
-      return `perspective(1200px) rotateY(${((-4 + eased * 8)).toFixed(2)}deg) scale(1.035)`;
+      return `perspective(1200px) rotateY(${((-4 + eased * 8)).toFixed(2)}deg) scale(0.965)`;
     case "glide":
-      return `scale(1.04) translate3d(${((0.5 - eased) * 3).toFixed(2)}%, 0, 0)`;
+      return `scale(0.97) translate3d(${((0.5 - eased) * 1.6).toFixed(2)}%, 0, 0)`;
     case "reassemble":
-      return `scale(${(1.07 - eased * 0.07).toFixed(4)})`;
+      return `scale(${(0.94 + eased * 0.06).toFixed(4)})`;
   }
 }
 
@@ -546,6 +546,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
   }, [activeScene.fieldNotes.length, activeScene.id]);
 
   const selectAtlasNode = (index: number | null) => {
+    if (index !== null) setGuideNotesOpen(false);
     setAtlasNodeIndex(index);
     try {
       const storageKey = `sipopedia:btg:atlas:${activeScene.id}:v1`;
@@ -593,7 +594,6 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
             <VineAnatomyParallax opacity={1} />
           ) : atlasEnabled ? (
             <FieldAtlasStudy
-              artTransform={motionTransform(activeScene.motion, sceneProgress)}
               onOpenLab={activeLab ? () => setActiveLabId(activeLab.id) : undefined}
               onSelect={selectAtlasNode}
               scene={activeScene}
@@ -613,7 +613,10 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                 objectFit: activeScene.artwork.fit ?? "contain",
                 objectPosition: activeScene.artwork.position ?? "center",
                 opacity: 1,
-                transform: motionTransform(activeScene.motion, sceneProgress),
+                transform:
+                  activeScene.id === "academy-plaza"
+                    ? "none"
+                    : motionTransform(activeScene.motion, sceneProgress),
                 transformOrigin: "50% 50%"
               }}
             />
@@ -700,6 +703,29 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                 </button>
               ) : null}
             </div>
+          ) : null}
+
+          {sceneIndex === 0 ? (
+            <aside aria-label="SIP Academy journey board" className="btg-plaza-itinerary">
+              <p className="btg-kicker">Active field trip</p>
+              <strong>Wine · From Rain to First Sip</strong>
+              <p>
+                {resumeSceneIndex
+                  ? `Your field notes are saved at ${chapter.scenes[resumeSceneIndex]?.title ?? "your last stop"}.`
+                  : "Meet the guides at sunrise, then follow one drop from vineyard to guest."}
+              </p>
+              <button onClick={() => requestScene(resumeSceneIndex ?? 1)} type="button">
+                {resumeSceneIndex ? "Continue the wine journey" : "Begin the wine journey"}
+              </button>
+              <div aria-label="Forthcoming SIP Academy field trips">
+                <span>Under construction</span>
+                <ul>
+                  {ACADEMY_ROADMAP.map((landmark) => (
+                    <li key={`itinerary-${landmark.label}`}>{landmark.label}</li>
+                  ))}
+                </ul>
+              </div>
+            </aside>
           ) : null}
 
           <aside
