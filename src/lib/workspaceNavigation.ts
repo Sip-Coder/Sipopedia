@@ -102,7 +102,7 @@ export const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
     description: "Scroll-controlled stories that reveal the connected systems inside every beverage.",
     keywords: ["beyond the glass", "journey", "story", "water", "cinematic", "systems"],
     previewBullets: ["Reversible scroll story", "Narrated learning layers", "Accessible chapter archive"],
-    previewImage: "/beyond-the-glass/poster-reduced-motion.webp",
+    previewImage: "/starter-thumbs/beyond-the-glass-960.webp",
     defaultRoom: "Lobby"
   },
   {
