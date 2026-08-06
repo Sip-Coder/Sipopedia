@@ -197,8 +197,10 @@ function AcademySwitchboard({
 
   return (
     <section className="sam-academy-switchboard" aria-labelledby="sam-academy-switchboard-title">
-      <div className="sam-note-rule" aria-hidden="true" />
-      <h3 id="sam-academy-switchboard-title">Academy switchboard</h3>
+      <div className="sam-academy-switchboard__heading">
+        <span className="sam-kicker">World directory</span>
+        <h3 id="sam-academy-switchboard-title">Academy switchboard</h3>
+      </div>
       <div className="sam-academy-switchboard__grid">
         {campuses.map((campus) => {
           const selected = activeCampusId === campus.id;
@@ -302,7 +304,6 @@ function GuildFieldNote({
           </div>
         ))}
       </div>
-      <AcademySwitchboard activeGuildId={guild.id} onSelect={onSelect} />
     </div>
   );
 }
@@ -381,7 +382,6 @@ function CampusFieldNote({
       <ul className="sam-focus-list">
         {campus.focus.map((item) => <li key={item}>{item}</li>)}
       </ul>
-      <AcademySwitchboard activeCampusId={campus.id} activeGuildId={guild.id} onSelect={onSelect} />
       <div className="sam-campus-atlas">
         <div className="sam-campus-atlas__rail" role="tablist" aria-label={`${campus.name} field studies`}>
           {studyLayers.map((item, index) => {
@@ -544,8 +544,15 @@ export function SipAcademyMapPage() {
           <p>Choose a guild to illuminate its continent. Choose an academy to trace its country border and move close enough to inspect its real 3D campus.</p>
         </div>
         <div className="sam-world-layout">
-          <div className="sam-globe-zone">
-            <SipAcademyGlobe selection={selection} onSelect={handleSelect} onClear={handleClear} />
+          <div className="sam-globe-stack">
+            <div className="sam-globe-zone">
+              <SipAcademyGlobe selection={selection} onSelect={handleSelect} onClear={handleClear} />
+            </div>
+            <AcademySwitchboard
+              activeCampusId={selectedCampus?.id}
+              activeGuildId={activeGuild?.id}
+              onSelect={handleSelect}
+            />
           </div>
           <aside className="sam-field-note" id="sam-field-note" aria-label="Selected academy map field note">
             <span className="sam-paper-label">SIP Academy field note</span>
