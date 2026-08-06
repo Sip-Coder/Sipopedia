@@ -202,22 +202,37 @@ function AcademySwitchboard({
       <div className="sam-academy-switchboard__grid">
         {campuses.map((campus) => {
           const selected = activeCampusId === campus.id;
+          const guild = guildForCampus(campus);
           return (
-            <button
-              aria-controls="sam-world"
-              aria-pressed={selected}
-              className={selected ? "is-selected" : ""}
+            <div
+              className={`sam-academy-switchboard__tile${selected ? " is-selected" : ""}`}
               key={campus.id}
-              onClick={() => onSelect({ kind: "campus", id: campus.id })}
               style={{ "--sam-node-accent": campus.accent } as CSSProperties}
-              type="button"
             >
-              <CampusMedallion campusId={campus.id} />
-              <span>
-                <strong>{campus.shortName}</strong>
-                <small>{guildForCampus(campus).name}</small>
-              </span>
-            </button>
+              <button
+                aria-controls="sam-world"
+                aria-pressed={selected}
+                onClick={() => onSelect({ kind: "campus", id: campus.id })}
+                type="button"
+              >
+                <CampusMedallion campusId={campus.id} />
+                <span className="sam-node-copy">
+                  <span className="sam-node-eyebrow">{selected ? "Campus in focus" : "Locate campus"}</span>
+                  <strong>{campus.shortName}</strong>
+                  <small>{campus.signal}</small>
+                  <em>{guild.name}</em>
+                </span>
+              </button>
+              {campus.route ? (
+                <a href={campus.route} aria-label={`Enter ${campus.name}`}>
+                  <ArrowRight aria-hidden="true" size={18} weight="bold" />
+                </a>
+              ) : (
+                <span className="sam-campus-planned" aria-label={`${campus.name} adventure forthcoming`}>
+                  <Sparkle aria-hidden="true" size={16} weight="duotone" />
+                </span>
+              )}
+            </div>
           );
         })}
       </div>
@@ -445,97 +460,6 @@ function CampusFieldNote({
   );
 }
 
-function AcademyDirectory({
-  onSelect,
-  selection
-}: {
-  onSelect: (selection: SipAcademyMapSelection) => void;
-  selection: SipAcademyMapSelection;
-}) {
-  const activeGuildId = selection.kind === "guild"
-    ? selection.id
-    : selection.kind === "campus"
-      ? SIP_ACADEMY_CAMPUSES.find((campus) => campus.id === selection.id)?.guild
-      : undefined;
-
-  return (
-    <section className="sam-directory" aria-labelledby="sam-directory-title">
-      <div className="sam-section-heading">
-        <div>
-          <span className="sam-kicker">World directory</span>
-          <h2 id="sam-directory-title">Every academy, one connected system</h2>
-        </div>
-        <p>Choose a campus to locate it on the globe, or enter its adventure directly.</p>
-      </div>
-      <div className="sam-directory-grid">
-        {SIP_ACADEMY_GUILDS.map((guild) => {
-          const campuses = guild.campusIds
-            .map((id) => SIP_ACADEMY_CAMPUSES.find((campus) => campus.id === id))
-            .filter((campus): campus is SipAcademyCampus => Boolean(campus));
-          return (
-            <section
-              className="sam-directory-guild"
-              key={guild.id}
-              aria-labelledby={`sam-directory-${guild.id}`}
-              style={{ "--sam-node-accent": guildAccent(guild) } as CSSProperties}
-            >
-              <button
-                className="sam-directory-guild-heading"
-                type="button"
-                onClick={() => onSelect({ kind: "guild", id: guild.id })}
-                aria-controls="sam-world"
-                aria-pressed={activeGuildId === guild.id}
-              >
-                <GuildMedallion guildId={guild.id} />
-                <span className="sam-node-copy">
-                  <span className="sam-node-eyebrow">Guild territory</span>
-                  <strong id={`sam-directory-${guild.id}`}>{guild.name}</strong>
-                  <small>{guild.motto}</small>
-                </span>
-              </button>
-              <ul>
-                {campuses.map((campus) => {
-                  const isSelected = selection.kind === "campus" && selection.id === campus.id;
-                  return (
-                    <li
-                      key={campus.id}
-                      className={isSelected ? "is-selected" : ""}
-                      style={{ "--sam-node-accent": campus.accent } as CSSProperties}
-                    >
-                      <button
-                        aria-controls="sam-world"
-                        aria-pressed={isSelected}
-                        type="button"
-                        onClick={() => onSelect({ kind: "campus", id: campus.id })}
-                      >
-                        <CampusMedallion campusId={campus.id} />
-                        <span className="sam-node-copy">
-                          <span className="sam-node-eyebrow">{isSelected ? "Campus in focus" : "Locate campus"}</span>
-                          <strong>{campus.name}</strong>
-                          <small>{campus.signal}</small>
-                        </span>
-                      </button>
-                      {campus.route ? (
-                        <a href={campus.route} aria-label={`Enter ${campus.name}`}>
-                          <ArrowRight aria-hidden="true" size={19} weight="bold" />
-                        </a>
-                      ) : (
-                        <span className="sam-campus-planned" aria-label={`${campus.name} adventure forthcoming`}>
-                          <Sparkle aria-hidden="true" size={17} weight="duotone" />
-                        </span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
 export function SipAcademyMapPage() {
   const [selection, setSelection] = useState<SipAcademyMapSelection>(() => selectionFromHash());
 
@@ -636,8 +560,6 @@ export function SipAcademyMapPage() {
         </div>
         <p className="sam-sr-only" role="status" aria-live="polite">{selectionAnnouncement}</p>
       </section>
-
-      <AcademyDirectory onSelect={handleSelect} selection={selection} />
 
       <footer className="sam-map-footer">
         <MapTrifold aria-hidden="true" size={28} weight="duotone" />
