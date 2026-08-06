@@ -712,12 +712,12 @@ export function SipAcademyGlobe({ selection, onSelect, onClear }: SipAcademyGlob
       });
       academyOverlays.forEach((overlay, campusId) => {
         const campus = SIP_ACADEMY_CAMPUSES.find((candidate) => candidate.id === campusId);
-        if (!campus || campus.guild !== activeGuild) {
+        if (!campus || !activeGuild) {
           overlay.setState("hidden");
           return;
         }
         const selectedCampus = currentSelection.kind === "campus" && currentSelection.id === campusId;
-        overlay.setState(selectedCampus ? "selected" : "active");
+        overlay.setState(selectedCampus ? "selected" : campus.guild === activeGuild ? "active" : "idle");
       });
 
       cameraVector.copy(camera.position).normalize();
@@ -754,14 +754,11 @@ export function SipAcademyGlobe({ selection, onSelect, onClear }: SipAcademyGlob
         const showGuild = record.kind === "guild" && (
           currentSelection.kind === "world"
             || (
-              currentSelection.kind === "guild"
-              && record.selection.kind === "guild"
+              record.selection.kind === "guild"
               && record.selection.id === activeGuild
             )
         );
-        const showCampus = record.kind === "campus" && currentSelection.kind !== "world" && (
-          currentSelection.kind === "campus" ? isSelected : inActiveGuild
-        );
+        const showCampus = record.kind === "campus" && currentSelection.kind !== "world";
         const hideCompactGuild = isCompact && record.kind === "guild" && currentSelection.kind !== "world";
         const visible = onFront && (showGuild || showCampus) && !hideCompactGuild;
         visibility.set(record, visible);
