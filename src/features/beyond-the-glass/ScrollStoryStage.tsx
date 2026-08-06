@@ -349,7 +349,10 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
   const [activeLabId, setActiveLabId] = useState<string | null>(null);
   const [noteView, setNoteView] = useState<NoteDeckView>("guide");
   const [guideNotesOpen, setGuideNotesOpen] = useState(false);
-  const [atlasNodeIndex, setAtlasNodeIndex] = useState<number | null>(null);
+  // Every field atlas opens on its first, far-left study layer. That gives a
+  // student a dependable starting point on every stop instead of restoring a
+  // previously selected detail from a different visit.
+  const [atlasNodeIndex, setAtlasNodeIndex] = useState<number | null>(0);
   const [academyResumeJourneys, setAcademyResumeJourneys] = useState<string[]>([]);
   const manualCardAnchorRef = useRef<number | null>(null);
   const restoredJourneyRef = useRef<string | null>(null);
@@ -610,23 +613,10 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
     setNoteView("guide");
     manualCardAnchorRef.current = null;
     setGuideNotesOpen(false);
-    try {
-      const storedValue =
-        window.localStorage.getItem(`sipopedia:btg:atlas:${activeScene.id}:v1`) ?? "";
-      const legacyIndex = Number.parseInt(storedValue, 10);
-      const storedIndex = Number.isInteger(legacyIndex)
-        ? legacyIndex
-        : activeScene.fieldNotes.findIndex((note) => note.title === storedValue);
-      setAtlasNodeIndex(
-        Number.isInteger(storedIndex) &&
-          storedIndex >= 0 &&
-          storedIndex < activeScene.fieldNotes.length
-          ? storedIndex
-          : null
-      );
-    } catch {
-      setAtlasNodeIndex(null);
-    }
+    // Preserve a clear learning sequence: each new scene begins on its
+    // leftmost rail item. Students may still explore any other node, but a
+    // saved selection never drops them into the middle of a study plate.
+    setAtlasNodeIndex(activeScene.fieldNotes.length > 0 ? 0 : null);
     if (storyPanelRef.current) storyPanelRef.current.scrollTop = 0;
   }, [activeScene.fieldNotes.length, activeScene.id]);
 
