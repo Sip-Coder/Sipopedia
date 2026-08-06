@@ -355,8 +355,8 @@ body:has(.btg-page),
   line-height: 1.25;
 }
 
-.btg-plaza-node--active {
-  animation: btg-plaza-glow 1.8s ease-in-out infinite;
+.btg-plaza-node--active,
+.btg-plaza-node--adventure {
   background: rgba(3, 20, 27, 0.93);
   border: 2px solid var(--btg-water);
   border-radius: 0.8rem;
@@ -368,8 +368,14 @@ body:has(.btg-page),
   pointer-events: auto;
 }
 
+.btg-plaza-node--active {
+  animation: btg-plaza-glow 1.8s ease-in-out infinite;
+}
+
 .btg-plaza-node--active > span,
-.btg-plaza-node--active > small {
+.btg-plaza-node--active > small,
+.btg-plaza-node--adventure > span,
+.btg-plaza-node--adventure > small {
   color: var(--btg-water);
 }
 
@@ -382,6 +388,21 @@ body:has(.btg-page),
 .btg-plaza-node--future > span,
 .btg-plaza-node--future > small {
   color: var(--btg-paper);
+}
+
+.btg-plaza-node--adventure {
+  cursor: pointer;
+  pointer-events: auto;
+  text-decoration: none;
+}
+
+.btg-plaza-node--adventure:hover,
+.btg-plaza-node--adventure:focus-visible {
+  background: rgba(8, 42, 48, 0.96);
+  border-color: var(--btg-water);
+  box-shadow: 0 0 0 0.18rem rgba(159, 232, 242, 0.2);
+  color: var(--btg-white);
+  outline: none;
 }
 
 .btg-plaza-replay {
@@ -2336,15 +2357,15 @@ body:has(.btg-page),
 
 /* -------------------------------------------------------------------------
    Journey dock
-   A compact route strip keeps movement primary. Listening and transcript
-   controls live in a smaller "field kit" so visual exploration stays first.
+   A compact route strip keeps movement primary. Narration, captions, and the
+   transcript are intentionally dormant until that experience is rebuilt.
    ------------------------------------------------------------------------- */
 
 .btg-journey-dock {
   align-items: stretch;
   display: grid;
   gap: 0.35rem;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   max-width: min(58rem, calc(100% - 1.5rem));
   padding: 0.35rem;
 }
@@ -5198,8 +5219,8 @@ body:has(.btg-page),
 /* -------------------------------------------------------------------------
    Mobile journey stack
    A phone gets three uninterrupted study zones: scene art, scene heading,
-   and the active note deck. Navigation is a compact route rail; optional
-   listening tools stay in an intentional popover instead of covering cards.
+   and the active note deck. Navigation is a compact route rail that never
+   competes with the cards for touch space.
    ------------------------------------------------------------------------- */
 
 .btg-mobile-label,
@@ -5383,7 +5404,7 @@ body:has(.btg-page),
     .btg-journey-dock
     > .btg-journey-path {
     gap: 0.18rem;
-    grid-template-columns: 3.25rem minmax(0, 1fr) 3.25rem 3.65rem;
+    grid-template-columns: 3.25rem minmax(0, 1fr) 3.25rem;
     height: 100%;
   }
 
@@ -6755,7 +6776,10 @@ body:has(.btg-page),
       radial-gradient(circle at 50% 45%, rgba(38, 104, 101, 0.28), transparent 58%),
       #041820;
     height: auto;
+    justify-self: center;
+    max-width: calc(100% - 1.5rem);
     min-height: 0;
+    width: 100%;
   }
 
   .btg-field-atlas__picture img {
@@ -7005,7 +7029,13 @@ body:has(.btg-page),
 
 @media (max-width: 900px) and (orientation: landscape) and (max-height: 430px) {
   .btg-field-atlas {
+    --btg-atlas-edge: 1.375rem;
     grid-template-columns: minmax(20rem, 20rem) minmax(0, 1fr);
+  }
+
+  .btg-field-atlas__nodes button {
+    height: 44px;
+    width: 44px;
   }
 
   .btg-stage[data-scene="vine-and-berry"] .btg-vine-part {
@@ -7092,6 +7122,101 @@ body:has(.btg-page),
 }
 
 /* -------------------------------------------------------------------------
+   Stop 05 shared-atlas parity
+   The vine keeps its authored 14-part anatomy and three-frame orbit, but now
+   uses the same scene frame, medallions, study rail, paper note, and controls
+   as every other substantive Beyond the Glass stop.
+   ------------------------------------------------------------------------- */
+
+.btg-stage[data-scene="vine-and-berry"] .btg-stage__visual {
+  aspect-ratio: auto !important;
+  height: auto !important;
+}
+
+.btg-field-atlas--vine {
+  --btg-atlas-edge: max(2.2rem, 5.8%);
+}
+
+.btg-vine-atlas__orbit,
+.btg-vine-atlas__orbit picture,
+.btg-vine-atlas__frame {
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.btg-vine-atlas__frame {
+  object-fit: contain;
+  object-position: center;
+  transition: opacity 460ms cubic-bezier(0.2, 0.75, 0.22, 1);
+}
+
+.btg-field-atlas--vine .btg-field-atlas__nodes button {
+  height: clamp(2.75rem, 4vw, 3.4rem);
+  width: clamp(2.75rem, 4vw, 3.4rem);
+}
+
+.btg-field-atlas--vine .btg-field-atlas__nodes button.is-active {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.btg-vine-atlas__lens {
+  align-items: center;
+  color: #f0d58f;
+  display: grid;
+  justify-items: center;
+}
+
+.btg-vine-atlas__lens svg {
+  filter: drop-shadow(0 0 0.32rem rgba(106, 224, 236, 0.42));
+  height: 72%;
+  width: 72%;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .btg-stage[data-scene="vine-and-berry"] {
+    grid-template-rows: 4rem auto auto !important;
+  }
+
+  .btg-stage[data-scene="vine-and-berry"] .btg-stage__visual {
+    grid-row: 2;
+  }
+
+  .btg-field-atlas--vine {
+    --btg-atlas-edge: 1.375rem;
+  }
+
+  .btg-field-atlas--vine .btg-field-atlas__nodes button {
+    height: 44px;
+    left: clamp(
+      var(--btg-atlas-edge),
+      var(--btg-atlas-phone-x),
+      calc(100% - var(--btg-atlas-edge))
+    );
+    top: clamp(
+      var(--btg-atlas-edge),
+      var(--btg-atlas-phone-y),
+      calc(100% - var(--btg-atlas-edge))
+    );
+    width: 44px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  .btg-field-atlas--vine .btg-field-atlas__nodes button {
+    height: 44px;
+    width: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btg-vine-atlas__frame {
+    transition: none !important;
+  }
+}
+
+/* -------------------------------------------------------------------------
    Canonical full-composition contract
    The illustration is a stable 16:9 study plate. Motion and selection live in
    the node/highlight layer so neither parallax nor a narrow viewport can crop
@@ -7112,8 +7237,14 @@ body:has(.btg-page),
 
 .btg-field-atlas__rail button,
 .btg-field-atlas__detail nav button,
-.btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__detail nav button {
+.btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__detail nav button,
+.btg-stage:not([data-scene="academy-plaza"]) .btg-vine-notes-toggle {
   min-width: 44px;
+}
+
+.btg-stage[data-scene="academy-plaza"] .btg-plaza-node--active {
+  box-sizing: border-box;
+  min-height: 44px;
 }
 
 .btg-stage[data-scene="vine-and-berry"] .btg-vine-orbit__frame {
@@ -7143,6 +7274,64 @@ body:has(.btg-page),
 
 .btg-plaza-itinerary {
   display: none;
+}
+
+.btg-plaza-itinerary li {
+  min-width: 0;
+}
+
+.btg-plaza-itinerary li.is-available {
+  padding: 0 !important;
+}
+
+.btg-plaza-itinerary li.is-forthcoming {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.btg-plaza-itinerary li.is-forthcoming > strong {
+  color: var(--btg-paper);
+  font-size: 0.68rem;
+}
+
+.btg-plaza-itinerary li.is-forthcoming > span {
+  color: var(--btg-muted);
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.btg-plaza-itinerary__journey {
+  background: linear-gradient(135deg, rgba(15, 64, 65, 0.98), rgba(74, 54, 29, 0.96));
+  border: 1px solid rgba(224, 184, 101, 0.72);
+  color: var(--btg-white);
+  display: grid;
+  gap: 0.12rem;
+  min-height: 44px;
+  padding: 0.48rem 0.55rem;
+  text-decoration: none;
+}
+
+.btg-plaza-itinerary__journey > strong {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 0.75rem;
+  line-height: 1.1;
+}
+
+.btg-plaza-itinerary__journey > span {
+  color: var(--btg-water);
+  font-size: 0.54rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.btg-plaza-itinerary__journey:hover,
+.btg-plaza-itinerary__journey:focus-visible {
+  border-color: var(--btg-water);
+  box-shadow: inset 0 0 0 1px rgba(159, 232, 242, 0.34);
+  outline: none;
 }
 
 @media (max-width: 760px) and (orientation: portrait) {
@@ -7226,6 +7415,10 @@ body:has(.btg-page),
   }
 
   .btg-stage[data-scene="academy-plaza"] .btg-plaza-node--future {
+    display: none;
+  }
+
+  .btg-stage[data-scene="academy-plaza"] .btg-plaza-node--adventure {
     display: none;
   }
 
@@ -7383,6 +7576,7 @@ body:has(.btg-page),
   }
 
   .btg-stage[data-scene="academy-plaza"] .btg-plaza-node--future,
+  .btg-stage[data-scene="academy-plaza"] .btg-plaza-node--adventure,
   .btg-stage[data-scene="academy-plaza"] .btg-plaza-replay {
     display: none;
   }
@@ -7434,7 +7628,12 @@ body:has(.btg-page),
 }
 
 @media (max-width: 760px) and (orientation: portrait) {
-  .btg-field-atlas__canvas,
+  .btg-field-atlas__canvas {
+    aspect-ratio: var(--btg-atlas-portrait-aspect, var(--btg-atlas-aspect)) !important;
+    height: auto !important;
+    width: 100% !important;
+  }
+
   .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__canvas {
     aspect-ratio: 16 / 9 !important;
     height: auto !important;
@@ -7446,6 +7645,43 @@ body:has(.btg-page),
     min-height: 48px;
     min-width: 48px;
     width: 48px;
+  }
+
+  .btg-field-atlas__rail {
+    grid-auto-columns: initial;
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow-x: visible;
+    overscroll-behavior-inline: auto;
+    scroll-snap-type: none;
+  }
+
+  .btg-field-atlas__rail button {
+    font-size: clamp(0.62rem, 2.6vw, 0.72rem);
+    line-height: 1.15;
+    min-height: 44px;
+    padding: 0.45rem 0.35rem;
+    scroll-snap-align: none;
+    white-space: normal;
+  }
+
+  /* Fourteen Vine anatomy controls need the full perimeter. The 44px target
+     preserves touch accessibility without colliding with its neighbor. */
+  .btg-field-atlas--vine {
+    --btg-atlas-edge: 1.375rem;
+  }
+
+  .btg-field-atlas--vine .btg-field-atlas__nodes button {
+    height: 44px;
+    min-height: 44px;
+    min-width: 44px;
+    width: 44px;
+  }
+
+  .btg-field-atlas--vine .btg-field-atlas__nodes button:hover,
+  .btg-field-atlas--vine .btg-field-atlas__nodes button:focus-visible,
+  .btg-field-atlas--vine .btg-field-atlas__nodes button.is-active {
+    transform: translate(-50%, -50%) scale(1);
   }
 
   .btg-stage[data-scene="vine-and-berry"] .btg-vine-part,
@@ -7552,6 +7788,23 @@ body:has(.btg-page),
     width: 48px;
   }
 
+  .btg-field-atlas--vine {
+    --btg-atlas-edge: 1.375rem;
+  }
+
+  .btg-field-atlas--vine .btg-field-atlas__nodes button {
+    height: 44px;
+    min-height: 44px;
+    min-width: 44px;
+    width: 44px;
+  }
+
+  .btg-field-atlas--vine .btg-field-atlas__nodes button:hover,
+  .btg-field-atlas--vine .btg-field-atlas__nodes button:focus-visible,
+  .btg-field-atlas--vine .btg-field-atlas__nodes button.is-active {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
   .btg-field-atlas__nodes button {
     left: clamp(
       var(--btg-atlas-edge),
@@ -7580,5 +7833,332 @@ body:has(.btg-page),
   .btg-field-atlas__detail nav button,
   .btg-stage[data-scene="vine-and-berry"] .btg-vine-anatomy__detail nav button {
     min-height: 44px;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Shared sommelier parchment
+   Every instructional note uses one tactile, aged-paper surface. Speaker and
+   material identity now live in the pin, label, and ink accents instead of
+   competing card colors. Keep this final so it remains the canonical surface
+   over earlier exploratory card materials.
+   ------------------------------------------------------------------------- */
+
+.btg-page {
+  --btg-note-paper-image: url("/beyond-the-glass/ui/note-paper-aged-v1.webp");
+  --btg-note-paper-ink: #26312c;
+  --btg-note-paper-heading: #4a2d1c;
+  --btg-note-paper-meta: #3e5d58;
+}
+
+.btg-page .btg-guide-card-deck::before,
+.btg-page .btg-guide-card-deck::after {
+  background-color: #ddc58f;
+  background-image: var(--btg-note-paper-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  border-color: transparent;
+}
+
+.btg-page .btg-stage:not([data-scene="academy-plaza"]) .btg-guide-card-deck .btg-guide-note,
+.btg-page .btg-field-notes > .btg-field-note,
+.btg-page .btg-field-atlas__detail > .btg-field-atlas__field-note,
+.btg-page .btg-reduced__notes > article,
+.btg-page .btg-vine-study-list article,
+.btg-page .btg-lab-letter,
+.btg-page .btg-lab-explainer,
+.btg-page .btg-notebook-entry > div > article {
+  background-color: #ead6a5;
+  background-image: var(--btg-note-paper-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  border-color: transparent;
+  box-shadow: 0 0.8rem 1.5rem rgba(0, 0, 0, 0.3);
+  color: var(--btg-note-paper-ink);
+}
+
+.btg-page .btg-stage:not([data-scene="academy-plaza"])
+  .btg-guide-card-deck
+  .btg-guide-note[data-speaker="Roma"],
+.btg-page .btg-stage:not([data-scene="academy-plaza"])
+  .btg-guide-card-deck
+  .btg-guide-note[data-speaker="Hummin"] {
+  background-color: #ead6a5;
+  background-image: var(--btg-note-paper-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  border-color: transparent;
+}
+
+.btg-page
+  :is(
+    .btg-guide-note,
+    .btg-field-note,
+    .btg-field-atlas__field-note,
+    .btg-reduced__notes > article,
+    .btg-vine-study-list article,
+    .btg-lab-letter,
+    .btg-lab-explainer,
+    .btg-notebook-entry > div > article
+  )
+  :is(h2, h3, h4, strong) {
+  color: var(--btg-note-paper-heading);
+}
+
+.btg-page
+  :is(
+    .btg-guide-note,
+    .btg-field-note,
+    .btg-field-atlas__field-note,
+    .btg-reduced__notes > article,
+    .btg-vine-study-list article,
+    .btg-lab-letter,
+    .btg-lab-explainer,
+    .btg-notebook-entry > div > article
+  )
+  :is(p, li) {
+  color: var(--btg-note-paper-ink);
+}
+
+.btg-page
+  :is(
+    .btg-guide-note,
+    .btg-field-note,
+    .btg-field-atlas__field-note,
+    .btg-reduced__notes > article,
+    .btg-vine-study-list article,
+    .btg-lab-letter,
+    .btg-lab-explainer,
+    .btg-notebook-entry > div > article
+  )
+  :is(span, small) {
+  color: var(--btg-note-paper-meta);
+}
+
+.btg-page .btg-field-atlas__detail > .btg-field-atlas__field-note {
+  padding-inline: clamp(0.72rem, 1.3vw, 1rem);
+}
+
+@media (max-width: 760px) {
+  .btg-page .btg-field-atlas__detail > .btg-field-atlas__field-note {
+    padding-inline: 0.72rem;
+  }
+}
+
+/* Local field trips remember their last stop. Keep resume/restart controls in
+   the protected header rail so they never cover artwork, nodes, or notes. */
+.btg-stage__actions {
+  align-items: stretch;
+  display: flex;
+  gap: 0.38rem;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.btg-stage__actions > button {
+  min-height: 44px;
+}
+
+.btg-academy-return {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(159, 232, 242, 0.16), rgba(23, 79, 73, 0.44));
+  border: 1px solid rgba(159, 232, 242, 0.72);
+  box-shadow: inset 0 -2px rgba(240, 213, 143, 0.22);
+  color: var(--btg-cream);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.66rem;
+  font-weight: 900;
+  justify-content: center;
+  letter-spacing: 0.04em;
+  min-height: 44px;
+  padding: 0.42rem 0.66rem;
+  white-space: nowrap;
+}
+
+.btg-academy-return:hover {
+  background:
+    linear-gradient(135deg, rgba(159, 232, 242, 0.24), rgba(23, 79, 73, 0.68));
+  border-color: var(--btg-brass);
+}
+
+.btg-academy-return:focus-visible {
+  outline: 3px solid var(--btg-water);
+  outline-offset: 2px;
+}
+
+.btg-reduced__toolbar {
+  align-items: center;
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: flex-start;
+  position: sticky;
+  top: calc(var(--btg-shell-offset) + 0.5rem);
+  z-index: 4;
+}
+
+.btg-journey-restart {
+  align-items: center;
+  background: rgba(240, 213, 143, 0.08);
+  border: 1px solid rgba(240, 213, 143, 0.58);
+  color: var(--btg-cream);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.66rem;
+  font-weight: 900;
+  justify-content: center;
+  padding: 0.42rem 0.62rem;
+  white-space: nowrap;
+}
+
+.btg-journey-restart:focus-visible {
+  outline: 3px solid var(--btg-water);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__actions {
+    align-self: stretch;
+    gap: 0.25rem;
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])
+    .btg-stage__actions
+    .btg-vine-notes-toggle {
+    font-size: 0.58rem;
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 44px;
+    padding: 0.24rem 0.42rem;
+  }
+
+  .btg-stage__actions .btg-desktop-label {
+    display: none;
+  }
+
+  .btg-stage__actions .btg-mobile-label {
+    display: inline;
+  }
+
+  .btg-journey-restart {
+    font-size: 0.56rem;
+    min-width: 3.35rem;
+    padding: 0.24rem 0.38rem;
+  }
+
+  .btg-stage__actions .btg-academy-return {
+    font-size: 0.56rem;
+    min-width: 3.7rem;
+    padding: 0.24rem 0.38rem;
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 430px) {
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__actions {
+    gap: 0.25rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__actions > button {
+    font-size: 0.56rem;
+    padding: 0.24rem 0.4rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-academy-return {
+    min-width: 3.7rem;
+  }
+}
+
+/* On short phone-landscape screens the map labels are intentionally hidden
+   to protect the artwork. Keep the same journeys connected through a compact,
+   touch-safe Academy board instead of reducing them to static text. */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 430px) {
+  .btg-stage[data-scene="academy-plaza"] .btg-plaza-itinerary > div {
+    border-top: 1px solid rgba(159, 232, 242, 0.25);
+    display: grid;
+    gap: 0.28rem;
+    padding-top: 0.3rem;
+  }
+
+  .btg-stage[data-scene="academy-plaza"] .btg-plaza-itinerary > div > span {
+    display: none;
+  }
+
+  .btg-stage[data-scene="academy-plaza"] .btg-plaza-itinerary ul {
+    display: grid;
+    gap: 0.28rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .btg-stage[data-scene="academy-plaza"] .btg-plaza-itinerary li.is-forthcoming {
+    display: none;
+  }
+
+  .btg-stage[data-scene="academy-plaza"] .btg-plaza-itinerary__journey {
+    font-size: 0.62rem;
+    min-height: 44px;
+    padding: 0.35rem 0.42rem;
+  }
+}
+
+/* Phone portrait keeps the visual atlas, note, and journey controls inside one
+   reachable stage. A single horizontal study rail preserves 44px targets while
+   avoiding the three-row node list that previously pushed Back/Continue below
+   the visual viewport. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .btg-field-atlas__rail {
+    grid-auto-columns: minmax(5.4rem, 1fr);
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline mandatory;
+    scrollbar-color: rgba(159, 232, 242, 0.5) transparent;
+    scrollbar-width: thin;
+  }
+
+  .btg-field-atlas__rail button {
+    scroll-snap-align: start;
+    white-space: normal;
+  }
+}
+
+/* Standalone academy adventures share a narrow lesson rail beside a wide
+   cinematic plate. Keep complete lesson words readable instead of forcing
+   five labels into single-character columns, and let the illustration begin
+   directly beneath the safe title rail rather than floating mid-stage. */
+@media (min-width: 761px) and (min-height: 541px) {
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__visual {
+    align-self: start;
+  }
+
+  .btg-field-atlas__rail {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow-x: visible;
+  }
+
+  .btg-field-atlas__rail button {
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+}
+
+/* Short landscape screens need a small physical gap between the atlas canvas
+   and the journey dock. This keeps both borders and every tap target distinct
+   without reducing the artwork or changing the desktop composition. */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 430px) {
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-journey-dock {
+    margin-top: 0.25rem;
   }
 }

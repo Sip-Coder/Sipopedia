@@ -60,6 +60,7 @@ import {
 } from "./lib/siteMap";
 
 const loadSipAcademyWineLessons = () => import("./components/SipAcademyWineLessons");
+const loadSipAcademyMapPage = () => import("./features/sip-academy-map/SipAcademyMapPage");
 const loadSipStudiosGame = () => import("./components/SipStudiosGame");
 const loadBeyondTheGlassPage = () => import("./features/beyond-the-glass/BeyondTheGlassPage");
 const loadLivingPalatePage = () => import("./features/living-palate/LivingPalatePage");
@@ -130,6 +131,9 @@ function lazyRoute<TComponent extends ComponentType<any>>(
 const SipAcademyWineLessons = lazyRoute("sip-academy", () =>
   loadSipAcademyWineLessons().then((module) => ({ default: module.SipAcademyWineLessons }))
 );
+const SipAcademyMapPage = lazyRoute("sip-academy-map", () =>
+  loadSipAcademyMapPage().then((module) => ({ default: module.SipAcademyMapPage }))
+);
 const SipStudiosGame = lazyRoute("sip-game", () => loadSipStudiosGame().then((module) => ({ default: module.SipStudiosGame })));
 const BeyondTheGlassPage = lazyRoute("beyond-the-glass", () =>
   loadBeyondTheGlassPage().then((module) => ({ default: module.BeyondTheGlassPage }))
@@ -167,6 +171,7 @@ type AiWinecastPage = "ai-winecast" | `ai-winecast/${string}`;
 type WorkspacePage =
   | "starter"
   | "sip-academy"
+  | "sip-academy-map"
   | "sip-game"
   | "beyond-the-glass"
   | "living-palate"
@@ -276,6 +281,7 @@ function normalizeWorkspacePage(value: string): WorkspacePage {
   if (value === "starter" || value === "start" || value === "launch") return "starter";
   if (value === "home") return "starter";
   if (value === "sip-academy") return "sip-academy";
+  if (value === "sip-academy-map" || value === "academy-map") return "sip-academy-map";
   if (value === "sip-game") return "sip-game";
   if (value === "beyond-the-glass" || value === "BTG" || value === "btg") return "beyond-the-glass";
   if (value === "living-palate") return "living-palate";
@@ -316,6 +322,7 @@ function parseRoute(hashValue?: string): AppRoute {
 function toHash(route: AppRoute): string {
   if (route === "app/starter") return "app/launch";
   if (route === "app/cocktails") return "app/recipes";
+  if (route === "app/beyond-the-glass") return "app/btg";
   return route;
 }
 
@@ -326,14 +333,20 @@ function routeToUrl(route: AppRoute): string {
   return hash === "home" ? "/#home" : `/#${hash}`;
 }
 
-function canonicalizeLegacyRecipeUrl(route: AppRoute): void {
-  if (typeof window === "undefined" || route !== "app/cocktails") return;
-
+function canonicalizeLegacyWorkspaceUrl(route: AppRoute): void {
+  if (typeof window === "undefined") return;
   const rawHash = window.location.hash.replace(/^#/, "");
   const queryIndex = rawHash.indexOf("?");
   const routePart = queryIndex >= 0 ? rawHash.slice(0, queryIndex) : rawHash;
-  const legacyRecipeRoutes = new Set(["app/cocktails", "cocktails", "app/cocktail-map", "cocktail-map"]);
-  if (!legacyRecipeRoutes.has(routePart)) return;
+  const legacyRoutesByCanonicalRoute = new Map<AppRoute, ReadonlySet<string>>([
+    ["app/cocktails", new Set(["app/cocktails", "cocktails", "app/cocktail-map", "cocktail-map"])],
+    [
+      "app/beyond-the-glass",
+      new Set(["app/beyond-the-glass", "beyond-the-glass", "app/BTG", "BTG", "btg"])
+    ]
+  ]);
+  const legacyRoutes = legacyRoutesByCanonicalRoute.get(route);
+  if (!legacyRoutes?.has(routePart)) return;
 
   const query = queryIndex >= 0 ? rawHash.slice(queryIndex) : "";
   window.history.replaceState(null, "", `${routeToUrl(route)}${query}`);
@@ -397,6 +410,10 @@ function preloadWorkspacePage(target: WorkspacePage): void {
   }
   if (target === "sip-academy") {
     void loadSipAcademyWineLessons();
+    return;
+  }
+  if (target === "sip-academy-map") {
+    void loadSipAcademyMapPage();
     return;
   }
   if (target === "sip-game") {
@@ -1172,6 +1189,8 @@ function WorkspaceShell({
   const renderedPage =
     page === "starter" ? null : page === "sip-academy" ? (
       <SipAcademyWineLessons />
+    ) : page === "sip-academy-map" ? (
+      <SipAcademyMapPage />
     ) : page === "sip-game" ? (
       <SipStudiosGame />
     ) : page === "beyond-the-glass" ? (
@@ -1354,7 +1373,7 @@ function App() {
   useEffect(() => {
     const onRouteChange = () => {
       const nextRoute = parseRoute();
-      canonicalizeLegacyRecipeUrl(nextRoute);
+      canonicalizeLegacyWorkspaceUrl(nextRoute);
       setRoute(nextRoute);
     };
     onRouteChange();

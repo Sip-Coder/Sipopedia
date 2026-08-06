@@ -4,7 +4,7 @@
 
 - Video: [Ai Winecast — J. Lohr Vineyards & Wines](https://youtu.be/zm2ECFtViXA)
 - Supporting winery account: [A Winery Tour with Kristen Barnhisel](https://www.jlohr.com/latest-news/a-winery-tour-with-kristen-barnhisel)
-- Route reviewed: `/#app/beyond-the-glass`
+- Route reviewed: `/#app/btg`
 
 The video transcript contains automated-caption spelling errors, so names, regions, equipment, measurements, and production claims are verified against primary winery, university, OIV, or AWRI sources before appearing in the journey.
 

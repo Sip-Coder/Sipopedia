@@ -95,6 +95,7 @@ The resolution is reconnection, not destruction.
 - Materials: stone, water, weathered paper, enamel, brass, glass, ceramic, wood, botanical fibers.
 - Interface text remains live HTML. Generated images contain no text, labels, logos, or watermarks.
 - Characters use the established Sipopedia silhouettes and roles.
+- Sippy and Roma remain clearly adult and professionally styled, but wardrobe is scene-authored rather than uniform: tailoring, fieldwear, hospitality attire, practical layers, and setting-specific color can evolve beyond black suits while preserving each character's identity.
 - The Drop remains the brightest object.
 - Layer objects use strong, recognizable silhouettes and enough separation for narrow screens.
 - The stage always retains one meaningful focal object; no scroll interval may become an empty transition.

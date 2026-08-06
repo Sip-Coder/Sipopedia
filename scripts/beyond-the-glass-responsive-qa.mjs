@@ -4,9 +4,36 @@ import os from "node:os";
 import path from "node:path";
 
 import { journeyOfADrop } from "../src/data/beyondTheGlassChapters.ts";
+import { breweryFieldTrip } from "../src/data/beyondTheGlassBrewery.ts";
+import { coffeeFieldTrip } from "../src/data/beyondTheGlassCoffee.ts";
+import { distilleryFieldTrip } from "../src/data/beyondTheGlassDistillery.ts";
+import { energyFieldTrip } from "../src/data/beyondTheGlassEnergy.ts";
+import { healthFieldTrip } from "../src/data/beyondTheGlassHealth.ts";
+import { juiceFieldTrip } from "../src/data/beyondTheGlassJuice.ts";
+import { kombuchaFieldTrip } from "../src/data/beyondTheGlassKombucha.ts";
+import { milkFieldTrip } from "../src/data/beyondTheGlassMilk.ts";
+import { sodasFieldTrip } from "../src/data/beyondTheGlassSodas.ts";
+import { teaFieldTrip } from "../src/data/beyondTheGlassTea.ts";
+import { waterFieldTrip } from "../src/data/beyondTheGlassWater.ts";
 
 const baseUrl = (process.env.BTG_QA_BASE_URL ?? "http://127.0.0.1:5100").replace(/\/+$/, "");
-const route = "/#app/beyond-the-glass";
+const journeyKey = (process.env.BTG_QA_JOURNEY ?? "wine").trim().toLowerCase();
+const chapterByJourney = {
+  brewery: breweryFieldTrip,
+  coffee: coffeeFieldTrip,
+  distillery: distilleryFieldTrip,
+  "energy-drinks": energyFieldTrip,
+  "health-drinks": healthFieldTrip,
+  juice: juiceFieldTrip,
+  kombucha: kombuchaFieldTrip,
+  milk: milkFieldTrip,
+  sodas: sodasFieldTrip,
+  tea: teaFieldTrip,
+  water: waterFieldTrip,
+  wine: journeyOfADrop
+};
+const selectedChapter = chapterByJourney[journeyKey];
+const route = journeyKey === "wine" ? "/#app/btg" : `/#app/btg?journey=${journeyKey}`;
 const localPreviewAccessKey = "sipstudies:local-preview-access";
 const runStamp = new Date().toISOString().replaceAll(":", "-");
 const outputDirectory = path.resolve(
@@ -92,7 +119,7 @@ const viewports = viewportFilter
     )
   : canonicalViewports;
 
-const authoredScenes = journeyOfADrop.scenes.map((scene, index) => ({
+const authoredScenes = (selectedChapter?.scenes ?? []).map((scene, index) => ({
   expectedNodeCount:
     scene.id === "academy-plaza"
       ? 1
@@ -116,6 +143,7 @@ const report = {
   finishedAt: null,
   generatedAt: new Date().toISOString(),
   interactions: [],
+  journey: journeyKey,
   matrix: {
     checkpointsPerScene: 3,
     requestedScenes: sceneFilter ?? "all",
@@ -498,7 +526,7 @@ async function settleStage(client, sessionId) {
         await new Promise((resolve) => requestAnimationFrame(resolve));
         const signature = Array.from(
           stage.querySelectorAll(
-            ".btg-stage__header, .btg-stage__visual, .btg-field-atlas__canvas, .btg-vine-anatomy__canvas, .btg-journey-dock"
+            ".btg-stage__header, .btg-stage__visual, .btg-field-atlas__canvas, .btg-journey-dock"
           )
         )
           .map((element) => {
@@ -578,25 +606,19 @@ async function inspectState(client, sessionId, scene, viewport) {
       const visual = stage.querySelector(".btg-stage__visual");
       const dock = stage.querySelector(".btg-journey-dock");
       const title = header?.querySelector("strong");
-      const nodeKind = config.sceneId === "academy-plaza" ? "plaza" : config.sceneId === "vine-and-berry" ? "vine" : "atlas";
+      const nodeKind = config.sceneId === "academy-plaza" ? "plaza" : "atlas";
       const canvas =
         nodeKind === "atlas"
           ? stage.querySelector(".btg-field-atlas__canvas")
-          : nodeKind === "vine"
-            ? stage.querySelector(".btg-vine-anatomy__canvas")
-            : stage.querySelector(".btg-plaza-map-layer") ?? visual;
+          : stage.querySelector(".btg-plaza-map-layer") ?? visual;
       const detail =
         nodeKind === "atlas"
           ? stage.querySelector(".btg-field-atlas__detail")
-          : nodeKind === "vine"
-            ? stage.querySelector(".btg-vine-anatomy__detail")
-            : null;
+          : null;
       const nodeSelector =
         nodeKind === "atlas"
           ? ".btg-field-atlas__nodes button"
-          : nodeKind === "vine"
-            ? ".btg-vine-part"
-            : ".btg-plaza-node--active";
+          : ".btg-plaza-node--active";
       const nodes = Array.from(stage.querySelectorAll(nodeSelector));
       const nodeBounds = canvas;
       const failures = [];
@@ -630,8 +652,12 @@ async function inspectState(client, sessionId, scene, viewport) {
       }
       if (regions.canvas && regions.visual) {
         const canvasToVisualRatio = regions.canvas.width / Math.max(1, regions.visual.width);
+        // Phone art keeps a narrow deliberate inset so the complete 4:5 plate,
+        // field note, and compact journey dock can all remain reachable without
+        // overlap. Ninety percent still rules out the large dead gutters this
+        // check was created to catch.
         const minimumCanvasRatio = config.phonePortrait
-          ? 0.95
+          ? 0.9
           : config.phoneLandscape
             ? 0.38
             : config.minimumCanvasToVisualRatio;
@@ -652,10 +678,8 @@ async function inspectState(client, sessionId, scene, viewport) {
       const artCandidates = Array.from(
         stage.querySelectorAll(
           nodeKind === "atlas"
-            ? ".btg-field-atlas__picture img"
-            : nodeKind === "vine"
-              ? ".btg-vine-orbit__frame"
-              : ".btg-scene-art--active"
+            ? ".btg-field-atlas__picture img, .btg-vine-atlas__frame"
+            : ".btg-scene-art--active"
         )
       );
       const artImage = artCandidates
@@ -729,7 +753,7 @@ async function inspectState(client, sessionId, scene, viewport) {
         if (aspectDistortion > 0.08) {
           pushFailure("artwork is aspect-distorted by " + Math.round(aspectDistortion * 100) + "%");
         }
-        if (nodeKind !== "vine" && !artImage.alt.trim()) {
+        if (config.sceneId !== "vine-and-berry" && !artImage.alt.trim()) {
           pushFailure("active instructional artwork has empty alt text");
         }
       }
@@ -812,7 +836,12 @@ async function inspectState(client, sessionId, scene, viewport) {
       const nodeSet = new Set(nodes);
       const genericControls = Array.from(stage.querySelectorAll("button, a[href], [role=button]"))
         .filter(visible)
-        .filter((element) => !nodeSet.has(element));
+        .filter((element) => !nodeSet.has(element))
+        // The horizontal layer rail is a redundant, scrollable index for the
+        // already-audited atlas nodes. Off-screen rail items are intentionally
+        // reachable by swiping and should not be mistaken for clipped primary
+        // controls; their corresponding art nodes are measured above.
+        .filter((element) => !element.closest(".btg-field-atlas__rail"));
       const controlFailures = [];
       for (const control of genericControls) {
         const value = rect(control);
@@ -833,7 +862,7 @@ async function inspectState(client, sessionId, scene, viewport) {
       }
 
       const clippedText = [];
-      for (const element of [title, detail?.querySelector(".btg-field-atlas__field-note, .btg-vine-anatomy__field-note")]) {
+      for (const element of [title, detail?.querySelector(".btg-field-atlas__field-note")]) {
         if (!visible(element)) continue;
         const style = getComputedStyle(element);
         const clippedX = element.scrollWidth > element.clientWidth + tolerance && ["hidden", "clip"].includes(style.overflowX);
@@ -871,7 +900,6 @@ async function inspectState(client, sessionId, scene, viewport) {
 
 function nodeSelectorForScene(sceneId) {
   if (sceneId === "academy-plaza") return ".btg-plaza-node--active";
-  if (sceneId === "vine-and-berry") return ".btg-vine-part";
   return ".btg-field-atlas__nodes button";
 }
 
@@ -907,11 +935,7 @@ async function resetAtlas(client, sessionId, sceneId) {
     client,
     sessionId,
     `(() => {
-      const detail = document.querySelector(
-        ${JSON.stringify(
-          sceneId === "vine-and-berry" ? ".btg-vine-anatomy__detail" : ".btg-field-atlas__detail"
-        )}
-      );
+      const detail = document.querySelector(".btg-field-atlas__detail");
       const button = Array.from(detail?.querySelectorAll("button") ?? []).find(
         (candidate) => candidate.textContent?.trim() === "Overview"
       );
@@ -966,7 +990,7 @@ async function exerciseKeyboard(client, sessionId, scene) {
       return document.activeElement === first;
     })()`
   );
-  const key = scene.id === "vine-and-berry" || nodeCount === 1 ? "Enter" : "ArrowRight";
+  const key = nodeCount === 1 ? "Enter" : "ArrowRight";
   await dispatchKey(client, sessionId, key);
   await waitForEvaluation(
     client,
@@ -988,7 +1012,7 @@ async function exerciseKeyboard(client, sessionId, scene) {
       const activeIndex = nodes.findIndex((node) => node.getAttribute("aria-pressed") === "true");
       return {
         activeIndex,
-        expectedIndex: ${scene.id === "vine-and-berry" || scene.expectedNodeCount === 1 ? 0 : 1},
+        expectedIndex: ${scene.expectedNodeCount === 1 ? 0 : 1},
         focusedIndex: nodes.indexOf(document.activeElement)
       };
     })()`
@@ -997,12 +1021,10 @@ async function exerciseKeyboard(client, sessionId, scene) {
   if (result.activeIndex !== result.expectedIndex) {
     failures.push(`keyboard selected node ${result.activeIndex + 1}, expected ${result.expectedIndex + 1}`);
   }
-  if (scene.id !== "vine-and-berry" && result.focusedIndex !== result.expectedIndex) {
+  if (result.focusedIndex !== result.expectedIndex) {
     failures.push(`keyboard focus remained on node ${result.focusedIndex + 1}`);
   }
-  if (scene.id !== "vine-and-berry") {
-    await dispatchKey(client, sessionId, "Escape");
-  }
+  await dispatchKey(client, sessionId, "Escape");
   await resetAtlas(client, sessionId, scene.id);
   return { ...result, failures, key };
 }
@@ -1036,8 +1058,7 @@ async function exerciseNodes(client, sessionId, scene, viewport) {
         return {
           accessibleName: node.getAttribute("aria-label") || node.textContent?.trim() || "",
           hitReachable: Boolean(hit && (hit === node || node.contains(hit))),
-          title: node.querySelector(".btg-vine-part__label strong")?.textContent?.trim() ||
-            (node.getAttribute("aria-label") || "").replace(/^Focus\\s+/, ""),
+          title: (node.getAttribute("aria-label") || "").replace(/^Focus\\s+/, ""),
           x: rect.left + rect.width / 2,
           y: rect.top + rect.height / 2
         };
@@ -1067,16 +1088,8 @@ async function exerciseNodes(client, sessionId, scene, viewport) {
       sessionId,
       `(() => {
         const node = document.querySelectorAll(${JSON.stringify(selector)})[${index}];
-        const canvas = document.querySelector(
-          ${JSON.stringify(
-            scene.id === "vine-and-berry" ? ".btg-vine-anatomy__canvas" : ".btg-field-atlas__canvas"
-          )}
-        );
-        const detail = document.querySelector(
-          ${JSON.stringify(
-            scene.id === "vine-and-berry" ? ".btg-vine-anatomy__detail" : ".btg-field-atlas__detail"
-          )}
-        );
+        const canvas = document.querySelector(".btg-field-atlas__canvas");
+        const detail = document.querySelector(".btg-field-atlas__detail");
         if (!(node instanceof HTMLElement) || !(canvas instanceof HTMLElement) || !(detail instanceof HTMLElement)) return null;
         const nodeRect = node.getBoundingClientRect();
         const canvasRect = canvas.getBoundingClientRect();
@@ -1087,7 +1100,7 @@ async function exerciseNodes(client, sessionId, scene, viewport) {
           Math.max(0, Math.min(canvasRect.bottom, detailRect.bottom) - Math.max(canvasRect.top, detailRect.top));
         return {
           detailCanvasOverlap: Math.round(overlap),
-          detailTitle: detail.querySelector(".btg-field-atlas__field-note strong, .btg-vine-anatomy__field-note strong")?.textContent?.trim() || "",
+          detailTitle: detail.querySelector(".btg-field-atlas__field-note strong")?.textContent?.trim() || "",
           height: nodeRect.height,
           hitReachable: Boolean(hit && (hit === node || node.contains(hit))),
           pressed: node.getAttribute("aria-pressed") === "true",
@@ -1100,7 +1113,7 @@ async function exerciseNodes(client, sessionId, scene, viewport) {
         };
       })()`
     );
-    const expectedTitle = scene.id === "vine-and-berry" ? before.title.split(":")[0] : scene.fieldNoteTitles[index];
+    const expectedTitle = scene.id === "vine-and-berry" ? before.title : scene.fieldNoteTitles[index];
     const nodeFailures = [];
     if (!after?.pressed) nodeFailures.push("activation did not set aria-pressed");
     if (!after?.hitReachable) nodeFailures.push("selected node center is obscured");
@@ -1254,6 +1267,11 @@ function writeReport() {
 }
 
 async function main() {
+  if (!selectedChapter) {
+    throw new Error(
+      `BTG_QA_JOURNEY ${JSON.stringify(journeyKey)} is unknown. Use wine, brewery, distillery, coffee, tea, water, kombucha, juice, milk, health-drinks, energy-drinks, or sodas.`
+    );
+  }
   validateConfiguration();
   if (typeof WebSocket !== "function") {
     throw new Error("This check requires Node 22.12+ with global WebSocket support.");

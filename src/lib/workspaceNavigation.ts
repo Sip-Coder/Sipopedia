@@ -2,6 +2,7 @@ export type WorkspaceSectionId = "learn" | "taste" | "connect";
 
 export type WorkspaceStaticPage =
   | "sip-academy"
+  | "sip-academy-map"
   | "sip-game"
   | "beyond-the-glass"
   | "living-palate"
@@ -82,6 +83,18 @@ export const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
     description: "Progressive mission ladder with guided learning loops and milestone progression.",
     keywords: ["academy", "lessons", "wine", "learn"],
     previewBullets: ["Realm progression", "Mentor-guided loops", "Gamified mastery flow"]
+  },
+  {
+    id: "sip-academy-map",
+    route: "app/sip-academy-map",
+    label: "Sip Academy Map",
+    section: "learn",
+    signal: "360° guild world",
+    description: "Orbit the Academy world, explore five guild territories, and enter each beverage campus.",
+    keywords: ["academy", "map", "globe", "guilds", "campus", "world", "360"],
+    previewBullets: ["Five guild territories", "Fifteen academy campuses", "360° world exploration"],
+    previewImage: "/sip-academy-map/sip-academy-world-960.webp",
+    defaultRoom: "Lobby"
   },
   {
     id: "sip-game",
@@ -231,7 +244,7 @@ export const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
     description: "Label, menu, and cellar scanner with study routes.",
     keywords: ["scanner", "cellar", "label", "menu", "inventory", "pairing"],
     previewBullets: ["Label verification", "Study route suggestions", "Cellar memory practice"],
-    previewImage: "/starter-thumbs/tasting-journal-640.webp"
+    previewImage: "/starter-thumbs/cellar-scanner-640.webp"
   },
   {
     id: "tasting-journal",
@@ -379,6 +392,13 @@ export function workspaceLabelForRoute(route: string | null | undefined): string
   if (!route) return null;
   const routePart = route.replace(/^#/, "").split("?")[0].replace(/^app\//, "");
   if (!routePart || routePart === "starter" || routePart === "launch") return "Launch Pad";
-  const workspacePage = routePart === "recipes" ? "cocktails" : routePart;
+  const workspacePage =
+    routePart === "recipes"
+      ? "cocktails"
+      : routePart === "btg"
+        ? "beyond-the-glass"
+        : routePart === "academy-map"
+          ? "sip-academy-map"
+          : routePart;
   return WORKSPACE_NAV_ITEMS.find((item) => item.id === workspacePage || workspacePage.startsWith(`${item.id}/`))?.label ?? null;
 }

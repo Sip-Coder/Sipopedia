@@ -28,6 +28,16 @@ export type LivingPalateDistrict = {
   stepIndex: number;
   mapX: number;
   mapY: number;
+  mapMobileX: number;
+  mapMobileY: number;
+};
+
+export type LivingPalateIntroRoute = {
+  id: "compare" | "serve" | "reflect";
+  label: string;
+  location: string;
+  districtId?: LivingPalateDistrict["id"];
+  stepIndex: number;
 };
 
 export type LivingPalateSpecimen = {
@@ -113,8 +123,10 @@ export const LIVING_PALATE_DISTRICTS: LivingPalateDistrict[] = [
     acidityFeature: "See why pH, total acidity, acid family, temperature, and perception are related—but not interchangeable.",
     signal: "Cause before conclusion",
     stepIndex: 3,
-    mapX: 50,
-    mapY: 19
+    mapX: 24,
+    mapY: 22,
+    mapMobileX: 22,
+    mapMobileY: 19
   },
   {
     id: "sensory",
@@ -125,8 +137,10 @@ export const LIVING_PALATE_DISTRICTS: LivingPalateDistrict[] = [
     acidityFeature: "Separate sour intensity, mouthwatering, prickling, timing, weight, and personal liking.",
     signal: "Observe without guessing",
     stepIndex: 1,
-    mapX: 74,
-    mapY: 28
+    mapX: 56,
+    mapY: 18,
+    mapMobileX: 67,
+    mapMobileY: 19
   },
   {
     id: "contrast",
@@ -137,8 +151,10 @@ export const LIVING_PALATE_DISTRICTS: LivingPalateDistrict[] = [
     acidityFeature: "Compare wine, coffee, beer, tea ferment, and carbonated water without forcing one vocabulary on every category.",
     signal: "Find the clue that matters",
     stepIndex: 2,
-    mapX: 50,
-    mapY: 68
+    mapX: 85,
+    mapY: 31,
+    mapMobileX: 86,
+    mapMobileY: 38
   },
   {
     id: "service",
@@ -149,8 +165,10 @@ export const LIVING_PALATE_DISTRICTS: LivingPalateDistrict[] = [
     acidityFeature: "Translate bright, sour, sharp, lively, and refreshing without correcting the guest.",
     signal: "Precision in service of people",
     stepIndex: 4,
-    mapX: 79,
-    mapY: 70
+    mapX: 82,
+    mapY: 64,
+    mapMobileX: 80,
+    mapMobileY: 68
   },
   {
     id: "commons",
@@ -161,8 +179,10 @@ export const LIVING_PALATE_DISTRICTS: LivingPalateDistrict[] = [
     acidityFeature: "See where cohort observations align, where they differ, and how liking remains personal.",
     signal: "Calibrate without conformity",
     stepIndex: 1,
-    mapX: 50,
-    mapY: 83
+    mapX: 48,
+    mapY: 82,
+    mapMobileX: 53,
+    mapMobileY: 84
   },
   {
     id: "archive",
@@ -173,8 +193,33 @@ export const LIVING_PALATE_DISTRICTS: LivingPalateDistrict[] = [
     acidityFeature: "Open the evidence behind pH, titratable acidity, fermentation, sensory training, and transfer.",
     signal: "Claims carry receipts",
     stepIndex: 5,
-    mapX: 22,
-    mapY: 72
+    mapX: 20,
+    mapY: 52,
+    mapMobileX: 17,
+    mapMobileY: 47
+  }
+];
+
+export const LIVING_PALATE_INTRO_ROUTE: LivingPalateIntroRoute[] = [
+  {
+    id: "compare",
+    label: "Compare",
+    location: "At the Contrast Table",
+    districtId: "contrast",
+    stepIndex: 2
+  },
+  {
+    id: "serve",
+    label: "Serve",
+    location: "At the Service Theatre",
+    districtId: "service",
+    stepIndex: 4
+  },
+  {
+    id: "reflect",
+    label: "Reflect",
+    location: "Back at the Worldglass",
+    stepIndex: 5
   }
 ];
 

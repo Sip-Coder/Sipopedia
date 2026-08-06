@@ -3,6 +3,8 @@ import type { BeyondTheGlassScene } from "../../data/beyondTheGlassChapters";
 import {
   ATLAS_SCENE_DESIGNS,
   GENERIC_ATLAS_ICONS,
+  semanticAtlasIcon,
+  semanticAtlasPhase,
   type AtlasPoint,
   type AtlasSceneDesign
 } from "./fieldAtlasDesigns";
@@ -12,7 +14,11 @@ const NODE_LAYOUTS: Record<number, readonly AtlasPoint[]> = {
   2: [[31, 36], [69, 36]],
   3: [[22, 34], [50, 22], [78, 34]],
   4: [[20, 32], [42, 20], [64, 20], [82, 36]],
-  5: [[18, 31], [36, 18], [58, 18], [82, 31], [50, 68]]
+  5: [[18, 31], [36, 18], [64, 18], [82, 31], [50, 72]],
+  6: [[16, 28], [50, 17], [84, 28], [16, 72], [50, 83], [84, 72]],
+  7: [[14, 27], [50, 15], [86, 27], [86, 70], [50, 84], [14, 70], [50, 49]],
+  8: [[14, 25], [38, 15], [62, 15], [86, 25], [86, 73], [62, 84], [38, 84], [14, 73]],
+  9: [[14, 24], [38, 14], [62, 14], [86, 24], [86, 72], [62, 84], [38, 84], [14, 72], [50, 49]]
 };
 
 /*
@@ -27,16 +33,20 @@ const PHONE_NODE_LAYOUTS: Record<number, readonly AtlasPoint[]> = {
   2: [[28, 34], [72, 34]],
   3: [[20, 34], [50, 20], [80, 34]],
   4: [[20, 28], [80, 28], [28, 74], [72, 74]],
-  5: [[15, 28], [50, 18], [85, 28], [28, 74], [72, 74]]
+  5: [[14, 27], [50, 17], [86, 27], [27, 76], [73, 76]],
+  6: [[13, 24], [50, 15], [87, 24], [13, 76], [50, 85], [87, 76]],
+  7: [[12, 23], [50, 14], [88, 23], [88, 73], [50, 86], [12, 73], [50, 50]],
+  8: [[12, 22], [37, 13], [63, 13], [88, 22], [88, 75], [63, 87], [37, 87], [12, 75]],
+  9: [[12, 21], [37, 12], [63, 12], [88, 21], [88, 74], [63, 88], [37, 88], [12, 74], [50, 50]]
 };
 
 const fallbackDesign = (scene: BeyondTheGlassScene): AtlasSceneDesign => ({
-  phase: "production",
+  phase: semanticAtlasPhase(scene.id),
   nodes: scene.fieldNotes.map((note, index) => ({
     art: "icon",
     focus:
-      NODE_LAYOUTS[Math.min(5, Math.max(1, scene.fieldNotes.length))]?.[index] ?? [50, 50],
-    icon: GENERIC_ATLAS_ICONS.production,
+      NODE_LAYOUTS[Math.min(9, Math.max(1, scene.fieldNotes.length))]?.[index] ?? [50, 50],
+    icon: semanticAtlasIcon(note),
     label: note.eyebrow
   }))
 });
@@ -56,7 +66,7 @@ export function FieldAtlasStudy({
 }: FieldAtlasStudyProps) {
   const nodeButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const design = ATLAS_SCENE_DESIGNS[scene.id] ?? fallbackDesign(scene);
-  const count = Math.min(5, Math.max(1, scene.fieldNotes.length));
+  const count = Math.min(9, Math.max(1, scene.fieldNotes.length));
   const layout = NODE_LAYOUTS[count] ?? NODE_LAYOUTS[1];
   const activeNote = selectedIndex === null ? null : (scene.fieldNotes[selectedIndex] ?? null);
   const activeFocus =
@@ -145,7 +155,7 @@ export function FieldAtlasStudy({
                 nodeDesign?.focus ?? layout[index] ?? layout[layout.length - 1] ?? [50, 50];
               const focus = nodeDesign?.focus ?? position;
               const phonePosition =
-                PHONE_NODE_LAYOUTS[count]?.[index] ?? position;
+                nodeDesign?.phoneFocus ?? PHONE_NODE_LAYOUTS[count]?.[index] ?? position;
               const isActive = selectedIndex === index;
               const customGraphic = nodeDesign?.graphic ?? null;
               const NodeIcon = nodeDesign?.icon ?? GENERIC_ATLAS_ICONS.production;
