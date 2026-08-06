@@ -306,6 +306,7 @@ export type AvatarSensoryTrait = "acidity" | "sweetness" | "bitterness" | "body"
 
 export type SipAvatarDesign = {
   version: 1;
+  rosterCharacterId: string;
   name: string;
   title: string;
   beverageCategory: AvatarBeverageCategory;
@@ -345,6 +346,7 @@ export const SIP_AVATAR_EVENT = "sipstudies:avatar-updated";
 
 export const defaultSipAvatar: SipAvatarDesign = {
   version: 1,
+  rosterCharacterId: "",
   name: "Cellar Scout",
   title: "Futurist Sommelier",
   beverageCategory: "wine",
@@ -1006,6 +1008,7 @@ function normalizeAvatar(value: Partial<SipAvatarDesign> | null): SipAvatarDesig
   const loadoutMeta = avatarLoadouts.find((item) => item.id === loadout) ?? avatarLoadouts[0];
   return {
     ...defaultSipAvatar,
+    rosterCharacterId: typeof value?.rosterCharacterId === "string" ? value.rosterCharacterId.trim().slice(0, 64) : "",
     name: normalizeName(value?.name),
     title: normalizeTitle(value?.title ?? professionMeta.title),
     beverageCategory,

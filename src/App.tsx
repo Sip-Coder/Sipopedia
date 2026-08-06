@@ -53,12 +53,14 @@ import {
   canViewRoute,
   configForRoute,
   fetchPageStatusMap,
+  orderItemsByPageOrder,
   readPageStatusMap,
   shouldShowInPublicNav,
   subscribeToPageStatusMap
 } from "./lib/siteMap";
 
 const loadSipAcademyWineLessons = () => import("./components/SipAcademyWineLessons");
+const loadSipAcademyMapPage = () => import("./features/sip-academy-map/SipAcademyMapPage");
 const loadSipStudiosGame = () => import("./components/SipStudiosGame");
 const loadBeyondTheGlassPage = () => import("./features/beyond-the-glass/BeyondTheGlassPage");
 const loadLivingPalatePage = () => import("./features/living-palate/LivingPalatePage");
@@ -129,6 +131,9 @@ function lazyRoute<TComponent extends ComponentType<any>>(
 const SipAcademyWineLessons = lazyRoute("sip-academy", () =>
   loadSipAcademyWineLessons().then((module) => ({ default: module.SipAcademyWineLessons }))
 );
+const SipAcademyMapPage = lazyRoute("sip-academy-map", () =>
+  loadSipAcademyMapPage().then((module) => ({ default: module.SipAcademyMapPage }))
+);
 const SipStudiosGame = lazyRoute("sip-game", () => loadSipStudiosGame().then((module) => ({ default: module.SipStudiosGame })));
 const BeyondTheGlassPage = lazyRoute("beyond-the-glass", () =>
   loadBeyondTheGlassPage().then((module) => ({ default: module.BeyondTheGlassPage }))
@@ -166,6 +171,7 @@ type AiWinecastPage = "ai-winecast" | `ai-winecast/${string}`;
 type WorkspacePage =
   | "starter"
   | "sip-academy"
+  | "sip-academy-map"
   | "sip-game"
   | "beyond-the-glass"
   | "living-palate"
@@ -275,6 +281,7 @@ function normalizeWorkspacePage(value: string): WorkspacePage {
   if (value === "starter" || value === "start" || value === "launch") return "starter";
   if (value === "home") return "starter";
   if (value === "sip-academy") return "sip-academy";
+  if (value === "sip-academy-map" || value === "academy-map") return "sip-academy-map";
   if (value === "sip-game") return "sip-game";
   if (value === "beyond-the-glass" || value === "BTG" || value === "btg") return "beyond-the-glass";
   if (value === "living-palate") return "living-palate";
@@ -315,6 +322,7 @@ function parseRoute(hashValue?: string): AppRoute {
 function toHash(route: AppRoute): string {
   if (route === "app/starter") return "app/launch";
   if (route === "app/cocktails") return "app/recipes";
+  if (route === "app/beyond-the-glass") return "app/btg";
   return route;
 }
 
@@ -325,14 +333,20 @@ function routeToUrl(route: AppRoute): string {
   return hash === "home" ? "/#home" : `/#${hash}`;
 }
 
-function canonicalizeLegacyRecipeUrl(route: AppRoute): void {
-  if (typeof window === "undefined" || route !== "app/cocktails") return;
-
+function canonicalizeLegacyWorkspaceUrl(route: AppRoute): void {
+  if (typeof window === "undefined") return;
   const rawHash = window.location.hash.replace(/^#/, "");
   const queryIndex = rawHash.indexOf("?");
   const routePart = queryIndex >= 0 ? rawHash.slice(0, queryIndex) : rawHash;
-  const legacyRecipeRoutes = new Set(["app/cocktails", "cocktails", "app/cocktail-map", "cocktail-map"]);
-  if (!legacyRecipeRoutes.has(routePart)) return;
+  const legacyRoutesByCanonicalRoute = new Map<AppRoute, ReadonlySet<string>>([
+    ["app/cocktails", new Set(["app/cocktails", "cocktails", "app/cocktail-map", "cocktail-map"])],
+    [
+      "app/beyond-the-glass",
+      new Set(["app/beyond-the-glass", "beyond-the-glass", "app/BTG", "BTG", "btg"])
+    ]
+  ]);
+  const legacyRoutes = legacyRoutesByCanonicalRoute.get(route);
+  if (!legacyRoutes?.has(routePart)) return;
 
   const query = queryIndex >= 0 ? rawHash.slice(queryIndex) : "";
   window.history.replaceState(null, "", `${routeToUrl(route)}${query}`);
@@ -396,6 +410,10 @@ function preloadWorkspacePage(target: WorkspacePage): void {
   }
   if (target === "sip-academy") {
     void loadSipAcademyWineLessons();
+    return;
+  }
+  if (target === "sip-academy-map") {
+    void loadSipAcademyMapPage();
     return;
   }
   if (target === "sip-game") {
@@ -543,38 +561,50 @@ function buildCompactNavigationGroups({
     active: isCompactNavRouteActive(route, id)
   });
   const visible = (target: string) => shouldShowInPublicNav(target, pageStatuses, isAdmin, isPaid);
-  const essentials: CompactNavItem[] = [
+  const routeForCompactItem = (item: CompactNavItem) => (item.id === "__signout" ? "logout" : item.id);
+  const essentials = orderItemsByPageOrder([
     visible("home") ? toItem("home", "Lobby Home", "Public front door") : null,
     visible("app/starter") ? toItem("app/starter", "Launch Pad", "Continue or choose a study room") : null,
     visible("pricing") ? toItem("pricing", "Membership & Pricing", "$10/month membership") : null,
     visible("study-paths") ? toItem("study-paths", "Credential Paths", "Independent exam prep") : null,
     visible("support") ? toItem("support", "Support & Teams", "Help, billing, and team training") : null
-  ].filter((item): item is CompactNavItem => Boolean(item));
+  ].filter((item): item is CompactNavItem => Boolean(item)), pageStatuses, routeForCompactItem);
 
   const workspaceGroups: CompactNavGroup[] = workspaceSections.map((workspaceSection) => ({
     id: workspaceSection.id,
     label: workspaceSection.label,
-    items: workspaceNavItems
-      .filter((item) => item.section === workspaceSection.id && visible(item.route))
+    items: orderItemsByPageOrder(
+      workspaceNavItems.filter((item) => item.section === workspaceSection.id && visible(item.route)),
+      pageStatuses,
+      (item) => item.route
+    )
       .map((item) => toItem(item.route, item.label, item.signal))
   }));
 
-  const accountItems: CompactNavItem[] = isSignedIn
-    ? [
+  const accountItems = orderItemsByPageOrder(
+    isSignedIn
+      ? [
         visible("account") ? toItem("account", "Account Dashboard", "Progress, profile, and billing") : null,
         toItem("__signout", "Log Out", "End this session")
       ].filter((item): item is CompactNavItem => Boolean(item))
-    : [
+      : [
         visible("checkout") ? toItem("checkout", "Join Sip Studies", "$10/month membership", "$10") : null,
         visible("login") ? toItem("login", "Log In", "Return to your account") : null
-      ].filter((item): item is CompactNavItem => Boolean(item));
+      ].filter((item): item is CompactNavItem => Boolean(item)),
+    pageStatuses,
+    routeForCompactItem
+  );
 
-  const bossItems: CompactNavItem[] = showBossNavigation
-    ? [
+  const bossItems = orderItemsByPageOrder(
+    showBossNavigation
+      ? [
         visible("admin") ? toItem("admin", "Admin Console", "Site controls and health") : null,
         visible("admin/terminology") ? toItem("admin/terminology", "Terms Ops", "Terminology publishing") : null
       ].filter((item): item is CompactNavItem => Boolean(item))
-    : [];
+      : [],
+    pageStatuses,
+    routeForCompactItem
+  );
 
   return [
     { id: "essentials", label: "Essentials", shortLabel: "Home", items: essentials },
@@ -759,15 +789,26 @@ function WorkspaceShell({
   const grapeSlug = isGrapesPage(page) && page !== "grapes" ? page.slice("grapes/".length) : null;
   const aiWinecastSlug = isAiWinecastPage(page) && page !== "ai-winecast" ? page.slice("ai-winecast/".length) : null;
   const sectionItems = useMemo(
-    () => workspaceNavItems.filter((item) => item.section === section && shouldShowInPublicNav(`app/${item.id}`, pageStatuses, isAdmin, isPaid)),
+    () =>
+      orderItemsByPageOrder(
+        workspaceNavItems.filter(
+          (item) => item.section === section && shouldShowInPublicNav(`app/${item.id}`, pageStatuses, isAdmin, isPaid)
+        ),
+        pageStatuses,
+        (item) => item.route
+      ),
     [isAdmin, isPaid, pageStatuses, section]
   );
   const menuSections = useMemo(
     () =>
       workspaceSections.map((item) => ({
         ...item,
-        items: workspaceNavItems.filter(
-          (navItem) => navItem.section === item.id && shouldShowInPublicNav(`app/${navItem.id}`, pageStatuses, isAdmin, isPaid)
+        items: orderItemsByPageOrder(
+          workspaceNavItems.filter(
+            (navItem) => navItem.section === item.id && shouldShowInPublicNav(`app/${navItem.id}`, pageStatuses, isAdmin, isPaid)
+          ),
+          pageStatuses,
+          (navItem) => navItem.route
         )
       })),
     [isAdmin, isPaid, pageStatuses]
@@ -1148,6 +1189,8 @@ function WorkspaceShell({
   const renderedPage =
     page === "starter" ? null : page === "sip-academy" ? (
       <SipAcademyWineLessons />
+    ) : page === "sip-academy-map" ? (
+      <SipAcademyMapPage />
     ) : page === "sip-game" ? (
       <SipStudiosGame />
     ) : page === "beyond-the-glass" ? (
@@ -1330,7 +1373,7 @@ function App() {
   useEffect(() => {
     const onRouteChange = () => {
       const nextRoute = parseRoute();
-      canonicalizeLegacyRecipeUrl(nextRoute);
+      canonicalizeLegacyWorkspaceUrl(nextRoute);
       setRoute(nextRoute);
     };
     onRouteChange();

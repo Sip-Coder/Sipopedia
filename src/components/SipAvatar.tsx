@@ -1,4 +1,5 @@
 import { type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { getAvatarRosterPresetForDesign } from "../data/avatarRoster";
 import { getSipAvatarSprite, getSipAvatarStudioLayers, type SipAvatarDesign } from "../lib/sipAvatar";
 
 type AvatarStyle = CSSProperties & {
@@ -31,6 +32,7 @@ type SipAvatarViewerProps = SipAvatarFigureProps & {
 
 export function SipAvatarFigure({ design, rotation = 0, size = "large" }: SipAvatarFigureProps) {
   const sprite = getSipAvatarSprite(design);
+  const rosterPreset = getAvatarRosterPresetForDesign(design);
   const studioLayers = getSipAvatarStudioLayers(design);
   const style: AvatarStyle = {
     "--avatar-rotation": `${rotation * 0.25}deg`,
@@ -43,13 +45,15 @@ export function SipAvatarFigure({ design, rotation = 0, size = "large" }: SipAva
 
   return (
     <div
-      className={`sip-avatar-figure sip-avatar-figure-${size} archetype-${design.archetype} build-${design.build} stance-${design.stance} expression-${design.expression} accessory-${design.accessory} companion-${design.companion} finish-${design.finish}`}
+      className={`sip-avatar-figure sip-avatar-figure-${size} ${rosterPreset ? "sip-avatar-figure-roster" : ""} archetype-${design.archetype} build-${design.build} stance-${design.stance} expression-${design.expression} accessory-${design.accessory} companion-${design.companion} finish-${design.finish}`}
       style={style}
       aria-label={`${design.name} Sip Studies avatar`}
     >
       <div className="sip-avatar-shadow" />
       <div className="sip-avatar-rotator">
-        {studioLayers ? (
+        {rosterPreset ? (
+          <img className="sip-avatar-sprite-image sip-avatar-roster-image" src={rosterPreset.imagePath} alt="" draggable={false} />
+        ) : studioLayers ? (
           <div className="sip-avatar-layer-stack">
             <img className="sip-avatar-sprite-image sip-avatar-layer-image" src={studioLayers.baseSrc} alt="" draggable={false} />
             <span className="sip-avatar-hair-layer" aria-hidden="true" />

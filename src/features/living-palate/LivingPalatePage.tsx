@@ -32,6 +32,7 @@ import {
 import {
   LIVING_PALATE_DISTRICTS,
   LIVING_PALATE_GUIDES,
+  LIVING_PALATE_INTRO_ROUTE,
   LIVING_PALATE_MASTERY,
   LIVING_PALATE_PHASES,
   LIVING_PALATE_SAFETY,
@@ -321,6 +322,7 @@ function MasteryConstellation({ completedPhaseIds }: { completedPhaseIds: Living
 
 function CampusView({
   selectedDistrict,
+  completedPhaseIds,
   completedCount,
   activeStep,
   sampleMode,
@@ -330,6 +332,7 @@ function CampusView({
   onOpenSources
 }: {
   selectedDistrict: LivingPalateDistrict;
+  completedPhaseIds: LivingPalatePhaseId[];
   completedCount: number;
   activeStep: number;
   sampleMode: SampleMode;
@@ -338,54 +341,58 @@ function CampusView({
   onStart: (stepIndex?: number) => void;
   onOpenSources: () => void;
 }) {
-  const activeGuide = LIVING_PALATE_GUIDES[selectedDistrict.guide];
+  const activeRouteId = activeStep >= 5 ? "reflect" : activeStep >= 4 ? "serve" : "compare";
+
   return (
     <>
       <section className="lp-campus-layout" aria-labelledby="lp-campus-title">
+        <h1 id="lp-campus-title" className="lp-sr-only">The Living Palate</h1>
         <div className="lp-campus-column">
-          <header className="lp-view-heading">
-            <div>
-              <span className="lp-kicker">The connected beverage academy</span>
-              <h1 id="lp-campus-title">The Living Palate</h1>
-              <p>Notice more. Explain why. Serve with confidence.</p>
-            </div>
-            <div className="lp-day-mark" aria-label={`Day 12, ${completedCount} of ${LIVING_PALATE_PHASES.length} flight phases complete`}>
-              <span>Day 12</span>
-              <strong>Acidity</strong>
-            </div>
-          </header>
-
           <div className="lp-campus-stage">
-            <picture>
-              <source media="(max-width: 760px)" srcSet="/beyond-the-glass/sip-academy-960.webp" />
-              <img
-                src="/beyond-the-glass/sip-academy-1600.webp"
-                alt="A circular brass-and-glass academy campus connected by luminous blue waterways"
-                decoding="async"
-              />
-            </picture>
-            <div className="lp-campus-vignette" aria-hidden="true" />
-            <div className="lp-campus-nodes" aria-label="Living Palate campus districts">
-              {LIVING_PALATE_DISTRICTS.map((district, index) => (
-                <button
-                  key={district.id}
-                  type="button"
-                  className={`lp-map-node ${district.id === selectedDistrict.id ? "is-selected" : ""} ${district.id === "contrast" ? "is-today" : ""}`}
-                  style={{ "--lp-x": `${district.mapX}%`, "--lp-y": `${district.mapY}%` } as CSSProperties}
-                  onClick={() => onSelectDistrict(district)}
-                  aria-pressed={district.id === selectedDistrict.id}
-                  aria-label={`${district.name}: ${district.signal}`}
-                >
-                  <span>{index + 1}</span>
-                  <strong>{district.shortName}</strong>
-                </button>
-              ))}
+            <div className="lp-campus-map">
+              <picture>
+                <source media="(max-width: 620px) and (orientation: portrait)" srcSet="/living-palate/campus-intro-portrait-960.webp" />
+                <source media="(max-width: 980px)" srcSet="/living-palate/campus-intro-960.webp" />
+                <img
+                  src="/living-palate/campus-intro-1600.webp"
+                  alt="The Living Palate campus with a crystal Worldglass, six academy districts, and luminous blue waterways"
+                  loading="eager"
+                  decoding="async"
+                />
+              </picture>
+              <div className="lp-campus-vignette" aria-hidden="true" />
+              <div className="lp-campus-nodes" aria-label="Living Palate campus districts">
+                {LIVING_PALATE_DISTRICTS.map((district, index) => (
+                  <button
+                    key={district.id}
+                    type="button"
+                    data-district={district.id}
+                    className={`lp-map-node ${district.id === selectedDistrict.id ? "is-selected" : ""} ${district.id === "contrast" ? "is-today" : ""}`}
+                    style={{
+                      "--lp-x": `${district.mapX}%`,
+                      "--lp-y": `${district.mapY}%`,
+                      "--lp-mobile-x": `${district.mapMobileX}%`,
+                      "--lp-mobile-y": `${district.mapMobileY}%`
+                    } as CSSProperties}
+                    onClick={() => onSelectDistrict(district)}
+                    aria-pressed={district.id === selectedDistrict.id}
+                    aria-label={`${district.name}: ${district.signal}`}
+                  >
+                    <span>{index + 1}</span>
+                    <strong>{district.shortName}</strong>
+                  </button>
+                ))}
+              </div>
             </div>
-            <button type="button" className="lp-worldglass" onClick={() => onStart(activeStep)}>
+            <button
+              type="button"
+              className="lp-worldglass"
+              onClick={() => selectedDistrict.id === "archive" ? onOpenSources() : onStart(activeStep)}
+            >
               <span className="lp-worldglass-ring" aria-hidden="true"><Wine size={34} weight="duotone" /></span>
               <span>
-                <small>{completedCount > 0 ? "Continue your flight" : "Begin at the Worldglass"}</small>
-                <strong>{completedCount > 0 ? LIVING_PALATE_PHASES[activeStep].title : "Acidity · 8 min"}</strong>
+                <small>{selectedDistrict.id === "archive" ? "Open the evidence ledger" : completedCount > 0 ? "Continue today's flight" : "Begin today's flight"}</small>
+                <strong>{selectedDistrict.id === "archive" ? "Source Archive" : `${LIVING_PALATE_PHASES[activeStep].title} · 8 min`}</strong>
               </span>
               <ArrowRight size={20} aria-hidden="true" />
             </button>
@@ -405,60 +412,72 @@ function CampusView({
               </button>
             ))}
           </div>
+
+          <MasteryConstellation completedPhaseIds={completedPhaseIds} />
         </div>
 
-        <aside className="lp-next-move" aria-live="polite">
-          <span className="lp-paper-tab"><Compass size={17} weight="duotone" /> Your next move</span>
-          <div className="lp-paper-heading">
-            <span>{selectedDistrict.signal}</span>
-            <h2>{selectedDistrict.name}</h2>
-            <p>{selectedDistrict.purpose}</p>
-          </div>
-          <blockquote>{selectedDistrict.acidityFeature}</blockquote>
-
-          <div className="lp-mode-choice" role="group" aria-label="Learning mode">
-            <span>Today's mode</span>
-            <div>
-              <button type="button" aria-pressed={sampleMode === "dry"} className={sampleMode === "dry" ? "is-selected" : ""} onClick={() => onSetSampleMode("dry")}>
-                <Flask size={18} /> Dry lab
-              </button>
-              <button type="button" aria-pressed={sampleMode === "sample"} className={sampleMode === "sample" ? "is-selected" : ""} onClick={() => onSetSampleMode("sample")}>
-                <Wine size={18} /> With sample
-              </button>
+        <div className="lp-campus-sidebar">
+          <aside className="lp-next-move" aria-live="polite">
+            <span className="lp-paper-tab"><Compass size={17} weight="duotone" /> Your next move</span>
+            <div className="lp-paper-heading">
+              <h2>Compare five expressions of acidity.</h2>
+              <p>Name the cue. Explain the cause. Choose the service response.</p>
             </div>
-            <small>No alcohol or physical sample is ever required.</small>
-          </div>
 
-          <div className="lp-next-actions">
-            {selectedDistrict.id === "archive" ? (
-              <button type="button" className="lp-primary-action" onClick={onOpenSources}>
-                <BookOpenText size={20} /> Open the evidence ledger
-              </button>
-            ) : (
-              <button type="button" className="lp-primary-action" onClick={() => onStart(selectedDistrict.stepIndex)}>
-                Enter this learning route <ArrowRight size={20} />
-              </button>
-            )}
-            <button type="button" className="lp-secondary-action" onClick={() => onStart(activeStep)}>
-              {completedCount > 0 ? "Resume my last note" : "Start today's complete flight"}
-            </button>
-          </div>
+            <ol className="lp-intro-route" aria-label="Today's Living Palate route">
+              {LIVING_PALATE_INTRO_ROUTE.map((route, index) => (
+                <li key={route.id}>
+                  <button
+                    type="button"
+                    className={route.id === activeRouteId ? "is-selected" : ""}
+                    onClick={() => {
+                      const district = route.districtId
+                        ? LIVING_PALATE_DISTRICTS.find((item) => item.id === route.districtId)
+                        : undefined;
+                      if (district) onSelectDistrict(district);
+                      onStart(route.stepIndex);
+                    }}
+                    aria-current={route.id === activeRouteId ? "step" : undefined}
+                  >
+                    <span>{index + 1}</span>
+                    <strong>{route.label}</strong>
+                    <small>{route.location}</small>
+                  </button>
+                </li>
+              ))}
+            </ol>
 
-          <GuideCompanion guideId={selectedDistrict.guide} compact>
-            <p>{activeGuide.line}</p>
-          </GuideCompanion>
-        </aside>
-      </section>
+            <div className="lp-mode-choice lp-mode-choice--compact" role="group" aria-label="Learning mode">
+              <span>Flight mode</span>
+              <div>
+                <button type="button" aria-pressed={sampleMode === "dry"} className={sampleMode === "dry" ? "is-selected" : ""} onClick={() => onSetSampleMode("dry")}>
+                  <Flask size={18} /> Dry lab
+                </button>
+                <button type="button" aria-pressed={sampleMode === "sample"} className={sampleMode === "sample" ? "is-selected" : ""} onClick={() => onSetSampleMode("sample")}>
+                  <Wine size={18} /> With sample
+                </button>
+              </div>
+              <small>No alcohol or physical sample is required.</small>
+            </div>
+          </aside>
 
-      <section className="lp-guide-bench" aria-labelledby="lp-guide-bench-title">
-        <div className="lp-guide-bench-intro">
-          <span className="lp-kicker">Three guides, three distinct jobs</span>
-          <h2 id="lp-guide-bench-title">Your guide bench</h2>
-          <p>They never compete with the lesson. Each enters only when their perspective is useful.</p>
+          <section className="lp-intro-guide-bench" aria-labelledby="lp-guide-bench-title">
+            <div className="lp-intro-guide-heading">
+              <span className="lp-kicker">Your guide bench</span>
+              <h2 id="lp-guide-bench-title">Three guides. Three distinct jobs.</h2>
+            </div>
+            <picture aria-hidden="true">
+              <source media="(max-width: 760px)" srcSet="/living-palate/guide-bench-720.webp" />
+              <img src="/living-palate/guide-bench-1500.webp" alt="" width={1500} height={500} loading="lazy" decoding="async" />
+            </picture>
+            <ul>
+              {(Object.keys(LIVING_PALATE_GUIDES) as LivingPalateGuideId[]).map((guideId) => {
+                const guide = LIVING_PALATE_GUIDES[guideId];
+                return <li key={guideId}><strong>{guide.name}</strong><span>{guide.role}</span></li>;
+              })}
+            </ul>
+          </section>
         </div>
-        {(Object.keys(LIVING_PALATE_GUIDES) as LivingPalateGuideId[]).map((guideId) => (
-          <GuideCompanion key={guideId} guideId={guideId} compact />
-        ))}
       </section>
     </>
   );
@@ -921,8 +940,12 @@ export function LivingPalatePage() {
     >
       <div className="lp-utility-rail" aria-label="Living Palate controls">
         <div className="lp-utility-brand">
-          <span className="lp-utility-mark"><Drop size={22} weight="duotone" /></span>
-          <div><span>Sip Studies presents</span><strong>The Living Palate</strong></div>
+          <span className="lp-utility-mark"><Wine size={22} weight="duotone" /></span>
+          <div><span>Sip Studies</span><strong>The Living Palate</strong></div>
+        </div>
+        <div className="lp-utility-day" aria-label="Day 12, today's concept is acidity">
+          <span>Day 12</span>
+          <strong>Acidity</strong>
         </div>
         <div className="lp-utility-path" aria-label={`${completedPhaseIds.length} of ${LIVING_PALATE_PHASES.length} phases complete`}>
           <span>Today's path</span>
@@ -947,6 +970,7 @@ export function LivingPalatePage() {
       {view === "campus" ? (
         <CampusView
           selectedDistrict={selectedDistrict}
+          completedPhaseIds={completedPhaseIds}
           completedCount={completedPhaseIds.length}
           activeStep={activeStep}
           sampleMode={sampleMode}
@@ -986,7 +1010,7 @@ export function LivingPalatePage() {
         />
       )}
 
-      <MasteryConstellation completedPhaseIds={completedPhaseIds} />
+      {view === "flight" ? <MasteryConstellation completedPhaseIds={completedPhaseIds} /> : null}
 
       <section className="lp-safety-strip" aria-label="Living Palate participation principles">
         <div><Leaf size={22} weight="duotone" /><strong>Learning without pressure</strong></div>

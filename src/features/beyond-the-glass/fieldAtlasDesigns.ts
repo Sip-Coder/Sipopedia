@@ -1,9 +1,11 @@
 import type { Icon } from "@phosphor-icons/react";
+import type { BeyondTheGlassFieldNote } from "../../data/beyondTheGlassChapters";
 import {
   ArrowCounterClockwise,
   ArrowsClockwise,
   ArrowsIn,
   Barcode,
+  BatteryCharging,
   BookOpenText,
   Broom,
   CalendarCheck,
@@ -13,12 +15,16 @@ import {
   CirclesThree,
   ClockCountdown,
   CloudFog,
+  Cow,
+  Coffee,
+  CoffeeBean,
   Drop,
   DropHalf,
   EyedropperSample,
   Factory,
   FileText,
   Fire,
+  FirstAidKit,
   Flask,
   FlowArrow,
   ForkKnife,
@@ -35,8 +41,10 @@ import {
   MapTrifold,
   Mountains,
   NotePencil,
+  OrangeSlice,
   Package,
   Plant,
+  Pulse,
   Recycle,
   Rows,
   Scales,
@@ -50,6 +58,7 @@ import {
   Storefront,
   SunHorizon,
   Tag,
+  TeaBag,
   TestTube,
   Thermometer,
   ThermometerHot,
@@ -59,6 +68,7 @@ import {
   UsersThree,
   Warehouse,
   Warning,
+  Waves,
   Wine,
   Wrench
 } from "@phosphor-icons/react";
@@ -70,6 +80,7 @@ export type AtlasNodeArt = "crop" | "graphic" | "icon";
 export type AtlasNodeDesign = {
   art: AtlasNodeArt;
   focus: AtlasPoint;
+  phoneFocus?: AtlasPoint;
   graphic?: string;
   icon?: Icon;
   label: string;
@@ -85,6 +96,76 @@ export type AtlasSceneDesign = {
     | "commerce"
     | "service";
 };
+
+const SEMANTIC_ICON_RULES: ReadonlyArray<readonly [RegExp, Icon]> = [
+  [/orchard|citrus|pulp|peel|pomace|press cake/i, OrangeSlice],
+  [/cow|goat|sheep|udder|milking|herd|animal care/i, Cow],
+  [/pasteuri|thermal|heat treatment|hot fill/i, ThermometerHot],
+  [/homogeni|emulsion|dispersion|suspension|stability/i, ArrowsIn],
+  [/casein|whey|lactose|milk fat|protein|micronutrient|vitamin|mineral/i, Flask],
+  [/fiber|prebiotic|botanical|plant extract/i, Plant],
+  [/claim|evidence|promise|intended use|label literacy/i, FileText],
+  [/electrolyte|hydration|fluid balance/i, FirstAidKit],
+  [/caffeine|guarana|taurine|stimulant|alertness/i, BatteryCharging],
+  [/cola|fountain|syrup room|bag-in-box/i, Pulse],
+  [/kombucha|scoby|pellicle|starter culture|liquid culture/i, CirclesThree],
+  [/acetic acid|organic acid|titratable acidity|\bph\b|acid balance/i, Flask],
+  [/pressure|package conditioning|force carbonation/i, Gauge],
+  [/coffee|coffee cherry|green bean|parchment|roast profile|roaster|cupping/i, CoffeeBean],
+  [/espresso|pour-over|brewer|grind|burr|extraction|coffee service/i, Coffee],
+  [/tea plant|cultivar|clone|bud|shoot|leaf|canopy|garden|estate/i, Leaf],
+  [/root|propagation|nursery|mother bush|tea bush|planting/i, Plant],
+  [/pluck|harvest|two leaves|flush/i, HandGrabbing],
+  [/withering|rolling|oxidation|bruising|turning/i, ArrowsClockwise],
+  [/fixation|kill-green|drying|firing|roast/i, Fire],
+  [/sort|grade|sieve|screen/i, Rows],
+  [/pack|chest|sachet|carton/i, Package],
+  [/tea|oolong|matcha|sencha|infusion|steep|tea service/i, TeaBag],
+  [/watershed|aquifer|groundwater|reservoir|surface water|water source/i, Waves],
+  [/water|liquor|irrigation|mineral|alkalinity|hydration/i, Drop],
+  [/malt|grain|grist|husk|starch|sugar|kernel|cereal/i, Stack],
+  [/hop|botanical|agave|fruit|cane|juniper|peel|root/i, Leaf],
+  [/yeast|ferment|culture|microb|organism|attenuation/i, CirclesThree],
+  [/oxygen|carbon dioxide|carbonation|gas|foam/i, CloudFog],
+  [/temperature|heat|cold|chill|cool|climate|storage/i, Thermometer],
+  [/mill|roller|mechan|equipment|pump|agitator/i, GearSix],
+  [/mash|lauter|filter|clarif|fining|sparge|vorlauf/i, Funnel],
+  [/kettle|boil|kiln|toast|char|fire/i, Fire],
+  [/whirlpool|reflux|recircul|rotation|return/i, ArrowsClockwise],
+  [/tank|vessel|still|column|condenser|brewhouse|cellar/i, Factory],
+  [/lab|sample|gravity|proof|ph|measure|sensory|panel|analysis/i, Flask],
+  [/package|bottle|can|keg|closure|seam|fill/i, Package],
+  [/label|code|trace|identity|record/i, Barcode],
+  [/warehouse|distribution|delivery|cold chain|custody/i, Warehouse],
+  [/tap|draught|service|glass|pour|guest|flight/i, Wine],
+  [/clean|sanitation|hygiene|wash/i, Broom],
+  [/law|legal|protected|standard|category|appellation/i, SealCheck],
+  [/safety|responsible|risk|warning/i, ShieldCheck]
+];
+
+export function semanticAtlasIcon(note: BeyondTheGlassFieldNote): Icon {
+  const text = `${note.eyebrow} ${note.title}`;
+  return SEMANTIC_ICON_RULES.find(([pattern]) => pattern.test(text))?.[1] ?? Factory;
+}
+
+export function semanticAtlasPhase(sceneId: string): AtlasSceneDesign["phase"] {
+  if (/guide|gate|plaza|map/i.test(sceneId)) return "guides";
+  if (
+    /water|watershed|aquifer|malt|hop|grain|material|root|vine|harvest|botanical|coffee|tea|farm|garden|estate|orchard|fruit|citrus|pasture|dairy|milk-source/i.test(
+      sceneId
+    )
+  ) {
+    return "vineyard";
+  }
+  if (/barrel|cooper|warehouse|conditioning|brite|maturation|assembly/i.test(sceneId)) {
+    return "cellar";
+  }
+  if (/package|bottle|can|label|cold-chain|distribution|market|warehouse|retail|fountain/i.test(sceneId)) {
+    return "commerce";
+  }
+  if (/taproom|service|final|tasting|sensory|shared-glass|guest|choice/i.test(sceneId)) return "service";
+  return "production";
+}
 
 const crop = (label: string, focus: AtlasPoint, icon?: Icon): AtlasNodeDesign => ({
   art: "crop",
@@ -122,12 +203,54 @@ const graphic = (
  * Academy raster medallions.
  */
 export const ATLAS_SCENE_DESIGNS: Record<string, AtlasSceneDesign> = {
+  "health-evidence-conservatory-gate": {
+    phase: "guides",
+    nodes: [
+      icon("Category", [18, 31], IdentificationCard),
+      icon("Purpose", [36, 18], SelectionAll),
+      icon("Evidence", [64, 18], FileText),
+      icon("Safety", [82, 31], ShieldCheck),
+      {
+        ...icon("Route", [84, 72], FlowArrow),
+        phoneFocus: [82, 76]
+      }
+    ]
+  },
+  "brewery-academy-plaza": {
+    phase: "production",
+    nodes: [
+      icon("Water", [62, 74], Drop),
+      icon("Malt", [13, 75], Stack),
+      crop("Hops", [13, 43], Leaf),
+      crop("Yeast", [84, 43], CirclesThree),
+      icon("Service", [50, 55], Storefront)
+    ]
+  },
+  "brewery-system-map": {
+    phase: "production",
+    nodes: [
+      icon("Ingredients", [16, 28], Stack),
+      icon("Hot side", [34, 68], Fire),
+      icon("Cold side", [66, 68], Thermometer),
+      icon("Package", [84, 28], Package),
+      icon("Guest", [50, 20], Storefront)
+    ]
+  },
   "guides-at-sunrise": {
     phase: "guides",
     nodes: [
-      graphic("Sippy", [30, 52], "/beyond-the-glass/guides/animated/sippy-still.png"),
-      graphic("Roma", [49, 52], "/beyond-the-glass/guides/animated/roma-still.png"),
-      graphic("Hummin", [68, 54], "/beyond-the-glass/guides/animated/hummin-still.png")
+      {
+        ...graphic("Sippy", [30, 70], "/beyond-the-glass/guides/animated/sippy-still.png"),
+        phoneFocus: [20, 70]
+      },
+      {
+        ...graphic("Roma", [49, 70], "/beyond-the-glass/guides/animated/roma-still.png"),
+        phoneFocus: [50, 70]
+      },
+      {
+        ...graphic("Hummin", [68, 70], "/beyond-the-glass/guides/animated/hummin-still.png"),
+        phoneFocus: [80, 70]
+      }
     ]
   },
   "two-regions": {

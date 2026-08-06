@@ -183,7 +183,7 @@ export function vineAnatomyPartForProgress(progress: number): VineAnatomyPart {
   return vineAnatomyParts[index] ?? vineAnatomyParts[0];
 }
 
-function VinePartGlyph({ type }: { type: VineAnatomyPart["glyph"] }) {
+export function VinePartGlyph({ type }: { type: VineAnatomyPart["glyph"] }) {
   const common = {
     fill: "none",
     stroke: "currentColor",

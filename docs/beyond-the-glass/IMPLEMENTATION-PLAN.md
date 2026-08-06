@@ -6,7 +6,7 @@ Add a reusable cinematic-learning system to Sipopedia and ship its first chapter
 
 ## Route and integration
 
-- Canonical route: `/#app/beyond-the-glass`
+- Canonical route: `/#app/btg` (legacy `/#app/beyond-the-glass` links redirect here)
 - Compatibility aliases: `/#BTG`, `/#btg`, `/#app/BTG`, `/#app/btg`
 - Navigation order: Sip Academy → Sip Game → Beyond The Glass → Sipopedia
 - Search keywords: beyond the glass, BTG, water, systems, story, cinematic, origin, access

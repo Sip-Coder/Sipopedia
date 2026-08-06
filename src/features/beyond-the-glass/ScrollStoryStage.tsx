@@ -16,16 +16,12 @@ import { beyondTheGlassCurriculumLabs } from "../../data/beyondTheGlassCurriculu
 import { CurriculumLab } from "./CurriculumLab";
 import { FieldAtlasStudy } from "./FieldAtlasStudy";
 import { GuideSprite } from "./GuideSprite";
-import { NarrationControls } from "./NarrationControls";
 import { progressBetween, useScrollStoryProgress } from "./useScrollStoryProgress";
-import {
-  VineAnatomyParallax,
-  VineAnatomyStudyList
-} from "./VineAnatomyParallax";
+import { VineAnatomyStudyList } from "./VineAnatomyParallax";
+import { VineFieldAtlas } from "./VineFieldAtlas";
 
 type ScrollStoryStageProps = {
   chapter: BeyondTheGlassChapter;
-  transcriptId: string;
 };
 
 type StoryImageProps = {
@@ -49,14 +45,51 @@ const CHARACTER_ROLES: Record<BeyondTheGlassSpeaker, string> = {
 };
 
 const FIELD_NOTE_MATERIALS = ["paper", "glass", "brass"] as const;
-const PROGRESS_STORAGE_KEY = "sipopedia:btg:wine:last-scene:v1";
+const JOURNEY_STORAGE_SLUGS: Record<string, string> = {
+  wine: "journey-of-a-drop",
+  brewery: "brewery",
+  distillery: "distillery",
+  coffee: "coffee",
+  kombucha: "kombucha",
+  tea: "tea",
+  water: "water"
+};
+const JOURNEY_LABELS: Record<string, string> = {
+  wine: "Winery Adventure",
+  brewery: "Brewery Adventure",
+  distillery: "Distillery Adventure",
+  "energy-drinks": "Energy Drinks Adventure",
+  coffee: "Coffee Adventure",
+  "health-drinks": "Health Drinks Adventure",
+  juice: "Juice Adventure",
+  kombucha: "Kombucha Adventure",
+  milk: "Milk Adventure",
+  sodas: "Sodas Adventure",
+  tea: "Tea Adventure",
+  water: "Water Adventure"
+};
+const DISCONNECTED_JOURNEYS = new Set([
+  "energy-drinks",
+  "health-drinks",
+  "juice",
+  "milk",
+  "sodas"
+]);
 const ACADEMY_ROADMAP = [
-  { label: "Brewery", note: "Under construction · next", x: 19, y: 49 },
-  { label: "Distillery", note: "Under construction · second", x: 81, y: 49 },
-  { label: "Coffee ecosystem", note: "Under construction · third", x: 20, y: 75 },
-  { label: "Tea ecosystem", note: "Under construction · fourth", x: 75, y: 22 },
-  { label: "Future journeys", note: "Academy expansion", x: 49, y: 18 }
+  { enabled: true, journey: "wine", label: "Winery Adventure", note: "From Rain to First Sip", x: 50, y: 49 },
+  { enabled: true, journey: "brewery", label: "Brewery Adventure", note: "From Grain to Tap", x: 19, y: 49 },
+  { enabled: true, journey: "distillery", label: "Distillery Adventure", note: "From Source to Service", x: 81, y: 49 },
+  { enabled: true, journey: "coffee", label: "Coffee Adventure", note: "From Seed to Service", x: 20, y: 75 },
+  { enabled: true, journey: "tea", label: "Tea Adventure", note: "From Garden to Cup", x: 75, y: 22 },
+  { enabled: true, journey: "water", label: "Water Adventure", note: "From Cloud to Glass", x: 50, y: 78 },
+  { enabled: true, journey: "kombucha", label: "Kombucha Adventure", note: "From Tea to Living Culture", x: 82, y: 75 },
+  { enabled: false, journey: "future", label: "Future Adventures", note: "Academy expansion", x: 49, y: 16 }
 ] as const;
+
+function journeyHash(journey: string): string {
+  return journey === "wine" ? "#app/btg" : `#app/btg?journey=${journey}`;
+}
+
 function clamp(value: number, minimum = 0, maximum = 1): number {
   return Math.min(maximum, Math.max(minimum, value));
 }
@@ -64,24 +97,6 @@ function clamp(value: number, minimum = 0, maximum = 1): number {
 function smoothstep(value: number): number {
   const progress = clamp(value);
   return progress * progress * (3 - 2 * progress);
-}
-
-function focusJourneySection(id: string) {
-  if (typeof window === "undefined") return;
-  const target = document.getElementById(id);
-  if (!target) return;
-  const reducedMotion =
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  target.focus({ preventScroll: true });
-  const appBarHeight =
-    document.querySelector<HTMLElement>(".sip-compact-navigation")?.getBoundingClientRect()
-      .height ?? 0;
-  const targetTop = window.scrollY + target.getBoundingClientRect().top - appBarHeight - 16;
-  window.scrollTo({
-    behavior: reducedMotion ? "auto" : "smooth",
-    top: Math.max(0, targetTop)
-  });
 }
 
 function StoryImage({
@@ -151,17 +166,17 @@ function motionTransform(motion: BeyondTheGlassMotion, progress: number): string
     case "establish":
       return `scale(${(0.965 + eased * 0.035).toFixed(4)})`;
     case "push-in":
-      return `scale(${(1 + eased * 0.09).toFixed(4)}) translate3d(0, ${(-eased * 1.5).toFixed(2)}%, 0)`;
+      return `scale(${(0.965 + eased * 0.035).toFixed(4)}) translate3d(0, ${((0.5 - eased) * 1.2).toFixed(2)}%, 0)`;
     case "orbit":
-      return `perspective(1200px) rotateY(${((-3 + eased * 6)).toFixed(2)}deg) scale(${(1.025 + Math.sin(eased * Math.PI) * 0.035).toFixed(4)})`;
+      return `perspective(1200px) rotateY(${((-3 + eased * 6)).toFixed(2)}deg) scale(${(0.965 + Math.sin(eased * Math.PI) * 0.02).toFixed(4)})`;
     case "cutaway":
-      return `scale(1.035) translate3d(0, ${((0.5 - eased) * 3.5).toFixed(2)}%, 0)`;
+      return `scale(0.97) translate3d(0, ${((0.5 - eased) * 1.6).toFixed(2)}%, 0)`;
     case "rotate":
-      return `perspective(1200px) rotateY(${((-4 + eased * 8)).toFixed(2)}deg) scale(1.035)`;
+      return `perspective(1200px) rotateY(${((-4 + eased * 8)).toFixed(2)}deg) scale(0.965)`;
     case "glide":
-      return `scale(1.04) translate3d(${((0.5 - eased) * 3).toFixed(2)}%, 0, 0)`;
+      return `scale(0.97) translate3d(${((0.5 - eased) * 1.6).toFixed(2)}%, 0, 0)`;
     case "reassemble":
-      return `scale(${(1.07 - eased * 0.07).toFixed(4)})`;
+      return `scale(${(0.94 + eased * 0.06).toFixed(4)})`;
   }
 }
 
@@ -249,10 +264,18 @@ function guideDeckWeight(sceneProgress: number, hasStudyCards: boolean): number 
   return currentState;
 }
 
-function ReducedMotionStory({ chapter, transcriptId }: ScrollStoryStageProps) {
-  const [captionsVisible, setCaptionsVisible] = useState(true);
+function ReducedMotionStory({ chapter }: ScrollStoryStageProps) {
   const [sceneIndex, setSceneIndex] = useState(0);
   const activeScene = chapter.scenes[sceneIndex] ?? chapter.scenes[0];
+  const isWineJourney = chapter.slug === "journey-of-a-drop";
+
+  const returnToAcademy = () => {
+    if (isWineJourney) {
+      setSceneIndex(0);
+      return;
+    }
+    if (typeof window !== "undefined") window.location.hash = "app/btg";
+  };
 
   return (
     <section
@@ -261,6 +284,18 @@ function ReducedMotionStory({ chapter, transcriptId }: ScrollStoryStageProps) {
       id="btg-story"
       tabIndex={-1}
     >
+      {!isWineJourney || sceneIndex > 0 ? (
+        <nav aria-label="Beyond the Glass shortcuts" className="btg-reduced__toolbar">
+          <button
+            aria-label="Return to the SIP Academy Plaza"
+            className="btg-academy-return"
+            onClick={returnToAcademy}
+            type="button"
+          >
+            Academy
+          </button>
+        </nav>
+      ) : null}
       <StoryImage
         alt={activeScene.artwork.alt}
         className="btg-reduced__poster"
@@ -298,29 +333,16 @@ function ReducedMotionStory({ chapter, transcriptId }: ScrollStoryStageProps) {
           ))}
         </div>
         {activeScene.id === "vine-and-berry" ? <VineAnatomyStudyList /> : null}
-        <section aria-label="Optional narration and captions" className="btg-optional-audio">
-          <NarrationControls
-            captionsVisible={captionsVisible}
-            onCaptionsChange={setCaptionsVisible}
-            onSceneRequest={setSceneIndex}
-            onTranscriptRequest={() => focusJourneySection(transcriptId)}
-            scene={activeScene}
-            sceneCount={chapter.scenes.length}
-            sceneIndex={sceneIndex}
-          />
-        </section>
       </div>
     </section>
   );
 }
 
-export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProps) {
+export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const storyPanelRef = useRef<HTMLDivElement>(null);
   const { activeScene, progress, reducedMotion, sceneIndex, sceneProgress } =
     useScrollStoryProgress(sectionRef, chapter.scenes);
-  const [captionsVisible, setCaptionsVisible] = useState(false);
-  const [activeNarrationLineIndex, setActiveNarrationLineIndex] = useState<number | null>(null);
   const [panelControlsCards, setPanelControlsCards] = useState(false);
   const [panelNoteProgress, setPanelNoteProgress] = useState(0);
   const [resumeSceneIndex, setResumeSceneIndex] = useState<number | null>(null);
@@ -328,14 +350,19 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
   const [noteView, setNoteView] = useState<NoteDeckView>("guide");
   const [guideNotesOpen, setGuideNotesOpen] = useState(false);
   const [atlasNodeIndex, setAtlasNodeIndex] = useState<number | null>(null);
-  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
+  const [academyResumeJourneys, setAcademyResumeJourneys] = useState<string[]>([]);
   const manualCardAnchorRef = useRef<number | null>(null);
+  const restoredJourneyRef = useRef<string | null>(null);
+  const activeJourneyKey = chapter.slug === "journey-of-a-drop" ? "wine" : chapter.slug;
+  const activeJourneyLabel = JOURNEY_LABELS[activeJourneyKey] ?? chapter.chapterTitle;
+  const isDisconnectedJourney = DISCONNECTED_JOURNEYS.has(activeJourneyKey);
+  // Keep the established Wine storage key intact so returning students do
+  // not lose their saved place while the Academy map uses the shorter route
+  // name (`wine`) for journey switching.
+  const progressStorageKey = `sipopedia:btg:${chapter.slug}:last-scene:v1`;
+  const academyRoadmap = ACADEMY_ROADMAP.filter((landmark) => landmark.journey !== activeJourneyKey);
 
   const activeSpeaker = activeScene.narration[0]?.speaker ?? "Sippy";
-  const activeCaptionLine =
-    activeNarrationLineIndex === null
-      ? null
-      : (activeScene.narration[activeNarrationLineIndex] ?? activeScene.narration[0] ?? null);
   const cardInteractionProgress = panelControlsCards ? panelNoteProgress : sceneProgress;
   const guideScrollPosition = noteDeckPosition(
     cardInteractionProgress,
@@ -349,10 +376,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     0.36,
     0.88
   );
-  const guideDeckPosition =
-    captionsVisible && activeNarrationLineIndex !== null
-      ? activeNarrationLineIndex
-      : guideScrollPosition;
+  const guideDeckPosition = guideScrollPosition;
   const visibleStudyCardIndex =
     Math.min(
       Math.max(0, Math.round(guideDeckPosition)),
@@ -394,8 +418,9 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     zIndex: effectiveNoteView === "study" ? 4 : 2
   } as CSSProperties;
   const activeLab = beyondTheGlassCurriculumLabs[activeScene.id];
+  const isAcademyPlazaScene = activeScene.id === "academy-plaza";
   const atlasEnabled =
-    activeScene.id !== "academy-plaza" &&
+    !isAcademyPlazaScene &&
     activeScene.id !== "vine-and-berry" &&
     activeScene.fieldNotes.length > 0;
   const journeyPercent = Math.round(progress * 100);
@@ -409,7 +434,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     [chapter.scenes]
   );
 
-  const requestScene = (index: number) => {
+  const requestScene = (index: number, behaviorOverride?: ScrollBehavior) => {
     const section = sectionRef.current;
     const target = sceneOffsets[index];
     if (!section || !target || typeof window === "undefined") return;
@@ -424,9 +449,41 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
       // phone after the responsive stage changed height. Compact navigation
       // now lands deterministically; direct user scrolling keeps the full
       // reversible card-flip and scene-motion language.
-      behavior: reducedMotion || compactViewport ? "auto" : "smooth",
+      behavior: behaviorOverride ?? (reducedMotion || compactViewport ? "auto" : "smooth"),
       top: sectionTop + travel * target.progress
     });
+  };
+
+  const requestJourney = (journey: string) => {
+    if (typeof window === "undefined") return;
+    window.location.hash = journeyHash(journey);
+  };
+
+  const requestAcademy = () => {
+    setActiveLabId(null);
+    setGuideNotesOpen(false);
+    setAtlasNodeIndex(null);
+    if (sceneIndex > 0) {
+      try {
+        window.localStorage.setItem(
+          progressStorageKey,
+          JSON.stringify({
+            sceneId: activeScene.id,
+            updatedAt: new Date().toISOString()
+          })
+        );
+      } catch {
+        // Returning to the Plaza still works when storage is unavailable.
+      }
+      setResumeSceneIndex(sceneIndex);
+    }
+    if (activeJourneyKey === "wine") {
+      // Jump directly so crossing intermediate scroll ranges cannot replace
+      // the student's saved stop while returning to the Plaza.
+      requestScene(0, "auto");
+      return;
+    }
+    requestJourney("wine");
   };
 
   const requestGuideCard = (index: number) => {
@@ -475,22 +532,52 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (restoredJourneyRef.current === chapter.slug) return;
+    restoredJourneyRef.current = chapter.slug;
     try {
-      const stored = window.localStorage.getItem(PROGRESS_STORAGE_KEY);
+      const stored = window.localStorage.getItem(progressStorageKey);
       if (!stored) return;
       const parsed = JSON.parse(stored) as { sceneId?: string };
       const storedIndex = chapter.scenes.findIndex((scene) => scene.id === parsed.sceneId);
-      if (storedIndex > 0) setResumeSceneIndex(storedIndex);
+      if (storedIndex > 0) {
+        setResumeSceneIndex(storedIndex);
+        if (activeJourneyKey !== "wine") {
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => requestScene(storedIndex));
+          });
+        }
+      }
     } catch {
-      window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
+      window.localStorage.removeItem(progressStorageKey);
     }
-  }, [chapter.scenes]);
+  }, [activeJourneyKey, chapter.scenes, chapter.slug, progressStorageKey]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !isAcademyPlazaScene) return;
+    const savedJourneys = ACADEMY_ROADMAP.filter((landmark) => landmark.enabled)
+      .filter((landmark) => {
+        const storageSlug = JOURNEY_STORAGE_SLUGS[landmark.journey];
+        if (!storageSlug) return false;
+        try {
+          const stored = window.localStorage.getItem(
+            `sipopedia:btg:${storageSlug}:last-scene:v1`
+          );
+          if (!stored) return false;
+          const parsed = JSON.parse(stored) as { sceneId?: string };
+          return Boolean(parsed.sceneId);
+        } catch {
+          return false;
+        }
+      })
+      .map((landmark) => landmark.journey);
+    setAcademyResumeJourneys(savedJourneys);
+  }, [isAcademyPlazaScene]);
 
   useEffect(() => {
     if (typeof window === "undefined" || sceneIndex <= 0) return;
     try {
       window.localStorage.setItem(
-        PROGRESS_STORAGE_KEY,
+        progressStorageKey,
         JSON.stringify({
           sceneId: activeScene.id,
           updatedAt: new Date().toISOString()
@@ -500,7 +587,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     } catch {
       // The tour remains fully usable when storage is unavailable or blocked.
     }
-  }, [activeScene.id, sceneIndex]);
+  }, [activeScene.id, progressStorageKey, sceneIndex]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -518,13 +605,11 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
 
   useEffect(() => {
     setActiveLabId(null);
-    setActiveNarrationLineIndex(null);
     setPanelControlsCards(false);
     setPanelNoteProgress(0);
     setNoteView("guide");
     manualCardAnchorRef.current = null;
     setGuideNotesOpen(false);
-    setMobileToolsOpen(false);
     try {
       const storedValue =
         window.localStorage.getItem(`sipopedia:btg:atlas:${activeScene.id}:v1`) ?? "";
@@ -546,6 +631,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
   }, [activeScene.fieldNotes.length, activeScene.id]);
 
   const selectAtlasNode = (index: number | null) => {
+    if (index !== null) setGuideNotesOpen(false);
     setAtlasNodeIndex(index);
     try {
       const storageKey = `sipopedia:btg:atlas:${activeScene.id}:v1`;
@@ -559,8 +645,13 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
     }
   };
 
+  const selectVineNode = (index: number | null) => {
+    if (index !== null) setGuideNotesOpen(false);
+    setAtlasNodeIndex(index);
+  };
+
   if (reducedMotion) {
-    return <ReducedMotionStory chapter={chapter} transcriptId={transcriptId} />;
+    return <ReducedMotionStory chapter={chapter} />;
   }
 
   const stageStyle = {
@@ -590,10 +681,9 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
       >
         <div className="btg-stage__visual">
           {activeScene.id === "vine-and-berry" ? (
-            <VineAnatomyParallax opacity={1} />
+            <VineFieldAtlas onSelect={selectVineNode} />
           ) : atlasEnabled ? (
             <FieldAtlasStudy
-              artTransform={motionTransform(activeScene.motion, sceneProgress)}
               onOpenLab={activeLab ? () => setActiveLabId(activeLab.id) : undefined}
               onSelect={selectAtlasNode}
               scene={activeScene}
@@ -613,7 +703,10 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                 objectFit: activeScene.artwork.fit ?? "contain",
                 objectPosition: activeScene.artwork.position ?? "center",
                 opacity: 1,
-                transform: motionTransform(activeScene.motion, sceneProgress),
+                transform:
+                  activeScene.id === "academy-plaza"
+                    ? "none"
+                    : motionTransform(activeScene.motion, sceneProgress),
                 transformOrigin: "50% 50%"
               }}
             />
@@ -635,7 +728,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
         <div className="btg-stage__hud">
           <header className="btg-stage__header">
             <div>
-              <p className="btg-kicker">Beyond The Glass · From Rain to First Sip</p>
+              <p className="btg-kicker">Beyond The Glass · {chapter.chapterTitle}</p>
               <strong>{activeScene.number} · {activeScene.title}</strong>
             </div>
             <div className="btg-progress">
@@ -643,19 +736,52 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
               <progress aria-label="Journey progress" max={100} value={journeyPercent} />
             </div>
             {activeScene.id !== "academy-plaza" ? (
-              <button
-                aria-controls="btg-guide-study-panel"
-                aria-expanded={guideNotesOpen}
-                className="btg-vine-notes-toggle"
-                onClick={() => setGuideNotesOpen((isOpen) => !isOpen)}
-                type="button"
-              >
-                {guideNotesOpen ? "Return to field atlas" : "Open guide notes"}
-              </button>
+              <div className="btg-stage__actions">
+                <button
+                  aria-label="Return to the SIP Academy Plaza"
+                  className="btg-academy-return"
+                  onClick={requestAcademy}
+                  type="button"
+                >
+                  Academy
+                </button>
+                {activeJourneyKey !== "wine" && sceneIndex > 0 ? (
+                  <button
+                    aria-label={`Restart ${chapter.chapterTitle} from ${chapter.scenes[0]?.title ?? "the first stop"}`}
+                    className="btg-journey-restart"
+                    onClick={() => {
+                      try {
+                        window.localStorage.removeItem(progressStorageKey);
+                      } catch {
+                        // Restart still works for this visit when storage is blocked.
+                      }
+                      setResumeSceneIndex(null);
+                      requestScene(0);
+                    }}
+                    type="button"
+                  >
+                    ↺ Start
+                  </button>
+                ) : null}
+                <button
+                  aria-controls="btg-guide-study-panel"
+                  aria-expanded={guideNotesOpen}
+                  className="btg-vine-notes-toggle"
+                  onClick={() => setGuideNotesOpen((isOpen) => !isOpen)}
+                  type="button"
+                >
+                  <span className="btg-desktop-label">
+                    {guideNotesOpen ? "Return to field atlas" : "Open guide notes"}
+                  </span>
+                  <span className="btg-mobile-label">
+                    {guideNotesOpen ? "Atlas" : "Notes"}
+                  </span>
+                </button>
+              </div>
             ) : null}
           </header>
 
-          {sceneIndex === 0 ? (
+          {isAcademyPlazaScene ? (
             <div className="btg-plaza-map-layer">
               <button
                 className="btg-plaza-node btg-plaza-node--active"
@@ -664,30 +790,44 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                 type="button"
               >
                 <span>Active adventure</span>
-                <strong>Wine · From Rain to First Sip</strong>
+                <strong>{activeJourneyLabel}</strong>
                 <small>
                   {resumeSceneIndex
-                    ? `Continue at ${chapter.scenes[resumeSceneIndex]?.title ?? "your last stop"}`
-                    : "Begin at sunrise"}
+                    ? `Continue · ${chapter.scenes[resumeSceneIndex]?.title ?? "your last stop"}`
+                    : chapter.chapterTitle}
                 </small>
               </button>
-              {ACADEMY_ROADMAP.map((landmark) => (
-                <div
-                  className="btg-plaza-node btg-plaza-node--future"
-                  key={landmark.label}
-                  style={{ left: `${landmark.x}%`, top: `${landmark.y}%` }}
-                >
-                  <span>Forthcoming</span>
-                  <strong>{landmark.label}</strong>
-                  <small>{landmark.note}</small>
-                </div>
-              ))}
+              {academyRoadmap.map((landmark) => {
+                const hasSavedProgress = academyResumeJourneys.includes(landmark.journey);
+                return landmark.enabled ? (
+                  <a
+                    className="btg-plaza-node btg-plaza-node--adventure"
+                    href={journeyHash(landmark.journey)}
+                    key={landmark.label}
+                    style={{ left: `${landmark.x}%`, top: `${landmark.y}%` }}
+                  >
+                    <span>{hasSavedProgress ? "Continue trip" : "Begin journey"}</span>
+                    <strong>{landmark.label}</strong>
+                    <small>{hasSavedProgress ? "Saved field notes ready" : landmark.note}</small>
+                  </a>
+                ) : (
+                  <div
+                    className="btg-plaza-node btg-plaza-node--future"
+                    key={landmark.label}
+                    style={{ left: `${landmark.x}%`, top: `${landmark.y}%` }}
+                  >
+                    <span>Forthcoming</span>
+                    <strong>{landmark.label}</strong>
+                    <small>{landmark.note}</small>
+                  </div>
+                );
+              })}
               {resumeSceneIndex ? (
                 <button
                   className="btg-plaza-replay"
                   onClick={() => {
                     try {
-                      window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
+                      window.localStorage.removeItem(progressStorageKey);
                     } catch {
                       // Storage may be disabled; replay still works.
                     }
@@ -702,15 +842,60 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
             </div>
           ) : null}
 
+          {isAcademyPlazaScene ? (
+            <aside aria-label="SIP Academy journey board" className="btg-plaza-itinerary">
+              <p className="btg-kicker">Active field trip</p>
+              <strong>{activeJourneyLabel}</strong>
+              <p>
+                {resumeSceneIndex
+                  ? `Your field notes are saved at ${chapter.scenes[resumeSceneIndex]?.title ?? "your last stop"}.`
+                  : "Meet the guides at the Academy, then follow this field trip from origin to guest."}
+              </p>
+              <button onClick={() => requestScene(resumeSceneIndex ?? 1)} type="button">
+                {resumeSceneIndex ? "Continue this journey" : "Begin this journey"}
+              </button>
+              <div aria-label="SIP Academy journeys">
+                <span>Choose another adventure</span>
+                <ul>
+                  {academyRoadmap.map((landmark) => {
+                    const hasSavedProgress = academyResumeJourneys.includes(landmark.journey);
+                    return (
+                      <li
+                        className={landmark.enabled ? "is-available" : "is-forthcoming"}
+                        key={`itinerary-${landmark.label}`}
+                      >
+                        {landmark.enabled ? (
+                          <a
+                            aria-label={`${hasSavedProgress ? "Continue" : "Begin"} ${landmark.label} adventure`}
+                            className="btg-plaza-itinerary__journey"
+                            href={journeyHash(landmark.journey)}
+                          >
+                            <strong>{landmark.label}</strong>
+                            <span>{hasSavedProgress ? "Continue trip" : "Begin journey"}</span>
+                          </a>
+                        ) : (
+                          <>
+                            <strong>{landmark.label}</strong>
+                            <span>Forthcoming</span>
+                          </>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </aside>
+          ) : null}
+
           <aside
             aria-label="SIP Academy field-trip map"
-            className={`btg-academy-map ${sceneIndex === 0 ? "btg-academy-map--expanded" : ""}`}
+            className={`btg-academy-map ${isAcademyPlazaScene ? "btg-academy-map--expanded" : ""}`}
           >
             <StoryImage
               alt=""
               className="btg-academy-map__image"
-              eager={sceneIndex === 0}
-              sizes={sceneIndex === 0 ? "(max-width: 760px) 100vw, 42vw" : "18rem"}
+              eager={isAcademyPlazaScene}
+              sizes={isAcademyPlazaScene ? "(max-width: 760px) 100vw, 42vw" : "18rem"}
               src={chapter.assets.academyMap}
               srcSet={chapter.assets.academyMapSet}
             />
@@ -819,7 +1004,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                           <span>Sommelier field card</span>
                           <strong>{speaker}</strong>
                         </header>
-                        <p aria-live={isActive && captionsVisible && activeCaptionLine ? "polite" : "off"}>
+                        <p aria-live="off">
                           {studyCard.text}
                         </p>
                         <footer>
@@ -828,8 +1013,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                           </span>
                           {isActive &&
                           effectiveNoteView === "guide" &&
-                          activeScene.narration.length > 1 &&
-                          !captionsVisible ? (
+                          activeScene.narration.length > 1 ? (
                             <nav aria-label="Guide study cards">
                               <button
                                 aria-label="Show the previous guide note"
@@ -958,21 +1142,41 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
             ))}
           </div>
 
-          <footer aria-label="Wine adventure journey controls" className="btg-journey-dock">
+          <footer aria-label={`${chapter.chapterTitle} journey controls`} className="btg-journey-dock">
             <div className="btg-journey-path">
               <button
                 aria-label={
                   sceneIndex === 0
-                    ? "Already at the first stop"
+                    ? activeJourneyKey === "wine"
+                      ? "Already at the Academy Plaza"
+                      : isDisconnectedJourney
+                        ? "Exit this standalone field trip"
+                        : "Return to the SIP Academy Plaza"
                     : `Go back to ${chapter.scenes[sceneIndex - 1]?.title ?? "the previous stop"}`
                 }
                 className="btg-dock-action btg-dock-action--back"
-                disabled={sceneIndex === 0}
-                onClick={() => requestScene(Math.max(0, sceneIndex - 1))}
+                disabled={sceneIndex === 0 && activeJourneyKey === "wine"}
+                onClick={() => {
+                  if (sceneIndex === 0 && activeJourneyKey !== "wine") {
+                    if (isDisconnectedJourney) {
+                      window.location.hash = "app/launch";
+                      return;
+                    }
+                    requestJourney("wine");
+                    return;
+                  }
+                  requestScene(Math.max(0, sceneIndex - 1));
+                }}
                 type="button"
               >
                 <span aria-hidden="true">←</span>
-                <span>Back</span>
+                <span>
+                  {sceneIndex === 0 && activeJourneyKey !== "wine"
+                    ? isDisconnectedJourney
+                      ? "Exit"
+                      : "Academy"
+                    : "Back"}
+                </span>
               </button>
               <div className="btg-dock-status" aria-live="polite">
                 <div>
@@ -982,7 +1186,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                   <strong>{activeScene.title}</strong>
                 </div>
                 <div
-                  aria-label={`Wine adventure progress: stop ${sceneIndex + 1} of ${chapter.scenes.length}`}
+                  aria-label={`${chapter.chapterTitle} progress: stop ${sceneIndex + 1} of ${chapter.scenes.length}`}
                   aria-valuemax={chapter.scenes.length}
                   aria-valuemin={1}
                   aria-valuenow={sceneIndex + 1}
@@ -1011,34 +1215,7 @@ export function ScrollStoryStage({ chapter, transcriptId }: ScrollStoryStageProp
                 <span className="btg-mobile-label">Next</span>
                 <span aria-hidden="true">→</span>
               </button>
-              <button
-                aria-controls="btg-mobile-field-kit"
-                aria-expanded={mobileToolsOpen}
-                className="btg-mobile-field-kit-toggle"
-                onClick={() => setMobileToolsOpen((open) => !open)}
-                type="button"
-              >
-                {mobileToolsOpen ? "Close" : "Field kit"}
-              </button>
             </div>
-            <section
-              aria-label="Optional narration"
-              className="btg-optional-audio"
-              data-mobile-open={mobileToolsOpen ? "true" : "false"}
-              id="btg-mobile-field-kit"
-            >
-              <span className="btg-dock-tools-label">Field kit</span>
-              <NarrationControls
-                captionsVisible={captionsVisible}
-                onActiveLineChange={setActiveNarrationLineIndex}
-                onCaptionsChange={setCaptionsVisible}
-                onSceneRequest={requestScene}
-                onTranscriptRequest={() => focusJourneySection(transcriptId)}
-                scene={activeScene}
-                sceneCount={chapter.scenes.length}
-                sceneIndex={sceneIndex}
-              />
-            </section>
           </footer>
         </div>
         {activeLab && activeLabId === activeLab.id ? (

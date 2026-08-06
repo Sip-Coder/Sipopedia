@@ -1427,7 +1427,8 @@ export function SipStudiosGame() {
   const navigateToWorkspace = (page: "sipopedia" | "beyond-the-glass" | "maps" | "recipes") => {
     if (typeof window === "undefined") return;
     setRoomCompletionModalKey(null);
-    window.location.hash = `#app/${page}`;
+    const routePage = page === "beyond-the-glass" ? "btg" : page;
+    window.location.hash = `#app/${routePage}`;
   };
 
   useEffect(() => {

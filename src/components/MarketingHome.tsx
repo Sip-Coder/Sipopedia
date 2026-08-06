@@ -153,7 +153,7 @@ const marketGapMoves: MarketGapMove[] = [
     gap: "Beverage education often separates facts that only make sense as a connected system.",
     response: "Beyond The Glass follows one drop through a cinematic, scroll-controlled story of science, culture, people, and responsibility.",
     routeLabel: "Explore Beyond The Glass",
-    route: "app/beyond-the-glass"
+    route: "app/btg"
   },
   {
     gap: "Competitors win with named credentials and exam ladders.",

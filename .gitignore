@@ -14,6 +14,12 @@ tmp/
 .codex-runlogs/
 supabase/.temp/
 
+# Local source masters and generated QA evidence. Runtime-ready WebP assets
+# live under public/ and are intentionally committed separately.
+/DUMP IN/
+/artifacts/
+/logs/
+
 # Local secrets workspace (ignore all real secret files)
 local-secrets/*
 !local-secrets/README.md

@@ -1,7 +1,7 @@
 # Beyond the Glass Learning-Journey Audit
 
 Date: July 30, 2026
-Route: `/#app/beyond-the-glass`
+Route: `/#app/btg`
 Curriculum lens: Society of Wine Educators CSW topic structure, supported by OIV, AWRI, university-extension, producer-tour, and public-health references.
 
 ## Outcome

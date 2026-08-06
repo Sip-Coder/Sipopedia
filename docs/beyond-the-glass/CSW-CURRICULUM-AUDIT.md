@@ -4,7 +4,7 @@
 > `BTG-LEARNING-JOURNEY-AUDIT-2026-07-30.md` for the current implementation and resolved gaps.
 
 Audit date: July 29, 2026
-Experience reviewed: `/#app/beyond-the-glass`
+Experience reviewed: `/#app/btg`
 Journey reviewed: **From Rain to First Sip**, 13 stops
 
 ## Executive finding

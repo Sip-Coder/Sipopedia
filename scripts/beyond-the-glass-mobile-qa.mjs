@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 
 const baseUrl = (process.env.BTG_QA_BASE_URL ?? "http://127.0.0.1:5100").replace(/\/+$/, "");
-const route = "/#app/beyond-the-glass";
+const route = "/#app/btg";
 const localPreviewAccessKey = "sipstudies:local-preview-access";
 const configuredViewports = [
   { width: 360, height: 800 },
@@ -255,7 +255,19 @@ async function setStoryProgress(client, sessionId, progress, expectedScene) {
       return Number.isFinite(current) && Math.abs(current - ${progress}) <= 0.003;
     })()`
   );
-  await sleep(1000);
+  await waitForEvaluation(
+    client,
+    sessionId,
+    `Array.from(document.querySelectorAll(".btg-stage__visual img"))
+      .filter((image) => {
+        const rect = image.getBoundingClientRect();
+        const style = getComputedStyle(image);
+        return rect.width > 0 && rect.height > 0 && style.display !== "none" && style.visibility !== "hidden" && Number.parseFloat(style.opacity || "1") > 0.02;
+      })
+      .every((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0)`,
+    15000
+  );
+  await sleep(250);
 }
 
 async function inspectStage(client, sessionId, expectedScene) {
@@ -335,11 +347,9 @@ async function inspectStage(client, sessionId, expectedScene) {
         .map((image) => image.getAttribute("src") ?? "(missing src)");
       const fallbackCount = Array.from(stage.querySelectorAll(".btg-story-image--fallback")).filter(visible).length;
       const guideNote = stage.querySelector('.btg-guide-note[aria-hidden="false"]');
-      const atlas = stage.querySelector(".btg-field-atlas, .btg-vine-anatomy");
+      const atlas = stage.querySelector(".btg-field-atlas");
       const atlasExpected = ${JSON.stringify(expectedScene)} !== "academy-plaza";
-      const atlasNodeCount = stage.querySelectorAll(
-        ".btg-field-atlas__nodes button, .btg-vine-anatomy__node"
-      ).length;
+      const atlasNodeCount = stage.querySelectorAll(".btg-field-atlas__nodes button").length;
       const documentOverflow = Math.max(
         0,
         document.documentElement.scrollWidth - window.innerWidth,
@@ -367,6 +377,9 @@ async function inspectStage(client, sessionId, expectedScene) {
       }
       if (atlasExpected && atlasNodeCount < 1) {
         failures.push("interactive field atlas has no visible lesson nodes");
+      }
+      if (${JSON.stringify(expectedScene)} === "vine-and-berry" && atlasNodeCount !== 14) {
+        failures.push("vine field atlas expected 14 lesson nodes, found " + atlasNodeCount);
       }
       if (activeNote) {
         const activeNoteRect = rect(activeNote);

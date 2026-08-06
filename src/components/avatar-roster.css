@@ -1,0 +1,816 @@
+.character-roster-page {
+  --roster-ink: #06131f;
+  --roster-navy: #071a28;
+  --roster-panel: rgba(5, 22, 34, 0.92);
+  --roster-line: rgba(159, 218, 245, 0.24);
+  --roster-cream: #fff1d1;
+  --roster-gold: #edd4a8;
+  --roster-cyan: #9fdaf5;
+  --roster-teal: #66c7b7;
+  width: min(100%, 1440px);
+  margin: 1rem auto 0;
+  padding: clamp(1rem, 2.4vw, 2rem);
+  border: 1px solid var(--roster-line);
+  border-radius: 24px;
+  color: rgba(236, 247, 246, 0.9);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(237, 212, 168, 0.16), transparent 31%),
+    radial-gradient(circle at 92% 14%, rgba(102, 199, 183, 0.12), transparent 28%),
+    linear-gradient(90deg, rgba(159, 218, 245, 0.04) 1px, transparent 1px) 0 0 / 52px 52px,
+    linear-gradient(0deg, rgba(159, 218, 245, 0.04) 1px, transparent 1px) 0 0 / 52px 52px,
+    linear-gradient(145deg, rgba(4, 16, 28, 0.98), rgba(10, 35, 43, 0.94));
+  box-shadow: 0 30px 80px rgba(0, 5, 14, 0.28);
+}
+
+.character-roster-login {
+  min-height: 420px;
+  display: grid;
+  place-content: center;
+  justify-items: start;
+  gap: 0.8rem;
+}
+
+.character-roster-login h1,
+.character-roster-login p {
+  margin: 0;
+}
+
+.character-roster-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: clamp(1rem, 3vw, 2.2rem);
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--roster-line);
+}
+
+.character-roster-kicker {
+  margin: 0 0 0.45rem;
+  color: var(--roster-teal);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.character-roster-header h1 {
+  margin: 0;
+  color: var(--roster-cream);
+  font-family: "Space Grotesk", "Outfit", sans-serif;
+  font-size: clamp(2rem, 4vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.character-roster-header p:not(.character-roster-kicker) {
+  max-width: 66ch;
+  margin: 0.7rem 0 0;
+  color: rgba(217, 247, 255, 0.78);
+  font-size: clamp(1rem, 1.3vw, 1.12rem);
+  line-height: 1.55;
+}
+
+.character-roster-header-actions,
+.character-roster-save-zone {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.character-roster-button {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.72rem 0.92rem;
+  border: 1px solid var(--roster-line);
+  border-radius: 14px;
+  color: var(--roster-cream);
+  font: 800 0.9rem/1 "Outfit", sans-serif;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.character-roster-button svg {
+  width: 1.12rem;
+  height: 1.12rem;
+  flex: 0 0 auto;
+}
+
+.character-roster-button-quiet {
+  background: rgba(3, 18, 30, 0.7);
+}
+
+.character-roster-button-save {
+  border-color: rgba(237, 212, 168, 0.55);
+  color: #07131e;
+  background: linear-gradient(135deg, var(--roster-gold), var(--roster-teal) 62%, var(--roster-cyan));
+  box-shadow: 0 12px 28px rgba(102, 199, 183, 0.18);
+}
+
+.character-roster-button:hover {
+  border-color: rgba(159, 218, 245, 0.65);
+  transform: translateY(-1px);
+}
+
+.character-roster-button:focus-visible,
+.character-world-grid button:focus-visible,
+.character-pair-grid button:focus-visible,
+.character-pronoun-fieldset button:focus-visible,
+.character-profile-fields input:focus-visible,
+.character-custom-pronouns input:focus-visible {
+  outline: 3px solid var(--roster-cyan);
+  outline-offset: 3px;
+}
+
+.character-roster-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.character-roster-steps span {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid rgba(159, 218, 245, 0.14);
+  border-radius: 12px;
+  color: rgba(217, 247, 255, 0.58);
+  background: rgba(2, 13, 31, 0.45);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.character-roster-steps span.complete {
+  color: var(--roster-cream);
+  border-color: rgba(102, 199, 183, 0.38);
+}
+
+.character-roster-steps b,
+.character-roster-panel-heading > span {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--roster-ink);
+  background: var(--roster-teal);
+  font-size: 0.72rem;
+}
+
+.character-roster-layout {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.88fr) minmax(480px, 1.12fr);
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: start;
+  margin-top: 1rem;
+}
+
+.character-roster-preview {
+  position: sticky;
+  top: 0.85rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--character-accent) 56%, var(--roster-line));
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 50% 26%, color-mix(in srgb, var(--character-accent) 18%, transparent), transparent 48%),
+    rgba(2, 13, 31, 0.9);
+  box-shadow: 0 24px 60px rgba(0, 7, 18, 0.38);
+}
+
+.character-roster-preview-topline {
+  position: absolute;
+  z-index: 2;
+  inset: 0.8rem 0.8rem auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.character-roster-preview-topline span {
+  padding: 0.38rem 0.6rem;
+  border: 1px solid rgba(255, 241, 209, 0.3);
+  border-radius: 999px;
+  color: var(--roster-cream);
+  background: rgba(3, 15, 25, 0.72);
+  backdrop-filter: blur(12px);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.character-roster-artwork {
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #020b14;
+}
+
+.character-roster-artwork img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+}
+
+.character-roster-preview-copy {
+  display: grid;
+  gap: 0.28rem;
+  padding: clamp(1rem, 2vw, 1.35rem);
+  border-top: 1px solid var(--roster-line);
+}
+
+.character-roster-preview-copy p,
+.character-roster-preview-copy h2,
+.character-roster-preview-copy strong,
+.character-roster-preview-copy span {
+  margin: 0;
+}
+
+.character-roster-preview-copy p {
+  color: color-mix(in srgb, var(--character-accent) 80%, var(--roster-cream));
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.character-roster-preview-copy h2 {
+  color: var(--roster-cream);
+  font-family: "Space Grotesk", "Outfit", sans-serif;
+  font-size: clamp(1.55rem, 3vw, 2.45rem);
+  line-height: 1;
+}
+
+.character-roster-preview-copy strong {
+  color: var(--roster-cyan);
+  font-size: 0.95rem;
+}
+
+.character-roster-preview-copy span {
+  margin-top: 0.3rem;
+  color: rgba(217, 247, 255, 0.72);
+  line-height: 1.52;
+}
+
+.character-roster-preview-status {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 1rem 1rem;
+  padding: 0.72rem 0.82rem;
+  border: 1px solid rgba(102, 199, 183, 0.32);
+  border-radius: 12px;
+  color: #bff3e8;
+  background: rgba(24, 85, 82, 0.22);
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.character-roster-deck {
+  min-width: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.character-roster-panel {
+  padding: clamp(0.9rem, 1.7vw, 1.25rem);
+  border: 1px solid var(--roster-line);
+  border-radius: 20px;
+  background: var(--roster-panel);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.character-roster-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.character-roster-panel-heading h2,
+.character-roster-panel-heading p {
+  margin: 0;
+}
+
+.character-roster-panel-heading h2 {
+  color: var(--roster-cream);
+  font-family: "Space Grotesk", "Outfit", sans-serif;
+  font-size: clamp(1.05rem, 1.8vw, 1.32rem);
+  line-height: 1.18;
+}
+
+.character-roster-panel-heading p {
+  margin-top: 0.18rem;
+  color: rgba(217, 247, 255, 0.62);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.character-world-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.52rem;
+}
+
+.character-world-grid button {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 0.52rem;
+  min-width: 0;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid rgba(159, 218, 245, 0.16);
+  border-radius: 12px;
+  color: rgba(236, 247, 246, 0.76);
+  background: rgba(4, 19, 31, 0.8);
+  font: 800 0.74rem/1.15 "Outfit", sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.character-world-grid button i {
+  width: 0.62rem;
+  height: 0.62rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--world-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--world-accent) 16%, transparent);
+}
+
+.character-world-grid button.active {
+  color: var(--roster-cream);
+  border-color: color-mix(in srgb, var(--world-accent) 70%, white 14%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--world-accent) 18%, transparent), rgba(4, 19, 31, 0.9));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--world-accent) 24%, transparent);
+}
+
+.character-pair-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.character-pair-grid > button {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(96px, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: 0.72rem;
+  overflow: hidden;
+  padding: 0.55rem;
+  border: 1px solid rgba(159, 218, 245, 0.18);
+  border-radius: 16px;
+  color: rgba(236, 247, 246, 0.82);
+  background: rgba(3, 16, 28, 0.76);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.character-pair-grid > button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(159, 218, 245, 0.46);
+}
+
+.character-pair-grid > button.active {
+  border-color: var(--roster-gold);
+  background: linear-gradient(135deg, rgba(237, 212, 168, 0.12), rgba(24, 85, 82, 0.2));
+  box-shadow: inset 0 0 0 1px rgba(237, 212, 168, 0.18), 0 14px 32px rgba(0, 8, 20, 0.22);
+}
+
+.character-pair-image {
+  aspect-ratio: 1;
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #020b14;
+}
+
+.character-pair-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.character-pair-copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.18rem;
+}
+
+.character-pair-copy small {
+  color: var(--roster-teal);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.character-pair-copy strong {
+  overflow: hidden;
+  color: var(--roster-cream);
+  font-family: "Space Grotesk", "Outfit", sans-serif;
+  font-size: 0.94rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.character-pair-copy em {
+  color: rgba(217, 247, 255, 0.65);
+  font-size: 0.72rem;
+  font-style: normal;
+  line-height: 1.3;
+}
+
+.character-pair-check {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--roster-ink);
+  background: var(--roster-gold);
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.character-pair-check svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.character-pair-grid > button.active .character-pair-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.character-profile-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.72rem;
+}
+
+.character-profile-fields label,
+.character-custom-pronouns {
+  display: grid;
+  gap: 0.38rem;
+  color: var(--roster-gold);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.character-profile-fields input,
+.character-custom-pronouns input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(159, 218, 245, 0.24);
+  border-radius: 12px;
+  padding: 0.72rem 0.8rem;
+  color: var(--roster-cream);
+  background: rgba(2, 13, 31, 0.74);
+  font: 750 0.92rem/1.2 "Outfit", sans-serif;
+}
+
+.character-pronoun-fieldset {
+  margin: 0.85rem 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.character-pronoun-fieldset legend {
+  margin-bottom: 0.38rem;
+  color: var(--roster-gold);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.character-pronoun-fieldset > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.48rem;
+}
+
+.character-pronoun-fieldset button {
+  min-height: 42px;
+  padding: 0.58rem 0.78rem;
+  border: 1px solid rgba(159, 218, 245, 0.2);
+  border-radius: 999px;
+  color: rgba(236, 247, 246, 0.76);
+  background: rgba(2, 13, 31, 0.7);
+  font: 800 0.78rem/1 "Outfit", sans-serif;
+  cursor: pointer;
+}
+
+.character-pronoun-fieldset button.active {
+  color: var(--roster-ink);
+  border-color: var(--roster-gold);
+  background: var(--roster-gold);
+}
+
+.character-custom-pronouns {
+  max-width: 280px;
+  margin-top: 0.72rem;
+}
+
+.character-profile-summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0.1rem;
+  margin-top: 0.9rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(102, 199, 183, 0.26);
+  border-radius: 14px;
+  background: rgba(24, 85, 82, 0.14);
+}
+
+.character-profile-summary > span {
+  grid-row: 1 / span 2;
+  padding: 0.42rem 0.55rem;
+  border-radius: 10px;
+  color: var(--roster-ink);
+  background: var(--roster-teal);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.character-profile-summary strong {
+  color: var(--roster-cream);
+  font-size: 0.96rem;
+}
+
+.character-profile-summary small {
+  color: rgba(217, 247, 255, 0.66);
+}
+
+.character-roster-save-zone {
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem;
+  border: 1px solid rgba(237, 212, 168, 0.24);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(237, 212, 168, 0.08), rgba(24, 85, 82, 0.1));
+}
+
+.character-roster-save-zone > div {
+  color: rgba(217, 247, 255, 0.68);
+  font-size: 0.78rem;
+}
+
+.character-roster-save-zone strong {
+  color: var(--roster-cream);
+}
+
+/* The curated v2 art bypasses the old modular block-art scale rules everywhere it appears. */
+.sip-avatar-figure.sip-avatar-figure-roster {
+  width: min(92%, 460px);
+  aspect-ratio: 1;
+}
+
+.sip-avatar-figure-small.sip-avatar-figure-roster {
+  width: min(148px, 72vw);
+  overflow: hidden;
+  border: 1px solid rgba(159, 218, 245, 0.22);
+  border-radius: 18px;
+  background: #020b14;
+}
+
+.sip-avatar-figure-roster .sip-avatar-rotator,
+.stance-toast .sip-avatar-figure-roster .sip-avatar-rotator,
+.stance-field-notes .sip-avatar-figure-roster .sip-avatar-rotator,
+.stance-challenge .sip-avatar-figure-roster .sip-avatar-rotator {
+  transform: none;
+}
+
+.sip-avatar-figure-roster .sip-avatar-roster-image {
+  transform: none;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 18px;
+}
+
+.sip-avatar-figure-roster .sip-avatar-shadow {
+  left: 18%;
+  right: 18%;
+  bottom: 1%;
+}
+
+.sip-avatar-figure-small.sip-avatar-figure-roster .sip-avatar-roster-image {
+  transform: scale(1.16);
+  transform-origin: 50% 38%;
+}
+
+@media (max-width: 1120px) {
+  .character-roster-header {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .character-roster-header-actions {
+    justify-content: flex-start;
+  }
+
+  .character-roster-layout {
+    grid-template-columns: minmax(300px, 0.82fr) minmax(420px, 1.18fr);
+  }
+
+  .character-world-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .character-pair-grid > button {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 820px) {
+  .character-roster-page {
+    padding: 0.9rem;
+    border-radius: 18px;
+  }
+
+  .character-roster-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .character-roster-preview {
+    position: relative;
+    top: auto;
+    display: grid;
+    grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
+    grid-template-rows: auto auto;
+  }
+
+  .character-roster-artwork {
+    grid-row: 1 / span 2;
+  }
+
+  .character-roster-preview-copy {
+    align-content: end;
+    border-top: 0;
+    border-left: 1px solid var(--roster-line);
+  }
+
+  .character-roster-preview-status {
+    align-self: start;
+    margin: 0 1rem 1rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .character-roster-page {
+    width: 100%;
+    margin-top: 0.55rem;
+    padding: 0.75rem;
+    border-radius: 14px;
+  }
+
+  .character-roster-header {
+    gap: 0.8rem;
+  }
+
+  .character-roster-header h1 {
+    font-size: clamp(2rem, 11vw, 3rem);
+  }
+
+  .character-roster-header-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .character-roster-header-actions .character-roster-button-save {
+    grid-column: 1 / -1;
+  }
+
+  .character-roster-steps span {
+    min-width: 0;
+    align-items: flex-start;
+    padding: 0.55rem;
+    font-size: 0.68rem;
+    line-height: 1.2;
+  }
+
+  .character-roster-preview {
+    display: block;
+    border-radius: 18px;
+  }
+
+  .character-roster-artwork {
+    max-height: 76svh;
+  }
+
+  .character-roster-preview-copy {
+    border-top: 1px solid var(--roster-line);
+    border-left: 0;
+  }
+
+  .character-roster-panel {
+    padding: 0.78rem;
+    border-radius: 16px;
+  }
+
+  .character-world-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.42rem;
+  }
+
+  .character-world-grid button {
+    min-height: 52px;
+    padding: 0.48rem;
+    font-size: 0.68rem;
+  }
+
+  .character-pair-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .character-pair-grid > button {
+    display: block;
+    padding: 0.45rem;
+  }
+
+  .character-pair-copy {
+    padding: 0.58rem 0.22rem 0.24rem;
+  }
+
+  .character-pair-copy strong {
+    white-space: normal;
+  }
+
+  .character-profile-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .character-roster-save-zone {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .character-roster-save-zone .character-roster-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+  .character-world-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .character-pair-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .character-pair-grid > button {
+    display: grid;
+    grid-template-columns: 106px minmax(0, 1fr);
+  }
+
+  .character-pair-copy {
+    padding: 0;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) and (min-width: 621px) {
+  .character-roster-layout {
+    grid-template-columns: minmax(300px, 0.9fr) minmax(480px, 1.1fr);
+  }
+
+  .character-roster-preview {
+    position: relative;
+    top: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .character-roster-button,
+  .character-pair-grid > button,
+  .character-pair-check {
+    transition: none;
+  }
+
+  .character-roster-button:hover,
+  .character-pair-grid > button:hover {
+    transform: none;
+  }
+}

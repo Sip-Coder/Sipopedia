@@ -86,15 +86,8 @@ import {
   readEquipmentMasterySnapshot
 } from "./SipStudiosEquipmentMastery";
 import { SipAvatarFigure } from "./SipAvatar";
+import { getAvatarRosterPresetForDesign } from "../data/avatarRoster";
 import {
-  getAvatarBeverageCategory,
-  getAvatarLoadout,
-  getAvatarMasteryTier,
-  getAvatarProfession,
-  getAvatarPronounLabel,
-  getAvatarSecondaryBeverageCategory,
-  getAvatarSpecialization,
-  getAvatarWorkContext,
   readSipAvatar,
   SIP_AVATAR_EVENT,
   type SipAvatarDesign
@@ -639,15 +632,7 @@ export function AccountDashboard({ onNavigate }: AccountDashboardProps) {
     (best, achievement) => (achievement.progress > best.progress ? achievement : best),
     progressSnapshot.achievements[0]
   );
-  const avatarProfession = getAvatarProfession(avatar);
-  const avatarCategory = getAvatarBeverageCategory(avatar);
-  const avatarSecondaryCategory = getAvatarSecondaryBeverageCategory(avatar);
-  const avatarLoadout = getAvatarLoadout(avatar);
-  const avatarWorkContext = getAvatarWorkContext(avatar);
-  const avatarMasteryTier = getAvatarMasteryTier(avatar);
-  const avatarSpecialization = getAvatarSpecialization(avatar);
-  const avatarPronouns = getAvatarPronounLabel(avatar);
-  const avatarPresentation = avatar.presentation.replace("-", " ");
+  const avatarRosterPreset = getAvatarRosterPresetForDesign(avatar);
   const adminOpenSupportRequests = adminSupportRequests.filter((request) => request.status !== "closed");
   const adminUrgentSupportRequests = adminSupportRequests.filter((request) => request.urgency === "urgent" && request.status !== "closed");
   const adminEnterpriseSupportRequests = adminSupportRequests.filter((request) => request.laneId === "team" || request.planInterest.toLowerCase().includes("team"));
@@ -849,19 +834,16 @@ export function AccountDashboard({ onNavigate }: AccountDashboardProps) {
             <p><strong>Display name:</strong> {profile?.displayName ?? "Not set"}</p>
             <p><strong>Access:</strong> {tier === "starter" ? "LAUNCH PAD PREVIEW" : tier.toUpperCase()}</p>
             <p><strong>Role:</strong> {profile?.role ?? "visitor"}</p>
-            <p><strong>Character:</strong> {avatar.title}</p>
-            <p><strong>Focus:</strong> {avatarProfession.label} / {avatarCategory.label} + {avatarSecondaryCategory.label}</p>
-            <p><strong>Specialty:</strong> {avatarSpecialization.label}</p>
-            <p><strong>Context:</strong> {avatarWorkContext.label} / {avatarMasteryTier.label}</p>
-            <p><strong>Pronouns:</strong> {avatarPronouns}</p>
-            <p><strong>Presentation:</strong> {avatarPresentation}</p>
+            <p><strong>Character:</strong> {avatarRosterPreset.displayName}</p>
+            <p><strong>Beverage world:</strong> {avatarRosterPreset.categoryLabel}</p>
+            <p><strong>Character role:</strong> {avatarRosterPreset.designPatch.title}</p>
             {isAdmin ? <p className="hint">Admin preview mode enabled.</p> : null}
           </div>
-          <button type="button" className="account-profile-avatar" onClick={() => onNavigate("account/avatar")} aria-label="Open avatar creator">
+          <button type="button" className="account-profile-avatar" onClick={() => onNavigate("account/avatar")} aria-label="Choose a profile character">
             <SipAvatarFigure design={avatar} rotation={-18} size="small" />
             <span>
-              <strong>{avatar.name}</strong>
-              <small>{avatarLoadout.label}</small>
+              <strong>{avatarRosterPreset.displayName}</strong>
+              <small>{avatarRosterPreset.categoryLabel}</small>
             </span>
           </button>
         </article>
@@ -1541,17 +1523,17 @@ export function AccountDashboard({ onNavigate }: AccountDashboardProps) {
 
         <article className="account-card account-card-wide account-avatar-studio-card">
           <div>
-            <p className="nav-overline">Character Studio</p>
-            <h3>{avatar.title}</h3>
-            <p>{avatar.name} is set as a {avatarMasteryTier.label} {avatarProfession.label} for {avatarCategory.label}, specializing in {avatarSpecialization.label} with the {avatarLoadout.label} loadout.</p>
+            <p className="nav-overline">Player Character</p>
+            <h3>{avatarRosterPreset.displayName}</h3>
+            <p>{avatarRosterPreset.roleDescription}</p>
             <div className="account-avatar-signal-row">
-              <span>{avatarWorkContext.label}</span>
-              <span>{avatarSecondaryCategory.label}</span>
-              <span>{avatarPronouns}</span>
+              <span>{avatarRosterPreset.categoryLabel}</span>
+              <span>{avatarRosterPreset.adultPresentation === "woman" ? "Woman" : "Man"}</span>
+              <span>{avatarRosterPreset.designPatch.title}</span>
             </div>
           </div>
           <button className="btn btn-primary" type="button" onClick={() => onNavigate("account/avatar")}>
-            Open Avatar Creator
+            Choose Character
           </button>
         </article>
 

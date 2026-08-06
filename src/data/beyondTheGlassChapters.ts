@@ -38,6 +38,14 @@ export type BeyondTheGlassScene = {
     alt: string;
     fit?: "cover" | "contain";
     position?: string;
+    /** Authored scene-art ratio used by the shared field-atlas artboard. */
+    aspectRatio?: string;
+    /** Optional ratio override when a dedicated portrait asset is supplied. */
+    portraitAspectRatio?: string;
+    /** Optional portrait-only crop behavior; falls back to `fit`. */
+    portraitFit?: "cover" | "contain";
+    /** Optional portrait-only focal position; falls back to `position`. */
+    portraitPosition?: string;
   };
   landmark: {
     label: string;
@@ -85,9 +93,10 @@ const scenes: BeyondTheGlassScene[] = [
     number: "01",
     title: "Academy Plaza",
     range: [0, 0.05],
-    eyebrow: "Choose the active journey",
-    summary: "Wine is open. The next SIP Academy field trips are still under construction.",
-    checkpoint: "Wine adventure ready",
+    eyebrow: "Choose your adventure",
+    summary:
+      "Winery, Brewery, Distillery, Coffee, Tea, Water, and Kombucha Adventures are open across SIP Academy.",
+    checkpoint: "Seven adventures ready",
     motion: "establish",
     artwork: {
       src: "/beyond-the-glass/sip-academy-1600.webp",
@@ -97,12 +106,12 @@ const scenes: BeyondTheGlassScene[] = [
         "A complete aerial view of SIP Academy, with vineyards and warm brass-and-glass craft halls connected by luminous blue waterways.",
       fit: "contain"
     },
-    landmark: { label: "Wine journey", x: 50, y: 49 },
+    landmark: { label: "Winery Adventure", x: 50, y: 49 },
     drop: { x: 50, y: 49, size: 9 },
     fieldNotes: [
       {
-        eyebrow: "Active field trip",
-        title: "Wine · From Rain to First Sip",
+        eyebrow: "Central field trip",
+        title: "Winery Adventure · From Rain to First Sip",
         detail:
           "Enter the glowing center to follow one drop across vineyard, winery, market, service, and the final table."
       }
@@ -112,7 +121,7 @@ const scenes: BeyondTheGlassScene[] = [
         speaker: "Sippy",
         durationSeconds: 7,
         text:
-          "The plaza is awake. Wine is today’s active field trip; the other academy wings are still being built."
+          "The plaza is awake. Choose Winery, Brewery, Distillery, Coffee, Tea, Water, or Kombucha, and your field notes will remember the route."
       }
     ]
   },
