@@ -1,13 +1,6 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type KeyboardEvent
-} from "react";
+import { useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { VinePartGlyph, vineAnatomyParts } from "./VineAnatomyParallax";
 
-const VINE_SELECTION_STORAGE_KEY = "sipopedia:btg:vine-anatomy:selected:v1";
 const DETAIL_ID = "vine-and-berry-atlas-detail";
 
 type VineFieldAtlasProps = {
@@ -46,7 +39,11 @@ const triangle = (value: number, center: number, width: number) =>
 export function VineFieldAtlas({ onSelect }: VineFieldAtlasProps) {
   const nodeButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const onSelectRef = useRef(onSelect);
-  const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
+  // Root is the leftmost study layer and the deliberate entry point for the
+  // vine sequence. Start there every time, then let learners travel freely.
+  const [selectedPartId, setSelectedPartId] = useState<string | null>(
+    vineAnatomyParts[0]?.id ?? null
+  );
   const activeIndex = selectedPartId
     ? vineAnatomyParts.findIndex((part) => part.id === selectedPartId)
     : -1;
@@ -71,20 +68,6 @@ export function VineFieldAtlas({ onSelect }: VineFieldAtlasProps) {
 
   onSelectRef.current = onSelect;
 
-  useEffect(() => {
-    try {
-      const storedPartId = window.localStorage.getItem(VINE_SELECTION_STORAGE_KEY);
-      if (storedPartId && vineAnatomyParts.some((part) => part.id === storedPartId)) {
-        setSelectedPartId(storedPartId);
-        onSelectRef.current?.(
-          vineAnatomyParts.findIndex((part) => part.id === storedPartId)
-        );
-      }
-    } catch {
-      // The atlas remains fully usable when local storage is unavailable.
-    }
-  }, []);
-
   const selectPart = (partId: string | null) => {
     setSelectedPartId(partId);
     onSelectRef.current?.(
@@ -92,12 +75,6 @@ export function VineFieldAtlas({ onSelect }: VineFieldAtlasProps) {
         ? null
         : vineAnatomyParts.findIndex((part) => part.id === partId)
     );
-    try {
-      if (partId) window.localStorage.setItem(VINE_SELECTION_STORAGE_KEY, partId);
-      else window.localStorage.removeItem(VINE_SELECTION_STORAGE_KEY);
-    } catch {
-      // Selection still works for the current visit.
-    }
   };
 
   const selectAndFocus = (index: number) => {

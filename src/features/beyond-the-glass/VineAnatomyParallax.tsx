@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { clamp, progressBetween } from "./useScrollStoryProgress";
 
 export type VineAnatomyPart = {
@@ -169,8 +169,6 @@ export const vineAnatomyParts: readonly VineAnatomyPart[] = [
 ] as const;
 
 const lerp = (from: number, to: number, amount: number) => from + (to - from) * amount;
-const VINE_SELECTION_STORAGE_KEY = "sipopedia:btg:vine-anatomy:selected:v1";
-
 const triangle = (value: number, center: number, width: number) =>
   clamp(1 - Math.abs(value - center) / width);
 
@@ -334,7 +332,9 @@ type VineAnatomyParallaxProps = {
 export function VineAnatomyParallax({
   opacity = 1
 }: VineAnatomyParallaxProps) {
-  const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
+  const [selectedPartId, setSelectedPartId] = useState<string | null>(
+    vineAnatomyParts[0]?.id ?? null
+  );
   const activeIndex = selectedPartId
     ? vineAnatomyParts.findIndex((part) => part.id === selectedPartId)
     : -1;
@@ -357,25 +357,8 @@ export function VineAnatomyParallax({
               ? 3
               : 4;
 
-  useEffect(() => {
-    try {
-      const storedPartId = window.localStorage.getItem(VINE_SELECTION_STORAGE_KEY);
-      if (storedPartId && vineAnatomyParts.some((part) => part.id === storedPartId)) {
-        setSelectedPartId(storedPartId);
-      }
-    } catch {
-      // The atlas stays fully usable when local storage is unavailable.
-    }
-  }, []);
-
   const selectPart = (partId: string | null) => {
     setSelectedPartId(partId);
-    try {
-      if (partId) window.localStorage.setItem(VINE_SELECTION_STORAGE_KEY, partId);
-      else window.localStorage.removeItem(VINE_SELECTION_STORAGE_KEY);
-    } catch {
-      // Selection still works for the current visit.
-    }
   };
 
   const moveSelection = (direction: -1 | 1) => {
