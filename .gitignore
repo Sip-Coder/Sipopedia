@@ -17,6 +17,24 @@ supabase/.temp/
 # Local source masters and generated QA evidence. Runtime-ready WebP assets
 # live under public/ and are intentionally committed separately.
 /DUMP IN/
+/DUMP-IN/
+/Checkpoint_Img/
+/output/
+/public-essential/
+/design-qa-assets/
+/archive/
+/review/
+/tmp/
+/attached_assets/
+/.codex-remote-attachments/
+
+# Non-runtime public originals and historical generations are retained outside
+# the repository review package, never in the deployable application.
+/public/infographics/DNU - Archived -Infographics/
+/public/game/checkpoint-scenes/archive-v1-v2/
+/public/game/sprites/Character_Studio/reference/Duolingo Character Creation.mp4
+/public/maps/AF Files/
+/public/maps/OG Files/
 /artifacts/
 /logs/
 

@@ -1,16 +1,5 @@
 import { useEffect, useState } from "react";
-import { breweryFieldTrip } from "../../data/beyondTheGlassBrewery";
-import { coffeeFieldTrip } from "../../data/beyondTheGlassCoffee";
-import { journeyOfADrop } from "../../data/beyondTheGlassChapters";
-import { distilleryFieldTrip } from "../../data/beyondTheGlassDistillery";
-import { energyFieldTrip } from "../../data/beyondTheGlassEnergy";
-import { healthFieldTrip } from "../../data/beyondTheGlassHealth";
-import { juiceFieldTrip } from "../../data/beyondTheGlassJuice";
-import { kombuchaFieldTrip } from "../../data/beyondTheGlassKombucha";
-import { milkFieldTrip } from "../../data/beyondTheGlassMilk";
-import { sodasFieldTrip } from "../../data/beyondTheGlassSodas";
-import { teaFieldTrip } from "../../data/beyondTheGlassTea";
-import { waterFieldTrip } from "../../data/beyondTheGlassWater";
+import { journeyOfADrop, type BeyondTheGlassChapter } from "../../data/beyondTheGlassChapters";
 import { ScrollStoryStage } from "./ScrollStoryStage";
 import "./beyond-the-glass.css";
 
@@ -34,20 +23,35 @@ type JourneySlug =
   | "water"
   | "wine";
 
-const JOURNEYS = {
-  brewery: breweryFieldTrip,
-  coffee: coffeeFieldTrip,
-  distillery: distilleryFieldTrip,
-  "energy-drinks": energyFieldTrip,
-  "health-drinks": healthFieldTrip,
-  juice: juiceFieldTrip,
-  kombucha: kombuchaFieldTrip,
-  milk: milkFieldTrip,
-  sodas: sodasFieldTrip,
-  tea: teaFieldTrip,
-  water: waterFieldTrip,
-  wine: journeyOfADrop
-} satisfies Record<JourneySlug, typeof journeyOfADrop>;
+type DeferredJourneySlug = Exclude<JourneySlug, "wine">;
+
+const JOURNEY_LOADERS: Record<
+  DeferredJourneySlug,
+  () => Promise<{ default: BeyondTheGlassChapter }>
+> = {
+  brewery: () =>
+    import("../../data/beyondTheGlassBrewery").then((module) => ({ default: module.breweryFieldTrip })),
+  coffee: () =>
+    import("../../data/beyondTheGlassCoffee").then((module) => ({ default: module.coffeeFieldTrip })),
+  distillery: () =>
+    import("../../data/beyondTheGlassDistillery").then((module) => ({ default: module.distilleryFieldTrip })),
+  "energy-drinks": () =>
+    import("../../data/beyondTheGlassEnergy").then((module) => ({ default: module.energyFieldTrip })),
+  "health-drinks": () =>
+    import("../../data/beyondTheGlassHealth").then((module) => ({ default: module.healthFieldTrip })),
+  juice: () =>
+    import("../../data/beyondTheGlassJuice").then((module) => ({ default: module.juiceFieldTrip })),
+  kombucha: () =>
+    import("../../data/beyondTheGlassKombucha").then((module) => ({ default: module.kombuchaFieldTrip })),
+  milk: () =>
+    import("../../data/beyondTheGlassMilk").then((module) => ({ default: module.milkFieldTrip })),
+  sodas: () =>
+    import("../../data/beyondTheGlassSodas").then((module) => ({ default: module.sodasFieldTrip })),
+  tea: () =>
+    import("../../data/beyondTheGlassTea").then((module) => ({ default: module.teaFieldTrip })),
+  water: () =>
+    import("../../data/beyondTheGlassWater").then((module) => ({ default: module.waterFieldTrip }))
+};
 
 const JOURNEY_FINALE_ARTIFACTS: Record<JourneySlug, string> = {
   brewery: "pint",
@@ -106,12 +110,33 @@ function focusSection(id: string) {
 
 export function BeyondTheGlassPage({ onNavigate }: BeyondTheGlassPageProps) {
   const [journeySlug, setJourneySlug] = useState<JourneySlug>(() => selectedJourneySlug());
-  const chapter = JOURNEYS[journeySlug];
+  const [chapter, setChapter] = useState<BeyondTheGlassChapter>(journeyOfADrop);
+  const [journeyLoading, setJourneyLoading] = useState(false);
   const finaleArtifact = JOURNEY_FINALE_ARTIFACTS[journeySlug];
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     window.scrollTo({ top: 0, behavior: "auto" });
+  }, [journeySlug]);
+
+  useEffect(() => {
+    if (journeySlug === "wine") {
+      setChapter(journeyOfADrop);
+      setJourneyLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setJourneyLoading(true);
+    void JOURNEY_LOADERS[journeySlug]().then(({ default: loadedChapter }) => {
+      if (cancelled) return;
+      setChapter(loadedChapter);
+      setJourneyLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [journeySlug]);
 
   useEffect(() => {
@@ -144,7 +169,14 @@ export function BeyondTheGlassPage({ onNavigate }: BeyondTheGlassPageProps) {
         Skip the cinematic tour
       </a>
 
-      <ScrollStoryStage chapter={chapter} key={chapter.slug} />
+      {journeyLoading ? (
+        <section aria-live="polite" className="btg-loading-state">
+          <p className="btg-kicker">Opening the next field route</p>
+          <p>Preparing the illustrated learning atlas.</p>
+        </section>
+      ) : (
+        <ScrollStoryStage chapter={chapter} key={chapter.slug} />
+      )}
 
       <section className="btg-finale" aria-labelledby="btg-finale-title">
         <div>
