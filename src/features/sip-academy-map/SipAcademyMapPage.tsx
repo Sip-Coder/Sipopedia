@@ -179,6 +179,52 @@ function WorldFieldNote() {
   );
 }
 
+function AcademySwitchboard({
+  activeCampusId,
+  activeGuildId,
+  onSelect
+}: {
+  activeCampusId?: SipAcademyCampusId;
+  activeGuildId?: SipAcademyGuildId;
+  onSelect: (selection: SipAcademyMapSelection) => void;
+}) {
+  const campuses = activeGuildId
+    ? [
+        ...SIP_ACADEMY_CAMPUSES.filter((campus) => campus.guild === activeGuildId),
+        ...SIP_ACADEMY_CAMPUSES.filter((campus) => campus.guild !== activeGuildId)
+      ]
+    : SIP_ACADEMY_CAMPUSES;
+
+  return (
+    <section className="sam-academy-switchboard" aria-labelledby="sam-academy-switchboard-title">
+      <div className="sam-note-rule" aria-hidden="true" />
+      <h3 id="sam-academy-switchboard-title">Academy switchboard</h3>
+      <div className="sam-academy-switchboard__grid">
+        {campuses.map((campus) => {
+          const selected = activeCampusId === campus.id;
+          return (
+            <button
+              aria-controls="sam-world"
+              aria-pressed={selected}
+              className={selected ? "is-selected" : ""}
+              key={campus.id}
+              onClick={() => onSelect({ kind: "campus", id: campus.id })}
+              style={{ "--sam-node-accent": campus.accent } as CSSProperties}
+              type="button"
+            >
+              <CampusMedallion campusId={campus.id} />
+              <span>
+                <strong>{campus.shortName}</strong>
+                <small>{guildForCampus(campus).name}</small>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function GuildFieldNote({
   guild,
   onSelect
@@ -241,6 +287,7 @@ function GuildFieldNote({
           </div>
         ))}
       </div>
+      <AcademySwitchboard activeGuildId={guild.id} onSelect={onSelect} />
     </div>
   );
 }
@@ -319,6 +366,7 @@ function CampusFieldNote({
       <ul className="sam-focus-list">
         {campus.focus.map((item) => <li key={item}>{item}</li>)}
       </ul>
+      <AcademySwitchboard activeCampusId={campus.id} activeGuildId={guild.id} onSelect={onSelect} />
       <div className="sam-campus-atlas">
         <div className="sam-campus-atlas__rail" role="tablist" aria-label={`${campus.name} field studies`}>
           {studyLayers.map((item, index) => {
