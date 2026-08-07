@@ -692,6 +692,84 @@
   }
 }
 
+@media (orientation: landscape) and (max-height: 620px) and (max-width: 1280px) {
+  .workspace-shell.with-sip-sidebar {
+    padding: 0.45rem max(0.45rem, env(safe-area-inset-right)) 0.55rem max(0.45rem, env(safe-area-inset-left));
+  }
+
+  .workspace-shell.with-sip-sidebar > .hero {
+    margin-top: 0.38rem;
+  }
+
+  .workspace-shell.with-sip-sidebar .sip-appbar {
+    border-radius: 14px;
+    gap: 0.38rem;
+    grid-template-columns: auto auto minmax(8rem, 1fr) auto;
+    min-height: 54px;
+    padding: 0.26rem 0.4rem;
+  }
+
+  .workspace-shell.with-sip-sidebar
+    :is(.sip-appbar-menu, .sip-appbar-brand, .sip-appbar-search, .sip-appbar-account) {
+    border-radius: 10px;
+    font-size: 0.68rem;
+    min-height: 44px;
+    padding-block: 0.3rem;
+  }
+
+  .workspace-shell.with-sip-sidebar .sip-appbar-menu {
+    min-width: 3.45rem;
+  }
+
+  .workspace-shell.with-sip-sidebar .sip-appbar-search {
+    min-width: 4.8rem;
+  }
+
+  .workspace-shell.with-sip-sidebar .sip-appbar-search kbd {
+    display: none;
+  }
+
+  .workspace-shell.with-sip-sidebar .sip-appbar-account {
+    min-width: 4.75rem;
+  }
+
+  .workspace-shell.with-sip-sidebar .sip-appbar-seal {
+    height: 30px;
+    width: 30px;
+  }
+
+  .workspace-shell.with-sip-sidebar .sip-appbar-wordmark {
+    height: 17px;
+    width: 76px;
+  }
+
+  .workspace-shell.with-sip-sidebar .sip-appbar-current span {
+    font-size: 0.48rem;
+  }
+
+  .workspace-shell.with-sip-sidebar .sip-appbar-current strong {
+    font-size: 0.78rem;
+  }
+
+  .workspace-shell .hero-brand.expanded {
+    padding: 0.35rem 0.45rem;
+  }
+
+  .workspace-shell .hero-brand.expanded .hero-welcome-panel {
+    max-height: min(34svh, 10.5rem);
+    object-fit: contain;
+    width: min(620px, 100%);
+  }
+
+  .workspace-shell .hero-brand.expanded .hero-brand-copy {
+    display: none;
+  }
+
+  :is(.sip-map-button, .regions-continent-chip, .news-source-chip) {
+    min-height: 44px;
+  }
+}
+
 @media (max-width: 420px) {
   .sip-appbar {
     grid-template-columns: auto minmax(0, 1fr) auto;

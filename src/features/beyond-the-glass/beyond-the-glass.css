@@ -8184,15 +8184,15 @@ body:has(.btg-page),
     border-radius: 14px;
     gap: 0.34rem;
     grid-template-columns: auto auto minmax(8rem, 1fr) auto;
-    min-height: 46px;
+    min-height: 54px;
     padding: 0.24rem 0.38rem;
   }
 
   .workspace-shell:has(.btg-page)
-    :is(.sip-appbar-menu, .sip-appbar-search, .sip-appbar-account) {
+    :is(.sip-appbar-menu, .sip-appbar-brand, .sip-appbar-search, .sip-appbar-account) {
     border-radius: 10px;
     font-size: 0.68rem;
-    min-height: 36px;
+    min-height: 44px;
     padding-block: 0.28rem;
   }
 

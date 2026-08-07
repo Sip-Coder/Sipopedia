@@ -788,6 +788,11 @@ function WorkspaceShell({
   const regionSlug = isRegionsPage(page) && page !== "regions" ? page.slice("regions/".length) : null;
   const grapeSlug = isGrapesPage(page) && page !== "grapes" ? page.slice("grapes/".length) : null;
   const aiWinecastSlug = isAiWinecastPage(page) && page !== "ai-winecast" ? page.slice("ai-winecast/".length) : null;
+
+  useEffect(() => {
+    setIsHeroExpanded(page === "starter" && !accountContent);
+  }, [accountContent, page]);
+
   const sectionItems = useMemo(
     () =>
       orderItemsByPageOrder(
