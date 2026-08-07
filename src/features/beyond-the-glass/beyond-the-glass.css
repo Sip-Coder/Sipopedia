@@ -8243,12 +8243,12 @@ body:has(.btg-page),
   }
 
   .btg-page {
-    --btg-shell-offset: clamp(3.15rem, 12.5svh, 3.8rem);
+    --btg-shell-offset: clamp(3.15rem, 12.5dvh, 3.8rem);
     overflow: visible;
   }
 
   .btg-stage {
-    height: calc(100svh - var(--btg-shell-offset) - 0.35rem);
+    height: calc(100dvh - var(--btg-shell-offset) - 0.35rem);
     min-height: 0;
     top: var(--btg-shell-offset);
   }
@@ -8272,7 +8272,7 @@ body:has(.btg-page),
     gap: 0.38rem;
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 2.78rem minmax(0, 1fr) 3.18rem;
-    height: calc(100svh - var(--btg-shell-offset) - 0.35rem);
+    height: calc(100dvh - var(--btg-shell-offset) - 0.35rem);
     padding: 0.38rem;
   }
 
@@ -8353,7 +8353,7 @@ body:has(.btg-page),
   }
 
   .btg-field-atlas {
-    --btg-atlas-edge: max(2.35rem, 8%);
+    --btg-atlas-edge: max(1.55rem, 6%);
     gap: 0.34rem;
     grid-template-columns: clamp(19.5rem, 45vw, 24rem) minmax(12rem, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
@@ -8404,11 +8404,14 @@ body:has(.btg-page),
 
   .btg-field-atlas__rail {
     gap: 0.2rem;
+    grid-auto-columns: minmax(5.35rem, 1fr);
+    grid-auto-flow: column;
     grid-column: 2;
     grid-row: 1;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: none;
     min-height: 0;
-    overflow: visible;
+    overflow-x: auto;
+    overflow-y: hidden;
     padding: 0.22rem;
   }
 
@@ -8424,13 +8427,15 @@ body:has(.btg-page),
     grid-column: 2;
     grid-row: 2;
     grid-template-columns: minmax(0, 1fr);
-    min-height: 0;
+    grid-template-rows: minmax(4.8rem, 1fr) auto;
+    min-height: 6.9rem;
     overflow-y: auto;
     padding: 0.28rem;
   }
 
   .btg-field-atlas__field-note {
-    min-height: 0;
+    min-height: 4.8rem;
+    overflow-y: auto;
     padding: 0.34rem 0.42rem;
   }
 
@@ -8453,6 +8458,10 @@ body:has(.btg-page),
   .btg-field-atlas__detail nav:has(.btg-field-atlas__lab) {
     gap: 0.2rem;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .btg-field-atlas__detail nav:has(.btg-field-atlas__lab) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .btg-field-atlas__detail nav button,
@@ -8625,7 +8634,7 @@ body:has(.btg-page),
     gap: 0.38rem;
     grid-template-columns: minmax(0, 1.5fr) minmax(14rem, 0.58fr);
     grid-template-rows: 2.78rem minmax(0, 1fr);
-    height: calc(100svh - var(--btg-shell-offset) - 0.35rem);
+    height: calc(100dvh - var(--btg-shell-offset) - 0.35rem);
     min-height: 0;
     padding: 0.38rem;
   }
@@ -8836,10 +8845,13 @@ body:has(.btg-page),
 
   .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas__detail {
     gap: 0.18rem;
+    grid-template-rows: minmax(4rem, 1fr) auto;
+    min-height: 6rem;
     padding: 0.22rem;
   }
 
   .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas__field-note {
+    min-height: 4rem;
     padding: 0.28rem 0.34rem;
   }
 

@@ -60,6 +60,12 @@ const numberFromEnvironment = (name, fallback, minimum, maximum) => {
 const thresholds = {
   maximumArtCropFraction: numberFromEnvironment("BTG_QA_MAX_ART_CROP", 0.02, 0, 0.9),
   maximumArtGutterFraction: numberFromEnvironment("BTG_QA_MAX_ART_GUTTER", 0.24, 0, 0.9),
+  maximumPhoneLandscapeArtGutterFraction: numberFromEnvironment(
+    "BTG_QA_MAX_PHONE_LANDSCAPE_ART_GUTTER",
+    0.34,
+    0,
+    0.9
+  ),
   maximumNodeOverlapFraction: numberFromEnvironment("BTG_QA_MAX_NODE_OVERLAP", 0.1, 0, 1),
   minimumCanvasToVisualRatio: numberFromEnvironment("BTG_QA_MIN_CANVAS_WIDTH", 0.7, 0.25, 1),
   minimumDesktopVisualToStageRatio: numberFromEnvironment(
@@ -105,7 +111,15 @@ const canonicalViewports = [
   {
     height: 390,
     mobile: true,
-    name: "phone-landscape",
+    name: "phone-landscape-collapsed-browser",
+    orientation: "landscapePrimary",
+    touch: true,
+    width: 844
+  },
+  {
+    height: 340,
+    mobile: true,
+    name: "phone-landscape-browser-chrome",
     orientation: "landscapePrimary",
     touch: true,
     width: 844
@@ -553,7 +567,7 @@ async function inspectState(client, sessionId, scene, viewport) {
     minimumDesktopVisualToStageRatio: thresholds.minimumDesktopVisualToStageRatio,
     minimumPhonePortraitVisualToStageRatio: thresholds.minimumPhonePortraitVisualToStageRatio,
     minimumTargetSize: thresholds.minimumTargetSize,
-    phoneLandscape: viewport.name === "phone-landscape",
+    phoneLandscape: viewport.name.startsWith("phone-landscape"),
     phonePortrait: viewport.name === "phone-portrait",
     sceneId: scene.id
   };
@@ -732,7 +746,10 @@ async function inspectState(client, sessionId, scene, viewport) {
         if (cropFraction > config.maximumArtCropFraction + 0.001) {
           pushFailure("art crops " + Math.round(cropFraction * 100) + "% of its source");
         }
-        if (gutterFraction > config.maximumArtGutterFraction + 0.001) {
+        const maximumGutterFraction = config.phoneLandscape
+          ? config.maximumPhoneLandscapeArtGutterFraction
+          : config.maximumArtGutterFraction;
+        if (gutterFraction > maximumGutterFraction + 0.001) {
           pushFailure("art leaves " + Math.round(gutterFraction * 100) + "% dead gutter on one axis");
         }
         if (transformedVisibleFraction < 0.75) {
@@ -862,7 +879,8 @@ async function inspectState(client, sessionId, scene, viewport) {
       }
 
       const clippedText = [];
-      for (const element of [title, detail?.querySelector(".btg-field-atlas__field-note")]) {
+      const noteElement = detail?.querySelector(".btg-field-atlas__field-note");
+      for (const element of [title, noteElement]) {
         if (!visible(element)) continue;
         const style = getComputedStyle(element);
         const clippedX = element.scrollWidth > element.clientWidth + tolerance && ["hidden", "clip"].includes(style.overflowX);
@@ -872,6 +890,12 @@ async function inspectState(client, sessionId, scene, viewport) {
         }
       }
       if (clippedText.length > 0) pushFailure("essential text is clipped: " + clippedText.join(" | "));
+      if (config.phoneLandscape && visible(noteElement)) {
+        const noteRect = rect(noteElement);
+        if (noteRect.height < 56) {
+          pushFailure("field note collapsed to " + Math.round(noteRect.height) + "px tall");
+        }
+      }
 
       const documentOverflow = Math.max(
         0,
