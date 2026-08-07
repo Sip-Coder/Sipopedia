@@ -8517,6 +8517,10 @@ body:has(.btg-page),
     overflow-y: auto;
   }
 
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas__field-note {
+    scrollbar-width: thin;
+  }
+
   .btg-stage:not([data-scene="academy-plaza"])
     .btg-guide-card-deck
     .btg-guide-note,
@@ -8811,5 +8815,42 @@ body:has(.btg-page),
   .btg-stage[data-scene="vine-and-berry"] .btg-vine-part[data-part="shoot"] {
     --btg-part-x: 88% !important;
     --btg-part-y: 70% !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 430px) and (max-width: 780px) {
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] {
+    grid-template-columns: minmax(0, 1fr) minmax(7.6rem, 0.34fr);
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"]
+    .btg-story-panel {
+    gap: 0.24rem;
+    padding: 0.3rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas {
+    gap: 0.24rem;
+    grid-template-columns: clamp(17.25rem, 48vw, 20rem) minmax(11rem, 1fr);
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas__detail {
+    gap: 0.18rem;
+    padding: 0.22rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas__field-note {
+    padding: 0.28rem 0.34rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas__field-note > strong {
+    font-size: 0.78rem;
+    line-height: 1.02;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas__field-note > p {
+    font-size: 0.58rem;
+    line-height: 1.18;
+    margin-top: 0.14rem;
   }
 }

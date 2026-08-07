@@ -768,6 +768,14 @@
   :is(.sip-map-button, .regions-continent-chip, .news-source-chip) {
     min-height: 44px;
   }
+
+  .flavor-wheel-tabs {
+    align-items: stretch;
+  }
+
+  .flavor-wheel-tab {
+    min-height: 44px;
+  }
 }
 
 @media (max-width: 420px) {
