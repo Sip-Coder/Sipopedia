@@ -30904,3 +30904,95 @@ button.journal-note-row.journal-note-select .journal-note-copy {
     font-size: var(--type-control);
   }
 }
+
+@media (max-width: 620px) and (orientation: portrait) {
+  .workspace-shell.with-sip-sidebar
+    :is(.sip-appbar-menu, .sip-appbar-brand, .sip-appbar-search, .sip-appbar-account) {
+    min-height: 44px;
+  }
+
+  .sip-appbar-brand {
+    min-height: 44px;
+  }
+
+  :is(
+      .sip-map-button,
+      .sip-map-download-toggle,
+      .regions-continent-chip,
+      .news-source-chip,
+      .flavor-wheel-tab,
+      .journal-choice-btn,
+      .terminology-bucket-pill,
+      .cellar-scanner-mode-row button,
+      .cellar-capture-target-row button,
+      .journal-flat-map-controls button,
+      .vineyard-panorama-controls button,
+      .sip-map-region-list button,
+      .ingredient-map-controls button,
+      .sip-game-facility-tabs button,
+      .journal-note-actions .btn
+    ) {
+    min-height: 44px;
+  }
+
+  :is(
+      .terminology-bucket-pill,
+      .vineyard-panorama-controls button,
+      .sam-academy-switchboard__tile a
+    ) {
+    min-width: 44px;
+  }
+
+  :is(.journal-row, .journal-toolbar, .flavor-wheel-detail, .support-form)
+    :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+    min-height: 44px;
+  }
+
+  :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+    min-height: 44px;
+  }
+
+  textarea {
+    min-height: 112px;
+  }
+
+  .flavor-wheel-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+    padding-bottom: 0.3rem;
+  }
+
+  .flavor-wheel-tab {
+    flex: initial;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .tasting-journal fieldset,
+  .journal-card,
+  .journal-block,
+  .journal-subsection,
+  .flavor-wheel-canvas,
+  .flavor-wheel-detail,
+  .flavors-settings,
+  .flavors-tool-box,
+  .flavors-photo-section,
+  .flavors-wheel-block,
+  .flavors-wheel-flavor {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .tasting-journal fieldset {
+    border-inline-width: 0;
+    padding-inline: 0;
+  }
+
+  .journal-form-grid,
+  .flavor-wheel-layout,
+  .flavors-settings .journal-form-grid,
+  .flavors-tool-box .journal-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

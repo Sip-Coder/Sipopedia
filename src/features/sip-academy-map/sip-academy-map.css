@@ -1991,6 +1991,10 @@
   .sam-academy-switchboard__grid {
     grid-template-columns: 1fr;
   }
+
+  .sam-academy-switchboard__tile > a {
+    min-width: 44px;
+  }
 }
 
 @media (max-height: 520px) and (orientation: landscape) {
