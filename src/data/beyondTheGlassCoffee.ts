@@ -2,16 +2,17 @@ import type { BeyondTheGlassChapter, BeyondTheGlassScene } from "./beyondTheGlas
 
 const coffeeArtwork = (
   slug: string,
-  alt: string
+  alt: string,
+  extension = "webp"
 ): BeyondTheGlassScene["artwork"] => ({
-  src: `/beyond-the-glass/coffee/${slug}-1600.webp`,
+  src: `/beyond-the-glass/coffee/${slug}-1600.${extension}`,
   srcSet:
-    `/beyond-the-glass/coffee/${slug}-960.webp 960w, ` +
-    `/beyond-the-glass/coffee/${slug}-1600.webp 1600w`,
-  portraitSrc: `/beyond-the-glass/coffee/${slug}-portrait-960.webp`,
+    `/beyond-the-glass/coffee/${slug}-960.${extension} 960w, ` +
+    `/beyond-the-glass/coffee/${slug}-1600.${extension} 1600w`,
+  portraitSrc: `/beyond-the-glass/coffee/${slug}-portrait-960.${extension}`,
   portraitSrcSet:
-    `/beyond-the-glass/coffee/${slug}-portrait-640.webp 640w, ` +
-    `/beyond-the-glass/coffee/${slug}-portrait-960.webp 960w`,
+    `/beyond-the-glass/coffee/${slug}-portrait-640.${extension} 640w, ` +
+    `/beyond-the-glass/coffee/${slug}-portrait-960.${extension} 960w`,
   alt,
   fit: "contain",
   portraitFit: "contain",
@@ -100,8 +101,9 @@ const coffeeSceneSeeds: CoffeeSceneSeed[] = [
     checkpoint: "See the whole system",
     motion: "glide",
     artwork: coffeeArtwork(
-      "coffee-academy-gate",
-      "A complete SIP Academy coffee map linking seed nursery, highland farm, processing and drying stations, dry mill, export warehouse, roastery, quality lab, brew bar, and café."
+      "coffee-system-map",
+      "A complete SIP Academy coffee map linking seed nursery, highland farm, processing and drying stations, dry mill, export warehouse, roastery, quality lab, brew bar, and café.",
+      "jpg"
     ),
     landmark: { label: "Coffee system map", x: 50, y: 42 },
     drop: { x: 48, y: 58, size: 7 },
@@ -277,8 +279,9 @@ const coffeeSceneSeeds: CoffeeSceneSeed[] = [
     checkpoint: "Site to healthy tree",
     motion: "orbit",
     artwork: coffeeArtwork(
-      "coffee-farm-lifecycle",
-      "An interactive highland coffee farm atlas with soil and roots visible below ground, coffee trees at multiple growth stages, shade trees, irrigation and drainage, weather, coffee leaf rust, berry borer monitoring, pruning, and workers scouting the field."
+      "coffee-farm-ecology",
+      "An interactive highland coffee farm atlas with soil health, shade trees, irrigation and drainage, habitat plantings, compost, pruning paths, field notebook tools, and ripe coffee cherries visible across a living ecosystem.",
+      "jpg"
     ),
     landmark: { label: "Living farm", x: 47, y: 47 },
     drop: { x: 38, y: 60, size: 7 },
@@ -338,8 +341,9 @@ const coffeeSceneSeeds: CoffeeSceneSeed[] = [
     checkpoint: "Manage the whole field",
     motion: "orbit",
     artwork: coffeeArtwork(
-      "coffee-genetics-resilience",
-      "A layered coffee agroforestry field atlas showing shade trees, windbreaks, ground cover, pruned coffee trees, soil organic matter, water infiltration, beneficial habitat, coffee leaf rust monitoring, and careful worker observation without printed labels."
+      "coffee-farm-resilience",
+      "A layered coffee agroforestry field atlas showing shade trees, windbreaks, water-harvesting channels, nursery replacement plants, biodiversity corridors, weather monitoring, and coffee leaf rust scouting without printed labels.",
+      "jpg"
     ),
     landmark: { label: "Resilient coffee farm", x: 58, y: 45 },
     drop: { x: 39, y: 61, size: 7 },
@@ -405,8 +409,9 @@ const coffeeSceneSeeds: CoffeeSceneSeed[] = [
     checkpoint: "Flower to fruit",
     motion: "reassemble",
     artwork: coffeeArtwork(
-      "coffee-farm-lifecycle",
-      "A deconstructed coffee branch timeline showing buds, white coffee flowers, early green fruit, expanding cherries, yellow-to-red ripening fruit, leaves, nodes, and the two seeds inside a ripe cherry."
+      "coffee-flower-cherry",
+      "A deconstructed coffee branch timeline showing buds, white coffee flowers, early green fruit, expanding cherries, yellow-to-red ripening fruit, leaves, cherry cross-sections, and the two seeds inside a ripe cherry.",
+      "jpg"
     ),
     landmark: { label: "Flower and cherry", x: 58, y: 42 },
     drop: { x: 64, y: 61, size: 6 },
@@ -515,8 +520,9 @@ const coffeeSceneSeeds: CoffeeSceneSeed[] = [
     checkpoint: "Cherry to drying form",
     motion: "cutaway",
     artwork: coffeeArtwork(
-      "coffee-harvest-processing",
-      "A four-path SIP Academy coffee processing mill showing intact cherries for natural processing, depulping and fermentation-washing for washed coffee, mucilage-coated parchment for pulped-natural or honey-style processing, and a separate wet-hulled path, with clean water and by-product handling."
+      "coffee-processing-crossroads",
+      "A four-path SIP Academy coffee processing mill showing intact cherries for natural processing, depulping and fermentation-washing for washed coffee, mucilage-coated parchment for pulped-natural or honey-style processing, and a separate wet-hulled path, with clean water and by-product handling.",
+      "jpg"
     ),
     landmark: { label: "Processing crossroads", x: 52, y: 49 },
     drop: { x: 49, y: 66, size: 8 },
@@ -698,8 +704,9 @@ const coffeeSceneSeeds: CoffeeSceneSeed[] = [
     checkpoint: "Dried coffee to green lot",
     motion: "rotate",
     artwork: coffeeArtwork(
-      "coffee-drying-drymill",
-      "A cutaway dry mill with parchment and dried cherry intake, huller, aspirator, screens, density table, optical sorter, hand-sorting belt, sample table, lined coffee bags, lot codes, pallets, and a dry export warehouse."
+      "coffee-dry-mill",
+      "A cutaway dry mill with parchment and dried cherry intake, huller, aspirator, screens, density table, optical sorter, hand-sorting belt, sample table, lined coffee bags, pallets, and a dry export warehouse.",
+      "jpg"
     ),
     landmark: { label: "Dry mill", x: 58, y: 48 },
     drop: { x: 42, y: 66, size: 7 },
@@ -826,8 +833,9 @@ const coffeeSceneSeeds: CoffeeSceneSeed[] = [
     checkpoint: "Origin to roastery",
     motion: "glide",
     artwork: coffeeArtwork(
-      "coffee-drying-drymill",
-      "A connected green coffee logistics scene showing lined export bags on pallets, dry warehouse inspection, protected truck, clean container, port, importer warehouse, sample room, and a final roastery receiving bay."
+      "coffee-logistics",
+      "A connected green coffee logistics scene showing lined export bags on pallets, dry warehouse inspection, protected truck, clean container, port, importer warehouse, sample room, and a final roastery receiving bay.",
+      "jpg"
     ),
     landmark: { label: "Green coffee route", x: 67, y: 44 },
     drop: { x: 34, y: 62, size: 6 },
@@ -942,8 +950,9 @@ const coffeeSceneSeeds: CoffeeSceneSeed[] = [
     checkpoint: "Machine to batch record",
     motion: "rotate",
     artwork: coffeeArtwork(
-      "coffee-roastery",
-      "A deconstructed rotating coffee roaster field atlas with hopper, charge gate, perforated drum, heat source, airflow path, temperature probes, sight glass, trier, exhaust, cyclone and chaff collector, discharge door, and cooling tray."
+      "coffee-roaster-anatomy",
+      "A deconstructed rotating coffee roaster field atlas with hopper, charge gate, perforated drum, heat source, airflow path, temperature probes, sight glass, trier, exhaust, cyclone and chaff collector, discharge door, and cooling tray.",
+      "jpg"
     ),
     landmark: { label: "Roaster anatomy", x: 61, y: 48 },
     drop: { x: 35, y: 65, size: 6 },
@@ -1253,8 +1262,9 @@ const coffeeSceneSeeds: CoffeeSceneSeed[] = [
     checkpoint: "Ground coffee to beverage",
     motion: "rotate",
     artwork: coffeeArtwork(
-      "coffee-brewing-atlas",
-      "A radial coffee brewing laboratory comparing immersion, pour-over percolation, batch brewing, espresso, and hybrid methods around a central water and extraction model, with scales, grinder, refractometer, filters, kettle, pressure gauge, and clean service vessels."
+      "coffee-brewing",
+      "A radial coffee brewing laboratory comparing immersion, pour-over percolation, batch brewing, espresso, and hybrid methods around a central water and extraction model, with scales, grinder, refractometer, filters, kettle, pressure gauge, and clean service vessels.",
+      "jpg"
     ),
     landmark: { label: "Brewing atlas", x: 53, y: 48 },
     drop: { x: 50, y: 62, size: 8 },

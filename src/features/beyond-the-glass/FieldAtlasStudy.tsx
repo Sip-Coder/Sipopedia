@@ -43,7 +43,7 @@ const PHONE_NODE_LAYOUTS: Record<number, readonly AtlasPoint[]> = {
 const fallbackDesign = (scene: BeyondTheGlassScene): AtlasSceneDesign => ({
   phase: semanticAtlasPhase(scene.id),
   nodes: scene.fieldNotes.map((note, index) => ({
-    art: "icon",
+    art: "crop",
     focus:
       NODE_LAYOUTS[Math.min(9, Math.max(1, scene.fieldNotes.length))]?.[index] ?? [50, 50],
     icon: semanticAtlasIcon(note),

@@ -96,7 +96,7 @@ const breweryScenes: BeyondTheGlassScene[] = [
     checkpoint: "See the whole system",
     motion: "glide",
     artwork: breweryArtwork(
-      "ingredient-origins",
+      "grain-to-tap-system",
       "An illustrated cutaway map of the SIP Academy brewery connecting ingredient rooms, mill, mash and lauter vessels, kettle, cellar tanks, packaging line, cold storage, and taproom."
     ),
     landmark: { label: "Brewhouse route", x: 24, y: 52 },
@@ -165,7 +165,7 @@ const breweryScenes: BeyondTheGlassScene[] = [
     checkpoint: "Source to mash",
     motion: "cutaway",
     artwork: breweryArtwork(
-      "ingredient-origins",
+      "brewery-water-room",
       "A cutaway brewery water room with source pipes, carbon filtration, mineral dosing, a laboratory sample bench, hot-liquor tank, and water flowing toward the mash tun."
     ),
     landmark: { label: "Water treatment", x: 36, y: 46 },
@@ -234,7 +234,7 @@ const breweryScenes: BeyondTheGlassScene[] = [
     checkpoint: "Barley to malt",
     motion: "reassemble",
     artwork: breweryArtwork(
-      "ingredient-origins",
+      "brewery-malt-house",
       "A deconstructed barley kernel beside steeping vessels, a germination floor, kiln, pale base malt, and progressively darker specialty malts."
     ),
     landmark: { label: "Malt house", x: 44, y: 44 },
@@ -303,7 +303,7 @@ const breweryScenes: BeyondTheGlassScene[] = [
     checkpoint: "Bine to brew",
     motion: "orbit",
     artwork: breweryArtwork(
-      "ingredient-origins",
+      "brewery-hop-cone",
       "A hop yard and rotating cutaway hop cone revealing bracts, strig, and yellow lupulin glands beside kettle, whirlpool, and dry-hop destinations."
     ),
     landmark: { label: "Hop cone", x: 62, y: 42 },
@@ -372,7 +372,7 @@ const breweryScenes: BeyondTheGlassScene[] = [
     checkpoint: "Culture to pitch",
     motion: "push-in",
     artwork: breweryArtwork(
-      "quality-lab-sensory-panel",
+      "brewery-yeast-lab",
       "A brewery yeast laboratory with microscope, culture flask, cell-count chamber, oxygenated wort, and separate ale and lager fermentation paths."
     ),
     landmark: { label: "Yeast culture", x: 52, y: 45 },
@@ -441,7 +441,7 @@ const breweryScenes: BeyondTheGlassScene[] = [
     checkpoint: "Kernel to grist",
     motion: "rotate",
     artwork: breweryArtwork(
-      "brewhouse-cutaway",
+      "brewery-roller-mill",
       "A rotating cutaway roller mill separating malt into husk, coarse grits, fine grits, and flour before the grist falls into a covered grist case."
     ),
     landmark: { label: "Roller gap", x: 50, y: 43 },
@@ -585,7 +585,7 @@ const breweryScenes: BeyondTheGlassScene[] = [
     checkpoint: "Wort to hot break",
     motion: "orbit",
     artwork: breweryArtwork(
-      "brewhouse-cutaway",
+      "brewery-kettle-whirlpool",
       "A copper brew kettle and stainless whirlpool in cutaway, showing boiling wort, timed hop additions, vapor, hot break, tangential inlet, and a central trub cone."
     ),
     landmark: { label: "Kettle boil", x: 38, y: 45 },
@@ -660,7 +660,7 @@ const breweryScenes: BeyondTheGlassScene[] = [
     checkpoint: "Hot wort to pitch",
     motion: "push-in",
     artwork: breweryArtwork(
-      "brewhouse-cutaway",
+      "brewery-cold-side-gate",
       "A transparent plate heat exchanger showing hot wort and cold water moving through separate channels, followed by sanitary piping, cold break, oxygenation point, and fermenter inlet."
     ),
     landmark: { label: "Heat exchanger", x: 50, y: 45 },
@@ -804,7 +804,7 @@ const breweryScenes: BeyondTheGlassScene[] = [
     checkpoint: "Young beer to bright beer",
     motion: "glide",
     artwork: breweryArtwork(
-      "fermentation-cellar",
+      "brewery-conditioning-brite",
       "A cold brewery cellar showing lagering tanks, settling yeast, dry-hop vessel, centrifuge and filter alternatives, brite tank, carbonation stone, pressure gauge, and low-oxygen transfer."
     ),
     landmark: { label: "Brite tank", x: 65, y: 44 },
@@ -1177,7 +1177,7 @@ const breweryExpansionScenesByAnchor: Partial<Record<string, BeyondTheGlassScene
     {
       id: "brewery-fermentation-paths",
       number: "",
-      title: "Four Fermentation Paths",
+      title: "Fermentation Paths",
       range: [0, 0],
       eyebrow: "Culture · Temperature · Vessel",
       summary:
@@ -1554,7 +1554,7 @@ const breweryExpansionScenesByAnchor: Partial<Record<string, BeyondTheGlassScene
       checkpoint: "Package to account",
       motion: "push-in",
       artwork: breweryArtwork(
-        "beer-passport-market",
+        "brewery-market-custody",
         "A wide SIP Academy beer custody route from package inspection through refrigerated warehouse and delivery to a retail cooler and restaurant receiving station."
       ),
       landmark: { label: "Market custody", x: 71, y: 49 },

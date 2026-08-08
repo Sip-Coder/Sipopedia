@@ -15,6 +15,7 @@ import type {
 import { beyondTheGlassCurriculumLabs } from "../../data/beyondTheGlassCurriculum";
 import { CurriculumLab } from "./CurriculumLab";
 import { FieldAtlasStudy } from "./FieldAtlasStudy";
+import { ATLAS_SCENE_DESIGNS, type AtlasPoint } from "./fieldAtlasDesigns";
 import { GuideSprite } from "./GuideSprite";
 import { progressBetween, useScrollStoryProgress } from "./useScrollStoryProgress";
 import { VineAnatomyStudyList } from "./VineAnatomyParallax";
@@ -23,6 +24,8 @@ import { VineFieldAtlas } from "./VineFieldAtlas";
 type ScrollStoryStageProps = {
   chapter: BeyondTheGlassChapter;
 };
+
+type SceneWithNotes = BeyondTheGlassChapter["scenes"][number];
 
 type StoryImageProps = {
   alt: string;
@@ -45,6 +48,17 @@ const CHARACTER_ROLES: Record<BeyondTheGlassSpeaker, string> = {
 };
 
 const FIELD_NOTE_MATERIALS = ["paper", "glass", "brass"] as const;
+const NOTE_CROP_LAYOUTS: Record<number, readonly AtlasPoint[]> = {
+  1: [[50, 52]],
+  2: [[31, 36], [69, 36]],
+  3: [[22, 34], [50, 22], [78, 34]],
+  4: [[20, 32], [42, 20], [64, 20], [82, 36]],
+  5: [[18, 31], [36, 18], [64, 18], [82, 31], [50, 72]],
+  6: [[16, 28], [50, 17], [84, 28], [16, 72], [50, 83], [84, 72]],
+  7: [[14, 27], [50, 15], [86, 27], [86, 70], [50, 84], [14, 70], [50, 49]],
+  8: [[14, 25], [38, 15], [62, 15], [86, 25], [86, 73], [62, 84], [38, 84], [14, 73]],
+  9: [[14, 24], [38, 14], [62, 14], [86, 24], [86, 72], [62, 84], [38, 84], [14, 72], [50, 49]]
+};
 const JOURNEY_STORAGE_SLUGS: Record<string, string> = {
   wine: "journey-of-a-drop",
   brewery: "brewery",
@@ -236,6 +250,32 @@ function noteCardStyle(index: number, position: number): CSSProperties {
   };
 }
 
+function sceneNoteImage(scene: SceneWithNotes): string {
+  return scene.artwork.srcSet?.split(",")[0]?.trim().split(" ")[0] ?? scene.artwork.src;
+}
+
+function noteCropFocus(scene: SceneWithNotes, index: number): AtlasPoint {
+  const authoredFocus = ATLAS_SCENE_DESIGNS[scene.id]?.nodes[index]?.focus;
+  if (authoredFocus) return authoredFocus;
+
+  const count = Math.min(9, Math.max(1, scene.fieldNotes.length));
+  return NOTE_CROP_LAYOUTS[count]?.[index] ?? [50, 50];
+}
+
+function noteImageStyle(
+  scene: SceneWithNotes,
+  index: number,
+  baseStyle: CSSProperties = {}
+): CSSProperties {
+  const focus = noteCropFocus(scene, index);
+
+  return {
+    ...baseStyle,
+    "--btg-note-image": `url(${sceneNoteImage(scene)})`,
+    "--btg-note-image-position": `${focus[0]}% ${focus[1]}%`
+  } as CSSProperties;
+}
+
 type NoteDeckView = "guide" | "study";
 
 const NOTE_DECK_TRANSITIONS = [0.2, 0.4, 0.6, 0.8] as const;
@@ -324,8 +364,8 @@ function ReducedMotionStory({ chapter }: ScrollStoryStageProps) {
           ))}
         </div>
         <div className="btg-reduced__notes">
-          {activeScene.fieldNotes.map((note) => (
-            <article key={note.title}>
+          {activeScene.fieldNotes.map((note, index) => (
+            <article key={note.title} style={noteImageStyle(activeScene, index)}>
               <span>{note.eyebrow}</span>
               <strong>{note.title}</strong>
               <p>{note.detail}</p>
@@ -1048,7 +1088,11 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
                       className={`btg-field-note btg-field-note--${FIELD_NOTE_MATERIALS[index % FIELD_NOTE_MATERIALS.length]}`}
                       data-card-state={noteCardState(index, fieldNoteScrollPosition)}
                       key={`${activeScene.id}-${note.title}`}
-                      style={noteCardStyle(index, fieldNoteScrollPosition)}
+                      style={noteImageStyle(
+                        activeScene,
+                        index,
+                        noteCardStyle(index, fieldNoteScrollPosition)
+                      )}
                     >
                       <header>
                         <span>{note.eyebrow}</span>

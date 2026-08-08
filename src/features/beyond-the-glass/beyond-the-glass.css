@@ -3971,11 +3971,39 @@ body:has(.btg-page),
   background: #f4e4bf;
   border-color: rgba(94, 58, 25, 0.72);
   box-shadow: 0 0.7rem 1.5rem rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+  position: relative;
+}
+
+.btg-stage:not([data-scene="academy-plaza"]) .btg-field-note::before,
+.btg-reduced__notes > article::before {
+  background-image:
+    linear-gradient(180deg, rgba(2, 18, 24, 0.08), rgba(2, 18, 24, 0.62)),
+    var(--btg-note-image);
+  background-position: var(--btg-note-image-position, center);
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-bottom: 1px solid rgba(94, 58, 25, 0.48);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 250, 230, 0.28),
+    inset 0 -1.8rem 2.5rem rgba(3, 20, 27, 0.34);
+  content: "";
+  display: block;
+  height: clamp(3.1rem, 7.4vw, 5.35rem);
+}
+
+.btg-reduced__notes > article {
+  overflow: hidden;
+  position: relative;
 }
 
 .btg-stage:not([data-scene="academy-plaza"]) .btg-field-note > header {
+  background:
+    linear-gradient(180deg, rgba(255, 247, 223, 0.74), rgba(255, 247, 223, 0)),
+    rgba(244, 228, 191, 0.18);
   min-height: 0;
   padding: 0.56rem 0.7rem;
+  position: relative;
 }
 
 .btg-stage:not([data-scene="academy-plaza"]) .btg-field-note > p {
@@ -5362,6 +5390,11 @@ body:has(.btg-page),
   .btg-stage:not([data-scene="academy-plaza"]) .btg-field-note {
     display: flex;
     flex-direction: column;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-note::before {
+    flex: 0 0 clamp(2.7rem, 9svh, 3.8rem);
+    height: auto;
   }
 
   .btg-stage:not([data-scene="academy-plaza"]) .btg-field-note > header,
@@ -8297,11 +8330,12 @@ body:has(.btg-page),
 
   .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__header strong {
     display: block;
-    font-size: 0.78rem;
-    line-height: 1.04;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 0.72rem;
+    line-height: 1.08;
+    max-height: 1.6rem;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
   }
 
   .btg-stage:not([data-scene="academy-plaza"]) .btg-progress {
@@ -8528,6 +8562,11 @@ body:has(.btg-page),
 
   .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas__field-note {
     scrollbar-width: thin;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-note::before {
+    flex: 0 0 clamp(2.15rem, 8svh, 3.1rem);
+    height: auto;
   }
 
   .btg-stage:not([data-scene="academy-plaza"])
@@ -8827,6 +8866,57 @@ body:has(.btg-page),
   }
 }
 
+@media (max-width: 640px) and (orientation: portrait) {
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__header {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__header .btg-kicker {
+    display: none;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__header > div:first-child {
+    align-self: center;
+    grid-row: 1 / -1;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__header strong,
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__header > div:first-child strong {
+    display: block;
+    font-size: clamp(0.7rem, 3.15vw, 0.84rem);
+    line-height: 1.08;
+    max-height: none;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    -webkit-box-orient: initial;
+    -webkit-line-clamp: initial;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-stage__copy h1 {
+    font-size: clamp(1.08rem, 5.2vw, 1.32rem);
+    line-height: 1.04;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas__detail {
+    max-height: 11.35rem;
+    overflow-y: auto;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas__field-note {
+    max-height: 6.55rem;
+    overflow-y: auto;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-atlas__field-note > p {
+    font-size: clamp(0.68rem, 2.25vw, 0.78rem);
+    line-height: 1.26;
+  }
+}
+
 @media (orientation: landscape) and (max-height: 430px) and (max-width: 780px) {
   .btg-stage:not([data-scene="academy-plaza"])[data-study-panel="open"] {
     grid-template-columns: minmax(0, 1fr) minmax(7.6rem, 0.34fr);
@@ -8864,5 +8954,9 @@ body:has(.btg-page),
     font-size: 0.58rem;
     line-height: 1.18;
     margin-top: 0.14rem;
+  }
+
+  .btg-stage:not([data-scene="academy-plaza"]) .btg-field-note::before {
+    flex-basis: clamp(1.65rem, 7svh, 2.35rem);
   }
 }
