@@ -16454,6 +16454,16 @@ select option:checked {
   line-height: 1.05;
 }
 
+.marketing-section-note {
+  max-width: 340px;
+  margin: 0;
+  color: rgba(217, 247, 255, 0.76);
+  font-size: 0.88rem;
+  font-weight: 750;
+  line-height: 1.35;
+  text-align: right;
+}
+
 .marketing-fit-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -16543,6 +16553,24 @@ select option:checked {
   font-size: 0.76rem;
   font-weight: 650;
   line-height: 1.32;
+}
+
+.marketing-fit-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.28rem;
+  margin-top: 0.1rem;
+}
+
+.marketing-fit-proof b {
+  border: 1px solid rgba(237, 212, 168, 0.2);
+  border-radius: 999px;
+  background: rgba(237, 212, 168, 0.07);
+  color: rgba(255, 241, 209, 0.9);
+  font-size: 0.62rem;
+  font-weight: 950;
+  line-height: 1;
+  padding: 0.24rem 0.36rem;
 }
 
 .marketing-fit-actions {
@@ -34209,6 +34237,11 @@ button.journal-note-row.journal-note-select .journal-note-copy {
     gap: 0.2rem;
   }
 
+  .marketing-section-note {
+    max-width: none;
+    text-align: left;
+  }
+
   .marketing-buyer-journey {
     grid-template-columns: 1fr;
   }
@@ -34316,6 +34349,16 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   .marketing-fit-strip,
   .marketing-market-signal-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) and (orientation: portrait) {
+  .marketing-fit-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .marketing-fit-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

@@ -340,6 +340,20 @@ function assertVisibleEmailInput(state) {
   if (!match) throw new Error("Email magic-link field is not fully visible in the login viewport.");
 }
 
+async function verifyPricingFitAction(client, sessionId, baseUrl, routeTimeoutMs, action) {
+  await scrollElementIntoView(client, sessionId, "button", action.label);
+  let state = await pageState(client, sessionId);
+  assertVisibleCritical(state, action.label, `${action.label} is not fully visible in the pricing customer-fit viewport.`);
+
+  if (!action.hash) return;
+
+  await clickButton(client, sessionId, action.label, routeTimeoutMs);
+  state = await pageState(client, sessionId);
+  assertHash(state, action.hash, `${action.label} did not open the expected saved pricing path.`);
+
+  await navigate(client, sessionId, `${baseUrl}/#pricing?plan=pro&source=home-primary&next=app%2Fbtg`, routeTimeoutMs);
+}
+
 async function runViewportFlow(client, sessionId, baseUrl, outputDir, routeTimeoutMs, viewport) {
   const screenshots = [];
   const failures = [];
@@ -361,6 +375,21 @@ async function runViewportFlow(client, sessionId, baseUrl, outputDir, routeTimeo
   check(() => assertText(state, "Learn drinks visually, from source to service", "Homepage promise is missing."));
   check(() => assertText(state, "\\$10|10/month", "Homepage $10 membership signal is missing."));
   check(() => assertText(state, "Watch previews", "Homepage preview action is missing."));
+  check(() => assertText(state, "Preview the room, save the path, then join only when it fits", "Homepage customer-path promise is missing."));
+
+  await scrollElementIntoView(client, sessionId, "button", "Join this path");
+  await capture("01-home-customer-paths");
+  state = await pageState(client, sessionId);
+  check(() => assertVisibleCritical(state, "Join this path", "Homepage new-learner join action is not fully visible."));
+  for (const homeAction of ["Train for service", "Build study path"]) {
+    try {
+      await scrollElementIntoView(client, sessionId, "button", homeAction);
+      state = await pageState(client, sessionId);
+      assertVisibleCritical(state, homeAction, `Homepage ${homeAction} action is not fully visible.`);
+    } catch (error) {
+      failures.push(error.message);
+    }
+  }
 
   await clickButton(client, sessionId, "Start for \\$10/month", routeTimeoutMs);
   await capture("02-pricing");
@@ -371,6 +400,28 @@ async function runViewportFlow(client, sessionId, baseUrl, outputDir, routeTimeo
   check(() => assertText(state, "Saved Preview Path|Continue the room|After checkout|Beyond The Glass", "Pricing page does not show the saved preview destination."));
   check(() => assertVisibleCritical(state, "Continue to Checkout", "Pricing checkout CTA is not fully visible in the pricing viewport."));
   check(() => assertVisibleCritical(state, "Membership Help", "Pricing help CTA is not fully visible in the pricing viewport."));
+
+  await scrollElementIntoView(client, sessionId, "button", "Save this journey");
+  await capture("02-pricing-fit-actions");
+
+  const pricingFitActions = [
+    { label: "Preview journey" },
+    { label: "Save this journey", hash: "checkout\\?.*source=pricing-fit-beginner.*next=app%2Fbtg|checkout\\?.*next=app/btg.*source=pricing-fit-beginner" },
+    { label: "Preview recipes" },
+    { label: "Save service path", hash: "checkout\\?.*source=pricing-fit-service.*next=app%2Frecipes|checkout\\?.*next=app/recipes.*source=pricing-fit-service" },
+    { label: "Preview terms" },
+    { label: "Save study path", hash: "checkout\\?.*source=pricing-fit-study.*next=app%2Fsipopedia|checkout\\?.*next=app/sipopedia.*source=pricing-fit-study" }
+  ];
+  for (const action of pricingFitActions) {
+    try {
+      await verifyPricingFitAction(client, sessionId, baseUrl, routeTimeoutMs, action);
+    } catch (error) {
+      failures.push(error.message);
+      await navigate(client, sessionId, `${baseUrl}/#pricing?plan=pro&source=home-primary&next=app%2Fbtg`, routeTimeoutMs).catch(() => {});
+    }
+  }
+  state = await pageState(client, sessionId);
+  check(() => assertHash(state, "pricing\\?", "Pricing route did not recover after customer-fit action checks."));
 
   await clickButton(client, sessionId, "Continue to Checkout", routeTimeoutMs);
   await capture("03-checkout");

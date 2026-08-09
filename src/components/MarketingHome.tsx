@@ -46,6 +46,7 @@ type CustomerFitTile = {
   title: string;
   room: string;
   outcome: string;
+  proof: string[];
   reelId: string;
   previewRoute: string;
   actionRoute: string;
@@ -303,6 +304,7 @@ const customerFitTiles: CustomerFitTile[] = [
     title: "Make drinks finally click.",
     room: "Beyond The Glass",
     outcome: "Start with cinematic source-to-service journeys.",
+    proof: ["Preview story", "Save room", "$10 join"],
     reelId: "btg",
     previewRoute: "app/btg",
     actionRoute: buildOnboardingRoute("pricing", {
@@ -317,6 +319,7 @@ const customerFitTiles: CustomerFitTile[] = [
     title: "Speak with more confidence.",
     room: "Recipes + Palate",
     outcome: "Practice guest language, flavor memory, and build logic.",
+    proof: ["Preview recipes", "Save path", "$10 join"],
     reelId: "recipes",
     previewRoute: "app/recipes",
     actionRoute: buildOnboardingRoute("pricing", {
@@ -331,6 +334,7 @@ const customerFitTiles: CustomerFitTile[] = [
     title: "Give facts a mental map.",
     room: "Sipopedia",
     outcome: "Use source-backed terms, maps, and visual memory anchors.",
+    proof: ["Preview terms", "Save path", "$10 join"],
     reelId: "sipopedia",
     previewRoute: "app/sipopedia",
     actionRoute: buildOnboardingRoute("pricing", {
@@ -345,6 +349,7 @@ const customerFitTiles: CustomerFitTile[] = [
     title: "Look around before paying.",
     room: "Launch Pad",
     outcome: "Watch trailers, open public rooms, or ask for help.",
+    proof: ["Preview first", "Ask help", "No pressure"],
     reelId: "sip-academy-map",
     previewRoute: "app/launch",
     actionRoute: buildMembershipSupportRoute({
@@ -614,8 +619,11 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
 
       <section className="marketing-customer-paths" aria-labelledby="customer-paths-title">
         <div className="marketing-section-intro">
-          <p className="marketing-kicker">Start Here</p>
-          <h2 id="customer-paths-title">Choose your first room.</h2>
+          <div>
+            <p className="marketing-kicker">Start Here</p>
+            <h2 id="customer-paths-title">Choose your first room.</h2>
+          </div>
+          <p className="marketing-section-note">Preview the room, save the path, then join only when it fits.</p>
         </div>
         <div className="marketing-fit-strip" aria-label="Customer fit shortcuts">
           {customerFitTiles.map((tile) => {
@@ -639,6 +647,11 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
                 <strong>{tile.title}</strong>
                 <p>{tile.room}</p>
                 <small>{tile.outcome}</small>
+                <div className="marketing-fit-proof" aria-label={`${tile.label} first customer proof`}>
+                  {tile.proof.map((proof) => (
+                    <b key={proof}>{proof}</b>
+                  ))}
+                </div>
                 <div className="marketing-fit-actions">
                   <button type="button" onClick={() => onNavigate(tile.previewRoute)}>
                     Preview

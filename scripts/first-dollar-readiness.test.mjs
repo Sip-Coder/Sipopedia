@@ -150,6 +150,11 @@ test("homepage sells by first-customer fit before feature count", () => {
   assert.match(marketingHomeSource, /I want to preview before paying/);
   assert.match(marketingHomeSource, /reelId/);
   assert.match(marketingHomeSource, /marketing-fit-media/);
+  assert.match(marketingHomeSource, /marketing-section-note/);
+  assert.match(marketingHomeSource, /Preview the room, save the path, then join only when it fits/);
+  assert.match(marketingHomeSource, /marketing-fit-proof/);
+  assert.match(marketingHomeSource, /Preview story/);
+  assert.match(marketingHomeSource, /Save room/);
   assert.match(marketingHomeSource, /tileReel\.src/);
   assert.match(marketingHomeSource, /home-path-new-learner/);
   assert.match(marketingHomeSource, /home-path-hospitality/);
@@ -416,6 +421,19 @@ test("pricing page keeps checkout and support choices visible early", () => {
   assert.match(pricingPageSource, /Save study path/);
   assert.match(mobileQaSource, /Pricing checkout CTA is not fully visible in the pricing viewport/);
   assert.match(mobileQaSource, /Pricing help CTA is not fully visible in the pricing viewport/);
+  assert.match(mobileQaSource, /01-home-customer-paths/);
+  assert.match(mobileQaSource, /Homepage customer-path promise is missing/);
+  assert.match(mobileQaSource, /Homepage new-learner join action is not fully visible/);
+  assert.match(mobileQaSource, /Train for service", "Build study path"/);
+  assert.match(mobileQaSource, /Homepage \$\{homeAction\} action is not fully visible/);
+  assert.match(mobileQaSource, /02-pricing-fit-actions/);
+  assert.match(mobileQaSource, /Preview journey/);
+  assert.match(mobileQaSource, /Save this journey/);
+  assert.match(mobileQaSource, /pricing-fit-beginner/);
+  assert.match(mobileQaSource, /Save service path/);
+  assert.match(mobileQaSource, /pricing-fit-service/);
+  assert.match(mobileQaSource, /Save study path/);
+  assert.match(mobileQaSource, /pricing-fit-study/);
 });
 
 test("assisted enrollment carries saved room context into the support handoff", () => {
