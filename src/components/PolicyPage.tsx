@@ -1,4 +1,9 @@
-import { buildMembershipSupportRoute, buildOnboardingRoute, readOnboardingIntent } from "../lib/onboardingIntent";
+import {
+  buildMembershipSupportRoute,
+  buildOnboardingRoute,
+  formatOnboardingRouteLabel,
+  readOnboardingIntent
+} from "../lib/onboardingIntent";
 
 type PolicyKind = "terms" | "privacy" | "refund";
 
@@ -38,6 +43,7 @@ const content: Record<PolicyKind, { title: string; paragraphs: string[] }> = {
 export function PolicyPage({ kind, onNavigate }: PolicyPageProps) {
   const policy = content[kind];
   const intent = readOnboardingIntent("pro");
+  const savedRoomLabel = formatOnboardingRouteLabel(intent.next);
   const checkoutRoute = buildOnboardingRoute("checkout", {
     planId: "pro",
     source: `${kind}-policy`,
@@ -62,6 +68,11 @@ export function PolicyPage({ kind, onNavigate }: PolicyPageProps) {
         {policy.paragraphs.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
         ))}
+        <div className="policy-context-ribbon" aria-label="Saved enrollment destination">
+          <span>Saved room</span>
+          <strong>{savedRoomLabel}</strong>
+          <small>Membership Details, Ask Support, and Continue Enrollment keep this destination attached.</small>
+        </div>
       </article>
       <div className="policy-actions">
         <button className="btn btn-light" onClick={() => onNavigate(pricingRoute)}>

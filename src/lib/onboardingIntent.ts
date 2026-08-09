@@ -35,6 +35,28 @@ export const onboardingPlans: {
   }
 ];
 
+const onboardingRouteLabels: Record<string, string> = {
+  "academy-map": "Sip Academy Map",
+  "beverage-news": "Beverage News",
+  "beverage-quiz": "Beverage Quiz",
+  "beyond-the-glass": "Beyond The Glass",
+  btg: "Beyond The Glass",
+  cocktails: "Bev Recipes",
+  flavors: "Tasting Journal",
+  "flavor-blog": "Flavor Blog",
+  "flavor-wheel": "Flavor Wheel",
+  grapes: "Grapes & Grains",
+  launch: "Launch Pad",
+  "living-palate": "Living Palate",
+  recipes: "Bev Recipes",
+  resources: "Resources",
+  "sip-academy": "Sip Academy",
+  "sip-academy-map": "Sip Academy Map",
+  sipopedia: "Sipopedia",
+  "sip-game": "Sip Game",
+  starter: "Launch Pad"
+};
+
 export function normalizePlanId(
   _value: string | null | undefined,
   fallback: PurchasablePlanId = "pro"
@@ -103,4 +125,38 @@ export function buildMembershipSupportRoute({
   if (sessionId) params.set("session_id", sessionId);
   if (billingStatus) params.set("billing_status", billingStatus);
   return `support?${params.toString()}`;
+}
+
+export function formatOnboardingRouteLabel(route: string | null | undefined): string {
+  const fallback = "Launch Pad";
+  if (!route) return fallback;
+  const routePart = route.replace(/^#/, "").split("?")[0].replace(/^app\//, "");
+  if (!routePart || routePart === "starter" || routePart === "launch") return fallback;
+  const firstPart = routePart.split("/")[0];
+  const knownLabel = onboardingRouteLabels[firstPart];
+  if (knownLabel) return knownLabel;
+  return routePart
+    .split("/")
+    .pop()!
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+export function formatOnboardingSourceLabel(source: string | null | undefined): string {
+  const normalized = (source ?? "").trim();
+  if (!normalized || normalized === "direct") return "Direct visit";
+  if (normalized.startsWith("home-video-")) return "Homepage preview";
+  if (normalized.startsWith("home-path-") || normalized.startsWith("home-fit-")) return "Homepage customer path";
+  if (normalized.startsWith("paywall")) return "Locked room";
+  if (normalized.includes("policy")) return "Policy review";
+  if (normalized.includes("pricing")) return "Membership details";
+  if (normalized.includes("checkout") || normalized.includes("success") || normalized.includes("cancel")) return "Checkout recovery";
+  if (normalized.includes("support")) return "Support";
+  return normalized
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }

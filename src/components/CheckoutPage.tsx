@@ -6,6 +6,8 @@ import { createCloudSupportRequest, isSupportRequestRateLimitError, saveLocalSup
 import {
   buildMembershipSupportRoute,
   buildOnboardingRoute,
+  formatOnboardingRouteLabel,
+  formatOnboardingSourceLabel,
   getPlanById,
   readOnboardingIntent
 } from "../lib/onboardingIntent";
@@ -50,7 +52,8 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const selectedPlan = getPlanById(selectedPlanId);
   const source = initialIntent.source;
   const nextRoute = initialIntent.next;
-  const nextRouteLabel = nextRoute ? nextRoute.replace(/^app\//, "").replace(/-/g, " ") : "Launch Pad";
+  const nextRouteLabel = formatOnboardingRouteLabel(nextRoute);
+  const sourceLabel = formatOnboardingSourceLabel(source);
   const checkoutReturnRoute = buildOnboardingRoute("checkout", { planId: selectedPlanId, source: "account-return", next: nextRoute });
   const loginBeforeCheckoutRoute = buildOnboardingRoute("login", { source: "checkout-account", next: checkoutReturnRoute });
   const membershipSupportRoute = buildMembershipSupportRoute({
@@ -156,8 +159,8 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
             {selectedPlan.title}
           </span>
           <span>
-            <strong>Source</strong>
-            {source}
+            <strong>Started from</strong>
+            {sourceLabel}
           </span>
           <span>
             <strong>Next</strong>

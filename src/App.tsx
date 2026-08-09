@@ -1536,6 +1536,7 @@ function App() {
     successAccessAttempts >= 4;
   const successTargetRoute = paymentSuccessRoute(isPaid, isAdmin, successIntent?.next);
   const successTargetLabel = formatRouteLabel(successTargetRoute);
+  const checkoutRecoveryTargetLabel = formatRouteLabel(checkoutRecoveryIntent?.next);
   const checkoutRecoveryRoute = checkoutRecoveryIntent
     ? buildOnboardingRoute("checkout", { planId: checkoutRecoveryIntent.planId, source: `${route}-recovery`, next: checkoutRecoveryIntent.next })
     : "checkout";
@@ -1795,7 +1796,7 @@ function App() {
               </span>
               <span>
                 <strong>Saved room</strong>
-                {hasConfirmedMembershipAccess ? `Next stop: ${successTargetLabel}.` : "Your saved room stays attached while access updates."}
+                {hasConfirmedMembershipAccess ? `Next stop: ${successTargetLabel}.` : `${successTargetLabel} stays attached while access updates.`}
               </span>
             </div>
           </header>
@@ -1837,7 +1838,7 @@ function App() {
             <p className="checkout-eyebrow">Checkout Recovery</p>
             <h1>Membership Checkout Canceled</h1>
             <p>
-              No charge was applied. Your account step and saved destination are still preserved, so you can retry the
+              No charge was applied. Your account step and {checkoutRecoveryTargetLabel} destination are still preserved, so you can retry the
               $10/month membership checkout or ask for help without losing context.
             </p>
             <div className="checkout-result-proof" aria-label="Canceled checkout status">
@@ -1847,7 +1848,7 @@ function App() {
               </span>
               <span>
                 <strong>Route saved</strong>
-                The intended room remains attached.
+                {checkoutRecoveryTargetLabel} remains attached.
               </span>
               <span>
                 <strong>Safe retry</strong>

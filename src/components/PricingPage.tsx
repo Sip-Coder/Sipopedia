@@ -1,5 +1,6 @@
 import {
   buildMembershipSupportRoute,
+  formatOnboardingRouteLabel,
   buildOnboardingRoute,
   getPlanById,
   readOnboardingIntent
@@ -92,9 +93,7 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
   const intent = readOnboardingIntent("pro");
   const membership = getPlanById("pro");
   const nextRoute = intent.next;
-  const nextRouteLabel = nextRoute
-    ? nextRoute.replace(/^app\//, "").replace(/-/g, " ")
-    : "Launch Pad";
+  const nextRouteLabel = formatOnboardingRouteLabel(nextRoute);
   const checkoutSource = intent.source === "direct" ? "pricing" : `${intent.source}-pricing`;
   const checkoutRoute = buildOnboardingRoute("checkout", {
     planId: "pro",

@@ -108,6 +108,7 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 
 - Confirm the public homepage promise and $10/month offer are still clear.
 - Review the likely first customer segments: curious learners, hospitality staff, certification-adjacent learners, and visual learners.
+- Use the evidence split to separate code-ready foundations from live proof that only counts after a signed-in production checkout.
 - Open the smoke-test path: Homepage -> Pricing -> Trust Links -> Checkout -> Success -> Cancel Recovery -> Paid Room -> Support.
 - Mark each smoke-test item only after a real production check proves it.
 - Add a short proof note for each step; checked items without notes remain missing from the launch-ready count.

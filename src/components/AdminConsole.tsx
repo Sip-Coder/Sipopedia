@@ -90,6 +90,13 @@ type LaunchCustomerSegment = {
   firstOffer: string;
 };
 
+type LaunchEvidenceLane = {
+  label: string;
+  status: "code-ready" | "live-proof";
+  detail: string;
+  items: string[];
+};
+
 type LaunchSmokeState = Record<string, { done: boolean; evidence: string }>;
 
 type StoredLaunchSmokeState = Partial<Record<string, Partial<{ done: boolean; evidence: string }>>>;
@@ -538,6 +545,30 @@ const launchCustomerSegments: LaunchCustomerSegment[] = [
     firstOffer: "Make previews, maps, and video blocks do most of the selling."
   }
 ];
+
+const launchEvidenceLanes: LaunchEvidenceLane[] = [
+  {
+    label: "Code-ready foundation",
+    status: "code-ready",
+    detail: "These parts can be reviewed in the app before a buyer pays.",
+    items: [
+      "Homepage audience paths and preview-first membership story",
+      "$10 pricing route with saved-room checkout context",
+      "Support fallbacks for checkout, cancellation, and billing recovery"
+    ]
+  },
+  {
+    label: "Needs live proof",
+    status: "live-proof",
+    detail: "These parts only count after one signed-in production checkout proves them.",
+    items: [
+      "Stripe Checkout creates the paid session on sipopedia.com",
+      "Stripe webhook writes customer_subscriptions in Supabase",
+      "Paid room unlock follows active or trialing subscription status"
+    ]
+  }
+];
+
 
 const socialPlatforms: SocialPlatform[] = [
   { id: "instagram", label: "Instagram", handle: "@sipstudies", postType: "Feed, Reel, Story", limit: 2200 },
@@ -1415,6 +1446,20 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   <span>{launchReadyForPaidInvite ? "Ready for controlled test" : "Hold paid invite"}</span>
                   <strong>{launchReadyForPaidInvite ? "First-customer path is proof-ready." : "Do not invite a paid customer yet."}</strong>
                   <small>{launchDecisionDetail}</small>
+                </div>
+                <div className="admin-launch-evidence-split" aria-label="First-dollar evidence split">
+                  {launchEvidenceLanes.map((lane) => (
+                    <article className={`status-${lane.status}`} key={lane.label}>
+                      <span>{lane.status === "code-ready" ? "Reviewable" : "Live proof"}</span>
+                      <strong>{lane.label}</strong>
+                      <small>{lane.detail}</small>
+                      <ul>
+                        {lane.items.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </article>
+                  ))}
                 </div>
                 <div className="admin-launch-test-script" aria-label="First paid customer production test script">
                   <div className="admin-launch-test-script-head">
