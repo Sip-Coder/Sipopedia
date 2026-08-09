@@ -19486,6 +19486,35 @@ select option:checked {
   text-transform: uppercase;
 }
 
+.checkout-session-reference {
+  align-items: center;
+  background: rgba(2, 18, 28, 0.72);
+  border: 1px solid rgba(237, 212, 168, 0.24);
+  border-radius: 14px;
+  color: rgba(225, 249, 246, 0.88);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.7rem;
+  margin-top: 0.85rem;
+  padding: 0.72rem 0.8rem;
+  width: min(100%, 820px);
+}
+
+.checkout-session-reference span {
+  color: #f4d9a2;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.checkout-session-reference code {
+  color: #d9f7ff;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .checkout-stage-list {
   counter-reset: checkout-stage;
   display: grid;

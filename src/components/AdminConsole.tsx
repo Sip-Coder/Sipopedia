@@ -97,6 +97,7 @@ type StoredLaunchSmokeState = Partial<Record<string, Partial<{ done: boolean; ev
 type LaunchProofDetails = {
   testAccountEmail: string;
   stripeSessionId: string;
+  webhookEventId: string;
   subscriptionReference: string;
   paidRoomRoute: string;
 };
@@ -126,7 +127,9 @@ type LaunchConnectionCheck = {
 type LaunchSubscriptionProbeRow = {
   status?: string | null;
   plan_code?: string | null;
+  provider_subscription_id?: string | null;
   updated_at?: string | null;
+  metadata?: Record<string, unknown> | null;
 };
 
 type LaunchSupportProbeRow = {
@@ -142,6 +145,7 @@ const launchProofDetailsStorageKey = "sipstudies:first-dollar-proof-details:v1";
 const defaultLaunchProofDetails: LaunchProofDetails = {
   testAccountEmail: "",
   stripeSessionId: "",
+  webhookEventId: "",
   subscriptionReference: "",
   paidRoomRoute: "app/btg"
 };
@@ -191,6 +195,7 @@ function readLaunchProofDetails(): LaunchProofDetails {
     return {
       testAccountEmail: typeof parsed.testAccountEmail === "string" ? parsed.testAccountEmail : "",
       stripeSessionId: typeof parsed.stripeSessionId === "string" ? parsed.stripeSessionId : "",
+      webhookEventId: typeof parsed.webhookEventId === "string" ? parsed.webhookEventId : "",
       subscriptionReference: typeof parsed.subscriptionReference === "string" ? parsed.subscriptionReference : "",
       paidRoomRoute: typeof parsed.paidRoomRoute === "string" && parsed.paidRoomRoute.trim() ? parsed.paidRoomRoute : "app/btg"
     };
@@ -243,6 +248,11 @@ function formatLaunchProbeTime(value: string | null | undefined): string {
   return date.toLocaleString();
 }
 
+function metadataStringValue(metadata: Record<string, unknown> | null | undefined, key: string): string | null {
+  const value = metadata?.[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
 function countLabel(count: number | null | undefined, singular: string, plural: string): string {
   const safeCount = typeof count === "number" ? count : 0;
   return `${safeCount.toLocaleString()} ${safeCount === 1 ? singular : plural}`;
@@ -279,6 +289,9 @@ function launchProofFieldGap(field: LaunchProofField, value: string): LaunchProo
   }
   if (field.field === "stripeSessionId" && !trimmed.startsWith("cs_")) {
     return { label: field.label, reason: "Needs a Stripe Checkout session id" };
+  }
+  if (field.field === "webhookEventId" && !trimmed.startsWith("evt_")) {
+    return { label: field.label, reason: "Needs a Stripe webhook event id" };
   }
   if (field.field === "subscriptionReference" && trimmed.length < 8) {
     return { label: field.label, reason: "Needs the subscription row or Stripe subscription reference" };
@@ -399,8 +412,15 @@ const launchSmokeSteps: LaunchSmokeStep[] = [
     id: "trust-links",
     label: "Trust Links",
     route: "pricing",
-    expected: "Terms, Privacy, Refunds, and Support are reachable before checkout without losing the saved room.",
-    evidencePrompt: "Example: pricing and checkout trust links open correctly, then continue enrollment with the same saved destination."
+    expected: "Terms, Privacy, Refunds, and Support are reachable from Pricing and Checkout before payment without losing the saved room.",
+    evidencePrompt: "Example: pricing and checkout trust links open correctly with the saved destination still attached."
+  },
+  {
+    id: "policy-exits",
+    label: "Policy Exits",
+    route: "terms",
+    expected: "Terms, Privacy, and Refund pages each offer Membership Details, Ask Support, and Continue Enrollment while preserving the saved room.",
+    evidencePrompt: "Example: policy pages return to membership details, open prefilled support, and continue checkout with the same destination."
   },
   {
     id: "login",
@@ -746,7 +766,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     .filter((platform) => targetPlatforms[platform.id])
     .map((platform) => platform.label);
   const activeSubscriptionCount = subscriptions.filter((subscription) =>
-    subscription.status === "trialing" || subscription.status === "active" || subscription.status === "past_due"
+    subscription.status === "trialing" || subscription.status === "active"
   ).length;
   const launchProofFields: LaunchProofField[] = [
     {
@@ -759,6 +779,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       field: "stripeSessionId",
       label: "Stripe session id",
       placeholder: "cs_live_or_test_..."
+    },
+    {
+      field: "webhookEventId",
+      label: "Webhook event id",
+      placeholder: "evt_... from billing_webhook_events or Stripe"
     },
     {
       field: "subscriptionReference",
@@ -898,6 +923,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       "## Stripe And Access Proof",
       `- Test account email: ${launchProofDetails.testAccountEmail.trim() || "Not captured yet."}`,
       `- Stripe session id: ${launchProofDetails.stripeSessionId.trim() || "Not captured yet."}`,
+      `- Webhook event id: ${launchProofDetails.webhookEventId.trim() || "Not captured yet."}`,
       `- Subscription reference: ${launchProofDetails.subscriptionReference.trim() || "Not captured yet."}`,
       `- Paid room route: ${launchProofDetails.paidRoomRoute.trim() || "Not captured yet."}`,
       `- Proof field status: ${launchProofMissingCount === 0 ? "All proof fields have plausible formats." : `${launchProofMissingCount} proof field${launchProofMissingCount === 1 ? "" : "s"} need review.`}`,
@@ -948,6 +974,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
 
     setLaunchProbeRunning(true);
     try {
+      let latestStripeSessionId: string | null = null;
+      let latestStripeEventId: string | null = null;
+      let latestSubscriptionReference: string | null = null;
       const [checkoutResult, billingWebhookResult, subscriptionResult, supportResult] = await Promise.allSettled([
         supabase.functions.invoke<Record<string, unknown>>("create-checkout-session", {
           body: { planId: "__readiness_probe__", source: "admin-connection-probe", next: "app/btg" }
@@ -957,7 +986,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         }),
         supabase
           .from("customer_subscriptions")
-          .select("status, plan_code, updated_at", { count: "exact" })
+          .select("status, plan_code, provider_subscription_id, updated_at, metadata", { count: "exact" })
           .order("updated_at", { ascending: false })
           .limit(1),
         supabase
@@ -1013,11 +1042,21 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       } else {
         const latestSubscription = (subscriptionResult.value.data?.[0] ?? null) as LaunchSubscriptionProbeRow | null;
         const subscriptionCount = countLabel(subscriptionResult.value.count, "subscription record", "subscription records");
+        latestStripeSessionId = metadataStringValue(latestSubscription?.metadata, "stripe_session_id");
+        latestStripeEventId = metadataStringValue(latestSubscription?.metadata, "stripe_event_id");
+        latestSubscriptionReference = metadataStringValue(latestSubscription?.metadata, "stripe_subscription_id")
+          ?? latestSubscription?.provider_subscription_id
+          ?? null;
+        const metadataProof = [
+          latestStripeEventId ? `event ${latestStripeEventId}` : null,
+          latestStripeSessionId ? `session ${latestStripeSessionId}` : null,
+          latestSubscriptionReference ? `subscription ${latestSubscriptionReference}` : null
+        ].filter(Boolean).join(", ");
         updateCheck(
           "subscription-table",
           "pass",
           latestSubscription
-            ? `${subscriptionCount} reachable. Latest: ${latestSubscription.status ?? "unknown status"} ${latestSubscription.plan_code ?? "membership"} updated ${formatLaunchProbeTime(latestSubscription.updated_at)}.`
+            ? `${subscriptionCount} reachable. Latest: ${latestSubscription.status ?? "unknown status"} ${latestSubscription.plan_code ?? "membership"} updated ${formatLaunchProbeTime(latestSubscription.updated_at)}${metadataProof ? `. Webhook proof: ${metadataProof}.` : "."}`
             : `${subscriptionCount} reachable. Run the real checkout smoke test to create webhook proof.`
         );
       }
@@ -1036,6 +1075,17 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
             ? `${supportCount} reachable. Latest: ${latestSupport.status ?? "unknown status"} enrollment request, ${latestSupport.urgency ?? "normal"} urgency, from ${latestSupport.source_route ?? "unknown route"}, created ${formatLaunchProbeTime(latestSupport.created_at)}.`
             : `${supportCount} found. Submit a test Membership Help or Assisted Enrollment request before inviting paid traffic.`
         );
+      }
+
+      if (latestStripeSessionId || latestStripeEventId || latestSubscriptionReference) {
+        setLaunchProofDetails((current) => ({
+          ...current,
+          stripeSessionId: current.stripeSessionId.trim() ? current.stripeSessionId : latestStripeSessionId ?? current.stripeSessionId,
+          webhookEventId: current.webhookEventId.trim() ? current.webhookEventId : latestStripeEventId ?? current.webhookEventId,
+          subscriptionReference: current.subscriptionReference.trim()
+            ? current.subscriptionReference
+            : latestSubscriptionReference ?? current.subscriptionReference
+        }));
       }
 
       setLaunchConnectionChecks(nextChecks);
@@ -1511,7 +1561,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
               <article className="admin-card admin-launch-metric-card">
                 <p className="admin-eyebrow">Entitlements</p>
                 <p className="admin-metric">{activeSubscriptionCount}</p>
-                <small>Trialing, active, or past-due records that currently unlock paid workspace access.</small>
+                <small>Trialing or active records that currently unlock paid workspace access.</small>
               </article>
             </div>
           </section>
@@ -1872,7 +1922,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         <article className="admin-card">
           <h3>User Access Control</h3>
           <p>Keep profile roles simple: student for learners and admin for back-office privileges. Trial access lives in subscription status, not a profile role.</p>
-          <p className="hint">Visitor is public/no profile role needed. Trialing, active, and past-due subscription records can unlock the paid workspace.</p>
+          <p className="hint">Visitor is public/no profile role needed. Only trialing or active subscription records unlock the paid workspace; past-due and canceled records stay locked until billing is repaired.</p>
           <div className="admin-user-table">
             <table>
               <thead>

@@ -75,11 +75,14 @@ Access state is owned by `AccessContext`:
 Paid access can come from:
 
 - admin role
-- mentor role
-- active/trialing/past-due subscription that has not expired
+- active or trialing subscription that has not expired
 - the current `pro`/`pro_monthly` membership plan code
 - legacy `founding`/`founding_cohort` entitlement records (recognized for
   backward compatibility, but not purchasable)
+
+Past-due, unpaid, incomplete, incomplete-expired, and canceled subscriptions do
+not unlock paid rooms until billing is repaired or a new active/trialing
+subscription is present.
 
 ## Supabase Contract
 

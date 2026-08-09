@@ -1734,6 +1734,12 @@ function App() {
                     : "Checkout return received; access may still be processing."}
               {checkoutSessionId ? ` Session: ${checkoutSessionId.slice(0, 18)}...` : ""}
             </div>
+            {checkoutSessionId ? (
+              <div className="checkout-session-reference" aria-label="Stripe checkout reference">
+                <span>Checkout reference</span>
+                <code>{checkoutSessionId}</code>
+              </div>
+            ) : null}
             <div className="checkout-result-proof" aria-label="Checkout completion status">
               <span>
                 <strong>Payment return</strong>

@@ -227,6 +227,33 @@ function readSupportRouteContext(): SupportRouteContext {
         destination ? `Saved room: ${destination}.` : "Saved room: Launch Pad.",
         "Please help me decide whether the $10/month membership fits my learning goal."
       ].join("\n")
+    },
+    "terms-policy-help": {
+      urgency: "soon",
+      subject: "Question about membership terms",
+      message: [
+        "I am reviewing the Sip Studies membership terms before joining.",
+        destination ? `Saved room: ${destination}.` : "Saved room: not sure.",
+        "Please help me understand the membership terms before checkout."
+      ].join("\n")
+    },
+    "privacy-policy-help": {
+      urgency: "soon",
+      subject: "Question about privacy before joining",
+      message: [
+        "I am reviewing privacy details before starting the Sip Studies membership.",
+        destination ? `Saved room: ${destination}.` : "Saved room: not sure.",
+        "Please help me understand account, progress, and data handling before checkout."
+      ].join("\n")
+    },
+    "refund-policy-help": {
+      urgency: "soon",
+      subject: "Question about refunds or cancellation",
+      message: [
+        "I am reviewing refund or cancellation details before joining Sip Studies.",
+        destination ? `Saved room: ${destination}.` : "Saved room: not sure.",
+        "Please help me understand cancellation or billing recovery before checkout."
+      ].join("\n")
     }
   };
   const template = supportTemplates[source] ?? null;

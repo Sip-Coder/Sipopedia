@@ -1,4 +1,4 @@
-import { buildOnboardingRoute, readOnboardingIntent } from "../lib/onboardingIntent";
+import { buildMembershipSupportRoute, buildOnboardingRoute, readOnboardingIntent } from "../lib/onboardingIntent";
 
 type PolicyKind = "terms" | "privacy" | "refund";
 
@@ -43,6 +43,16 @@ export function PolicyPage({ kind, onNavigate }: PolicyPageProps) {
     source: `${kind}-policy`,
     next: intent.next
   });
+  const pricingRoute = buildOnboardingRoute("pricing", {
+    planId: "pro",
+    source: `${kind}-policy-back`,
+    next: intent.next
+  });
+  const supportRoute = buildMembershipSupportRoute({
+    source: `${kind}-policy-help`,
+    urgency: "soon",
+    next: intent.next
+  });
   return (
     <section className="policy-page">
       <header className="section-header">
@@ -54,6 +64,12 @@ export function PolicyPage({ kind, onNavigate }: PolicyPageProps) {
         ))}
       </article>
       <div className="policy-actions">
+        <button className="btn btn-light" onClick={() => onNavigate(pricingRoute)}>
+          Membership Details
+        </button>
+        <button className="btn btn-light" onClick={() => onNavigate(supportRoute)}>
+          Ask Support
+        </button>
         <button className="btn btn-light" onClick={() => onNavigate("home")}>
           Back Home
         </button>

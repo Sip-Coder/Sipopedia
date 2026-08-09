@@ -58,7 +58,7 @@ When a visitor chooses a preview room from the homepage hero or customer cards, 
 - [ ] Stripe Checkout session starts from production for a signed-in test user.
 - [ ] Checkout fallback has a direct Membership Help route with `checkout-help` enrollment context attached.
 - [ ] Stripe success URL returns to `https://sipopedia.com/#success` with the session context intact.
-- [ ] Success page shows a clear pending-access state with Refresh Access, Launch Pad, and Support if webhook sync is delayed.
+- [ ] Success page shows the full checkout session reference plus a clear pending-access state with Refresh Access, Launch Pad, and Support if webhook sync is delayed.
 - [ ] Stripe cancel URL returns to `https://sipopedia.com/#cancel` with the retry path intact.
 - [ ] Success and cancel recovery buttons route membership help to Support with enrollment context prefilled.
 - [ ] Success-page Membership Help includes the Stripe checkout session id when Stripe returns it.
@@ -70,6 +70,7 @@ When a visitor chooses a preview room from the homepage hero or customer cards, 
 - [ ] Profile roles are limited to Student and Admin; Trial access is issued through `customer_subscriptions.status = 'trialing'`.
 - [ ] Frontend access/admin views normalize any legacy or unknown profile role to Student unless the role is explicitly Admin.
 - [ ] Terms, Privacy, Refund, and billing support routes are reachable from Pricing and Checkout before payment without losing the saved room.
+- [ ] Terms, Privacy, and Refund pages offer Membership Details, Ask Support, and Continue Enrollment exits while preserving the saved room.
 - [ ] Assisted Enrollment submits to a support/admin workflow that someone will monitor.
 - [ ] Admin connection probe finds at least one Enrollment support request created by Membership Help or Assisted Enrollment.
 - [ ] Mobile portrait checkout path is readable from homepage to success.
@@ -90,7 +91,7 @@ Confirm these without exposing secret values in chat, Git, logs, or frontend cod
 - Stripe product/price matches the public $10/month membership.
 - Supabase profile roles are limited to Student and Admin.
 - Trial access is represented by a time-boxed subscription record, not a separate profile role.
-- Admin proof fields capture the production test account email, Stripe session id, subscription reference, and paid room route used for the first-dollar smoke test.
+- Admin proof fields capture the production test account email, Stripe session id, Stripe webhook event id, subscription reference, and paid room route used for the first-dollar smoke test.
 
 ## Next Build Priorities
 
@@ -109,8 +110,9 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Open the smoke-test path: Homepage -> Pricing -> Trust Links -> Checkout -> Success -> Cancel Recovery -> Paid Room -> Support.
 - Mark each smoke-test item only after a real production check proves it.
 - Add a short proof note for each step; checked items without notes remain missing from the launch-ready count.
-- Fill in the Stripe + access proof fields with plausible live evidence: valid test account email, `cs_` Stripe session id, subscription reference, and paid `app/...` route.
-- Run the connection probe and confirm subscription checks show safe counts, and support checks find at least one Enrollment request with latest status metadata.
+- Fill in the Stripe + access proof fields with plausible live evidence: valid test account email, `cs_` Stripe session id, `evt_` webhook event id, subscription reference, and paid `app/...` route.
+- Run the connection probe and confirm subscription checks show safe counts, webhook/session metadata when available, and support checks find at least one Enrollment request with latest status metadata.
+- After the real checkout, rerun the connection probe and confirm it prefills or displays the latest `cs_`, `evt_`, and subscription proof from `customer_subscriptions.metadata`.
 - Review the proof-gaps panel and the downloaded Missing Proof Checklist; do not invite paid traffic while any gap is still marked missing.
 - Download the first-dollar proof log after the smoke test so the checkout, webhook, support, and access evidence is saved outside browser memory.
 - Keep the launch decision on hold until every smoke-test item is checked, every connection probe passes, and every Stripe + access proof field is filled.
@@ -124,13 +126,15 @@ Run this once, in order, from production before inviting a real buyer:
 1. Open `https://sipopedia.com` on the phone/account that will test payment.
 2. Confirm the homepage promise, preview path, $10 pricing, and trust links are clear before checkout.
 3. Select a homepage preview room, then start the $10/month path and confirm Pricing shows that same saved destination.
-4. Sign in with the production test learner account, and confirm the Google or email magic-link route preserves the saved checkout room.
-5. Start Stripe Checkout from Sipopedia and confirm Stripe shows the correct monthly membership. If checkout fails, confirm Membership Help opens Support with `checkout-help` enrollment context attached.
-6. Return to `https://sipopedia.com/#success` and confirm session context, Refresh Access, Launch Pad, and Support are visible.
-7. Open Membership Help from the success page and confirm the Support intake includes the saved room and Stripe checkout session id.
-8. Open the saved paid room and verify access comes from an active or trialing subscription status, not a manual profile role edit.
-9. Confirm a canceled or past-due subscription record does not keep paid-room access open.
-10. Use Membership Help from the locked-room paywall once and confirm Support opens with billing-recovery context and the saved room.
-11. Use Membership Help from cancel once and confirm Support opens the Enrollment lane with the checkout context prefilled.
-12. Mark the Admin Console smoke-test items only after the live proof is captured.
-13. Download the Admin proof log and keep it with the first-customer launch notes.
+4. Open Terms, Privacy, and Refund from the membership path, then confirm Membership Details, Ask Support, and Continue Enrollment preserve the saved room.
+5. Sign in with the production test learner account, and confirm the Google or email magic-link route preserves the saved checkout room.
+6. Start Stripe Checkout from Sipopedia and confirm Stripe shows the correct monthly membership. If checkout fails, confirm Membership Help opens Support with `checkout-help` enrollment context attached.
+7. Return to `https://sipopedia.com/#success` and confirm the full checkout session reference, Refresh Access, Launch Pad, and Support are visible.
+8. Open Membership Help from the success page and confirm the Support intake includes the saved room and Stripe checkout session id.
+9. Capture the Stripe `evt_` webhook event id and the resulting subscription reference from Supabase proof.
+10. Open the saved paid room and verify access comes from an active or trialing subscription status, not a manual profile role edit.
+11. Confirm a canceled or past-due subscription record does not keep paid-room access open.
+12. Use Membership Help from the locked-room paywall once and confirm Support opens with billing-recovery context and the saved room.
+13. Use Membership Help from cancel once and confirm Support opens the Enrollment lane with the checkout context prefilled.
+14. Mark the Admin Console smoke-test items only after the live proof is captured.
+15. Download the Admin proof log and keep it with the first-customer launch notes.
