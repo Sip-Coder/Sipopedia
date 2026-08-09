@@ -69,6 +69,81 @@ function localWorkingTreeSummary() {
   }
 }
 
+function localLfsSummary() {
+  try {
+    const lfsStatus = execFileSync("git", ["lfs", "status"], {
+      encoding: "utf8",
+      windowsHide: true
+    })
+      .split(/\r?\n/);
+    const queued = [];
+    let readingQueuedObjects = false;
+    for (const line of lfsStatus) {
+      if (/^Objects to be pushed to /i.test(line)) {
+        readingQueuedObjects = true;
+        continue;
+      }
+      if (readingQueuedObjects && /^Objects /i.test(line)) {
+        break;
+      }
+      if (readingQueuedObjects && line.trim()) {
+        queued.push(line.trim());
+      }
+    }
+    return {
+      queuedObjects: queued.length,
+      entries: queued.slice(0, 10)
+    };
+  } catch {
+    return null;
+  }
+}
+
+function parseStatusPaths(statusOutput) {
+  const records = statusOutput.split("\0");
+  const paths = [];
+  for (let index = 0; index < records.length; index += 1) {
+    const record = records[index];
+    if (!record) continue;
+    const status = record.slice(0, 2);
+    const rawPath = record.slice(3);
+    if (!rawPath) continue;
+    const path = status.includes("R") || status.includes("C")
+      ? records[index + 1] || rawPath
+      : rawPath;
+    if (status.includes("R") || status.includes("C")) {
+      index += 1;
+    }
+    if (status[0] === "D" && status[1] === " ") continue;
+    if (path.startsWith(".tmp/") || path.startsWith(".tmp\\")) continue;
+    paths.push(path);
+  }
+  return Array.from(new Set(paths));
+}
+
+function localChangedLfsPaths() {
+  try {
+    const statusOutput = execFileSync("git", ["status", "--porcelain=v1", "-z", "--untracked-files=all"], {
+      encoding: "utf8",
+      windowsHide: true
+    });
+    const changedPaths = parseStatusPaths(statusOutput);
+    const lfsPaths = [];
+    for (const path of changedPaths) {
+      const attrOutput = execFileSync("git", ["check-attr", "filter", "--", path], {
+        encoding: "utf8",
+        windowsHide: true
+      }).trim();
+      if (/: filter: lfs$/i.test(attrOutput)) {
+        lfsPaths.push(path);
+      }
+    }
+    return lfsPaths;
+  } catch {
+    return null;
+  }
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const probeArgs = ["--base-url", options.baseUrl];
@@ -82,6 +157,30 @@ async function main() {
     console.log(
       `Local working tree has ${workingTree.trackedChanges} tracked change${workingTree.trackedChanges === 1 ? "" : "s"} not in production yet; live checks may fail until the next RGRD publish.`
     );
+  }
+  const lfsSummary = localLfsSummary();
+  if (!lfsSummary) {
+    console.log("Local Git LFS status was unavailable; confirm LFS manually before RGRD if media changed.");
+  } else if (lfsSummary.queuedObjects > 0) {
+    console.log(`Local Git LFS has ${lfsSummary.queuedObjects} queued object${lfsSummary.queuedObjects === 1 ? "" : "s"}:`);
+    for (const entry of lfsSummary.entries) {
+      console.log(`- ${entry}`);
+    }
+    throw new Error("Stop before RGRD: queued Git LFS objects could spend LFS quota.");
+  } else {
+    console.log("Local Git LFS queue is empty; no media objects are staged for push.");
+  }
+  const changedLfsPaths = localChangedLfsPaths();
+  if (!changedLfsPaths) {
+    console.log("Local changed-file LFS attribute check was unavailable; confirm media paths manually before RGRD.");
+  } else if (changedLfsPaths.length > 0) {
+    console.log(`Local changes include ${changedLfsPaths.length} LFS-tracked path${changedLfsPaths.length === 1 ? "" : "s"}:`);
+    for (const path of changedLfsPaths.slice(0, 10)) {
+      console.log(`- ${path}`);
+    }
+    throw new Error("Stop before RGRD: changed LFS-tracked files need explicit media approval and quota review.");
+  } else {
+    console.log("Local changed files do not match Git LFS tracking rules.");
   }
   await runNodeScript("scripts/first-dollar-production-probe.mjs", probeArgs);
   await runNodeScript("scripts/first-dollar-mobile-path-qa.mjs", ["--base-url", options.baseUrl]);

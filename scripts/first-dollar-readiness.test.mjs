@@ -209,6 +209,14 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /Show, choose, join/);
   assert.match(adminSource, /First-dollar gate/);
   assert.match(adminSource, /One live proof loop/);
+  assert.match(adminSource, /RGRD safety/);
+  assert.match(adminSource, /Preflight before publish/);
+  assert.match(adminSource, /Command: \$\{rgrdPreflightCommand\}/);
+  assert.match(adminSource, /queued LFS objects or changed LFS-tracked media paths could spend quota/);
+  assert.match(adminSource, /rgrdPreflightCommand = "npm run rgrd:preflight"/);
+  assert.match(adminSource, /copyRgrdPreflightCommand/);
+  assert.match(adminSource, /Copy RGRD preflight/);
+  assert.match(adminSource, /admin_rgrd_preflight_command_copy/);
   assert.match(adminSource, /launchProofHandoffSteps/);
   assert.match(adminSource, /Smoke test handoff/);
   assert.match(adminSource, /Safe preflight is not the same as first-dollar proof/);
@@ -402,10 +410,20 @@ test("RGRD manifest keeps Replit publish stamps separate from GitHub source comm
 
 test("first-dollar preflight runs safe production and mobile checks together", () => {
   assert.match(packageSource, /"first-dollar:preflight": "node scripts\/first-dollar-preflight\.mjs"/);
+  assert.match(packageSource, /"rgrd:preflight": "npm run security:secrets && npm run first-dollar:preflight -- --base-url https:\/\/sipopedia\.com"/);
+  assert.match(packageSource, /"rgrd:check": "npm run rgrd:preflight &&/);
   assert.match(preflightSource, /first-dollar-production-probe\.mjs/);
   assert.match(preflightSource, /first-dollar-mobile-path-qa\.mjs/);
   assert.match(preflightSource, /--base-url/);
   assert.match(preflightSource, /Local working tree has/);
+  assert.match(preflightSource, /git", \["lfs", "status"\]/);
+  assert.match(preflightSource, /Objects to be pushed to /);
+  assert.match(preflightSource, /git", \["status", "--porcelain=v1", "-z", "--untracked-files=all"\]/);
+  assert.match(preflightSource, /git", \["check-attr", "filter", "--", path\]/);
+  assert.match(preflightSource, /Local Git LFS queue is empty; no media objects are staged for push/);
+  assert.match(preflightSource, /Local changed files do not match Git LFS tracking rules/);
+  assert.match(preflightSource, /queued Git LFS objects could spend LFS quota/);
+  assert.match(preflightSource, /changed LFS-tracked files need explicit media approval and quota review/);
   assert.match(preflightSource, /live checks may fail until the next RGRD publish/);
   assert.match(preflightSource, /Preflight passed\. Remaining live proof before inviting a real customer/);
   assert.match(preflightSource, /paid room opens from active or trialing subscription status without Admin override/);

@@ -103,6 +103,8 @@ type LaunchCommandCard = {
   items: string[];
 };
 
+const rgrdPreflightCommand = "npm run rgrd:preflight";
+
 type LaunchEvidenceLane = {
   label: string;
   status: "code-ready" | "live-proof";
@@ -553,6 +555,16 @@ const launchCommandCards: LaunchCommandCard[] = [
       "Supabase records matching Stripe event, session, and subscription metadata on one row.",
       "Paid rooms unlock from active/trialing status, while canceled or past-due status locks them again."
     ]
+  },
+  {
+    label: "RGRD safety",
+    title: "Preflight before publish",
+    detail: "Run the release preflight before Git/Replit deployment when first-dollar or media work changed.",
+    items: [
+      `Command: ${rgrdPreflightCommand}`,
+      "Confirms secrets scan, production wiring, and phone buyer-path QA.",
+      "Stops when queued LFS objects or changed LFS-tracked media paths could spend quota."
+    ]
   }
 ];
 
@@ -880,6 +892,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const [launchProbeRunning, setLaunchProbeRunning] = useState(false);
   const [launchProofCopyStatus, setLaunchProofCopyStatus] = useState("Proof log is ready to copy or download.");
   const [launchTestScriptCopyStatus, setLaunchTestScriptCopyStatus] = useState("Live test script not copied yet.");
+  const [rgrdPreflightCopyStatus, setRgrdPreflightCopyStatus] = useState("RGRD preflight command not copied yet.");
   const [firstCustomerInviteCopyStatus, setFirstCustomerInviteCopyStatus] = useState("Invite not copied yet.");
   const [latestSuccessProof, setLatestSuccessProof] = useState<FirstDollarSuccessProof | null>(() => readFirstDollarSuccessProof());
   const [successProofImportStatus, setSuccessProofImportStatus] = useState("No checkout return proof imported yet.");
@@ -1439,6 +1452,23 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       });
     } catch {
       setLaunchTestScriptCopyStatus("Clipboard copy was blocked. Use the visible script instead.");
+    }
+  };
+
+  const copyRgrdPreflightCommand = async () => {
+    if (!navigator.clipboard?.writeText) {
+      setRgrdPreflightCopyStatus("Clipboard copy is unavailable in this browser. Use the visible command instead.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(rgrdPreflightCommand);
+      setRgrdPreflightCopyStatus(`RGRD preflight command copied at ${new Date().toLocaleTimeString()}.`);
+      trackEvent("admin_rgrd_preflight_command_copy", {
+        command: rgrdPreflightCommand
+      });
+    } catch {
+      setRgrdPreflightCopyStatus("Clipboard copy was blocked. Use the visible command instead.");
     }
   };
 
@@ -2037,6 +2067,16 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                     </article>
                   ))}
                 </div>
+                <div className="admin-launch-test-script-head admin-launch-copy-head" aria-label="RGRD preflight command">
+                  <div>
+                    <p className="admin-eyebrow">Release safety command</p>
+                    <strong>{rgrdPreflightCommand}</strong>
+                  </div>
+                  <button className="btn btn-light" type="button" onClick={() => void copyRgrdPreflightCommand()}>
+                    Copy RGRD preflight
+                  </button>
+                </div>
+                <p className="admin-launch-copy-status" role="status">{rgrdPreflightCopyStatus}</p>
                 <div className="admin-launch-evidence-split" aria-label="First-dollar evidence split">
                   {launchEvidenceLanes.map((lane) => (
                     <article className={`status-${lane.status}`} key={lane.label}>

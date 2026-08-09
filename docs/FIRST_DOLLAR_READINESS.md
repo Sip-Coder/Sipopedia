@@ -154,7 +154,20 @@ Run this after each RGRD publish and before the real Stripe test:
 npm run first-dollar:preflight
 ```
 
+Run this before RGRD when you want the same first-dollar check plus the local secret scan and LFS/media-change guard:
+
+```powershell
+npm run rgrd:preflight
+```
+
+The full release check now starts with the same guard:
+
+```powershell
+npm run rgrd:check
+```
+
 The preflight runs both the safe production probe and the mobile buyer path QA against `https://sipopedia.com`, then prints the remaining live-payment proof list.
+It also checks the local Git LFS queue and changed files that match LFS tracking rules before RGRD-style work; stop if it reports queued LFS objects or changed LFS-tracked paths, because those media objects can spend the GitHub LFS allowance.
 
 Run the pieces separately only when you need a narrower check:
 
