@@ -16044,6 +16044,7 @@ select option:checked {
   background: linear-gradient(135deg, rgba(126, 39, 68, 0.18), transparent);
 }
 
+.marketing-buyer-journey,
 .marketing-customer-paths,
 .marketing-reel-wall,
 .marketing-room-preview {
@@ -16055,6 +16056,66 @@ select option:checked {
     linear-gradient(135deg, rgba(237, 212, 168, 0.08), transparent 42%),
     rgba(4, 15, 26, 0.7);
   padding: clamp(0.85rem, 2vw, 1.15rem);
+}
+
+.marketing-buyer-journey {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.6rem, 1.4vw, 0.85rem);
+  background:
+    linear-gradient(90deg, rgba(102, 199, 183, 0.1), transparent 32%, rgba(237, 212, 168, 0.1)),
+    rgba(3, 14, 24, 0.76);
+}
+
+.marketing-buyer-journey article {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.65rem;
+  min-width: 0;
+  border: 1px solid rgba(159, 218, 245, 0.18);
+  border-radius: 14px;
+  padding: clamp(0.74rem, 1.3vw, 0.92rem);
+  background: rgba(4, 20, 31, 0.62);
+}
+
+.marketing-buyer-journey article:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -0.72rem;
+  width: 0.8rem;
+  height: 1px;
+  background: rgba(237, 212, 168, 0.36);
+}
+
+.marketing-buyer-journey span {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid rgba(237, 212, 168, 0.46);
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(10, 84, 77, 0.88), rgba(117, 70, 28, 0.72));
+  color: #fff2d3;
+  font-size: 0.72rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.marketing-buyer-journey h2 {
+  margin: 0;
+  color: #fff1d1;
+  font-size: clamp(1rem, 1.35vw, 1.2rem);
+  line-height: 1.08;
+}
+
+.marketing-buyer-journey p {
+  margin: 0.24rem 0 0;
+  color: rgba(217, 247, 255, 0.78);
+  font-size: 0.8rem;
+  font-weight: 650;
+  line-height: 1.32;
 }
 
 .marketing-customer-paths {
@@ -16432,6 +16493,35 @@ select option:checked {
 .pricing-card-actions .btn {
   flex: 1 1 150px;
   justify-content: center;
+}
+
+.pricing-trust-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.72rem;
+}
+
+.pricing-trust-links button {
+  appearance: none;
+  min-height: 36px;
+  border: 1px solid rgba(159, 218, 245, 0.22);
+  border-radius: 999px;
+  padding: 0.38rem 0.68rem;
+  background: rgba(4, 13, 24, 0.5);
+  color: #c6e5ef;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.pricing-trust-links button:hover,
+.pricing-trust-links button:focus-visible {
+  border-color: rgba(237, 212, 168, 0.54);
+  color: #fff2d3;
+  outline: none;
 }
 
 .pricing-select-button[aria-pressed="true"] {
@@ -19720,6 +19810,57 @@ select option:checked {
   line-height: 1;
 }
 
+.admin-launch-decision {
+  display: grid;
+  gap: 0.28rem;
+  margin-top: 0.85rem;
+  border: 1px solid rgba(237, 212, 168, 0.24);
+  border-radius: 14px;
+  padding: 0.75rem 0.85rem;
+  background: rgba(4, 13, 24, 0.48);
+}
+
+.admin-launch-decision span {
+  width: fit-content;
+  border: 1px solid rgba(237, 212, 168, 0.3);
+  border-radius: 999px;
+  padding: 0.2rem 0.48rem;
+  color: #f1ddb0;
+  font-size: 0.6rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.admin-launch-decision strong {
+  color: #fff2d3;
+  font-size: 1.02rem;
+  line-height: 1.16;
+}
+
+.admin-launch-decision small {
+  color: #c9e8f0;
+  font-size: 0.78rem;
+  font-weight: 760;
+  line-height: 1.36;
+}
+
+.admin-launch-decision.status-ready {
+  border-color: rgba(80, 220, 171, 0.36);
+  background: linear-gradient(135deg, rgba(21, 92, 75, 0.24), rgba(4, 13, 24, 0.48));
+}
+
+.admin-launch-decision.status-ready span {
+  border-color: rgba(80, 220, 171, 0.42);
+  color: #9df0ce;
+}
+
+.admin-launch-decision.status-hold {
+  border-color: rgba(237, 212, 168, 0.34);
+  background: linear-gradient(135deg, rgba(124, 88, 36, 0.2), rgba(4, 13, 24, 0.5));
+}
+
 .admin-launch-check-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -19936,7 +20077,7 @@ select option:checked {
 
 .admin-launch-connection-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 0.55rem;
 }
 
@@ -32243,6 +32384,19 @@ button.journal-note-row.journal-note-select .journal-note-copy {
     gap: 0.2rem;
   }
 
+  .marketing-buyer-journey {
+    grid-template-columns: 1fr;
+  }
+
+  .marketing-buyer-journey article:not(:last-child)::after {
+    top: auto;
+    right: auto;
+    bottom: -0.72rem;
+    left: 1.86rem;
+    width: 1px;
+    height: 0.82rem;
+  }
+
   .marketing-customer-path-grid {
     grid-template-columns: 1fr;
   }
@@ -32302,6 +32456,35 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
   .marketing-feature-caption {
     max-width: 360px;
+  }
+
+  .marketing-buyer-journey {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .marketing-buyer-journey article {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+    padding: 0.65rem;
+  }
+
+  .marketing-buyer-journey article:not(:last-child)::after {
+    display: none;
+  }
+
+  .marketing-buyer-journey span {
+    width: 1.85rem;
+    height: 1.85rem;
+    font-size: 0.64rem;
+  }
+
+  .marketing-buyer-journey h2 {
+    font-size: 0.94rem;
+  }
+
+  .marketing-buyer-journey p {
+    font-size: 0.74rem;
+    line-height: 1.24;
   }
 
   .marketing-customer-path-grid {

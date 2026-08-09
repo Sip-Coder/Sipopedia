@@ -40,6 +40,12 @@ type CustomerPath = {
   actionLabel: string;
 };
 
+type BuyerJourneyStep = {
+  label: string;
+  title: string;
+  detail: string;
+};
+
 type PreviewRoom = {
   title: string;
   detail: string;
@@ -242,6 +248,24 @@ const customerPaths: CustomerPath[] = [
   }
 ];
 
+const buyerJourneySteps: BuyerJourneyStep[] = [
+  {
+    label: "01",
+    title: "Preview the world",
+    detail: "Watch the academy rooms, maps, games, and field journeys before paying."
+  },
+  {
+    label: "02",
+    title: "Choose your reason",
+    detail: "Begin as a new learner, hospitality pro, certification student, or visual explorer."
+  },
+  {
+    label: "03",
+    title: "Join once",
+    detail: "One $10 monthly membership keeps the saved room attached through checkout."
+  }
+];
+
 const previewRooms: PreviewRoom[] = [
   {
     title: "Learn",
@@ -327,6 +351,18 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
           </aside>
         </div>
       </div>
+
+      <section className="marketing-buyer-journey" aria-label="How Sip Studies starts">
+        {buyerJourneySteps.map((step) => (
+          <article key={step.label}>
+            <span>{step.label}</span>
+            <div>
+              <h2>{step.title}</h2>
+              <p>{step.detail}</p>
+            </div>
+          </article>
+        ))}
+      </section>
 
       <section className="marketing-customer-paths" aria-labelledby="customer-paths-title">
         <div className="marketing-section-intro">

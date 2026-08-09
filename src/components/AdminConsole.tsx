@@ -187,6 +187,12 @@ function initialLaunchConnectionChecks(): LaunchConnectionCheck[] {
       detail: "Run the probe to confirm the checkout function answers before Stripe is tested."
     },
     {
+      id: "billing-webhook",
+      label: "Billing webhook",
+      status: "waiting",
+      detail: "Run the probe to confirm the billing webhook endpoint is live and rejects unsigned traffic."
+    },
+    {
       id: "subscription-table",
       label: "Subscription records",
       status: "waiting",
@@ -262,6 +268,13 @@ const launchSmokeSteps: LaunchSmokeStep[] = [
     evidencePrompt: "Example: offer and help language visible without zooming."
   },
   {
+    id: "trust-links",
+    label: "Trust Links",
+    route: "pricing",
+    expected: "Terms, Privacy, Refunds, and Support are reachable before a buyer enters checkout.",
+    evidencePrompt: "Example: pricing trust links and checkout footer links each open correctly."
+  },
+  {
     id: "checkout",
     label: "Checkout",
     route: "checkout",
@@ -272,8 +285,8 @@ const launchSmokeSteps: LaunchSmokeStep[] = [
     id: "success",
     label: "Success",
     route: "success",
-    expected: "Stripe returns to Sipopedia with the session context intact.",
-    evidencePrompt: "Example: success page confirms membership and next room."
+    expected: "Stripe returns to Sipopedia with session context, access refresh, Launch Pad fallback, and support visible.",
+    evidencePrompt: "Example: success page confirms active access or shows the safe processing/recovery state."
   },
   {
     id: "paid-room",
@@ -547,6 +560,13 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   ).length;
   const launchNeedsProofCount = launchReadinessChecks.filter((check) => check.status === "needs-proof").length;
   const completedLaunchSmokeCount = launchSmokeSteps.filter((step) => launchSmokeState[step.id]?.done).length;
+  const pendingLaunchSmokeCount = launchSmokeSteps.length - completedLaunchSmokeCount;
+  const launchConnectionPassCount = launchConnectionChecks.filter((check) => check.status === "pass").length;
+  const launchConnectionIssueCount = launchConnectionChecks.length - launchConnectionPassCount;
+  const launchReadyForPaidInvite = pendingLaunchSmokeCount === 0 && launchConnectionIssueCount === 0;
+  const launchDecisionDetail = launchReadyForPaidInvite
+    ? "All smoke-test proof is checked and every production connection probe is passing. Run one real signed-in Stripe checkout before inviting broader paid traffic."
+    : `${pendingLaunchSmokeCount} smoke step${pendingLaunchSmokeCount === 1 ? "" : "s"} and ${launchConnectionIssueCount} connection check${launchConnectionIssueCount === 1 ? "" : "s"} still need proof before the first paid invite.`;
   const beverageNewsNeedsAttention =
     beverageNewsHealth !== null &&
     isBeverageNewsHealthFresh(beverageNewsHealth) &&
@@ -610,7 +630,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
 
     if (!supabase) {
       setLaunchConnectionChecks(nextChecks.map((check) =>
-        check.id === "checkout-edge" || check.id === "subscription-table" || check.id === "support-queue"
+        check.id === "checkout-edge" || check.id === "billing-webhook" || check.id === "subscription-table" || check.id === "support-queue"
           ? { ...check, status: "fail", detail: "Supabase is not configured in this environment.", checkedAt }
           : check
       ));
@@ -619,9 +639,12 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
 
     setLaunchProbeRunning(true);
     try {
-      const [checkoutResult, subscriptionResult, supportResult] = await Promise.allSettled([
+      const [checkoutResult, billingWebhookResult, subscriptionResult, supportResult] = await Promise.allSettled([
         supabase.functions.invoke<Record<string, unknown>>("create-checkout-session", {
           body: { planId: "__readiness_probe__", source: "admin-connection-probe", next: "app/btg" }
+        }),
+        supabase.functions.invoke<Record<string, unknown>>("billing-webhook", {
+          body: { readinessProbe: true }
         }),
         supabase.from("customer_subscriptions").select("id", { count: "exact", head: true }),
         supabase.from("support_requests").select("id", { count: "exact", head: true })
@@ -651,6 +674,20 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         updateCheck("checkout-edge", "warn", "Checkout function returned data to the probe. Review before running a real payment test.");
       }
 
+      if (billingWebhookResult.status === "rejected") {
+        updateCheck("billing-webhook", "fail", "Billing webhook could not be reached from this browser session.");
+      } else if (billingWebhookResult.value.error) {
+        const status = functionErrorStatus(billingWebhookResult.value.error);
+        const message = await functionErrorMessage(billingWebhookResult.value.error);
+        if (status === 401 && message.toLowerCase().includes("unauthorized webhook call")) {
+          updateCheck("billing-webhook", "pass", "Billing webhook is reachable and correctly rejects the unsigned readiness probe.");
+        } else {
+          updateCheck("billing-webhook", "fail", `Billing webhook responded with ${status ?? "an unexpected status"}: ${message}`);
+        }
+      } else {
+        updateCheck("billing-webhook", "warn", "Billing webhook accepted the unsigned probe. Review webhook signing before taking payment.");
+      }
+
       if (subscriptionResult.status === "rejected") {
         updateCheck("subscription-table", "fail", "Subscription table probe could not run.");
       } else if (subscriptionResult.value.error) {
@@ -671,6 +708,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       trackEvent("admin_launch_connection_probe", {
         origin: currentLaunchOrigin(),
         checkout: nextChecks.find((check) => check.id === "checkout-edge")?.status,
+        billingWebhook: nextChecks.find((check) => check.id === "billing-webhook")?.status,
         subscriptions: nextChecks.find((check) => check.id === "subscription-table")?.status,
         support: nextChecks.find((check) => check.id === "support-queue")?.status
       });
@@ -982,6 +1020,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   The product story and checkout path are in place. Before a real customer pays, run one production
                   smoke test that proves login, Stripe, webhook sync, and paid access all connect.
                 </p>
+                <div className={`admin-launch-decision ${launchReadyForPaidInvite ? "status-ready" : "status-hold"}`} role="status">
+                  <span>{launchReadyForPaidInvite ? "Ready for controlled test" : "Hold paid invite"}</span>
+                  <strong>{launchReadyForPaidInvite ? "First-customer path is proof-ready." : "Do not invite a paid customer yet."}</strong>
+                  <small>{launchDecisionDetail}</small>
+                </div>
                 <div className="admin-launch-customer-grid" aria-label="Likely first customer segments">
                   {launchCustomerSegments.map((segment) => (
                     <div className="admin-launch-customer" key={segment.label}>

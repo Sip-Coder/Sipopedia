@@ -1505,6 +1505,7 @@ function App() {
   const checkoutRecoveryIntent = route === "success" || route === "cancel" ? readOnboardingIntent("pro") : null;
   const successIntent = route === "success" ? checkoutRecoveryIntent : null;
   const checkoutSessionId = successIntent?.sessionId;
+  const hasConfirmedMembershipAccess = isPaid || isAdmin;
   const successTargetRoute = paymentSuccessRoute(isPaid, isAdmin, successIntent?.next);
   const successTargetLabel = formatRouteLabel(successTargetRoute);
   const checkoutRecoveryRoute = checkoutRecoveryIntent
@@ -1713,7 +1714,7 @@ function App() {
             <p className="checkout-eyebrow">Checkout Return</p>
             <h1>Membership Checkout Complete</h1>
             <p>
-              {isPaid || isAdmin
+              {hasConfirmedMembershipAccess
                 ? "Your membership access is active. The saved room is ready."
                 : "Your signed-in account is being updated. A short Stripe sync delay can happen; refresh access or use membership help if the room is not open yet."}
             </p>
@@ -1722,7 +1723,7 @@ function App() {
                 ? "Checking paid access for this account..."
                 : successAccessStatus === "failed"
                   ? "Access refresh did not complete. Try again or request membership help."
-                  : isPaid || isAdmin
+                  : hasConfirmedMembershipAccess
                     ? "Access confirmed."
                     : "Checkout return received; access may still be processing."}
               {checkoutSessionId ? ` Session: ${checkoutSessionId.slice(0, 18)}...` : ""}
@@ -1734,20 +1735,22 @@ function App() {
               </span>
               <span>
                 <strong>Access check</strong>
-                Your account refreshes against billing status.
+                {hasConfirmedMembershipAccess ? "Billing status confirms membership access." : "Waiting for billing status to confirm access."}
               </span>
               <span>
                 <strong>Saved room</strong>
-                Next stop: {successTargetLabel}.
+                {hasConfirmedMembershipAccess ? `Next stop: ${successTargetLabel}.` : "Your saved room stays attached while access updates."}
               </span>
             </div>
           </header>
           <div className="checkout-links">
-            <button className="btn btn-primary" onClick={() => navigate(successTargetRoute)}>
-              Open {successTargetLabel}
-            </button>
+            {hasConfirmedMembershipAccess ? (
+              <button className="btn btn-primary" onClick={() => navigate(successTargetRoute)}>
+                Open {successTargetLabel}
+              </button>
+            ) : null}
             <button
-              className="btn btn-light"
+              className={hasConfirmedMembershipAccess ? "btn btn-light" : "btn btn-primary"}
               onClick={() => {
                 setSuccessAccessStatus("checking");
                 refreshProfile()
@@ -1757,8 +1760,16 @@ function App() {
             >
               Refresh Access
             </button>
+            {!hasConfirmedMembershipAccess ? (
+              <button className="btn btn-light" onClick={() => navigate("app/starter")}>
+                Open Launch Pad
+              </button>
+            ) : null}
             <button className="btn btn-light" onClick={() => navigateFromString(checkoutRecoveryRoute)}>
               Membership Help
+            </button>
+            <button className="btn btn-light" onClick={() => navigate("support")}>
+              Support
             </button>
           </div>
         </section>

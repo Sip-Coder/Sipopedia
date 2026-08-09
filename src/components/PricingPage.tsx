@@ -123,6 +123,20 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
               Continue to Secure Checkout
             </button>
           </div>
+          <div className="pricing-trust-links" aria-label="Membership trust links">
+            <button type="button" onClick={() => onNavigate("terms")}>
+              Terms
+            </button>
+            <button type="button" onClick={() => onNavigate("privacy")}>
+              Privacy
+            </button>
+            <button type="button" onClick={() => onNavigate("refund")}>
+              Refunds
+            </button>
+            <button type="button" onClick={() => onNavigate("support")}>
+              Support
+            </button>
+          </div>
         </article>
       </div>
 

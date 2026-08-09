@@ -24,19 +24,27 @@ Homepage should keep proving three buyer outcomes:
 - Practice the craft: tasting memory, service decisions, game checkpoints, and recipes.
 - Find the answer: Sipopedia terms, ingredients, citations, and reference lists.
 
+The homepage conversion path should stay simple enough to repeat in ads, demos, and phone reviews:
+
+1. Preview the world.
+2. Choose the reason you came.
+3. Join once for $10/month.
+
 ## Ready-To-Sell Gates
 
 - [ ] Production homepage clearly explains who Sipopedia is for before asking for payment.
+- [ ] Homepage shows the simple buyer path: preview first, choose a use case, join once.
 - [ ] Pricing page clearly states $10/month, what unlocks, and how cancellation/help works.
 - [ ] Login before checkout works on production.
 - [ ] Stripe Checkout session starts from production for a signed-in test user.
 - [ ] Stripe success URL returns to `https://sipopedia.com/#success` with the session context intact.
+- [ ] Success page shows a clear pending-access state with Refresh Access, Launch Pad, and Support if webhook sync is delayed.
 - [ ] Stripe cancel URL returns to `https://sipopedia.com/#cancel` with the retry path intact.
 - [ ] Stripe webhook writes or updates `customer_subscriptions` in Supabase.
 - [ ] Paid account receives Student/subscriber access without manual database edits.
 - [ ] Canceled or past-due subscription removes or limits paid access.
 - [ ] Profile roles are limited to Student and Admin; Trial access is issued through `customer_subscriptions.status = 'trialing'`.
-- [ ] Terms, Privacy, Refund, and billing support routes are reachable before checkout.
+- [ ] Terms, Privacy, Refund, and billing support routes are reachable from Pricing and Checkout before payment.
 - [ ] Assisted Enrollment submits to a support/admin workflow that someone will monitor.
 - [ ] Mobile portrait checkout path is readable from homepage to success.
 - [ ] Mobile landscape checkout path has no clipped CTA, pricing, login, or support controls.
@@ -51,6 +59,7 @@ Confirm these without exposing secret values in chat, Git, logs, or frontend cod
 - Supabase Edge Function has `STRIPE_SECRET_KEY`.
 - Supabase Edge Function has `STRIPE_PRICE_ID_PRO`.
 - Supabase Edge Function has a safe production return origin for `https://sipopedia.com`.
+- Billing webhook endpoint is reachable and rejects unsigned readiness probes.
 - Stripe webhook endpoint is deployed and has its signing secret configured.
 - Stripe product/price matches the public $10/month membership.
 - Supabase profile roles are limited to Student and Admin.
@@ -70,8 +79,9 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 
 - Confirm the public homepage promise and $10/month offer are still clear.
 - Review the likely first customer segments: curious learners, hospitality staff, certification-adjacent learners, and visual learners.
-- Open the smoke-test path: Homepage -> Pricing -> Checkout -> Success -> Paid Room -> Support.
+- Open the smoke-test path: Homepage -> Pricing -> Trust Links -> Checkout -> Success -> Paid Room -> Support.
 - Mark each smoke-test item only after a real production check proves it.
 - Add a short proof note for each step so the operator can see what was verified and what is still assumed.
+- Keep the launch decision on hold until every smoke-test item is checked and every connection probe passes.
 - Treat Stripe checkout and webhook unlock as unproven until a signed-in production test account completes the full loop.
 - Watch Assisted Enrollment/support requests daily while the first customers are being invited.

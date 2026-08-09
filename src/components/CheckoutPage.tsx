@@ -339,6 +339,9 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
         <button className="btn btn-light" onClick={() => onNavigate("refund")}>
           Refund Policy
         </button>
+        <button className="btn btn-light" onClick={() => onNavigate("support")}>
+          Support
+        </button>
       </div>
     </section>
   );
