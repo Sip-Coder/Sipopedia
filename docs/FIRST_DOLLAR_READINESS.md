@@ -43,11 +43,15 @@ The homepage conversion path should stay simple enough to repeat in ads, demos, 
 2. Choose the reason you came.
 3. Join once for $10/month.
 
+When a visitor chooses a preview room from the homepage hero or customer cards, that room should stay attached through Pricing and Checkout so the purchase path feels like continuing the demo, not starting over.
+
 ## Ready-To-Sell Gates
 
 - [ ] Production homepage clearly explains who Sipopedia is for before asking for payment.
 - [ ] Homepage shows the simple buyer path: preview first, choose a use case, join once.
+- [ ] Homepage hero preview choices carry the selected room into Pricing and Checkout.
 - [ ] Pricing page clearly states $10/month, what unlocks, and how cancellation/help works.
+- [ ] Pricing page confirms the saved preview destination before the buyer enters Checkout.
 - [ ] Pricing page answers three first-buyer objections: what paying unlocks, what can be reviewed before payment, and what happens if checkout stalls.
 - [ ] Login before checkout works on production.
 - [ ] Stripe Checkout session starts from production for a signed-in test user.
@@ -117,11 +121,12 @@ Run this once, in order, from production before inviting a real buyer:
 
 1. Open `https://sipopedia.com` on the phone/account that will test payment.
 2. Confirm the homepage promise, preview path, $10 pricing, and trust links are clear before checkout.
-3. Sign in with the production test learner account.
-4. Start Stripe Checkout from Sipopedia and confirm Stripe shows the correct monthly membership. If checkout fails, confirm Membership Help opens Support with `checkout-help` enrollment context attached.
-5. Return to `https://sipopedia.com/#success` and confirm session context, Refresh Access, Launch Pad, and Support are visible.
-6. Open Membership Help from the success page and confirm the Support intake includes the saved room and Stripe checkout session id.
-7. Open the saved paid room and verify access comes from subscription status, not a manual profile role edit.
-8. Use Membership Help from cancel once and confirm Support opens the Enrollment lane with the checkout context prefilled.
-9. Mark the Admin Console smoke-test items only after the live proof is captured.
-10. Download the Admin proof log and keep it with the first-customer launch notes.
+3. Select a homepage preview room, then start the $10/month path and confirm Pricing shows that same saved destination.
+4. Sign in with the production test learner account.
+5. Start Stripe Checkout from Sipopedia and confirm Stripe shows the correct monthly membership. If checkout fails, confirm Membership Help opens Support with `checkout-help` enrollment context attached.
+6. Return to `https://sipopedia.com/#success` and confirm session context, Refresh Access, Launch Pad, and Support are visible.
+7. Open Membership Help from the success page and confirm the Support intake includes the saved room and Stripe checkout session id.
+8. Open the saved paid room and verify access comes from subscription status, not a manual profile role edit.
+9. Use Membership Help from cancel once and confirm Support opens the Enrollment lane with the checkout context prefilled.
+10. Mark the Admin Console smoke-test items only after the live proof is captured.
+11. Download the Admin proof log and keep it with the first-customer launch notes.

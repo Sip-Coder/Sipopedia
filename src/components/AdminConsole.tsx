@@ -385,15 +385,15 @@ const launchSmokeSteps: LaunchSmokeStep[] = [
     id: "homepage",
     label: "Homepage",
     route: "home",
-    expected: "A new visitor understands the visual beverage academy and sees the $10 membership path.",
-    evidencePrompt: "Example: hero, previews, and CTA readable on phone."
+    expected: "A new visitor understands the visual beverage academy, can select a preview room, and sees the $10 membership path.",
+    evidencePrompt: "Example: hero preview switcher, previews, and CTA readable on phone."
   },
   {
     id: "pricing",
     label: "Pricing",
     route: "pricing",
-    expected: "$10/month, preview-first value, cancellation, and support feel clear before checkout.",
-    evidencePrompt: "Example: offer and help language visible without zooming."
+    expected: "$10/month, saved preview destination, cancellation, and support feel clear before checkout.",
+    evidencePrompt: "Example: pricing shows the selected preview room and help language without zooming."
   },
   {
     id: "trust-links",
@@ -448,7 +448,7 @@ const launchTestScriptSteps: LaunchTestScriptStep[] = [
   {
     label: "Preview and price",
     route: "pricing",
-    detail: "Confirm the homepage promise, buyer path, $10 price, and trust links before checkout."
+    detail: "Select a homepage preview, then confirm Pricing keeps that room, the $10 price, and trust links before checkout."
   },
   {
     label: "Sign in first",

@@ -51,6 +51,42 @@ const membershipPromises = [
   }
 ];
 
+const pricingRouteSteps = [
+  {
+    label: "01",
+    title: "Preview",
+    detail: "Room selected before payment"
+  },
+  {
+    label: "02",
+    title: "Pricing",
+    detail: "$10 monthly membership"
+  },
+  {
+    label: "03",
+    title: "Account",
+    detail: "Attach learner access"
+  },
+  {
+    label: "04",
+    title: "Checkout",
+    detail: "Secure Stripe session"
+  },
+  {
+    label: "05",
+    title: "Return",
+    detail: "Open the saved room"
+  }
+];
+
+function pricingRouteStepNote(index: number): string {
+  if (index === 0) return "This destination stays attached through checkout.";
+  if (index === 1) return "Confirm the one-plan offer before payment.";
+  if (index === 2) return "Access follows the signed-in learner account.";
+  if (index === 3) return "Payment details stay on Stripe.";
+  return "Return to the room that started the path.";
+}
+
 export function PricingPage({ onNavigate }: PricingPageProps) {
   const intent = readOnboardingIntent("pro");
   const membership = getPlanById("pro");
@@ -58,9 +94,10 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
   const nextRouteLabel = nextRoute
     ? nextRoute.replace(/^app\//, "").replace(/-/g, " ")
     : "Launch Pad";
+  const checkoutSource = intent.source === "direct" ? "pricing" : `${intent.source}-pricing`;
   const checkoutRoute = buildOnboardingRoute("checkout", {
     planId: "pro",
-    source: "pricing",
+    source: checkoutSource,
     next: nextRoute
   });
 
@@ -116,6 +153,36 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
             <p>{promise.detail}</p>
           </article>
         ))}
+      </section>
+
+      <section className="pricing-route-builder" aria-label="Saved preview checkout path">
+        <div className="pricing-route-builder-head">
+          <div>
+            <p className="pricing-route-builder-label">Saved Preview Path</p>
+            <h2>{nextRoute ? "Continue the room you just previewed." : "Start with the Launch Pad."}</h2>
+          </div>
+          <strong>{nextRouteLabel}</strong>
+        </div>
+        <div className="pricing-route-builder-track">
+          {pricingRouteSteps.map((step, index) => (
+            <section className={index <= 1 ? "active" : ""} key={step.label}>
+              <span>{step.label}</span>
+              <strong>{step.title}</strong>
+              <b>{index === 0 ? nextRouteLabel : step.detail}</b>
+              <small>{pricingRouteStepNote(index)}</small>
+            </section>
+          ))}
+        </div>
+        <div className="pricing-route-builder-actions">
+          {nextRoute ? (
+            <button type="button" className="btn btn-light" onClick={() => onNavigate(nextRoute)}>
+              Revisit Saved Preview
+            </button>
+          ) : null}
+          <button type="button" className="btn btn-primary" onClick={() => onNavigate(checkoutRoute)}>
+            Continue to Checkout
+          </button>
+        </div>
       </section>
 
       <div className="pricing-grid pricing-grid-single">

@@ -220,6 +220,8 @@ const previewReelGroups: PreviewReelGroup[] = [
   }
 ];
 
+const heroReelIds = ["btg", "sip-academy-map", "sip-game", "recipes"];
+
 const customerPaths: CustomerPath[] = [
   {
     label: "New learner",
@@ -227,7 +229,11 @@ const customerPaths: CustomerPath[] = [
     detail: "Start with the visual academy, field journeys, and quick terms before memorizing dense notes.",
     outcomes: ["Plain-language path", "Visual memory anchors", "Room previews first"],
     previewRoute: "app/btg",
-    actionRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "home-path-new-learner" }),
+    actionRoute: buildOnboardingRoute("pricing", {
+      planId: "pro",
+      source: "home-path-new-learner",
+      next: "app/btg"
+    }),
     actionLabel: "Start learning"
   },
   {
@@ -236,7 +242,11 @@ const customerPaths: CustomerPath[] = [
     detail: "Use maps, tasting practice, and recipe logic to explain drinks more confidently on the floor.",
     outcomes: ["Service wording", "Recipe logic", "Fast study loops"],
     previewRoute: "app/recipes",
-    actionRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "home-path-hospitality" }),
+    actionRoute: buildOnboardingRoute("pricing", {
+      planId: "pro",
+      source: "home-path-hospitality",
+      next: "app/recipes"
+    }),
     actionLabel: "Train for service"
   },
   {
@@ -245,7 +255,11 @@ const customerPaths: CustomerPath[] = [
     detail: "Turn regions, ingredients, terms, and production systems into visual memory anchors.",
     outcomes: ["Region context", "Terms with sources", "Production systems"],
     previewRoute: "app/sipopedia",
-    actionRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "home-path-certification" }),
+    actionRoute: buildOnboardingRoute("pricing", {
+      planId: "pro",
+      source: "home-path-certification",
+      next: "app/sipopedia"
+    }),
     actionLabel: "Build my study path"
   },
   {
@@ -345,7 +359,14 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
               ))}
             </div>
             <div className="marketing-hero-actions">
-              <button className="btn btn-primary" onClick={() => onNavigate(buildOnboardingRoute("pricing", { planId: "pro", source: "home-video-hero" }))}>
+              <button
+                className="btn btn-primary"
+                onClick={() => onNavigate(buildOnboardingRoute("pricing", {
+                  planId: "pro",
+                  source: `home-video-${activeReel.id}`,
+                  next: activeReel.route
+                }))}
+              >
                 Start for $10/month
               </button>
               <button className="btn btn-light" onClick={scrollToPreviews}>
@@ -357,6 +378,24 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
               <span>Cancel anytime</span>
               <span>Works on phones</span>
               <span>Source-backed terms</span>
+            </div>
+            <div className="marketing-hero-switchboard" aria-label="Featured preview videos">
+              {heroReelIds.map((reelId) => {
+                const reel = learnPreviewReels.find((item) => item.id === reelId);
+                if (!reel) return null;
+
+                return (
+                  <button
+                    key={reel.id}
+                    type="button"
+                    onClick={() => setActiveReelId(reel.id)}
+                    aria-pressed={activeReel.id === reel.id}
+                  >
+                    <span>{reel.label}</span>
+                    <strong>{reel.title}</strong>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

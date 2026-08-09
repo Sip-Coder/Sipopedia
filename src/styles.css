@@ -15821,6 +15821,61 @@ select option:checked {
   text-transform: uppercase;
 }
 
+.marketing-hero-switchboard {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.48rem;
+  min-width: 0;
+}
+
+.marketing-hero-switchboard button {
+  display: grid;
+  gap: 0.16rem;
+  min-width: 0;
+  min-height: 54px;
+  border: 1px solid rgba(159, 218, 245, 0.24);
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(8, 65, 70, 0.74), rgba(4, 16, 26, 0.84)),
+    rgba(3, 18, 28, 0.72);
+  color: #fff1d1;
+  cursor: pointer;
+  padding: 0.58rem 0.62rem;
+  text-align: left;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.marketing-hero-switchboard button:hover,
+.marketing-hero-switchboard button:focus-visible,
+.marketing-hero-switchboard button[aria-pressed="true"] {
+  border-color: rgba(237, 212, 168, 0.72);
+  box-shadow: 0 0 0 3px rgba(237, 212, 168, 0.1), 0 12px 28px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.marketing-hero-switchboard button[aria-pressed="true"] {
+  background:
+    linear-gradient(135deg, rgba(10, 84, 77, 0.92), rgba(117, 70, 28, 0.72)),
+    rgba(3, 18, 28, 0.72);
+}
+
+.marketing-hero-switchboard span {
+  color: #9de6ec;
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.marketing-hero-switchboard strong {
+  color: #fff1d1;
+  font-size: 0.88rem;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+
 .marketing-feature-player {
   position: relative;
   overflow: hidden;
@@ -16842,13 +16897,39 @@ select option:checked {
   padding: 0.82rem;
 }
 
+.pricing-route-builder-head {
+  align-items: end;
+  display: flex;
+  gap: 0.8rem;
+  justify-content: space-between;
+  margin-bottom: 0.72rem;
+}
+
 .pricing-route-builder-label {
-  margin: 0 0 0.58rem;
+  margin: 0 0 0.28rem;
   color: rgba(159, 218, 245, 0.8);
   font-size: 0.66rem;
   font-weight: 950;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+.pricing-route-builder-head h2 {
+  color: #fff1d1;
+  font-size: clamp(1.18rem, 2.4vw, 1.75rem);
+  line-height: 1.08;
+  margin: 0;
+}
+
+.pricing-route-builder-head > strong {
+  border: 1px solid rgba(237, 212, 168, 0.36);
+  border-radius: 999px;
+  color: #fff1d1;
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  line-height: 1;
+  padding: 0.54rem 0.7rem;
+  text-transform: capitalize;
 }
 
 .pricing-route-builder-track {
@@ -19230,6 +19311,14 @@ select option:checked {
   font-size: 0.92rem;
   line-height: 1.1;
   text-transform: capitalize;
+}
+
+.pricing-route-builder-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: flex-end;
+  margin-top: 0.8rem;
 }
 
 .pricing-route-builder-track small {
@@ -21621,6 +21710,17 @@ select option:checked {
 
   .pricing-route-builder-track {
     grid-template-columns: 1fr;
+  }
+
+  .pricing-route-builder-head,
+  .pricing-route-builder-actions {
+    align-items: stretch;
+    display: grid;
+    justify-content: stretch;
+  }
+
+  .pricing-route-builder-head > strong {
+    width: fit-content;
   }
 
   .pricing-route-builder-track section::after {
@@ -32816,6 +32916,14 @@ button.journal-note-row.journal-note-select .journal-note-copy {
     width: 100%;
     white-space: normal;
   }
+
+  .marketing-hero-switchboard {
+    grid-template-columns: 1fr;
+  }
+
+  .marketing-hero-switchboard button {
+    min-height: 50px;
+  }
 }
 
 @media (orientation: landscape) and (max-height: 520px) {
@@ -32846,6 +32954,25 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
   .marketing-feature-caption {
     max-width: 360px;
+  }
+
+  .marketing-hero-switchboard {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.36rem;
+  }
+
+  .marketing-hero-switchboard button {
+    min-height: 48px;
+    padding: 0.5rem;
+  }
+
+  .marketing-hero-switchboard span {
+    font-size: 0.52rem;
+    letter-spacing: 0.08em;
+  }
+
+  .marketing-hero-switchboard strong {
+    font-size: 0.74rem;
   }
 
   .marketing-buyer-journey {
