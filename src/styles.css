@@ -20823,6 +20823,75 @@ select option:checked {
   border-color: rgba(159, 218, 245, 0.32);
 }
 
+.admin-launch-proof-capture {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+  border: 1px solid rgba(159, 218, 245, 0.22);
+  border-radius: 14px;
+  padding: 0.82rem;
+  background:
+    linear-gradient(135deg, rgba(42, 191, 205, 0.08), rgba(237, 212, 168, 0.05)),
+    rgba(4, 13, 24, 0.48);
+}
+
+.admin-launch-proof-capture-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.admin-launch-proof-capture-grid article {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.55rem;
+  min-width: 0;
+  border: 1px solid rgba(159, 218, 245, 0.18);
+  border-radius: 12px;
+  padding: 0.72rem;
+  background: rgba(4, 18, 30, 0.62);
+}
+
+.admin-launch-proof-capture-grid article > span {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(237, 212, 168, 0.38);
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  color: #f1ddb0;
+  font-size: 0.64rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.admin-launch-proof-capture-grid div {
+  display: grid;
+  gap: 0.32rem;
+  min-width: 0;
+}
+
+.admin-launch-proof-capture-grid strong {
+  color: #fff2d3;
+  font-size: 0.92rem;
+  line-height: 1.14;
+}
+
+.admin-launch-proof-capture-grid p {
+  margin: 0;
+  color: #dff8ff;
+  font-size: 0.74rem;
+  font-weight: 760;
+  line-height: 1.32;
+}
+
+.admin-launch-proof-capture-grid small {
+  color: #9fdaf5;
+  font-size: 0.68rem;
+  font-weight: 820;
+  line-height: 1.28;
+}
+
 .admin-launch-proof-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -22382,6 +22451,7 @@ select option:checked {
   .admin-launch-handoff-grid,
   .admin-launch-command-grid,
   .admin-launch-evidence-split,
+  .admin-launch-proof-capture-grid,
   .admin-launch-customer-grid,
   .admin-launch-check-grid,
   .admin-launch-connection-grid,
@@ -22410,6 +22480,7 @@ select option:checked {
   .admin-launch-command-grid article,
   .admin-launch-evidence-split article,
   .admin-launch-live-proof-grid article,
+  .admin-launch-proof-capture-grid article,
   .admin-launch-customer,
   .admin-launch-check,
   .admin-launch-connection-check,
@@ -22466,6 +22537,7 @@ select option:checked {
   .admin-launch-handoff-grid,
   .admin-launch-command-grid,
   .admin-launch-evidence-split,
+  .admin-launch-proof-capture-grid,
   .admin-launch-proof-fields,
   .admin-launch-proof-gaps,
   .admin-launch-connection-grid {

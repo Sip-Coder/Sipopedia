@@ -128,13 +128,15 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Mark each smoke-test item only after a real production check proves it.
 - Add a short proof note for each step; checked items without notes remain missing from the launch-ready count.
 - Add specific proof notes, not placeholder text; each checked smoke-test item should name what was observed.
-- Fill in the Stripe + access proof fields with plausible live evidence: valid test account email, full `cs_test_...` or `cs_live_...` Stripe Checkout session id, full `evt_...` webhook event id, a `sub_...` Stripe subscription id or `customer_subscriptions` UUID, Supabase metadata proof showing the same row contains the matching Stripe identifiers, paid `app/...` route, and the phone screenshot proof location.
-- Run the connection probe and confirm subscription checks show safe counts, webhook/session metadata when available, and support checks find at least one Enrollment request with latest status metadata.
+- Use the Proof capture run sheet so Stripe, Supabase, paid access, and phone screenshots all point to the same signed-in Student test.
+- Fill in the Stripe + access proof fields with plausible live evidence: valid test account email, Supabase Student user id, full `cs_test_...` or `cs_live_...` Stripe Checkout session id, full `evt_...` webhook event id, a `sub_...` Stripe subscription id or `customer_subscriptions` UUID, Supabase metadata proof showing the same row contains the matching Stripe identifiers, paid `app/...` route, the phone screenshot proof location, and Lockout proof showing canceled, past-due, unpaid, incomplete, or expired status locks paid access.
+- Run the connection probe and confirm the Live RGRD build check captures the exact deployed `rgrd.json` commit, subscription checks show safe counts, webhook/session metadata when available, and support checks find at least one Enrollment request with latest status metadata.
+- After entering the Supabase Student user id, Stripe session id, or subscription reference, rerun the connection probe and confirm it says "Matched entered proof row"; if it says no entered proof matched recent rows, stop and inspect the account before inviting paid traffic.
 - After the real checkout, rerun the connection probe and confirm it prefills or displays the latest `cs_`, `evt_`, and subscription proof from `customer_subscriptions.metadata`.
-- Treat the webhook proof as complete only when the same live test account has a `billing_webhook_events.event_id`, a `customer_subscriptions` row with matching `metadata.stripe_event_id`, `metadata.stripe_session_id`, and `metadata.stripe_subscription_id`, and the paid room opens after Refresh Access without changing the profile role to Admin.
+- Treat the webhook proof as complete only when the same live test account has a `billing_webhook_events.event_id`, a `customer_subscriptions` row for the same Student user id with matching `metadata.stripe_event_id`, `metadata.stripe_session_id`, and `metadata.stripe_subscription_id`, and the paid room opens after Refresh Access without changing the profile role to Admin.
 - Use the Admin Console live paid proof ladder to reject false positives: localhost, Replit preview, Admin access, manually edited rows, mismatched Stripe IDs, and happy-path-only checks do not count.
 - Review the proof-gaps panel and the downloaded Missing Proof Checklist; do not invite paid traffic while any gap is still marked missing.
-- Download the first-dollar proof log after the smoke test so the proof log includes the evidence split and saves checkout, webhook, support, and access evidence outside browser memory.
+- Download the first-dollar proof log after the smoke test so the proof log includes the evidence split and saves deployed build, checkout, webhook, support, and access evidence outside browser memory.
 - On the success page, use the Checkout reference copy action to paste the exact `cs_...` session id into Admin proof or Membership Help instead of retyping it from a phone.
 - Keep the launch decision on hold until every smoke-test item is checked, every connection probe passes, and every Stripe + access proof field is filled.
 - Treat Stripe checkout and webhook unlock as unproven until a signed-in production test account completes the full loop.
@@ -184,10 +186,10 @@ Run this once, in order, from production before inviting a real buyer:
 6. Start Stripe Checkout from Sipopedia and confirm Stripe shows the correct monthly membership. If checkout fails, confirm Membership Help opens Support with `checkout-help` enrollment context attached.
 7. Return to `https://sipopedia.com/#success` and confirm the full checkout session reference, copy action, Refresh Access, Launch Pad, and Support are visible.
 8. Open Membership Help from the success page and confirm the Support intake includes the saved room and Stripe checkout session id.
-9. Capture the Stripe `evt_` webhook event id and the resulting subscription reference from Supabase proof.
-10. Confirm the Supabase proof row has the same Stripe event, session, and subscription identifiers in `customer_subscriptions.metadata`.
+9. Capture the Supabase Student user id, Stripe `evt_` webhook event id, and resulting subscription reference from Supabase proof.
+10. Confirm the Supabase proof row belongs to the same Student user id and has the same Stripe event, session, and subscription identifiers in `customer_subscriptions.metadata`.
 11. Open the saved paid room and verify access comes from an active or trialing subscription status, not a manual profile role edit.
-12. Confirm a canceled or past-due subscription record does not keep paid-room access open.
+12. Confirm a canceled or past-due subscription record does not keep paid-room access open, then paste that Lockout proof into Admin.
 13. Use Membership Help from the locked-room paywall once and confirm Support opens with billing-recovery context and the saved room.
     If the blocked account has a `past_due`, `unpaid`, `incomplete`, or `canceled` subscription status, confirm Support opens the Billing lane and includes that status in the request details.
 14. Use Membership Help from cancel once and confirm Support opens the Enrollment lane with the checkout context prefilled.

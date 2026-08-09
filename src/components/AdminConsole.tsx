@@ -116,18 +116,26 @@ type LaunchLiveProofStep = {
   notEnough: string;
 };
 
+type LaunchProofCaptureStep = {
+  label: string;
+  capture: string;
+  pasteInto: string;
+};
+
 type LaunchSmokeState = Record<string, { done: boolean; evidence: string }>;
 
 type StoredLaunchSmokeState = Partial<Record<string, Partial<{ done: boolean; evidence: string }>>>;
 
 type LaunchProofDetails = {
   testAccountEmail: string;
+  studentUserId: string;
   stripeSessionId: string;
   webhookEventId: string;
   subscriptionReference: string;
   supabaseMetadataProof: string;
   paidRoomRoute: string;
   mobileScreenshotProof: string;
+  lockoutProof: string;
 };
 
 type LaunchProofField = {
@@ -150,6 +158,14 @@ type LaunchConnectionCheck = {
   status: LaunchConnectionStatus;
   detail: string;
   checkedAt?: string;
+};
+
+type LaunchRgrdManifest = {
+  repository?: unknown;
+  commit?: unknown;
+  branch?: unknown;
+  builtAt?: unknown;
+  provider?: unknown;
 };
 
 type LaunchSubscriptionProbeRow = {
@@ -178,15 +194,18 @@ const launchProofCheckoutSessionRe = /^cs_(?:test|live)_[a-z0-9_]+$/i;
 const launchProofWebhookEventRe = /^evt_[a-z0-9_]+$/i;
 const launchProofSubscriptionRe =
   /^(?:sub_[a-z0-9_]+|[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;
+const launchProofUuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const launchProofPaidRouteRe = /^app\/[a-z0-9-]+(?:\/[a-z0-9-]+)*$/i;
 const defaultLaunchProofDetails: LaunchProofDetails = {
   testAccountEmail: "",
+  studentUserId: "",
   stripeSessionId: "",
   webhookEventId: "",
   subscriptionReference: "",
   supabaseMetadataProof: "",
   paidRoomRoute: "app/btg",
-  mobileScreenshotProof: ""
+  mobileScreenshotProof: "",
+  lockoutProof: ""
 };
 
 function buildDefaultLaunchSmokeState(): LaunchSmokeState {
@@ -233,12 +252,14 @@ function readLaunchProofDetails(): LaunchProofDetails {
     const parsed = JSON.parse(stored) as Partial<LaunchProofDetails>;
     return {
       testAccountEmail: typeof parsed.testAccountEmail === "string" ? parsed.testAccountEmail : "",
+      studentUserId: typeof parsed.studentUserId === "string" ? parsed.studentUserId : "",
       stripeSessionId: typeof parsed.stripeSessionId === "string" ? parsed.stripeSessionId : "",
       webhookEventId: typeof parsed.webhookEventId === "string" ? parsed.webhookEventId : "",
       subscriptionReference: typeof parsed.subscriptionReference === "string" ? parsed.subscriptionReference : "",
       supabaseMetadataProof: typeof parsed.supabaseMetadataProof === "string" ? parsed.supabaseMetadataProof : "",
       paidRoomRoute: typeof parsed.paidRoomRoute === "string" && parsed.paidRoomRoute.trim() ? parsed.paidRoomRoute : "app/btg",
-      mobileScreenshotProof: typeof parsed.mobileScreenshotProof === "string" ? parsed.mobileScreenshotProof : ""
+      mobileScreenshotProof: typeof parsed.mobileScreenshotProof === "string" ? parsed.mobileScreenshotProof : "",
+      lockoutProof: typeof parsed.lockoutProof === "string" ? parsed.lockoutProof : ""
     };
   } catch {
     return defaultLaunchProofDetails;
@@ -289,9 +310,42 @@ function formatLaunchProbeTime(value: string | null | undefined): string {
   return date.toLocaleString();
 }
 
+function shortLaunchCommit(value: unknown): string | null {
+  if (typeof value !== "string" || !/^[0-9a-f]{7,40}$/i.test(value.trim())) return null;
+  return value.trim().slice(0, 7);
+}
+
 function metadataStringValue(metadata: Record<string, unknown> | null | undefined, key: string): string | null {
   const value = metadata?.[key];
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function chooseLaunchSubscriptionProofRow(
+  rows: LaunchSubscriptionProbeRow[],
+  proofDetails: LaunchProofDetails
+): LaunchSubscriptionProbeRow | null {
+  if (rows.length === 0) return null;
+  const targetedRow = rows.find((row) => launchSubscriptionRowMatchesProof(row, proofDetails));
+  return targetedRow ?? rows[0] ?? null;
+}
+
+function launchSubscriptionRowMatchesProof(row: LaunchSubscriptionProbeRow, proofDetails: LaunchProofDetails): boolean {
+  const targetUserId = proofDetails.studentUserId.trim().toLowerCase();
+  const targetSessionId = proofDetails.stripeSessionId.trim().toLowerCase();
+  const targetSubscriptionReference = proofDetails.subscriptionReference.trim().toLowerCase();
+  const rowUserId = row.user_id?.toLowerCase() ?? "";
+  const rowSessionId = metadataStringValue(row.metadata, "stripe_session_id")?.toLowerCase() ?? "";
+  const rowSubscriptionId = (
+    metadataStringValue(row.metadata, "stripe_subscription_id")
+    ?? row.provider_subscription_id
+    ?? row.id
+    ?? ""
+  ).toLowerCase();
+  return Boolean(
+    (targetUserId && rowUserId === targetUserId)
+    || (targetSessionId && rowSessionId === targetSessionId)
+    || (targetSubscriptionReference && rowSubscriptionId === targetSubscriptionReference)
+  );
 }
 
 function countLabel(count: number | null | undefined, singular: string, plural: string): string {
@@ -328,6 +382,9 @@ function launchProofFieldGap(field: LaunchProofField, value: string): LaunchProo
   if (field.field === "testAccountEmail" && !launchProofEmailRe.test(trimmed)) {
     return { label: field.label, reason: "Needs a valid email" };
   }
+  if (field.field === "studentUserId" && !launchProofUuidRe.test(trimmed)) {
+    return { label: field.label, reason: "Needs the Supabase auth/profile user UUID for the same Student account" };
+  }
   if (field.field === "stripeSessionId" && !launchProofCheckoutSessionRe.test(trimmed)) {
     return { label: field.label, reason: "Needs a full cs_test_ or cs_live_ session id" };
   }
@@ -348,6 +405,9 @@ function launchProofFieldGap(field: LaunchProofField, value: string): LaunchProo
   }
   if (field.field === "mobileScreenshotProof" && trimmed.length < launchProofEvidenceMinLength) {
     return { label: field.label, reason: "Needs a screenshot path, link, or note proving phone portrait and landscape were checked" };
+  }
+  if (field.field === "lockoutProof" && trimmed.length < launchProofEvidenceMinLength) {
+    return { label: field.label, reason: "Needs proof that canceled, past-due, unpaid, incomplete, or expired status locks paid access" };
   }
   return null;
 }
@@ -370,6 +430,12 @@ function initialLaunchConnectionChecks(): LaunchConnectionCheck[] {
       detail: isSupabaseConfigured
         ? "Browser client is configured with public Supabase project settings."
         : "Missing public Supabase URL or anon key in this environment."
+    },
+    {
+      id: "rgrd-manifest",
+      label: "Live RGRD build",
+      status: "waiting",
+      detail: "Run the probe to capture the deployed rgrd.json commit before the paid smoke test."
     },
     {
       id: "checkout-edge",
@@ -694,6 +760,29 @@ const launchLiveProofSteps: LaunchLiveProofStep[] = [
   }
 ];
 
+const launchProofCaptureSteps: LaunchProofCaptureStep[] = [
+  {
+    label: "Before checkout",
+    capture: "Production rgrd.json commit, Student test email, Supabase user id, and saved room route.",
+    pasteInto: "Connection probe, Test account email, Student user id, Paid room route"
+  },
+  {
+    label: "After Stripe return",
+    capture: "Full cs_ checkout session shown on the Sipopedia success page.",
+    pasteInto: "Stripe session id"
+  },
+  {
+    label: "After webhook",
+    capture: "Stripe evt_ id plus the matching customer_subscriptions row or sub_ id.",
+    pasteInto: "Webhook event id, Subscription reference"
+  },
+  {
+    label: "After access check",
+    capture: "Same row metadata match, paid-room unlock proof, phone screenshots, and lockout result.",
+    pasteInto: "Supabase metadata proof, Mobile screenshot proof, Lockout proof, smoke-test notes"
+  }
+];
+
 const socialPlatforms: SocialPlatform[] = [
   { id: "instagram", label: "Instagram", handle: "@sipstudies", postType: "Feed, Reel, Story", limit: 2200 },
   { id: "facebook", label: "Facebook", handle: "Sip Studies", postType: "Page post", limit: 63206 },
@@ -938,6 +1027,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       inputMode: "email"
     },
     {
+      field: "studentUserId",
+      label: "Student user id",
+      placeholder: "Supabase user UUID for the same Student test account"
+    },
+    {
       field: "stripeSessionId",
       label: "Stripe session id",
       placeholder: "cs_live_or_test_..."
@@ -966,6 +1060,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       field: "mobileScreenshotProof",
       label: "Mobile screenshot proof",
       placeholder: "phone portrait + landscape screenshots saved in ..."
+    },
+    {
+      field: "lockoutProof",
+      label: "Lockout proof",
+      placeholder: "canceled or past_due test account saw the paywall and Membership Help opened billing recovery"
     }
   ];
   const completedLaunchSmokeCount = launchSmokeSteps.filter((step) => isLaunchSmokeStepProven(launchSmokeState, step.id)).length;
@@ -1083,6 +1182,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `   Must show: ${step.mustShow}`,
       `   Not enough: ${step.notEnough}`
     ]);
+    const proofCaptureLines = launchProofCaptureSteps.flatMap((step, index) => [
+      `${index + 1}. ${step.label}`,
+      `   Capture: ${step.capture}`,
+      `   Paste into: ${step.pasteInto}`
+    ]);
     const smokeLines = launchSmokeSteps.flatMap((step, index) => {
       const stepState = launchSmokeState[step.id] ?? { done: false, evidence: "" };
       const stepIsProven = isLaunchSmokeStepProven(launchSmokeState, step.id);
@@ -1121,14 +1225,19 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       "## Live Paid Proof Ladder",
       ...liveProofLines,
       "",
+      "## Proof Capture Run Sheet",
+      ...proofCaptureLines,
+      "",
       "## Stripe And Access Proof",
       `- Test account email: ${launchProofDetails.testAccountEmail.trim() || "Not captured yet."}`,
+      `- Student user id: ${launchProofDetails.studentUserId.trim() || "Not captured yet."}`,
       `- Stripe session id: ${launchProofDetails.stripeSessionId.trim() || "Not captured yet."}`,
       `- Webhook event id: ${launchProofDetails.webhookEventId.trim() || "Not captured yet."}`,
       `- Subscription reference: ${launchProofDetails.subscriptionReference.trim() || "Not captured yet."}`,
       `- Supabase metadata proof: ${launchProofDetails.supabaseMetadataProof.trim() || "Not captured yet."}`,
       `- Paid room route: ${launchProofDetails.paidRoomRoute.trim() || "Not captured yet."}`,
       `- Mobile screenshot proof: ${launchProofDetails.mobileScreenshotProof.trim() || "Not captured yet."}`,
+      `- Lockout proof: ${launchProofDetails.lockoutProof.trim() || "Not captured yet."}`,
       `- Proof field status: ${launchProofMissingCount === 0 ? "All proof fields have plausible formats." : `${launchProofMissingCount} proof field${launchProofMissingCount === 1 ? "" : "s"} need review.`}`,
       "",
       "## Likely First Customers",
@@ -1165,6 +1274,49 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const runLaunchConnectionProbe = async () => {
     const checkedAt = new Date().toISOString();
     const nextChecks = initialLaunchConnectionChecks().map((check) => ({ ...check, checkedAt }));
+    setLaunchProbeRunning(true);
+    const updateCheck = (id: string, status: LaunchConnectionStatus, detail: string) => {
+      const target = nextChecks.find((check) => check.id === id);
+      if (target) {
+        target.status = status;
+        target.detail = detail;
+      }
+    };
+
+    try {
+      const manifestResponse = await fetch(`${currentLaunchOrigin().replace(/\/+$/, "")}/rgrd.json?admin_probe=${Date.now()}`, {
+        cache: "no-store"
+      });
+      if (!manifestResponse.ok) {
+        updateCheck(
+          "rgrd-manifest",
+          "warn",
+          `Live build manifest returned ${manifestResponse.status}. Verify rgrd.json after RGRD before payment.`
+        );
+      } else {
+        const manifest = await manifestResponse.json() as LaunchRgrdManifest;
+        const shortCommit = shortLaunchCommit(manifest.commit);
+        if (manifest.repository === "Sip-Coder/Sipopedia" && shortCommit) {
+          updateCheck(
+            "rgrd-manifest",
+            "pass",
+            `Live RGRD manifest: ${manifest.repository}@${shortCommit} on ${typeof manifest.branch === "string" ? manifest.branch : "unknown branch"}, built ${formatLaunchProbeTime(typeof manifest.builtAt === "string" ? manifest.builtAt : null)} via ${typeof manifest.provider === "string" ? manifest.provider : "unknown provider"}.`
+          );
+        } else {
+          updateCheck(
+            "rgrd-manifest",
+            "warn",
+            "rgrd.json loaded, but the repository or commit format did not match Sip-Coder/Sipopedia."
+          );
+        }
+      }
+    } catch {
+      updateCheck(
+        "rgrd-manifest",
+        "warn",
+        "rgrd.json was not available on this origin. Re-run the probe on sipopedia.com after RGRD."
+      );
+    }
 
     if (!supabase) {
       setLaunchConnectionChecks(nextChecks.map((check) =>
@@ -1172,14 +1324,15 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
           ? { ...check, status: "fail", detail: "Supabase is not configured in this environment.", checkedAt }
           : check
       ));
+      setLaunchProbeRunning(false);
       return;
     }
 
-    setLaunchProbeRunning(true);
     try {
       let latestStripeSessionId: string | null = null;
       let latestStripeEventId: string | null = null;
       let latestSubscriptionReference: string | null = null;
+      let latestStudentUserId: string | null = null;
       let latestSupabaseMetadataProof: string | null = null;
       const [checkoutResult, billingWebhookResult, subscriptionResult, supportResult] = await Promise.allSettled([
         supabase.functions.invoke<Record<string, unknown>>("create-checkout-session", {
@@ -1192,7 +1345,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
           .from("customer_subscriptions")
           .select("id,user_id,status,plan_code,provider_subscription_id,updated_at,metadata", { count: "exact" })
           .order("updated_at", { ascending: false })
-          .limit(1),
+          .limit(10),
         supabase
           .from("support_requests")
           .select("lane_id, urgency, status, source_route, created_at", { count: "exact" })
@@ -1200,14 +1353,6 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
           .order("created_at", { ascending: false })
           .limit(1)
       ]);
-
-      const updateCheck = (id: string, status: LaunchConnectionStatus, detail: string) => {
-        const target = nextChecks.find((check) => check.id === id);
-        if (target) {
-          target.status = status;
-          target.detail = detail;
-        }
-      };
 
       if (checkoutResult.status === "rejected") {
         updateCheck("checkout-edge", "fail", "Checkout function could not be reached from this browser session.");
@@ -1244,8 +1389,16 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       } else if (subscriptionResult.value.error) {
         updateCheck("subscription-table", "fail", subscriptionResult.value.error.message);
       } else {
-        const latestSubscription = (subscriptionResult.value.data?.[0] ?? null) as LaunchSubscriptionProbeRow | null;
+        const subscriptionRows = ((subscriptionResult.value.data as LaunchSubscriptionProbeRow[] | null) ?? []);
+        const latestSubscription = chooseLaunchSubscriptionProofRow(subscriptionRows, launchProofDetails);
         const subscriptionCount = countLabel(subscriptionResult.value.count, "subscription record", "subscription records");
+        const targetWasEntered = Boolean(
+          launchProofDetails.studentUserId.trim()
+          || launchProofDetails.stripeSessionId.trim()
+          || launchProofDetails.subscriptionReference.trim()
+        );
+        const selectedRowMatchedTarget = Boolean(latestSubscription && launchSubscriptionRowMatchesProof(latestSubscription, launchProofDetails));
+        latestStudentUserId = latestSubscription?.user_id ?? null;
         latestStripeSessionId = metadataStringValue(latestSubscription?.metadata, "stripe_session_id");
         latestStripeEventId = metadataStringValue(latestSubscription?.metadata, "stripe_event_id");
         latestSubscriptionReference = metadataStringValue(latestSubscription?.metadata, "stripe_subscription_id")
@@ -1253,8 +1406,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
           ?? null;
         if (latestSubscription && latestStripeEventId && latestStripeSessionId && latestSubscriptionReference) {
           const rowLabel = latestSubscription.id ? `customer_subscriptions row ${latestSubscription.id}` : "latest customer_subscriptions row";
+          const userLabel = latestStudentUserId ? ` for user ${latestStudentUserId}` : "";
           latestSupabaseMetadataProof =
-            `${rowLabel} has matching stripe_event_id ${latestStripeEventId}, stripe_session_id ${latestStripeSessionId}, and stripe_subscription_id ${latestSubscriptionReference}.`;
+            `${rowLabel}${userLabel} has matching stripe_event_id ${latestStripeEventId}, stripe_session_id ${latestStripeSessionId}, and stripe_subscription_id ${latestSubscriptionReference}.`;
         }
         const metadataProof = [
           latestStripeEventId ? `event ${latestStripeEventId}` : null,
@@ -1263,9 +1417,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         ].filter(Boolean).join(", ");
         updateCheck(
           "subscription-table",
-          "pass",
+          targetWasEntered && !selectedRowMatchedTarget ? "warn" : "pass",
           latestSubscription
-            ? `${subscriptionCount} reachable. Latest: ${latestSubscription.status ?? "unknown status"} ${latestSubscription.plan_code ?? "membership"} updated ${formatLaunchProbeTime(latestSubscription.updated_at)}${metadataProof ? `. Webhook proof: ${metadataProof}.` : "."}`
+            ? `${subscriptionCount} reachable. ${selectedRowMatchedTarget ? "Matched entered proof row" : targetWasEntered ? "Using newest row because no entered proof matched recent rows" : "Latest row"}: ${latestSubscription.status ?? "unknown status"} ${latestSubscription.plan_code ?? "membership"} for user ${latestSubscription.user_id ?? "unknown user"} updated ${formatLaunchProbeTime(latestSubscription.updated_at)}${metadataProof ? `. Webhook proof: ${metadataProof}.` : "."}`
             : `${subscriptionCount} reachable. Run the real checkout smoke test to create webhook proof.`
         );
       }
@@ -1286,9 +1440,10 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         );
       }
 
-      if (latestStripeSessionId || latestStripeEventId || latestSubscriptionReference || latestSupabaseMetadataProof) {
+      if (latestStudentUserId || latestStripeSessionId || latestStripeEventId || latestSubscriptionReference || latestSupabaseMetadataProof) {
         setLaunchProofDetails((current) => ({
           ...current,
+          studentUserId: current.studentUserId.trim() ? current.studentUserId : latestStudentUserId ?? current.studentUserId,
           stripeSessionId: current.stripeSessionId.trim() ? current.stripeSessionId : latestStripeSessionId ?? current.stripeSessionId,
           webhookEventId: current.webhookEventId.trim() ? current.webhookEventId : latestStripeEventId ?? current.webhookEventId,
           subscriptionReference: current.subscriptionReference.trim()
@@ -1303,6 +1458,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       setLaunchConnectionChecks(nextChecks);
       trackEvent("admin_launch_connection_probe", {
         origin: currentLaunchOrigin(),
+        rgrd: nextChecks.find((check) => check.id === "rgrd-manifest")?.status,
         checkout: nextChecks.find((check) => check.id === "checkout-edge")?.status,
         billingWebhook: nextChecks.find((check) => check.id === "billing-webhook")?.status,
         subscriptions: nextChecks.find((check) => check.id === "subscription-table")?.status,
@@ -1719,6 +1875,24 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                       <small>{check.detail}</small>
                     </div>
                   ))}
+                </div>
+                <div className="admin-launch-proof-capture" aria-label="Proof capture run sheet">
+                  <div className="admin-launch-test-script-head">
+                    <p className="admin-eyebrow">Proof capture run sheet</p>
+                    <strong>Capture these in order so Stripe, Supabase, access, and screenshots all point to the same test.</strong>
+                  </div>
+                  <div className="admin-launch-proof-capture-grid">
+                    {launchProofCaptureSteps.map((step, index) => (
+                      <article key={step.label}>
+                        <span>{String(index + 1).padStart(2, "0")}</span>
+                        <div>
+                          <strong>{step.label}</strong>
+                          <p>{step.capture}</p>
+                          <small>Paste into: {step.pasteInto}</small>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
                 </div>
                 <div className="admin-launch-proof-fields" aria-label="Stripe and access proof details">
                   <div className="admin-launch-test-script-head">
