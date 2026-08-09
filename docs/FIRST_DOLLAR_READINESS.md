@@ -131,6 +131,18 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Treat Stripe checkout and webhook unlock as unproven until a signed-in production test account completes the full loop.
 - Watch Assisted Enrollment/support requests daily while the first customers are being invited.
 
+## Safe Production Probe
+
+Run this after each RGRD publish and before the real Stripe test:
+
+```powershell
+npm run first-dollar:probe
+```
+
+The probe checks the live `https://sipopedia.com/rgrd.json` commit, the homepage app shell, the public Supabase configuration in the production bundle, the unauthenticated checkout guard, and the unsigned billing-webhook guard. It does not create a Stripe Checkout Session, write subscription rows, submit payment, or use secret keys.
+
+Passing this probe means the public wiring is reachable. It does not replace the final first-dollar smoke test, because only a signed-in production Stripe checkout can prove the webhook writes `customer_subscriptions` and unlocks paid access.
+
 ## First Paid Test Script
 
 Run this once, in order, from production before inviting a real buyer:

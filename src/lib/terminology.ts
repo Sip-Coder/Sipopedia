@@ -74,11 +74,29 @@ const letterBuckets: Exclude<TermBucket, "ALL" | "#">[] = [
   "Z"
 ];
 
+const COMMAND_SEARCH_REMOTE_TIMEOUT_MS = 2500;
+
 type CuratedFallbackTerm = {
   term: string;
   beverage_type: string;
   category: string;
 };
+
+function withFallbackTimeout<T>(promise: Promise<T>, fallback: T, timeoutMs = COMMAND_SEARCH_REMOTE_TIMEOUT_MS): Promise<T> {
+  return new Promise((resolve) => {
+    const timer = globalThis.setTimeout(() => resolve(fallback), timeoutMs);
+    promise.then(
+      (value) => {
+        globalThis.clearTimeout(timer);
+        resolve(value);
+      },
+      () => {
+        globalThis.clearTimeout(timer);
+        resolve(fallback);
+      }
+    );
+  });
+}
 
 function fallbackTermId(term: string, index: number): string {
   const slug = term
@@ -332,8 +350,9 @@ export async function searchTerminologyCommandResults(query: string, limit = 10)
   if (trimmedQuery.length < 2) return [];
 
   const normalizedQuery = trimmedQuery.toLowerCase();
+  const fallbackResults = searchFallbackTerminologyResults(trimmedQuery, limit);
   if (!supabase) {
-    return searchFallbackTerminologyResults(trimmedQuery, limit);
+    return fallbackResults;
   }
 
   const safeSearchQuery = trimmedQuery
@@ -365,10 +384,14 @@ export async function searchTerminologyCommandResults(query: string, limit = 10)
     .order("normalized_term", { ascending: true })
     .limit(Math.max(limit * 4, 24));
 
-  const results = await Promise.all([exactRequest, prefixRequest, broadRequest]);
+  type TerminologySearchResponse = Awaited<typeof exactRequest>;
+  const results = await withFallbackTimeout<TerminologySearchResponse[]>(
+    Promise.all([exactRequest, prefixRequest, broadRequest]),
+    []
+  );
   const successfulResults = results.filter((result) => !result.error);
   if (successfulResults.length === 0) {
-    return searchFallbackTerminologyResults(trimmedQuery, limit);
+    return fallbackResults;
   }
 
   const rowsById = new Map<string, TerminologySummary>();
@@ -376,11 +399,15 @@ export async function searchTerminologyCommandResults(query: string, limit = 10)
     ((result.data ?? []) as TerminologySummary[]).forEach((row) => rowsById.set(row.id, row));
   });
 
-  return [...rowsById.values()]
+  const rankedRows = [...rowsById.values()]
     .map((row) => ({ ...row, rank_score: scoreTerminologyResult(row, normalizedQuery) }))
     .filter((row) => row.rank_score > 0)
-    .sort((left, right) => right.rank_score - left.rank_score || left.term.localeCompare(right.term))
-    .slice(0, limit);
+    .sort((left, right) => right.rank_score - left.rank_score || left.term.localeCompare(right.term));
+
+  const seenTerms = new Set(rankedRows.map((row) => row.term.trim().toLowerCase()));
+  const supplementalRows = fallbackResults.filter((row) => !seenTerms.has(row.term.trim().toLowerCase()));
+
+  return [...rankedRows, ...supplementalRows].slice(0, limit);
 }
 
 export async function listTerminologyLinkTargets(maxRows = 1200): Promise<TerminologyLinkTarget[]> {

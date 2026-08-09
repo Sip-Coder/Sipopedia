@@ -320,3 +320,17 @@ test("The terminology fallback remains inside Replit's deployable source tree", 
   assert.ok(Array.isArray(fallbackSource));
   assert.ok(fallbackSource.length > 0);
 });
+
+test("Workspace command search keeps fallback terminology available on production lag", async () => {
+  const terminologySource = await readFile(
+    new URL("../src/lib/terminology.ts", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(terminologySource, /COMMAND_SEARCH_REMOTE_TIMEOUT_MS\s*=\s*2500/);
+  assert.match(terminologySource, /const fallbackResults = searchFallbackTerminologyResults\(trimmedQuery, limit\)/);
+  assert.match(terminologySource, /withFallbackTimeout<TerminologySearchResponse\[\]>/);
+  assert.match(terminologySource, /Promise\.all\(\[exactRequest, prefixRequest, broadRequest\]\)/);
+  assert.match(terminologySource, /const supplementalRows = fallbackResults\.filter/);
+  assert.match(terminologySource, /\[\.\.\.rankedRows, \.\.\.supplementalRows\]\.slice\(0, limit\)/);
+});
