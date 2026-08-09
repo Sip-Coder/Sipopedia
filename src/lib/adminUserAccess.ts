@@ -13,6 +13,7 @@ export type TrialAccessResponse = {
   subscriptionId?: string;
   status?: string;
   trialEndsAt?: string | null;
+  currentPeriodEnd?: string | null;
   promoCode?: string | null;
 };
 

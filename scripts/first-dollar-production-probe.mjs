@@ -168,6 +168,30 @@ async function probeBillingWebhook({ baseUrl, supabaseUrl, anonKey }) {
   );
 }
 
+async function probeAdminTrialAccessFunction({ baseUrl, supabaseUrl, anonKey }) {
+  const endpoint = `${supabaseUrl.replace(/\/+$/, "")}/functions/v1/admin-trial-access`;
+  const { response, body, json } = await fetchJson(endpoint, {
+    method: "POST",
+    headers: {
+      apikey: anonKey,
+      authorization: `Bearer ${anonKey}`,
+      "content-type": "application/json",
+      origin: baseUrl
+    },
+    body: JSON.stringify({ action: "update-subscription-status", subscriptionId: "not-a-uuid", status: "active" })
+  });
+  const message = typeof json?.error === "string" ? json.error : body.slice(0, 180);
+  const expectedGuard = response.status === 403 && /admin privileges are required/i.test(message);
+  return result(
+    "admin entitlement function guard",
+    expectedGuard ? "pass" : "fail",
+    expectedGuard
+      ? "Admin entitlement Edge Function is reachable and rejects non-admin subscription writes."
+      : `Expected a safe 403 admin guard, got HTTP ${response.status}.`,
+    { httpStatus: response.status, message }
+  );
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const expectedCommit = options.expectedCommit || currentGitCommit();
@@ -240,6 +264,7 @@ async function main() {
     ));
     checks.push(await probeCheckoutFunction({ baseUrl: options.baseUrl, supabaseUrl, anonKey }));
     checks.push(await probeBillingWebhook({ baseUrl: options.baseUrl, supabaseUrl, anonKey }));
+    checks.push(await probeAdminTrialAccessFunction({ baseUrl: options.baseUrl, supabaseUrl, anonKey }));
   }
 
   const failed = checks.filter((check) => check.status === "fail");

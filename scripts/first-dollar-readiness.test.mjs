@@ -11,6 +11,8 @@ import { workspaceLabelForRoute } from "../src/lib/workspaceNavigation.ts";
 const [
   appSource,
   adminSource,
+  adminTrialAccessSource,
+  adminUserAccessSource,
   authPanelSource,
   marketingHomeSource,
   supportSource,
@@ -21,6 +23,7 @@ const [
   policyPageSource,
   checkoutFunctionSource,
   billingWebhookSource,
+  supabaseConfigSource,
   schemaSource,
   productionProbeSource,
   preflightSource,
@@ -34,6 +37,8 @@ const [
 ] = await Promise.all([
   readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/AdminConsole.tsx", import.meta.url), "utf8"),
+  readFile(new URL("../supabase/functions/admin-trial-access/index.ts", import.meta.url), "utf8"),
+  readFile(new URL("../src/lib/adminUserAccess.ts", import.meta.url), "utf8"),
   readFile(new URL("../src/components/AuthPanel.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/MarketingHome.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/SupportCenter.tsx", import.meta.url), "utf8"),
@@ -44,6 +49,7 @@ const [
   readFile(new URL("../src/components/PolicyPage.tsx", import.meta.url), "utf8"),
   readFile(new URL("../supabase/functions/create-checkout-session/index.ts", import.meta.url), "utf8"),
   readFile(new URL("../supabase/functions/billing-webhook/index.ts", import.meta.url), "utf8"),
+  readFile(new URL("../supabase/config.toml", import.meta.url), "utf8"),
   readFile(new URL("../supabase/schema.sql", import.meta.url), "utf8"),
   readFile(new URL("./first-dollar-production-probe.mjs", import.meta.url), "utf8"),
   readFile(new URL("./first-dollar-preflight.mjs", import.meta.url), "utf8"),
@@ -460,8 +466,36 @@ test("paid subscriber proof stays separate from admin override access", () => {
   assert.match(accessContextSource, /function normalizeAccessRole\(role: ProfileRecord\["role"\]\)\s*:\s*AccessRole/);
   assert.match(accessContextSource, /return role === "admin" \? "admin" : "student";/);
   assert.match(accessContextSource, /ENTITLING_SUBSCRIPTION_STATUSES = new Set<SubscriptionStatus>\(\["trialing", "active"\]\)/);
+  assert.match(accessContextSource, /function isEntitlingSubscription/);
+  assert.match(accessContextSource, /if \(!currentPeriodEnd\) return true;/);
+  assert.match(accessContextSource, /periodEnd >= now/);
+  assert.match(accessContextSource, /records\.find\(\(record\) => isEntitlingSubscription\(record\.status, record\.current_period_end\)\)/);
   assert.match(accessContextSource, /isPaid: tier === "pro" \|\| tier === "founding"/);
   assert.doesNotMatch(accessContextSource, /isPaid:[^\n]*tier === "admin"/);
+});
+
+test("admin subscription status changes use the server entitlement function", () => {
+  assert.match(adminSource, /updateManagedSubscriptionStatus/);
+  assert.match(adminSource, /current_period_end: result\.currentPeriodEnd \?\? subscription\.current_period_end/);
+  assert.doesNotMatch(adminSource, /\.from\("customer_subscriptions"\)\.update\(\{ status \}\)/);
+  assert.match(adminUserAccessSource, /"admin-trial-access"/);
+  assert.match(adminUserAccessSource, /currentPeriodEnd\?: string \| null/);
+  assert.match(adminTrialAccessSource, /requireAdminUserId/);
+  assert.match(adminTrialAccessSource, /supabase\.auth\.getUser\(token\)/);
+  assert.match(adminTrialAccessSource, /\.from\("profiles"\)[\s\S]*?\.select\("role"\)/);
+  assert.match(adminTrialAccessSource, /profile\?\.role !== "admin"/);
+  assert.match(adminTrialAccessSource, /action: "update-subscription-status"/);
+  assert.match(adminTrialAccessSource, /managedPeriodEnd/);
+  assert.match(adminTrialAccessSource, /entitlingManagedStatuses = new Set<ManagedSubscriptionStatus>\(\["trialing", "active"\]\)/);
+  assert.match(adminTrialAccessSource, /return trialEndsAt\(30\)/);
+  assert.match(adminTrialAccessSource, /admin_status_update/);
+  assert.match(adminTrialAccessSource, /\.update\(\{[\s\S]*?status: payload\.status,[\s\S]*?current_period_end: currentPeriodEnd,[\s\S]*?metadata/);
+  assert.match(adminTrialAccessSource, /action: "issue-trial"/);
+  assert.match(adminTrialAccessSource, /provider: "admin-trial"/);
+  assert.match(adminTrialAccessSource, /current_period_end: periodEnd/);
+  assert.match(supabaseConfigSource, /\[functions\.admin-trial-access\][\s\S]*?verify_jwt = true/);
+  assert.match(supabaseConfigSource, /\[functions\.billing-webhook\][\s\S]*?verify_jwt = false/);
+  assert.match(packageSource, /supabase\/functions\/admin-trial-access\/index\.ts/);
 });
 
 test("safe production probe reports remaining paid-access proof", () => {
@@ -470,6 +504,10 @@ test("safe production probe reports remaining paid-access proof", () => {
   assert.match(productionProbeSource, /Stripe webhook writes billing_webhook_events and customer_subscriptions/);
   assert.match(productionProbeSource, /customer_subscriptions\.metadata contains matching Stripe event, session, and subscription identifiers/);
   assert.match(productionProbeSource, /paid room opens from active or trialing subscription status without Admin override/);
+  assert.match(productionProbeSource, /probeAdminTrialAccessFunction/);
+  assert.match(productionProbeSource, /functions\/v1\/admin-trial-access/);
+  assert.match(productionProbeSource, /admin entitlement function guard/);
+  assert.match(productionProbeSource, /Expected a safe 403 admin guard/);
   assert.match(productionProbeSource, /sourceCommit/);
   assert.match(productionProbeSource, /Replit build stamp/);
   assert.match(productionProbeSource, /expected GitHub source commit/);
@@ -494,6 +532,7 @@ test("first-dollar preflight runs safe production and mobile checks together", (
   assert.match(preflightSource, /first-dollar-production-probe\.mjs/);
   assert.match(preflightSource, /first-dollar-mobile-path-qa\.mjs/);
   assert.match(preflightSource, /--base-url/);
+  assert.match(productionProbeSource, /Admin entitlement Edge Function is reachable and rejects non-admin subscription writes/);
   assert.match(preflightSource, /Local working tree has/);
   assert.match(preflightSource, /git", \["lfs", "status"\]/);
   assert.match(preflightSource, /Objects to be pushed to /);
@@ -563,6 +602,8 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /individuals before teams, show\/choose\/join homepage hook, and one live proof loop/);
   assert.match(readinessDoc, /Copy answer brief/);
   assert.match(readinessDoc, /potential customer base, homepage simplification, before-first-dollar gates, and next work/);
+  assert.match(readinessDoc, /Supabase `admin-trial-access` Edge Function is deployed/);
+  assert.match(readinessDoc, /server-side service-role writes instead of blocked browser-side table updates/);
   assert.match(readinessDoc, /Smoke test handoff/);
   assert.match(readinessDoc, /Safe preflight proves public wiring only/);
   assert.match(readinessDoc, /Live RGRD build/);
@@ -601,6 +642,7 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /Admin override access is not paid subscriber proof/);
   assert.match(readinessDoc, /npm run first-dollar:preflight/);
   assert.match(packageSource, /"first-dollar:mobile-qa": "node scripts\/first-dollar-mobile-path-qa\.mjs"/);
+  assert.match(readinessDoc, /Checkout, Billing Webhook, and Admin entitlement Edge Functions are reachable and rejecting unsafe calls/);
   assert.match(readinessDoc, /Mobile Buyer Path QA/);
   assert.match(readinessDoc, /Homepage -> customer-path cards -> Pricing -> pricing save\/preview actions -> Checkout -> Login -> Success -> Cancel/);
   assert.match(readinessDoc, /preview\/save\/join proof badges/);

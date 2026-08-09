@@ -103,6 +103,7 @@ Confirm these without exposing secret values in chat, Git, logs, or frontend cod
 - Supabase Edge Function has a safe production return origin for `https://sipopedia.com`.
 - Billing webhook endpoint is reachable and rejects unsigned readiness probes.
 - Stripe webhook endpoint is deployed and has its signing secret configured.
+- Supabase `admin-trial-access` Edge Function is deployed with `verify_jwt = true` so Admin subscription-status tests use server-side service-role writes instead of blocked browser-side table updates.
 - Stripe product/price matches the public $10/month membership.
 - Supabase profile roles are limited to Student and Admin.
 - Trial access is represented by a time-boxed subscription record, not a separate profile role.
@@ -170,7 +171,7 @@ The full release check now starts with the same guard:
 npm run rgrd:check
 ```
 
-The preflight runs both the safe production probe and the mobile buyer path QA against `https://sipopedia.com`, then prints the remaining live-payment proof list.
+The preflight runs both the safe production probe and the mobile buyer path QA against `https://sipopedia.com`, then prints the remaining live-payment proof list. The safe probe also checks that Checkout, Billing Webhook, and Admin entitlement Edge Functions are reachable and rejecting unsafe calls before the live paid smoke test.
 It also checks the local Git LFS queue and changed files that match LFS tracking rules before RGRD-style work; stop if it reports queued LFS objects or changed LFS-tracked paths, because those media objects can spend the GitHub LFS allowance.
 
 Run the pieces separately only when you need a narrower check:

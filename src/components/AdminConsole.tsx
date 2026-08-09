@@ -30,6 +30,7 @@ import {
   type FirstDollarLockoutProof,
   type FirstDollarSuccessProof
 } from "../lib/firstDollarProof";
+import { updateManagedSubscriptionStatus } from "../lib/adminUserAccess";
 
 type AdminConsoleProps = {
   onNavigate: (route: string) => void;
@@ -1078,17 +1079,23 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     id: string,
     status: "trialing" | "active" | "past_due" | "unpaid" | "canceled" | "incomplete" | "incomplete_expired"
   ) => {
-    if (!supabase) return;
     if (!isAdmin) {
       setError("Admin access required.");
       return;
     }
-    const { error: updateError } = await supabase.from("customer_subscriptions").update({ status }).eq("id", id);
-    if (updateError) {
-      setError(updateError.message);
+    try {
+      const result = await updateManagedSubscriptionStatus({ subscriptionId: id, status });
+      setSubscriptions((current) =>
+        current.map((subscription) =>
+          subscription.id === id
+            ? { ...subscription, status, current_period_end: result.currentPeriodEnd ?? subscription.current_period_end }
+            : subscription
+        )
+      );
+    } catch (updateError: unknown) {
+      setError(updateError instanceof Error ? updateError.message : "Subscription status could not be saved.");
       return;
     }
-    setSubscriptions((current) => current.map((subscription) => (subscription.id === id ? { ...subscription, status } : subscription)));
     trackEvent("admin_subscription_update", { subscriptionId: id, status });
   };
 
