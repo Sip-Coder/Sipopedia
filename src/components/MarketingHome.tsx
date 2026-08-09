@@ -46,6 +46,7 @@ type CustomerFitTile = {
   title: string;
   room: string;
   outcome: string;
+  reelId: string;
   previewRoute: string;
   actionRoute: string;
   actionLabel: string;
@@ -296,6 +297,7 @@ const customerFitTiles: CustomerFitTile[] = [
     title: "Make drinks finally click.",
     room: "Beyond The Glass",
     outcome: "Start with cinematic source-to-service journeys.",
+    reelId: "btg",
     previewRoute: "app/btg",
     actionRoute: buildOnboardingRoute("pricing", {
       planId: "pro",
@@ -309,6 +311,7 @@ const customerFitTiles: CustomerFitTile[] = [
     title: "Speak with more confidence.",
     room: "Recipes + Palate",
     outcome: "Practice guest language, flavor memory, and build logic.",
+    reelId: "recipes",
     previewRoute: "app/recipes",
     actionRoute: buildOnboardingRoute("pricing", {
       planId: "pro",
@@ -322,6 +325,7 @@ const customerFitTiles: CustomerFitTile[] = [
     title: "Give facts a mental map.",
     room: "Sipopedia",
     outcome: "Use source-backed terms, maps, and visual memory anchors.",
+    reelId: "sipopedia",
     previewRoute: "app/sipopedia",
     actionRoute: buildOnboardingRoute("pricing", {
       planId: "pro",
@@ -335,6 +339,7 @@ const customerFitTiles: CustomerFitTile[] = [
     title: "Look around before paying.",
     room: "Launch Pad",
     outcome: "Watch trailers, open public rooms, or ask for help.",
+    reelId: "sip-academy-map",
     previewRoute: "app/launch",
     actionRoute: buildMembershipSupportRoute({
       source: "home-fit-preview",
@@ -568,22 +573,38 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
           <h2 id="customer-paths-title">Choose your first room.</h2>
         </div>
         <div className="marketing-fit-strip" aria-label="Customer fit shortcuts">
-          {customerFitTiles.map((tile) => (
-            <article className="marketing-fit-tile" key={tile.label}>
-              <span>{tile.label}</span>
-              <strong>{tile.title}</strong>
-              <p>{tile.room}</p>
-              <small>{tile.outcome}</small>
-              <div className="marketing-fit-actions">
-                <button type="button" onClick={() => onNavigate(tile.previewRoute)}>
-                  Preview
-                </button>
-                <button type="button" onClick={() => onNavigate(tile.actionRoute)}>
-                  {tile.actionLabel}
-                </button>
-              </div>
-            </article>
-          ))}
+          {customerFitTiles.map((tile) => {
+            const tileReel = learnPreviewReels.find((reel) => reel.id === tile.reelId) ?? learnPreviewReels[0];
+
+            return (
+              <article className="marketing-fit-tile" key={tile.label}>
+                <div className="marketing-fit-media" aria-hidden="true">
+                  <video
+                    src={tileReel.src}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    poster={welcomeToSipStudies}
+                    onLoadedMetadata={(event) => startPreviewPastLoader(event.currentTarget)}
+                  />
+                </div>
+                <span>{tile.label}</span>
+                <strong>{tile.title}</strong>
+                <p>{tile.room}</p>
+                <small>{tile.outcome}</small>
+                <div className="marketing-fit-actions">
+                  <button type="button" onClick={() => onNavigate(tile.previewRoute)}>
+                    Preview
+                  </button>
+                  <button type="button" onClick={() => onNavigate(tile.actionRoute)}>
+                    {tile.actionLabel}
+                  </button>
+                </div>
+              </article>
+            );
+          })}
         </div>
         <div className="marketing-customer-path-grid">
           {customerPaths.map((path) => (

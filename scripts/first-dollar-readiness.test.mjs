@@ -15,6 +15,7 @@ const [
   marketingHomeSource,
   supportSource,
   checkoutPageSource,
+  pricingPageSource,
   paywallSource,
   accessContextSource,
   policyPageSource,
@@ -37,6 +38,7 @@ const [
   readFile(new URL("../src/components/MarketingHome.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/SupportCenter.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/CheckoutPage.tsx", import.meta.url), "utf8"),
+  readFile(new URL("../src/components/PricingPage.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/PaywallPanel.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/context/AccessContext.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/PolicyPage.tsx", import.meta.url), "utf8"),
@@ -146,6 +148,9 @@ test("homepage sells by first-customer fit before feature count", () => {
   assert.match(marketingHomeSource, /I need better guest language/);
   assert.match(marketingHomeSource, /I need structure beside my study book/);
   assert.match(marketingHomeSource, /I want to preview before paying/);
+  assert.match(marketingHomeSource, /reelId/);
+  assert.match(marketingHomeSource, /marketing-fit-media/);
+  assert.match(marketingHomeSource, /tileReel\.src/);
   assert.match(marketingHomeSource, /home-path-new-learner/);
   assert.match(marketingHomeSource, /home-path-hospitality/);
   assert.match(marketingHomeSource, /home-path-certification/);
@@ -277,6 +282,14 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /copyLaunchProofLog/);
   assert.match(adminSource, /Copy proof log/);
   assert.match(adminSource, /admin_launch_proof_copy/);
+  assert.match(adminSource, /buildLaunchTestScriptBody/);
+  assert.match(adminSource, /copyLaunchTestScript/);
+  assert.match(adminSource, /Sipopedia first-dollar live test script/);
+  assert.match(adminSource, /Copy live test script/);
+  assert.match(adminSource, /admin_launch_test_script_copy/);
+  assert.match(adminSource, /Latest checkout return -> Import checkout proof/);
+  assert.match(adminSource, /Latest lockout proof -> Import lockout proof/);
+  assert.match(adminSource, /Do not count Admin override, localhost, Replit preview, manual database edits, or mismatched Stripe IDs/);
   assert.match(adminSource, /Clipboard copy is unavailable in this browser/);
   assert.match(adminSource, /readFirstDollarSuccessProof/);
   assert.match(adminSource, /Latest checkout return/);
@@ -338,6 +351,16 @@ test("billing webhook preserves the Stripe-to-Supabase paid access proof chain",
   assert.match(schemaSource, /create table if not exists public\.billing_webhook_events/);
   assert.match(schemaSource, /event_id text primary key/);
   assert.match(schemaSource, /alter table public\.billing_webhook_events enable row level security/);
+});
+
+test("pricing page keeps checkout and support choices visible early", () => {
+  assert.match(pricingPageSource, /pricing-hero-actions/);
+  assert.match(pricingPageSource, /Membership decision actions/);
+  assert.match(pricingPageSource, /\{nextRouteLabel\} stays saved/);
+  assert.match(pricingPageSource, /onNavigate\(checkoutRoute\)/);
+  assert.match(pricingPageSource, /onNavigate\(membershipSupportRoute\)/);
+  assert.match(mobileQaSource, /Pricing checkout CTA is not fully visible in the pricing viewport/);
+  assert.match(mobileQaSource, /Pricing help CTA is not fully visible in the pricing viewport/);
 });
 
 test("assisted enrollment carries saved room context into the support handoff", () => {

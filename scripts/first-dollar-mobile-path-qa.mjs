@@ -369,6 +369,8 @@ async function runViewportFlow(client, sessionId, baseUrl, outputDir, routeTimeo
   check(() => assertHash(state, "next=app%2Fbtg|next=app/btg", "Saved Beyond The Glass destination was not preserved into pricing."));
   check(() => assertText(state, "\\$10|10/month|10 per month", "Pricing page does not show the membership price."));
   check(() => assertText(state, "Saved Preview Path|Continue the room|After checkout|Beyond The Glass", "Pricing page does not show the saved preview destination."));
+  check(() => assertVisibleCritical(state, "Continue to Checkout", "Pricing checkout CTA is not fully visible in the pricing viewport."));
+  check(() => assertVisibleCritical(state, "Membership Help", "Pricing help CTA is not fully visible in the pricing viewport."));
 
   await clickButton(client, sessionId, "Continue to Checkout", routeTimeoutMs);
   await capture("03-checkout");

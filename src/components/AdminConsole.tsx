@@ -879,6 +879,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   );
   const [launchProbeRunning, setLaunchProbeRunning] = useState(false);
   const [launchProofCopyStatus, setLaunchProofCopyStatus] = useState("Proof log is ready to copy or download.");
+  const [launchTestScriptCopyStatus, setLaunchTestScriptCopyStatus] = useState("Live test script not copied yet.");
   const [firstCustomerInviteCopyStatus, setFirstCustomerInviteCopyStatus] = useState("Invite not copied yet.");
   const [latestSuccessProof, setLatestSuccessProof] = useState<FirstDollarSuccessProof | null>(() => readFirstDollarSuccessProof());
   const [successProofImportStatus, setSuccessProofImportStatus] = useState("No checkout return proof imported yet.");
@@ -1284,6 +1285,37 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     });
   };
 
+  const buildLaunchTestScriptBody = (generatedAt = new Date()) => {
+    const stepLines = launchTestScriptSteps.flatMap((step, index) => [
+      `${index + 1}. ${step.label}`,
+      `   Route: ${step.route}`,
+      `   Action: ${step.detail}`
+    ]);
+    const body = [
+      "# Sipopedia first-dollar live test script",
+      "",
+      `Generated: ${generatedAt.toLocaleString()}`,
+      `Origin: ${currentLaunchOrigin()}`,
+      "",
+      "Use one signed-in production Student account. Do not count Admin override, localhost, Replit preview, manual database edits, or mismatched Stripe IDs.",
+      "",
+      "## Run Order",
+      ...stepLines,
+      "",
+      "## Proof Capture",
+      "- Success page: use Copy proof note after Stripe returns to Sipopedia.",
+      "- Admin: use Latest checkout return -> Import checkout proof before matching Supabase rows.",
+      "- Supabase: confirm billing_webhook_events.event_id and customer_subscriptions metadata all match the same Stripe session/subscription.",
+      "- Paid room: Refresh Access, then open the saved paid route as a Student account.",
+      "- Lockout: set or locate a canceled, past-due, unpaid, incomplete, or expired status, then use Copy lockout proof on the paywall.",
+      "- Admin: use Latest lockout proof -> Import lockout proof and keep the first-customer invite kit disabled until every proof gate passes.",
+      "",
+      "## Final Rule",
+      "Only invite a real paid customer after checkout, webhook writeback, Student paid access, mobile proof, support fallback, and billing lockout are all proven."
+    ].join("\n");
+    return { body, generatedAt };
+  };
+
   const buildLaunchProofLogBody = (generatedAt = new Date()) => {
     const launchCardLines = launchCommandCards.flatMap((card) => [
       `- ${card.label}: ${card.title}`,
@@ -1308,6 +1340,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `   Capture: ${step.capture}`,
       `   Paste into: ${step.pasteInto}`
     ]);
+    const liveTestScriptLines = buildLaunchTestScriptBody(generatedAt).body.split("\n").slice(6);
     const firstCustomerInviteLines = launchFirstCustomerInvites.flatMap((invite) => [
       `- ${invite.label}: ${invite.audience}`,
       `  ${invite.message}`
@@ -1353,6 +1386,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       "## Proof Capture Run Sheet",
       ...proofCaptureLines,
       "",
+      "## First Paid Test Script",
+      ...liveTestScriptLines,
+      "",
       "## Stripe And Access Proof",
       `- Test account email: ${launchProofDetails.testAccountEmail.trim() || "Not captured yet."}`,
       `- Student user id: ${launchProofDetails.studentUserId.trim() || "Not captured yet."}`,
@@ -1385,6 +1421,25 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       "Run one real signed-in production Stripe checkout and confirm the billing webhook unlocks paid access without manual database edits."
     ].join("\n");
     return { body, generatedAt };
+  };
+
+  const copyLaunchTestScript = async () => {
+    const { body, generatedAt } = buildLaunchTestScriptBody();
+    if (!navigator.clipboard?.writeText) {
+      setLaunchTestScriptCopyStatus("Clipboard copy is unavailable in this browser. Use the visible script instead.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(body);
+      setLaunchTestScriptCopyStatus(`Live test script copied at ${generatedAt.toLocaleTimeString()}.`);
+      trackEvent("admin_launch_test_script_copy", {
+        steps: launchTestScriptSteps.length,
+        ready: launchReadyForPaidInvite
+      });
+    } catch {
+      setLaunchTestScriptCopyStatus("Clipboard copy was blocked. Use the visible script instead.");
+    }
   };
 
   const downloadLaunchProofLog = () => {
@@ -1997,9 +2052,14 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   ))}
                 </div>
                 <div className="admin-launch-test-script" aria-label="First paid customer production test script">
-                  <div className="admin-launch-test-script-head">
-                    <p className="admin-eyebrow">First paid test script</p>
-                    <strong>Run this once, in order, before inviting anyone real.</strong>
+                  <div className="admin-launch-test-script-head admin-launch-copy-head">
+                    <div>
+                      <p className="admin-eyebrow">First paid test script</p>
+                      <strong>Run this once, in order, before inviting anyone real.</strong>
+                    </div>
+                    <button className="btn btn-light" type="button" onClick={() => void copyLaunchTestScript()}>
+                      Copy live test script
+                    </button>
                   </div>
                   <div className="admin-launch-test-script-grid">
                     {launchTestScriptSteps.map((step, index) => (
@@ -2015,6 +2075,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                       </article>
                     ))}
                   </div>
+                  <p className="admin-launch-copy-status" role="status">{launchTestScriptCopyStatus}</p>
                 </div>
                 <div className="admin-launch-live-proof" aria-label="Live paid proof ladder">
                   <div className="admin-launch-test-script-head">

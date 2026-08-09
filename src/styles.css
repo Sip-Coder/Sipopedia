@@ -16407,6 +16407,33 @@ select option:checked {
   color: #fff1d1;
 }
 
+.marketing-fit-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  min-width: 0;
+  border: 1px solid rgba(159, 218, 245, 0.22);
+  border-radius: 10px;
+  background: #031018;
+}
+
+.marketing-fit-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, rgba(3, 16, 25, 0.42), transparent 56%),
+    radial-gradient(circle at 18% 12%, rgba(237, 212, 168, 0.24), transparent 38%);
+  pointer-events: none;
+}
+
+.marketing-fit-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .marketing-fit-tile span {
   width: fit-content;
   border: 1px solid rgba(157, 230, 236, 0.28);
@@ -16983,6 +17010,27 @@ select option:checked {
 .pricing-hero > p:not(.checkout-eyebrow) {
   max-width: 680px;
   color: rgba(217, 247, 255, 0.84);
+}
+
+.pricing-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.62rem;
+  margin-top: 1rem;
+  max-width: 780px;
+}
+
+.pricing-hero-actions .btn {
+  min-height: 44px;
+  justify-content: center;
+}
+
+.pricing-hero-actions small {
+  color: rgba(217, 247, 255, 0.78);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.25;
 }
 
 .pricing-intent-ribbon {
@@ -20674,10 +20722,27 @@ select option:checked {
   gap: 0.22rem;
 }
 
+.admin-launch-copy-head {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.admin-launch-copy-head > div {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+}
+
 .admin-launch-test-script-head strong {
   color: #fff2d3;
   font-size: 0.95rem;
   line-height: 1.25;
+}
+
+.admin-launch-copy-head .btn {
+  min-height: 2.25rem;
+  white-space: nowrap;
 }
 
 .admin-launch-test-script-grid {
@@ -22550,6 +22615,15 @@ select option:checked {
     justify-content: flex-start;
   }
 
+  .pricing-hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .pricing-hero-actions .btn {
+    width: 100%;
+  }
+
   .study-paths-tabs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -22605,6 +22679,72 @@ select option:checked {
 }
 
 @media (max-width: 960px) and (orientation: landscape) {
+  .pricing-page {
+    padding-top: 0.7rem;
+  }
+
+  .pricing-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(210px, 0.95fr);
+    gap: 0.42rem 0.75rem;
+    align-items: start;
+    border-radius: 18px;
+    padding: 0.72rem 0.78rem;
+  }
+
+  .pricing-hero .checkout-eyebrow {
+    grid-column: 1;
+    margin: 0;
+  }
+
+  .pricing-hero h1 {
+    grid-column: 1;
+    font-size: clamp(1.45rem, 4.8vw, 2.15rem);
+    letter-spacing: 0;
+    line-height: 0.98;
+    margin: 0;
+  }
+
+  .pricing-hero > p:not(.checkout-eyebrow) {
+    grid-column: 1;
+    font-size: 0.84rem;
+    line-height: 1.24;
+    margin: 0;
+  }
+
+  .pricing-hero-actions {
+    align-self: center;
+    display: grid;
+    gap: 0.42rem;
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    grid-template-columns: 1fr;
+    margin-top: 0;
+    max-width: none;
+  }
+
+  .pricing-hero-actions .btn {
+    min-height: 38px;
+    padding: 0.46rem 0.64rem;
+    width: 100%;
+  }
+
+  .pricing-hero-actions small {
+    font-size: 0.7rem;
+  }
+
+  .pricing-intent-ribbon,
+  .pricing-proof-strip {
+    grid-column: 1 / -1;
+    margin-top: 0.28rem;
+  }
+
+  .pricing-intent-ribbon span,
+  .pricing-proof-strip span {
+    border-radius: 13px;
+    padding: 0.45rem 0.56rem;
+  }
+
   .auth-panel {
     align-items: flex-start;
     gap: 0.65rem;
@@ -22748,6 +22888,14 @@ select option:checked {
   }
 
   .admin-launch-smoke-path .btn {
+    width: 100%;
+  }
+
+  .admin-launch-copy-head {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-launch-copy-head .btn {
     width: 100%;
   }
 
@@ -33752,15 +33900,16 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   }
 
   .marketing-preview-copy h1 {
-    font-size: clamp(1.75rem, 10vw, 2.55rem);
+    font-size: clamp(1.55rem, 8.6vw, 2.28rem);
     line-height: 1.05;
   }
 
   .marketing-lead {
-    font-size: 1rem;
+    font-size: 0.94rem;
   }
 
   .marketing-feature-player {
+    order: -1;
     width: 100%;
     min-height: 0;
     aspect-ratio: 16 / 10;
@@ -33780,6 +33929,18 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
   .marketing-feature-caption p {
     font-size: 0.82rem;
+  }
+
+  .marketing-preview-copy {
+    align-content: start;
+  }
+
+  .marketing-preview-copy .marketing-kicker,
+  .marketing-preview-copy h1,
+  .marketing-preview-copy .marketing-lead,
+  .marketing-preview-copy .marketing-audience-chips,
+  .marketing-preview-copy .marketing-hero-actions {
+    order: -2;
   }
 
   .marketing-parallax-story {

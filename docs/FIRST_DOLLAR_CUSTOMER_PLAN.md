@@ -72,7 +72,7 @@ Keep the homepage centered on one repeatable conversion path:
 
 Avoid adding more explanation above the fold. The homepage should sell by showing:
 - A moving preview.
-- Four customer paths.
+- Four customer paths with their own visual preview clips.
 - One membership price.
 - Trust signals: preview first, cancel anytime, works on phones, source-backed terms.
 

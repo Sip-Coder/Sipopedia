@@ -117,6 +117,15 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
           One monthly membership opens the visual academy: preview first, join once, then keep your saved room attached
           through checkout.
         </p>
+        <div className="pricing-hero-actions" aria-label="Membership decision actions">
+          <button type="button" className="btn btn-primary" onClick={() => onNavigate(checkoutRoute)}>
+            Continue to Checkout
+          </button>
+          <button type="button" className="btn btn-light" onClick={() => onNavigate(membershipSupportRoute)}>
+            Membership Help
+          </button>
+          <small>{nextRouteLabel} stays saved.</small>
+        </div>
         <div className="pricing-intent-ribbon pricing-intent-ribbon-single" aria-label="Membership checkout context">
           <span>
             <strong>Billing</strong>
