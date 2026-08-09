@@ -96,7 +96,7 @@ function tierFromPlanCode(planCode: string | null | undefined): AccessTier {
 type ProfileRecord = {
   id: string;
   display_name: string | null;
-  role: AccessRole | "mentor";
+  role: string | null;
   created_at: string | null;
 };
 

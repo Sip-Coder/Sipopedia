@@ -20369,6 +20369,11 @@ select option:checked {
   background: linear-gradient(135deg, rgba(21, 92, 75, 0.22), rgba(4, 13, 24, 0.48));
 }
 
+.admin-launch-smoke-step.needs-evidence {
+  border-color: rgba(237, 212, 168, 0.34);
+  background: linear-gradient(135deg, rgba(115, 81, 34, 0.2), rgba(4, 13, 24, 0.48));
+}
+
 .admin-launch-smoke-step label {
   display: flex;
   align-items: start;

@@ -32,16 +32,19 @@ type AdminConsoleProps = {
 type UserRow = {
   id: string;
   display_name: string | null;
-  role: "student" | "admin" | "mentor";
+  role: EditableUserRole;
   created_at: string | null;
 };
 
 type EditableUserRole = "student" | "admin";
 
-const adminRoleLabels: Record<UserRow["role"], string> = {
+type RawUserRow = Omit<UserRow, "role"> & {
+  role: string | null;
+};
+
+const adminRoleLabels: Record<EditableUserRole, string> = {
   student: "student",
-  admin: "admin",
-  mentor: "legacy mentor - convert to student"
+  admin: "admin"
 };
 
 type DashboardStats = {
@@ -105,6 +108,11 @@ type LaunchProofField = {
   inputMode?: "email" | "text";
 };
 
+type LaunchProofFieldGap = {
+  label: string;
+  reason: string;
+};
+
 type LaunchConnectionStatus = "pass" | "warn" | "fail" | "waiting";
 
 type LaunchConnectionCheck = {
@@ -125,6 +133,7 @@ type LaunchSupportProbeRow = {
   lane_id?: string | null;
   urgency?: string | null;
   status?: string | null;
+  source_route?: string | null;
   created_at?: string | null;
 };
 
@@ -239,6 +248,47 @@ function countLabel(count: number | null | undefined, singular: string, plural: 
   return `${safeCount.toLocaleString()} ${safeCount === 1 ? singular : plural}`;
 }
 
+function normalizeAdminUserRole(role: string | null | undefined): EditableUserRole {
+  return role === "admin" ? "admin" : "student";
+}
+
+function normalizeAdminUserRow(row: RawUserRow): UserRow {
+  return {
+    ...row,
+    role: normalizeAdminUserRole(row.role)
+  };
+}
+
+function isLaunchSmokeStepProven(state: LaunchSmokeState, stepId: string): boolean {
+  const stepState = state[stepId];
+  return Boolean(stepState?.done && stepState.evidence.trim());
+}
+
+function launchSmokeStepGapLabel(state: LaunchSmokeState, step: LaunchSmokeStep): string {
+  const stepState = state[step.id];
+  if (!stepState?.done) return step.label;
+  if (!stepState.evidence.trim()) return `${step.label} evidence note`;
+  return step.label;
+}
+
+function launchProofFieldGap(field: LaunchProofField, value: string): LaunchProofFieldGap | null {
+  const trimmed = value.trim();
+  if (!trimmed) return { label: field.label, reason: "Missing" };
+  if (field.field === "testAccountEmail" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    return { label: field.label, reason: "Needs a valid email" };
+  }
+  if (field.field === "stripeSessionId" && !trimmed.startsWith("cs_")) {
+    return { label: field.label, reason: "Needs a Stripe Checkout session id" };
+  }
+  if (field.field === "subscriptionReference" && trimmed.length < 8) {
+    return { label: field.label, reason: "Needs the subscription row or Stripe subscription reference" };
+  }
+  if (field.field === "paidRoomRoute" && !trimmed.startsWith("app/")) {
+    return { label: field.label, reason: "Needs an app route like app/btg" };
+  }
+  return null;
+}
+
 function initialLaunchConnectionChecks(): LaunchConnectionCheck[] {
   const origin = currentLaunchOrigin();
   return [
@@ -280,7 +330,7 @@ function initialLaunchConnectionChecks(): LaunchConnectionCheck[] {
       id: "support-queue",
       label: "Support queue",
       status: "waiting",
-      detail: "Run the probe to confirm assisted-enrollment requests are reachable."
+      detail: "Run the probe to confirm at least one enrollment support handoff is reachable."
     }
   ];
 }
@@ -367,6 +417,13 @@ const launchSmokeSteps: LaunchSmokeStep[] = [
     evidencePrompt: "Example: success page confirms active access or shows the safe processing/recovery state."
   },
   {
+    id: "cancel-recovery",
+    label: "Cancel Recovery",
+    route: "cancel",
+    expected: "Canceled checkout returns to Sipopedia with retry, pricing, and Membership Help recovery paths intact.",
+    evidencePrompt: "Example: cancel page opens support with enrollment context and no lost saved room."
+  },
+  {
     id: "paid-room",
     label: "Paid Room",
     route: "app/btg",
@@ -377,8 +434,8 @@ const launchSmokeSteps: LaunchSmokeStep[] = [
     id: "support",
     label: "Support",
     route: "support",
-    expected: "A confused buyer can request assisted enrollment and get a human follow-up path.",
-    evidencePrompt: "Example: support request path submitted and monitored."
+    expected: "Membership Help or Assisted Enrollment creates an Enrollment support request that the admin probe can find.",
+    evidencePrompt: "Example: enrollment support request submitted, visible in admin probe, and assigned for follow-up."
   }
 ];
 
@@ -409,9 +466,19 @@ const launchTestScriptSteps: LaunchTestScriptStep[] = [
     detail: "Confirm the success page shows session context, access refresh, Launch Pad, and support."
   },
   {
+    label: "Prove cancel rescue",
+    route: "cancel",
+    detail: "Confirm canceled checkout keeps retry, pricing, and Membership Help routes attached to the saved room."
+  },
+  {
     label: "Unlock the room",
     route: "app/btg",
     detail: "Open the saved paid room and verify access comes from subscription status."
+  },
+  {
+    label: "Submit enrollment help",
+    route: "support",
+    detail: "Submit Membership Help or Assisted Enrollment once and re-run the admin probe until the Enrollment request is found."
   }
 ];
 
@@ -522,7 +589,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         return;
       }
 
-      const nextUsers = (profilesResult.data as UserRow[] | null) ?? [];
+      const nextUsers = ((profilesResult.data as RawUserRow[] | null) ?? []).map(normalizeAdminUserRow);
       const nextSubscriptions = (subscriptionsResult.data as SubscriptionRow[] | null) ?? [];
       setUsers(nextUsers.sort((a, b) => (a.created_at ?? "").localeCompare(b.created_at ?? "")));
       setSubscriptions(nextSubscriptions);
@@ -697,13 +764,15 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       placeholder: "app/btg"
     }
   ];
-  const completedLaunchSmokeCount = launchSmokeSteps.filter((step) => launchSmokeState[step.id]?.done).length;
-  const incompleteLaunchSmokeSteps = launchSmokeSteps.filter((step) => !launchSmokeState[step.id]?.done);
+  const completedLaunchSmokeCount = launchSmokeSteps.filter((step) => isLaunchSmokeStepProven(launchSmokeState, step.id)).length;
+  const incompleteLaunchSmokeSteps = launchSmokeSteps.filter((step) => !isLaunchSmokeStepProven(launchSmokeState, step.id));
   const pendingLaunchSmokeCount = incompleteLaunchSmokeSteps.length;
   const incompleteLaunchConnectionChecks = launchConnectionChecks.filter((check) => check.status !== "pass");
   const launchConnectionIssueCount = incompleteLaunchConnectionChecks.length;
-  const missingLaunchProofFields = launchProofFields.filter((proofField) => !launchProofDetails[proofField.field].trim());
-  const launchProofMissingCount = missingLaunchProofFields.length;
+  const launchProofFieldGaps = launchProofFields
+    .map((proofField) => launchProofFieldGap(proofField, launchProofDetails[proofField.field]))
+    .filter((gap): gap is LaunchProofFieldGap => Boolean(gap));
+  const launchProofMissingCount = launchProofFieldGaps.length;
   const launchOutstandingProofCount = pendingLaunchSmokeCount + launchConnectionIssueCount + launchProofMissingCount;
   const launchReadyForPaidInvite = pendingLaunchSmokeCount === 0 && launchConnectionIssueCount === 0 && launchProofMissingCount === 0;
   const launchDecisionDetail = launchReadyForPaidInvite
@@ -713,8 +782,8 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     {
       label: "Smoke proof",
       status: pendingLaunchSmokeCount === 0 ? "clear" : "missing",
-      detail: pendingLaunchSmokeCount === 0 ? "Every production smoke step is marked proven." : `${pendingLaunchSmokeCount} step${pendingLaunchSmokeCount === 1 ? "" : "s"} still need live evidence.`,
-      items: incompleteLaunchSmokeSteps.map((step) => step.label)
+      detail: pendingLaunchSmokeCount === 0 ? "Every production smoke step is checked and has a proof note." : `${pendingLaunchSmokeCount} step${pendingLaunchSmokeCount === 1 ? "" : "s"} still need a checkmark and proof note.`,
+      items: incompleteLaunchSmokeSteps.map((step) => launchSmokeStepGapLabel(launchSmokeState, step))
     },
     {
       label: "Connection proof",
@@ -725,8 +794,8 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     {
       label: "Stripe/access proof",
       status: launchProofMissingCount === 0 ? "clear" : "missing",
-      detail: launchProofMissingCount === 0 ? "All checkout and access identifiers are captured." : `${launchProofMissingCount} identifier${launchProofMissingCount === 1 ? "" : "s"} still need to be captured.`,
-      items: missingLaunchProofFields.map((field) => field.label)
+      detail: launchProofMissingCount === 0 ? "All checkout and access identifiers are captured with plausible formats." : `${launchProofMissingCount} identifier${launchProofMissingCount === 1 ? "" : "s"} still need valid proof.`,
+      items: launchProofFieldGaps.map((gap) => `${gap.label}: ${gap.reason}`)
     }
   ];
   const beverageNewsNeedsAttention =
@@ -795,8 +864,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     const generatedAt = new Date();
     const smokeLines = launchSmokeSteps.flatMap((step, index) => {
       const stepState = launchSmokeState[step.id] ?? { done: false, evidence: "" };
+      const stepIsProven = isLaunchSmokeStepProven(launchSmokeState, step.id);
       return [
-        `${index + 1}. ${step.label}: ${stepState.done ? "PROVEN" : "NEEDS PROOF"}`,
+        `${index + 1}. ${step.label}: ${stepIsProven ? "PROVEN" : "NEEDS PROOF"}`,
         `   Route: ${step.route}`,
         `   Expected: ${step.expected}`,
         `   Evidence: ${stepState.evidence.trim() || "Not captured yet."}`
@@ -823,6 +893,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `- Stripe session id: ${launchProofDetails.stripeSessionId.trim() || "Not captured yet."}`,
       `- Subscription reference: ${launchProofDetails.subscriptionReference.trim() || "Not captured yet."}`,
       `- Paid room route: ${launchProofDetails.paidRoomRoute.trim() || "Not captured yet."}`,
+      `- Proof field status: ${launchProofMissingCount === 0 ? "All proof fields have plausible formats." : `${launchProofMissingCount} proof field${launchProofMissingCount === 1 ? "" : "s"} need review.`}`,
       "",
       "## Likely First Customers",
       ...launchCustomerSegments.map((segment) => `- ${segment.label}: ${segment.firstOffer}`),
@@ -884,7 +955,8 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
           .limit(1),
         supabase
           .from("support_requests")
-          .select("lane_id, urgency, status, created_at", { count: "exact" })
+          .select("lane_id, urgency, status, source_route, created_at", { count: "exact" })
+          .eq("lane_id", "enrollment")
           .order("created_at", { ascending: false })
           .limit(1)
       ]);
@@ -949,13 +1021,13 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         updateCheck("support-queue", "warn", `Support queue needs review: ${supportResult.value.error.message}`);
       } else {
         const latestSupport = (supportResult.value.data?.[0] ?? null) as LaunchSupportProbeRow | null;
-        const supportCount = countLabel(supportResult.value.count, "support request", "support requests");
+        const supportCount = countLabel(supportResult.value.count, "enrollment support request", "enrollment support requests");
         updateCheck(
           "support-queue",
-          "pass",
+          latestSupport ? "pass" : "warn",
           latestSupport
-            ? `${supportCount} reachable. Latest: ${latestSupport.status ?? "unknown status"} ${latestSupport.lane_id ?? "support"} request, ${latestSupport.urgency ?? "normal"} urgency, created ${formatLaunchProbeTime(latestSupport.created_at)}.`
-            : `${supportCount} reachable. Submit a test assisted-enrollment request before inviting paid traffic.`
+            ? `${supportCount} reachable. Latest: ${latestSupport.status ?? "unknown status"} enrollment request, ${latestSupport.urgency ?? "normal"} urgency, from ${latestSupport.source_route ?? "unknown route"}, created ${formatLaunchProbeTime(latestSupport.created_at)}.`
+            : `${supportCount} found. Submit a test Membership Help or Assisted Enrollment request before inviting paid traffic.`
         );
       }
 
@@ -1324,13 +1396,15 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                     <strong>Capture the identifiers from the real signed-in production test.</strong>
                   </div>
                   {launchProofFields.map((proofField) => {
-                    const isCaptured = launchProofDetails[proofField.field].trim().length > 0;
+                    const proofGap = launchProofFieldGap(proofField, launchProofDetails[proofField.field]);
+                    const isCaptured = proofGap === null;
+                    const fieldHasValue = launchProofDetails[proofField.field].trim().length > 0;
                     return (
                       <label key={proofField.field}>
                         <span className="admin-launch-proof-label-row">
                           {proofField.label}
                           <em className={isCaptured ? "is-complete" : "is-missing"}>
-                            {isCaptured ? "Captured" : "Missing"}
+                            {isCaptured ? "Captured" : fieldHasValue ? "Check" : "Missing"}
                           </em>
                         </span>
                         <input
@@ -1376,8 +1450,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   </div>
                   {launchSmokeSteps.map((step) => {
                     const stepState = launchSmokeState[step.id] ?? { done: false, evidence: "" };
+                    const stepIsProven = isLaunchSmokeStepProven(launchSmokeState, step.id);
                     return (
-                      <article className={`admin-launch-smoke-step ${stepState.done ? "is-complete" : ""}`} key={step.id}>
+                      <article className={`admin-launch-smoke-step ${stepIsProven ? "is-complete" : ""} ${stepState.done && !stepIsProven ? "needs-evidence" : ""}`} key={step.id}>
                         <label>
                           <input
                             type="checkbox"
@@ -1399,6 +1474,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                           placeholder={step.evidencePrompt}
                           rows={2}
                         />
+                        {stepState.done && !stepIsProven ? <small className="hint">Add a proof note before this counts as proven.</small> : null}
                       </article>
                     );
                   })}
@@ -1807,7 +1883,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                     <td>{adminRoleLabels[user.role]}</td>
                     <td>{user.created_at ? new Date(user.created_at).toLocaleDateString() : "-"}</td>
                     <td>
-                      <select value={user.role === "mentor" ? "student" : user.role} onChange={(event) => void updateRole(user.id, event.target.value as EditableUserRole)}>
+                      <select value={user.role} onChange={(event) => void updateRole(user.id, event.target.value as EditableUserRole)}>
                         <option value="student">student</option>
                         <option value="admin">admin</option>
                       </select>

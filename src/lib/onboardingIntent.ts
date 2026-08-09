@@ -78,3 +78,24 @@ export function buildOnboardingRoute(
   const query = params.toString();
   return query ? `${route}?${query}` : route;
 }
+
+export function buildMembershipSupportRoute({
+  source,
+  next,
+  sessionId,
+  urgency = "soon"
+}: {
+  source: string;
+  next?: string | null;
+  sessionId?: string | null;
+  urgency?: "normal" | "soon" | "urgent";
+}): string {
+  const params = new URLSearchParams({
+    lane: "enrollment",
+    source,
+    urgency
+  });
+  if (next) params.set("next", next);
+  if (sessionId) params.set("session_id", sessionId);
+  return `support?${params.toString()}`;
+}

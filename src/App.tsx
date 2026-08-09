@@ -35,7 +35,7 @@ import {
   type CompactNavSearchItem
 } from "./components/CompactNavigation";
 import { isBossNavigationUser } from "./lib/adminAccess";
-import { buildOnboardingRoute, readOnboardingIntent } from "./lib/onboardingIntent";
+import { buildMembershipSupportRoute, buildOnboardingRoute, readOnboardingIntent } from "./lib/onboardingIntent";
 import {
   WORKSPACE_NAV_ITEMS,
   WORKSPACE_SECTIONS,
@@ -1514,14 +1514,12 @@ function App() {
   const pricingRecoveryRoute = checkoutRecoveryIntent
     ? buildOnboardingRoute("pricing", { planId: checkoutRecoveryIntent.planId, source: `${route}-recovery`, next: checkoutRecoveryIntent.next })
     : "pricing";
-  const checkoutSupportParams = new URLSearchParams({
-    lane: "enrollment",
+  const checkoutSupportRoute = buildMembershipSupportRoute({
     source: `checkout-${route}`,
-    urgency: route === "success" ? "urgent" : "soon"
+    urgency: route === "success" ? "urgent" : "soon",
+    next: checkoutRecoveryIntent?.next,
+    sessionId: checkoutSessionId
   });
-  if (checkoutRecoveryIntent?.next) checkoutSupportParams.set("next", checkoutRecoveryIntent.next);
-  if (checkoutSessionId) checkoutSupportParams.set("session_id", checkoutSessionId);
-  const checkoutSupportRoute = `support?${checkoutSupportParams.toString()}`;
   const requiresResolvedAccess =
     route.startsWith("admin") ||
     route === "account" ||

@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { createCheckoutSession } from "../lib/checkoutSession";
 import { createCloudSupportRequest, isSupportRequestRateLimitError, saveLocalSupportRequest } from "../lib/supportRequests";
 import {
+  buildMembershipSupportRoute,
   buildOnboardingRoute,
   getPlanById,
   readOnboardingIntent
@@ -52,7 +53,12 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const nextRouteLabel = nextRoute ? nextRoute.replace(/^app\//, "").replace(/-/g, " ") : "Launch Pad";
   const checkoutReturnRoute = buildOnboardingRoute("checkout", { planId: selectedPlanId, source: "account-return", next: nextRoute });
   const loginBeforeCheckoutRoute = buildOnboardingRoute("login", { source: "checkout-account", next: checkoutReturnRoute });
-  const membershipSupportRoute = `support?lane=enrollment&source=checkout-help&urgency=soon&next=${encodeURIComponent(nextRoute ?? "")}`;
+  const membershipSupportRoute = buildMembershipSupportRoute({
+    source: "checkout-help",
+    urgency: "soon",
+    next: nextRoute,
+    sessionId: initialIntent.sessionId
+  });
   const activeCheckoutStep = user ? 2 : 1;
   const isEmailValid = !email.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const isAssistedReady = Boolean(name.trim() && goal.trim() && email.trim() && isEmailValid);

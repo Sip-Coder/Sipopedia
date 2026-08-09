@@ -192,6 +192,7 @@ function readSupportRouteContext(): SupportRouteContext {
       message: [
         "I am on the membership checkout page and need help finishing enrollment.",
         destination ? `Saved room: ${destination}.` : "Saved room: not sure.",
+        checkoutSessionId ? `Stripe checkout session: ${checkoutSessionId}.` : "Stripe checkout session: not started.",
         "Please help me attach the membership to the correct account and continue safely."
       ].join("\n")
     },

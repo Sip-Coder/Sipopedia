@@ -57,12 +57,15 @@ The homepage conversion path should stay simple enough to repeat in ads, demos, 
 - [ ] Stripe cancel URL returns to `https://sipopedia.com/#cancel` with the retry path intact.
 - [ ] Success and cancel recovery buttons route membership help to Support with enrollment context prefilled.
 - [ ] Success-page Membership Help includes the Stripe checkout session id when Stripe returns it.
+- [ ] Checkout, success, and cancel Membership Help routes use the same enrollment-support builder so saved room and session evidence do not drift.
 - [ ] Stripe webhook writes or updates `customer_subscriptions` in Supabase.
 - [ ] Paid account receives Student/subscriber access without manual database edits.
 - [ ] Canceled or past-due subscription removes or limits paid access.
 - [ ] Profile roles are limited to Student and Admin; Trial access is issued through `customer_subscriptions.status = 'trialing'`.
+- [ ] Frontend access/admin views normalize any legacy or unknown profile role to Student unless the role is explicitly Admin.
 - [ ] Terms, Privacy, Refund, and billing support routes are reachable from Pricing and Checkout before payment.
 - [ ] Assisted Enrollment submits to a support/admin workflow that someone will monitor.
+- [ ] Admin connection probe finds at least one Enrollment support request created by Membership Help or Assisted Enrollment.
 - [ ] Mobile portrait checkout path is readable from homepage to success.
 - [ ] Mobile landscape checkout path has no clipped CTA, pricing, login, or support controls.
 - [ ] A real production smoke test proves: homepage -> pricing -> login -> checkout -> success -> paid room unlock.
@@ -97,11 +100,11 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 
 - Confirm the public homepage promise and $10/month offer are still clear.
 - Review the likely first customer segments: curious learners, hospitality staff, certification-adjacent learners, and visual learners.
-- Open the smoke-test path: Homepage -> Pricing -> Trust Links -> Checkout -> Success -> Paid Room -> Support.
+- Open the smoke-test path: Homepage -> Pricing -> Trust Links -> Checkout -> Success -> Cancel Recovery -> Paid Room -> Support.
 - Mark each smoke-test item only after a real production check proves it.
-- Add a short proof note for each step so the operator can see what was verified and what is still assumed.
-- Fill in the Stripe + access proof fields with the test account email, Stripe session id, subscription reference, and paid room route.
-- Run the connection probe and confirm subscription/support checks show safe counts and latest status metadata, not just generic reachability.
+- Add a short proof note for each step; checked items without notes remain missing from the launch-ready count.
+- Fill in the Stripe + access proof fields with plausible live evidence: valid test account email, `cs_` Stripe session id, subscription reference, and paid `app/...` route.
+- Run the connection probe and confirm subscription checks show safe counts, and support checks find at least one Enrollment request with latest status metadata.
 - Review the proof-gaps panel and the downloaded Missing Proof Checklist; do not invite paid traffic while any gap is still marked missing.
 - Download the first-dollar proof log after the smoke test so the checkout, webhook, support, and access evidence is saved outside browser memory.
 - Keep the launch decision on hold until every smoke-test item is checked, every connection probe passes, and every Stripe + access proof field is filled.
