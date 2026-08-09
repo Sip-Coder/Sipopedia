@@ -92,6 +92,10 @@ test("onboarding labels hide route metadata from first buyers", () => {
   assert.match(policyPageSource, /Continue Enrollment keep this destination attached/);
   assert.match(appSource, /checkoutRecoveryTargetLabel/);
   assert.match(appSource, /\$\{successTargetLabel\} stays attached while access updates/);
+  assert.match(appSource, /First-dollar live proof cues/);
+  assert.match(appSource, /Use the Student account that started checkout/);
+  assert.match(appSource, /Match session, event, and subscription metadata in Supabase/);
+  assert.match(appSource, /Paid access must work without Admin role changes/);
   assert.match(appSource, /\{checkoutRecoveryTargetLabel\} remains attached/);
   assert.match(appSource, /route === "success"[\s\S]*?View Membership Details[\s\S]*?Membership Help/);
   assert.match(appSource, /route === "cancel"[\s\S]*?Retry Membership Checkout/);
@@ -152,6 +156,15 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /Code-ready foundation/);
   assert.match(adminSource, /Needs live proof/);
   assert.match(adminSource, /First-dollar evidence split/);
+  assert.match(adminSource, /Live paid proof ladder/);
+  assert.match(adminSource, /same Student account/);
+  assert.match(adminSource, /Student test account starts Stripe Checkout from sipopedia\.com with the saved room attached/);
+  assert.match(adminSource, /Admin access, localhost checkout, or a Replit preview URL/);
+  assert.match(adminSource, /billing_webhook_events event and one customer_subscriptions row for the same account/);
+  assert.match(adminSource, /IDs captured across different rows or different test accounts/);
+  assert.match(adminSource, /Opening the room while the account is Admin/);
+  assert.match(adminSource, /Only testing the happy path/);
+  assert.match(adminSource, /## Live Paid Proof Ladder/);
   assert.match(adminSource, /## Evidence Split/);
   assert.match(adminSource, /reviewable before payment/);
   assert.match(adminSource, /live proof required/);
@@ -263,6 +276,8 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /full `cs_test_\.\.\.` or `cs_live_\.\.\.`/);
   assert.match(readinessDoc, /`sub_\.\.\.` Stripe subscription id or `customer_subscriptions` UUID/);
   assert.match(readinessDoc, /Supabase metadata proof/);
+  assert.match(readinessDoc, /Admin Console live paid proof ladder/);
+  assert.match(readinessDoc, /localhost, Replit preview, Admin access, manually edited rows, mismatched Stripe IDs, and happy-path-only checks do not count/);
   assert.match(readinessDoc, /phone screenshot proof location/);
   assert.match(readinessDoc, /proof log includes the evidence split/);
   assert.match(readinessDoc, /first-visit decision rail offers Watch, Choose, Join, and Help actions/);

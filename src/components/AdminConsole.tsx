@@ -97,6 +97,12 @@ type LaunchEvidenceLane = {
   items: string[];
 };
 
+type LaunchLiveProofStep = {
+  label: string;
+  mustShow: string;
+  notEnough: string;
+};
+
 type LaunchSmokeState = Record<string, { done: boolean; evidence: string }>;
 
 type StoredLaunchSmokeState = Partial<Record<string, Partial<{ done: boolean; evidence: string }>>>;
@@ -586,6 +592,39 @@ const launchEvidenceLanes: LaunchEvidenceLane[] = [
   }
 ];
 
+const launchLiveProofSteps: LaunchLiveProofStep[] = [
+  {
+    label: "Signed-in buyer",
+    mustShow: "Student test account starts Stripe Checkout from sipopedia.com with the saved room attached.",
+    notEnough: "Admin access, localhost checkout, or a Replit preview URL."
+  },
+  {
+    label: "Stripe return",
+    mustShow: "Success page shows the full Stripe Checkout session reference after payment.",
+    notEnough: "A Stripe dashboard payment without the Sipopedia success return."
+  },
+  {
+    label: "Webhook writeback",
+    mustShow: "Supabase has a billing_webhook_events event and one customer_subscriptions row for the same account.",
+    notEnough: "A manually edited subscription row or profile role change."
+  },
+  {
+    label: "Metadata match",
+    mustShow: "That same subscription row contains matching stripe_event_id, stripe_session_id, and stripe_subscription_id metadata.",
+    notEnough: "IDs captured across different rows or different test accounts."
+  },
+  {
+    label: "Access unlock",
+    mustShow: "The saved paid room opens from active or trialing subscription status after Refresh Access.",
+    notEnough: "Opening the room while the account is Admin."
+  },
+  {
+    label: "Lockout check",
+    mustShow: "Canceled, past-due, unpaid, incomplete, and expired statuses do not keep paid access open.",
+    notEnough: "Only testing the happy path."
+  }
+];
+
 const socialPlatforms: SocialPlatform[] = [
   { id: "instagram", label: "Instagram", handle: "@sipstudies", postType: "Feed, Reel, Story", limit: 2200 },
   { id: "facebook", label: "Facebook", handle: "Sip Studies", postType: "Page post", limit: 63206 },
@@ -962,6 +1001,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `- ${lane.label} (${lane.status === "code-ready" ? "reviewable before payment" : "live proof required"}): ${lane.detail}`,
       ...lane.items.map((item) => `  - ${item}`)
     ]);
+    const liveProofLines = launchLiveProofSteps.flatMap((step, index) => [
+      `${index + 1}. ${step.label}`,
+      `   Must show: ${step.mustShow}`,
+      `   Not enough: ${step.notEnough}`
+    ]);
     const smokeLines = launchSmokeSteps.flatMap((step, index) => {
       const stepState = launchSmokeState[step.id] ?? { done: false, evidence: "" };
       const stepIsProven = isLaunchSmokeStepProven(launchSmokeState, step.id);
@@ -990,6 +1034,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       "",
       "## Evidence Split",
       ...evidenceLaneLines,
+      "",
+      "## Live Paid Proof Ladder",
+      ...liveProofLines,
       "",
       "## Stripe And Access Proof",
       `- Test account email: ${launchProofDetails.testAccountEmail.trim() || "Not captured yet."}`,
@@ -1521,6 +1568,24 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                         <button className="btn btn-light" type="button" onClick={() => onNavigate(step.route)}>
                           Open
                         </button>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+                <div className="admin-launch-live-proof" aria-label="Live paid proof ladder">
+                  <div className="admin-launch-test-script-head">
+                    <p className="admin-eyebrow">Live paid proof ladder</p>
+                    <strong>Count the test only when every step is proven from the same Student account.</strong>
+                  </div>
+                  <div className="admin-launch-live-proof-grid">
+                    {launchLiveProofSteps.map((step, index) => (
+                      <article key={step.label}>
+                        <span>{String(index + 1).padStart(2, "0")}</span>
+                        <div>
+                          <strong>{step.label}</strong>
+                          <p>{step.mustShow}</p>
+                          <small>Not enough: {step.notEnough}</small>
+                        </div>
                       </article>
                     ))}
                   </div>

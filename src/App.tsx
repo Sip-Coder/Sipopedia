@@ -1799,6 +1799,20 @@ function App() {
                 {hasConfirmedMembershipAccess ? `Next stop: ${successTargetLabel}.` : `${successTargetLabel} stays attached while access updates.`}
               </span>
             </div>
+            <div className="checkout-live-proof-cue" aria-label="First-dollar live proof cues">
+              <span>
+                <strong>Same account</strong>
+                Use the Student account that started checkout.
+              </span>
+              <span>
+                <strong>Same row</strong>
+                Match session, event, and subscription metadata in Supabase.
+              </span>
+              <span>
+                <strong>No override</strong>
+                Paid access must work without Admin role changes.
+              </span>
+            </div>
           </header>
           <div className="checkout-links">
             {hasConfirmedMembershipAccess ? (

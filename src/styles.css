@@ -19638,6 +19638,36 @@ select option:checked {
   text-transform: uppercase;
 }
 
+.checkout-live-proof-cue {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 0.6rem;
+  width: min(100%, 820px);
+}
+
+.checkout-live-proof-cue span {
+  border: 1px solid rgba(237, 212, 168, 0.26);
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(237, 212, 168, 0.08), rgba(42, 191, 205, 0.04)),
+    rgba(2, 18, 28, 0.62);
+  color: rgba(225, 249, 246, 0.86);
+  display: grid;
+  gap: 0.14rem;
+  font-size: 0.74rem;
+  font-weight: 720;
+  line-height: 1.26;
+  padding: 0.62rem 0.7rem;
+}
+
+.checkout-live-proof-cue strong {
+  color: #f4d9a2;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .checkout-session-reference {
   align-items: center;
   background: rgba(2, 18, 28, 0.72);
@@ -20488,6 +20518,73 @@ select option:checked {
   min-height: 2.15rem;
   padding-inline: 0.78rem;
   white-space: nowrap;
+}
+
+.admin-launch-live-proof {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.9rem;
+  border: 1px solid rgba(237, 212, 168, 0.24);
+  border-radius: 14px;
+  padding: 0.85rem;
+  background:
+    linear-gradient(135deg, rgba(237, 212, 168, 0.08), rgba(42, 191, 205, 0.05)),
+    rgba(4, 18, 30, 0.66);
+}
+
+.admin-launch-live-proof-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.admin-launch-live-proof-grid article {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.64rem;
+  min-width: 0;
+  border: 1px solid rgba(159, 218, 245, 0.18);
+  border-radius: 12px;
+  padding: 0.68rem;
+  background: rgba(1, 17, 27, 0.6);
+}
+
+.admin-launch-live-proof-grid article > span {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(237, 212, 168, 0.46);
+  border-radius: 999px;
+  color: #fff2d3;
+  font-size: 0.72rem;
+  font-weight: 950;
+}
+
+.admin-launch-live-proof-grid article div {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+}
+
+.admin-launch-live-proof-grid strong {
+  color: #fff2d3;
+  line-height: 1.16;
+}
+
+.admin-launch-live-proof-grid p {
+  margin: 0;
+  color: #dff8ff;
+  font-size: 0.76rem;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.admin-launch-live-proof-grid small {
+  color: #edcfa5;
+  font-size: 0.7rem;
+  font-weight: 760;
+  line-height: 1.32;
 }
 
 .admin-launch-check-grid {
@@ -22049,12 +22146,14 @@ select option:checked {
   .pricing-buyer-fit-grid,
   .pricing-membership-promises,
   .admin-launch-evidence-split,
+  .admin-launch-live-proof-grid,
   .admin-launch-customer-grid,
   .admin-launch-check-grid,
   .admin-launch-connection-grid,
   .checkout-intent-ribbon,
   .checkout-safety-strip,
   .checkout-result-proof,
+  .checkout-live-proof-cue,
   .checkout-stage-list {
     grid-template-columns: 1fr;
   }
@@ -22167,11 +22266,13 @@ select option:checked {
   .pricing-buyer-fit-grid article,
   .pricing-membership-promises article,
   .admin-launch-evidence-split article,
+  .admin-launch-live-proof-grid article,
   .admin-launch-customer,
   .admin-launch-check,
   .admin-launch-connection-check,
   .checkout-safety-strip span,
-  .checkout-result-proof span {
+  .checkout-result-proof span,
+  .checkout-live-proof-cue span {
     padding: 0.62rem;
   }
 
