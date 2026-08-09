@@ -1374,6 +1374,7 @@ function App() {
   const [pageStatusesReady, setPageStatusesReady] = useState(false);
   const [successAccessStatus, setSuccessAccessStatus] = useState<"idle" | "checking" | "checked" | "waiting" | "failed">("idle");
   const [successAccessAttempts, setSuccessAccessAttempts] = useState(0);
+  const [successReferenceCopied, setSuccessReferenceCopied] = useState(false);
   const { loading: accessLoading, isPaid, isAdmin, refreshProfile } = useAccess();
 
   useEffect(() => {
@@ -1396,9 +1397,14 @@ function App() {
   }, [route]);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [route]);
+
+  useEffect(() => {
     if (route !== "success") {
       setSuccessAccessStatus("idle");
       setSuccessAccessAttempts(0);
+      setSuccessReferenceCopied(false);
       return;
     }
 
@@ -1549,6 +1555,16 @@ function App() {
     next: checkoutRecoveryIntent?.next,
     sessionId: checkoutSessionId
   });
+  const copySuccessCheckoutReference = async () => {
+    if (!checkoutSessionId) return;
+    try {
+      await navigator.clipboard.writeText(checkoutSessionId);
+      setSuccessReferenceCopied(true);
+      trackEvent("checkout_success_reference_copy", { source: "success", next: successIntent?.next });
+    } catch {
+      setSuccessReferenceCopied(false);
+    }
+  };
   const requiresResolvedAccess =
     route.startsWith("admin") ||
     route === "account" ||
@@ -1781,8 +1797,14 @@ function App() {
             ) : null}
             {checkoutSessionId ? (
               <div className="checkout-session-reference" aria-label="Stripe checkout reference">
-                <span>Checkout reference</span>
+                <div>
+                  <span>Checkout reference</span>
+                  <small>Copy into Admin proof or Membership Help if access is still syncing.</small>
+                </div>
                 <code>{checkoutSessionId}</code>
+                <button className="btn btn-light" type="button" onClick={() => void copySuccessCheckoutReference()}>
+                  {successReferenceCopied ? "Copied" : "Copy"}
+                </button>
               </div>
             ) : null}
             <div className="checkout-result-proof" aria-label="Checkout completion status">

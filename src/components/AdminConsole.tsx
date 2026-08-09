@@ -104,6 +104,12 @@ type LaunchEvidenceLane = {
   items: string[];
 };
 
+type LaunchProofHandoffStep = {
+  label: string;
+  title: string;
+  detail: string;
+};
+
 type LaunchLiveProofStep = {
   label: string;
   mustShow: string;
@@ -467,6 +473,29 @@ const launchCommandCards: LaunchCommandCard[] = [
       "Supabase records matching Stripe event, session, and subscription metadata on one row.",
       "Paid rooms unlock from active/trialing status, while canceled or past-due status locks them again."
     ]
+  }
+];
+
+const launchProofHandoffSteps: LaunchProofHandoffStep[] = [
+  {
+    label: "Safe preflight",
+    title: "Proves public wiring only",
+    detail: "After each RGRD, run the production preflight and keep the matching commit, mobile screenshots, checkout guard, and webhook guard together."
+  },
+  {
+    label: "Live checkout",
+    title: "Proves a buyer can pay",
+    detail: "Use one signed-in Student account on sipopedia.com, start Stripe Checkout, return to success, and capture the full cs_ session reference."
+  },
+  {
+    label: "Webhook row",
+    title: "Proves payment became access",
+    detail: "Capture the evt_ webhook and the same customer_subscriptions row containing stripe_event_id, stripe_session_id, and stripe_subscription_id."
+  },
+  {
+    label: "Lockout",
+    title: "Proves access can turn off",
+    detail: "Confirm canceled, unpaid, incomplete, or past-due subscription status locks the paid room and routes the buyer to billing support."
   }
 ];
 
@@ -1046,6 +1075,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `- ${lane.label} (${lane.status === "code-ready" ? "reviewable before payment" : "live proof required"}): ${lane.detail}`,
       ...lane.items.map((item) => `  - ${item}`)
     ]);
+    const proofHandoffLines = launchProofHandoffSteps.map((step) => (
+      `- ${step.label}: ${step.title}. ${step.detail}`
+    ));
     const liveProofLines = launchLiveProofSteps.flatMap((step, index) => [
       `${index + 1}. ${step.label}`,
       `   Must show: ${step.mustShow}`,
@@ -1082,6 +1114,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       "",
       "## Evidence Split",
       ...evidenceLaneLines,
+      "",
+      "## Smoke Test Handoff",
+      ...proofHandoffLines,
       "",
       "## Live Paid Proof Ladder",
       ...liveProofLines,
@@ -1585,6 +1620,21 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   <span>{launchReadyForPaidInvite ? "Ready for controlled test" : "Hold paid invite"}</span>
                   <strong>{launchReadyForPaidInvite ? "First-customer path is proof-ready." : "Do not invite a paid customer yet."}</strong>
                   <small>{launchDecisionDetail}</small>
+                </div>
+                <div className="admin-launch-handoff" aria-label="First-dollar smoke test handoff">
+                  <div className="admin-launch-test-script-head">
+                    <p className="admin-eyebrow">Smoke test handoff</p>
+                    <strong>Safe preflight is not the same as first-dollar proof.</strong>
+                  </div>
+                  <div className="admin-launch-handoff-grid">
+                    {launchProofHandoffSteps.map((step) => (
+                      <article key={step.label}>
+                        <span>{step.label}</span>
+                        <strong>{step.title}</strong>
+                        <small>{step.detail}</small>
+                      </article>
+                    ))}
+                  </div>
                 </div>
                 <div className="admin-launch-command-grid" aria-label="First-dollar launch card">
                   {launchCommandCards.map((card) => (

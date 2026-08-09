@@ -67,6 +67,7 @@ Keep future homepage changes anchored to the first-customer decision, not the in
 - [ ] Stripe Checkout session starts from production for a signed-in test user.
 - [ ] Checkout fallback has a direct Membership Help route with `checkout-help` enrollment context attached.
 - [ ] Stripe success URL returns to `https://sipopedia.com/#success` with the session context intact.
+- [ ] Checkout server success URLs preserve Stripe's `{CHECKOUT_SESSION_ID}` placeholder so the returned `#success` route can display and copy the exact `cs_...` session id.
 - [ ] Success page shows the full checkout session reference plus a clear pending-access state with Refresh Access, Launch Pad, and Support if webhook sync is delayed.
 - [ ] Success recovery avoids duplicate-checkout prompts while access is syncing; retry checkout stays on the canceled-checkout route.
 - [ ] Stripe cancel URL returns to `https://sipopedia.com/#cancel` with the retry path intact.
@@ -121,6 +122,7 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Confirm the public homepage promise and $10/month offer are still clear.
 - Review the likely first customer segments: curious learners, hospitality staff, certification-adjacent learners, and visual learners.
 - Use the Admin launch card to keep the decision anchored: individuals before teams, show/choose/join homepage hook, and one live proof loop before paid invites.
+- Use the Smoke test handoff to keep safe preflight separate from real payment proof. Safe preflight proves public wiring only; first-dollar proof still needs live checkout, webhook writeback, paid unlock, and lockout evidence from the same Student account.
 - Use the evidence split to separate code-ready foundations from live proof that only counts after a signed-in production checkout.
 - Open the smoke-test path: Homepage -> Pricing -> Trust Links -> Checkout -> Success -> Cancel Recovery -> Paid Room -> Support.
 - Mark each smoke-test item only after a real production check proves it.
@@ -133,6 +135,7 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Use the Admin Console live paid proof ladder to reject false positives: localhost, Replit preview, Admin access, manually edited rows, mismatched Stripe IDs, and happy-path-only checks do not count.
 - Review the proof-gaps panel and the downloaded Missing Proof Checklist; do not invite paid traffic while any gap is still marked missing.
 - Download the first-dollar proof log after the smoke test so the proof log includes the evidence split and saves checkout, webhook, support, and access evidence outside browser memory.
+- On the success page, use the Checkout reference copy action to paste the exact `cs_...` session id into Admin proof or Membership Help instead of retyping it from a phone.
 - Keep the launch decision on hold until every smoke-test item is checked, every connection probe passes, and every Stripe + access proof field is filled.
 - Treat Stripe checkout and webhook unlock as unproven until a signed-in production test account completes the full loop.
 - Watch Assisted Enrollment/support requests daily while the first customers are being invited.
@@ -167,7 +170,7 @@ npm run first-dollar:mobile-qa
 npm run first-dollar:mobile-qa -- --base-url https://sipopedia.com
 ```
 
-The mobile QA walks phone portrait and phone landscape through Homepage -> Pricing -> Checkout -> Login. It fails if the homepage promise, $10 membership signal, saved Beyond The Glass room, login-before-payment guard, Assisted Enrollment fallback, Google login, email magic-link fallback, or Send Magic Link button disappear or become hidden outside the phone viewport. Screenshots and `report.json` are saved under `.tmp/first-dollar-mobile-path-qa-*` for proof review; keep those files local unless a specific screenshot is approved for release.
+The mobile QA walks phone portrait and phone landscape through Homepage -> Pricing -> Checkout -> Login -> Success -> Cancel. It fails if the homepage promise, $10 membership signal, saved Beyond The Glass room, login-before-payment guard, Assisted Enrollment fallback, Google login, email magic-link fallback, Send Magic Link button, success checkout-reference copy action, success recovery actions, or cancel recovery actions disappear or become unreachable in the phone viewport. Screenshots and `report.json` are saved under `.tmp/first-dollar-mobile-path-qa-*` for proof review; keep those files local unless a specific screenshot is approved for release.
 
 ## First Paid Test Script
 
@@ -179,7 +182,7 @@ Run this once, in order, from production before inviting a real buyer:
 4. Open Terms, Privacy, and Refund from the membership path, then confirm Membership Details, Ask Support, and Continue Enrollment preserve the saved room.
 5. Sign in with the production test learner account, and confirm the Google or email magic-link route preserves the saved checkout room.
 6. Start Stripe Checkout from Sipopedia and confirm Stripe shows the correct monthly membership. If checkout fails, confirm Membership Help opens Support with `checkout-help` enrollment context attached.
-7. Return to `https://sipopedia.com/#success` and confirm the full checkout session reference, Refresh Access, Launch Pad, and Support are visible.
+7. Return to `https://sipopedia.com/#success` and confirm the full checkout session reference, copy action, Refresh Access, Launch Pad, and Support are visible.
 8. Open Membership Help from the success page and confirm the Support intake includes the saved room and Stripe checkout session id.
 9. Capture the Stripe `evt_` webhook event id and the resulting subscription reference from Supabase proof.
 10. Confirm the Supabase proof row has the same Stripe event, session, and subscription identifiers in `customer_subscriptions.metadata`.

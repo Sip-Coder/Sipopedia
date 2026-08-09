@@ -119,7 +119,7 @@ async function waitForDevToolsPort(userDataDir, chrome, chromeState, timeoutMs =
       const port = Number.parseInt(portLine, 10);
       if (Number.isInteger(port) && port > 0) return port;
     } catch (error) {
-      if (error?.code !== "ENOENT") throw error;
+      if (error?.code !== "ENOENT" && error?.code !== "EBUSY") throw error;
     }
     await sleep(200);
   }
@@ -299,6 +299,24 @@ async function clickButton(client, sessionId, labelPattern, routeTimeoutMs) {
   await waitForReady(client, sessionId, routeTimeoutMs);
 }
 
+async function scrollElementIntoView(client, sessionId, selector, labelPattern) {
+  const scrolled = await evaluate(
+    client,
+    sessionId,
+    `(() => {
+      const pattern = new RegExp(${JSON.stringify(labelPattern)}, "i");
+      const element = Array.from(document.querySelectorAll(${JSON.stringify(selector)})).find((candidate) =>
+        pattern.test((candidate.textContent ?? "").trim())
+      );
+      if (!element) return false;
+      element.scrollIntoView({ block: "center", inline: "nearest" });
+      return true;
+    })()`
+  );
+  if (!scrolled) throw new Error(`Could not scroll to element matching ${labelPattern}.`);
+  await sleep(250);
+}
+
 function assertText(state, pattern, message) {
   if (!new RegExp(pattern, "i").test(state.text)) {
     throw new Error(message);
@@ -374,6 +392,54 @@ async function runViewportFlow(client, sessionId, baseUrl, outputDir, routeTimeo
   check(() => assertVisibleCritical(state, "Log In with Google|Google Login Unavailable", "Google login button is not fully visible in the login viewport."));
   check(() => assertVisibleCritical(state, "Send Magic Link", "Send Magic Link button is not fully visible in the login viewport."));
   check(() => assertVisibleEmailInput(state));
+
+  const fakeSessionId = "cs_test_mobileproof_1234567890abcdef";
+  await navigate(
+    client,
+    sessionId,
+    `${baseUrl}/#success?plan=pro&source=checkout-success&next=app%2Fbtg&session_id=${fakeSessionId}`,
+    routeTimeoutMs
+  );
+  await scrollElementIntoView(client, sessionId, ".checkout-session-reference", "Checkout reference");
+  await capture("05-success-proof");
+  state = await pageState(client, sessionId);
+  check(() => assertHash(state, "success\\?", "Success route did not open."));
+  check(() => assertText(state, "Membership Checkout Complete", "Success page headline is missing."));
+  check(() => assertText(state, "Checkout reference", "Success page checkout reference label is missing."));
+  check(() => assertText(state, fakeSessionId, "Success page does not show the full checkout session reference."));
+  check(() => assertText(state, "Copy into Admin proof or Membership Help", "Success page does not explain where to use the copied reference."));
+  check(() => assertText(state, "Same account", "Success page live-proof same-account cue is missing."));
+  check(() => assertText(state, "Same row", "Success page live-proof same-row cue is missing."));
+  check(() => assertVisibleCritical(state, "Checkout reference", "Checkout reference is not fully visible in the success viewport."));
+  check(() => assertVisibleCritical(state, "Copy", "Checkout reference copy action is not fully visible in the success viewport."));
+
+  await scrollElementIntoView(client, sessionId, "button", "Membership Help");
+  await capture("06-success-actions");
+  state = await pageState(client, sessionId);
+  check(() => assertVisibleCritical(state, "Refresh Access", "Refresh Access button is not fully visible after scrolling success actions into view."));
+  check(() => assertVisibleCritical(state, "Membership Help", "Membership Help button is not fully visible after scrolling success actions into view."));
+  check(() => assertVisibleCritical(state, "View Membership Details", "Membership Details button is not fully visible after scrolling success actions into view."));
+
+  await navigate(
+    client,
+    sessionId,
+    `${baseUrl}/#cancel?plan=pro&source=checkout-cancel&next=app%2Fbtg`,
+    routeTimeoutMs
+  );
+  await capture("07-cancel-proof");
+  state = await pageState(client, sessionId);
+  check(() => assertHash(state, "cancel\\?", "Cancel route did not open."));
+  check(() => assertText(state, "Membership Checkout Canceled", "Cancel recovery headline is missing."));
+  check(() => assertText(state, "No charge", "Cancel recovery no-charge proof is missing."));
+  check(() => assertText(state, "Beyond The Glass", "Cancel recovery lost the saved destination label."));
+  check(() => assertText(state, "Retry Membership Checkout", "Cancel recovery retry action is missing."));
+  check(() => assertText(state, "Membership Support", "Cancel recovery support action is missing."));
+
+  await scrollElementIntoView(client, sessionId, "button", "Retry Membership Checkout");
+  await capture("08-cancel-actions");
+  state = await pageState(client, sessionId);
+  check(() => assertVisibleCritical(state, "Retry Membership Checkout", "Retry Membership Checkout button is not fully visible in the cancel viewport."));
+  check(() => assertVisibleCritical(state, "Membership Support", "Membership Support button is not fully visible in the cancel viewport."));
 
   return { viewport: viewport.name, ok: failures.length === 0, failures, screenshots };
 }

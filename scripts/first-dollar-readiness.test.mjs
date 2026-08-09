@@ -92,10 +92,14 @@ test("onboarding labels hide route metadata from first buyers", () => {
   assert.match(policyPageSource, /Continue Enrollment keep this destination attached/);
   assert.match(appSource, /checkoutRecoveryTargetLabel/);
   assert.match(appSource, /\$\{successTargetLabel\} stays attached while access updates/);
+  assert.match(appSource, /window\.scrollTo\(\{ top: 0, left: 0, behavior: "auto" \}\)/);
   assert.match(appSource, /First-dollar live proof cues/);
   assert.match(appSource, /Use the Student account that started checkout/);
   assert.match(appSource, /Match session, event, and subscription metadata in Supabase/);
   assert.match(appSource, /Paid access must work without Admin role changes/);
+  assert.match(appSource, /copySuccessCheckoutReference/);
+  assert.match(appSource, /checkout_success_reference_copy/);
+  assert.match(appSource, /Copy into Admin proof or Membership Help if access is still syncing/);
   assert.match(appSource, /\{checkoutRecoveryTargetLabel\} remains attached/);
   assert.match(appSource, /route === "success"[\s\S]*?View Membership Details[\s\S]*?Membership Help/);
   assert.match(appSource, /route === "cancel"[\s\S]*?Retry Membership Checkout/);
@@ -163,6 +167,13 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /Show, choose, join/);
   assert.match(adminSource, /First-dollar gate/);
   assert.match(adminSource, /One live proof loop/);
+  assert.match(adminSource, /launchProofHandoffSteps/);
+  assert.match(adminSource, /Smoke test handoff/);
+  assert.match(adminSource, /Safe preflight is not the same as first-dollar proof/);
+  assert.match(adminSource, /Proves public wiring only/);
+  assert.match(adminSource, /Proves a buyer can pay/);
+  assert.match(adminSource, /Proves payment became access/);
+  assert.match(adminSource, /Proves access can turn off/);
   assert.match(adminSource, /First-dollar evidence split/);
   assert.match(adminSource, /Live paid proof ladder/);
   assert.match(adminSource, /same Student account/);
@@ -174,6 +185,7 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /Only testing the happy path/);
   assert.match(adminSource, /## Launch Card/);
   assert.match(adminSource, /## Live Paid Proof Ladder/);
+  assert.match(adminSource, /## Smoke Test Handoff/);
   assert.match(adminSource, /## Evidence Split/);
   assert.match(adminSource, /reviewable before payment/);
   assert.match(adminSource, /live proof required/);
@@ -200,6 +212,8 @@ test("checkout Edge Function sanitizes source and next before Stripe session cre
   assert.match(checkoutFunctionSource, /const source = cleanCheckoutSource\(payload\.source\)/);
   assert.match(checkoutFunctionSource, /const next = cleanCheckoutNext\(payload\.next\)/);
   assert.match(checkoutFunctionSource, /success_url: buildReturnUrl\(baseUrl, "success", plan, source, next\)/);
+  assert.match(checkoutFunctionSource, /session_id=\{CHECKOUT_SESSION_ID\}/);
+  assert.match(supportSource, /"checkout-success"[\s\S]*?Stripe checkout session: \$\{checkoutSessionId\}\./);
 });
 
 test("billing webhook preserves the Stripe-to-Supabase paid access proof chain", () => {
@@ -256,6 +270,8 @@ test("first-dollar preflight runs safe production and mobile checks together", (
   assert.match(preflightSource, /first-dollar-production-probe\.mjs/);
   assert.match(preflightSource, /first-dollar-mobile-path-qa\.mjs/);
   assert.match(preflightSource, /--base-url/);
+  assert.match(preflightSource, /Local working tree has/);
+  assert.match(preflightSource, /live checks may fail until the next RGRD publish/);
   assert.match(preflightSource, /Preflight passed\. Remaining live proof before inviting a real customer/);
   assert.match(preflightSource, /paid room opens from active or trialing subscription status without Admin override/);
 });
@@ -286,12 +302,15 @@ test("short first-dollar customer plan matches the live proof gates", () => {
 test("readiness checklist documents the same first-dollar proof requirements", () => {
   assert.match(readinessDoc, /Billing support lane with the saved room and visible subscription status/);
   assert.match(readinessDoc, /Checkout server code sanitizes saved source and destination routes/);
+  assert.match(readinessDoc, /preserve Stripe's `\{CHECKOUT_SESSION_ID\}` placeholder/);
   assert.match(readinessDoc, /full `cs_test_\.\.\.` or `cs_live_\.\.\.`/);
   assert.match(readinessDoc, /`sub_\.\.\.` Stripe subscription id or `customer_subscriptions` UUID/);
   assert.match(readinessDoc, /Supabase metadata proof/);
   assert.match(readinessDoc, /Admin Console live paid proof ladder/);
   assert.match(readinessDoc, /Admin launch card/);
   assert.match(readinessDoc, /individuals before teams, show\/choose\/join homepage hook, and one live proof loop/);
+  assert.match(readinessDoc, /Smoke test handoff/);
+  assert.match(readinessDoc, /Safe preflight proves public wiring only/);
   assert.match(readinessDoc, /localhost, Replit preview, Admin access, manually edited rows, mismatched Stripe IDs, and happy-path-only checks do not count/);
   assert.match(readinessDoc, /phone screenshot proof location/);
   assert.match(readinessDoc, /proof log includes the evidence split/);
@@ -305,8 +324,14 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /npm run first-dollar:preflight/);
   assert.match(packageSource, /"first-dollar:mobile-qa": "node scripts\/first-dollar-mobile-path-qa\.mjs"/);
   assert.match(readinessDoc, /Mobile Buyer Path QA/);
-  assert.match(readinessDoc, /Homepage -> Pricing -> Checkout -> Login/);
+  assert.match(readinessDoc, /Homepage -> Pricing -> Checkout -> Login -> Success -> Cancel/);
   assert.match(mobileQaSource, /phone-portrait/);
   assert.match(mobileQaSource, /phone-landscape/);
+  assert.match(mobileQaSource, /05-success-proof/);
+  assert.match(mobileQaSource, /06-success-actions/);
+  assert.match(mobileQaSource, /07-cancel-proof/);
+  assert.match(mobileQaSource, /08-cancel-actions/);
+  assert.match(mobileQaSource, /Checkout reference copy action is not fully visible/);
+  assert.match(mobileQaSource, /Retry Membership Checkout button is not fully visible/);
   assert.match(mobileQaSource, /Email magic-link field is not fully visible/);
 });

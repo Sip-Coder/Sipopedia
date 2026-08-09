@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import process from "node:process";
 
 const defaultBaseUrl = "https://sipopedia.com";
@@ -50,6 +50,25 @@ function runNodeScript(scriptPath, args) {
   });
 }
 
+function localWorkingTreeSummary() {
+  try {
+    const status = execFileSync("git", ["status", "--porcelain"], {
+      encoding: "utf8",
+      windowsHide: true
+    })
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const trackedChanges = status.filter((line) => !line.startsWith("?? "));
+    return {
+      trackedChanges: trackedChanges.length,
+      untrackedChanges: status.length - trackedChanges.length
+    };
+  } catch {
+    return null;
+  }
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const probeArgs = ["--base-url", options.baseUrl];
@@ -58,6 +77,12 @@ async function main() {
   }
 
   console.log(`First-dollar preflight for ${options.baseUrl}`);
+  const workingTree = localWorkingTreeSummary();
+  if (workingTree && workingTree.trackedChanges > 0) {
+    console.log(
+      `Local working tree has ${workingTree.trackedChanges} tracked change${workingTree.trackedChanges === 1 ? "" : "s"} not in production yet; live checks may fail until the next RGRD publish.`
+    );
+  }
   await runNodeScript("scripts/first-dollar-production-probe.mjs", probeArgs);
   await runNodeScript("scripts/first-dollar-mobile-path-qa.mjs", ["--base-url", options.baseUrl]);
 

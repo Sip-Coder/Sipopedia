@@ -19682,6 +19682,12 @@ select option:checked {
   width: min(100%, 820px);
 }
 
+.checkout-session-reference > div {
+  display: grid;
+  gap: 0.16rem;
+  min-width: min(100%, 180px);
+}
+
 .checkout-session-reference span {
   color: #f4d9a2;
   font-size: 0.66rem;
@@ -19690,11 +19696,25 @@ select option:checked {
   text-transform: uppercase;
 }
 
+.checkout-session-reference small {
+  color: rgba(217, 247, 255, 0.76);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
 .checkout-session-reference code {
+  flex: 1 1 260px;
   color: #d9f7ff;
   font-size: 0.82rem;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+.checkout-session-reference .btn {
+  flex: 0 0 auto;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.78rem;
 }
 
 .checkout-auto-refresh-note {
@@ -20359,6 +20379,56 @@ select option:checked {
 .admin-launch-decision.status-hold {
   border-color: rgba(237, 212, 168, 0.34);
   background: linear-gradient(135deg, rgba(124, 88, 36, 0.2), rgba(4, 13, 24, 0.5));
+}
+
+.admin-launch-handoff {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+  border: 1px solid rgba(159, 218, 245, 0.22);
+  border-radius: 14px;
+  padding: 0.85rem;
+  background:
+    linear-gradient(135deg, rgba(42, 191, 205, 0.08), rgba(237, 212, 168, 0.05)),
+    rgba(4, 13, 24, 0.5);
+}
+
+.admin-launch-handoff-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.admin-launch-handoff-grid article {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  min-width: 0;
+  border: 1px solid rgba(159, 218, 245, 0.18);
+  border-radius: 12px;
+  padding: 0.7rem;
+  background: rgba(4, 18, 30, 0.6);
+}
+
+.admin-launch-handoff-grid span {
+  color: #9fdaf5;
+  font-size: 0.58rem;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.admin-launch-handoff-grid strong {
+  color: #fff2d3;
+  font-size: 0.9rem;
+  line-height: 1.14;
+}
+
+.admin-launch-handoff-grid small {
+  color: #c9e8f0;
+  font-size: 0.72rem;
+  font-weight: 760;
+  line-height: 1.3;
 }
 
 .admin-launch-command-grid {
@@ -22212,6 +22282,7 @@ select option:checked {
   .pricing-proof-strip,
   .pricing-buyer-fit-grid,
   .pricing-membership-promises,
+  .admin-launch-handoff-grid,
   .admin-launch-command-grid,
   .admin-launch-evidence-split,
   .admin-launch-live-proof-grid,
@@ -22308,6 +22379,7 @@ select option:checked {
   .pricing-proof-strip,
   .pricing-buyer-fit-grid,
   .pricing-membership-promises,
+  .admin-launch-handoff-grid,
   .admin-launch-command-grid,
   .admin-launch-evidence-split,
   .admin-launch-customer-grid,
@@ -22334,6 +22406,7 @@ select option:checked {
   .pricing-proof-strip span,
   .pricing-buyer-fit-grid article,
   .pricing-membership-promises article,
+  .admin-launch-handoff-grid article,
   .admin-launch-command-grid article,
   .admin-launch-evidence-split article,
   .admin-launch-live-proof-grid article,
@@ -22390,6 +22463,7 @@ select option:checked {
 
   .admin-launch-customer-grid,
   .admin-launch-test-script-grid,
+  .admin-launch-handoff-grid,
   .admin-launch-command-grid,
   .admin-launch-evidence-split,
   .admin-launch-proof-fields,
