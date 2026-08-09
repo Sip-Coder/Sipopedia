@@ -81,6 +81,16 @@ type TeamSprint = {
   outcome: string;
 };
 
+type SupportRouteContext = {
+  laneId: SupportRequestLane;
+  urgency: SupportRequestUrgency;
+  planInterest: string;
+  subject: string;
+  message: string;
+  sourceRoute: string;
+  hasQuery: boolean;
+};
+
 const supportLanes: SupportLane[] = [
   {
     id: "enrollment",
@@ -125,6 +135,82 @@ const urgencyOptions: Array<{ value: SupportRequestUrgency; label: string }> = [
   { value: "soon", label: "This week" },
   { value: "urgent", label: "Urgent access" }
 ];
+
+function normalizeSupportLane(value: string | null): SupportRequestLane {
+  return value === "billing" || value === "study" || value === "team" || value === "general" ? value : "enrollment";
+}
+
+function normalizeSupportUrgency(value: string | null): SupportRequestUrgency {
+  return value === "urgent" || value === "soon" ? value : "normal";
+}
+
+function readSupportRouteContext(): SupportRouteContext {
+  const fallback: SupportRouteContext = {
+    laneId: "enrollment",
+    urgency: "normal",
+    planInterest: "$10/month Membership",
+    subject: "",
+    message: "",
+    sourceRoute: "support",
+    hasQuery: false
+  };
+  if (typeof window === "undefined") return fallback;
+
+  const rawHash = window.location.hash.replace(/^#/, "");
+  const query = rawHash.includes("?") ? rawHash.slice(rawHash.indexOf("?") + 1) : "";
+  if (!query) return { ...fallback, sourceRoute: window.location.hash || "support" };
+
+  const params = new URLSearchParams(query);
+  const source = params.get("source") ?? "";
+  const laneId = normalizeSupportLane(params.get("lane"));
+  const urgency = normalizeSupportUrgency(params.get("urgency"));
+  const destination = params.get("next")?.replace(/^app\//, "").replace(/-/g, " ") ?? "";
+  const supportTemplates: Record<string, Pick<SupportRouteContext, "subject" | "message" | "urgency">> = {
+    "checkout-success": {
+      urgency: "urgent",
+      subject: "Membership access help after checkout",
+      message: [
+        "I completed checkout and need help confirming access.",
+        destination ? `Saved room: ${destination}.` : "Saved room: not sure.",
+        "Please check whether the Stripe return, webhook sync, and membership access are connected."
+      ].join("\n")
+    },
+    "checkout-cancel": {
+      urgency: "soon",
+      subject: "Membership checkout help",
+      message: [
+        "I canceled or could not finish membership checkout.",
+        destination ? `Saved room: ${destination}.` : "Saved room: not sure.",
+        "Please help me retry or complete enrollment without losing my place."
+      ].join("\n")
+    },
+    "checkout-help": {
+      urgency: "soon",
+      subject: "Membership enrollment help from checkout",
+      message: [
+        "I am on the membership checkout page and need help finishing enrollment.",
+        destination ? `Saved room: ${destination}.` : "Saved room: not sure.",
+        "Please help me attach the membership to the correct account and continue safely."
+      ].join("\n")
+    },
+    pricing: {
+      urgency: "normal",
+      subject: "Membership question before checkout",
+      message: "I have a question about the $10/month Sip Studies membership before I check out."
+    }
+  };
+  const template = supportTemplates[source] ?? null;
+
+  return {
+    laneId,
+    urgency: template?.urgency ?? urgency,
+    planInterest: laneId === "team" ? "Team training" : "$10/month Membership",
+    subject: params.get("subject") ?? template?.subject ?? "",
+    message: params.get("message") ?? template?.message ?? "",
+    sourceRoute: window.location.hash || "support",
+    hasQuery: true
+  };
+}
 
 const teamSprints: TeamSprint[] = [
   {
@@ -222,7 +308,9 @@ const faqGroups = [
 
 export function SupportCenter({ onNavigate }: SupportCenterProps) {
   const { user, loading: authLoading, isConfigured: isAuthConfigured } = useAuth();
-  const [activeLaneId, setActiveLaneId] = useState(supportLanes[0].id);
+  const initialSupportContext = readSupportRouteContext();
+  const supportRouteToken = typeof window === "undefined" ? "" : window.location.hash;
+  const [activeLaneId, setActiveLaneId] = useState<SupportRequestLane>(initialSupportContext.laneId);
   const [selectedTemplateId, setSelectedTemplateId] = useState(teamSprintTemplates[0].id);
   const [teamName, setTeamName] = useState("Service team");
   const [managerName, setManagerName] = useState("Training lead");
@@ -240,10 +328,10 @@ export function SupportCenter({ onNavigate }: SupportCenterProps) {
   const [requestContactEmail, setRequestContactEmail] = useState(user?.email ?? "");
   const [requestTeamName, setRequestTeamName] = useState("");
   const [requestTeamSize, setRequestTeamSize] = useState("");
-  const [requestPlanInterest, setRequestPlanInterest] = useState("$10/month Membership");
-  const [requestUrgency, setRequestUrgency] = useState<SupportRequestUrgency>("normal");
-  const [requestSubject, setRequestSubject] = useState("");
-  const [requestMessage, setRequestMessage] = useState("");
+  const [requestPlanInterest, setRequestPlanInterest] = useState(initialSupportContext.planInterest);
+  const [requestUrgency, setRequestUrgency] = useState<SupportRequestUrgency>(initialSupportContext.urgency);
+  const [requestSubject, setRequestSubject] = useState(initialSupportContext.subject);
+  const [requestMessage, setRequestMessage] = useState(initialSupportContext.message);
   const [requestWebsite, setRequestWebsite] = useState("");
   const [liveSupportChannel, setLiveSupportChannel] = useState<LiveSupportChannel>("chat");
   const [liveSupportPhone, setLiveSupportPhone] = useState("");
@@ -345,6 +433,19 @@ export function SupportCenter({ onNavigate }: SupportCenterProps) {
   useEffect(() => {
     if (user?.email && !requestContactEmail) setRequestContactEmail(user.email);
   }, [requestContactEmail, user?.email]);
+
+  useEffect(() => {
+    const context = readSupportRouteContext();
+    if (!context.hasQuery) return;
+    setActiveLaneId(context.laneId);
+    setRequestUrgency(context.urgency);
+    setRequestPlanInterest(context.planInterest);
+    if (context.subject) setRequestSubject((current) => current || context.subject);
+    if (context.message) setRequestMessage((current) => current || context.message);
+    window.setTimeout(() => {
+      document.getElementById("support-intake")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  }, [supportRouteToken]);
 
   useEffect(() => {
     if (authLoading) {

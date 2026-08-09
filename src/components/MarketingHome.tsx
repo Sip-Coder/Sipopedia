@@ -35,6 +35,7 @@ type CustomerPath = {
   label: string;
   title: string;
   detail: string;
+  outcomes: string[];
   previewRoute: string;
   actionRoute: string;
   actionLabel: string;
@@ -218,6 +219,7 @@ const customerPaths: CustomerPath[] = [
     label: "New learner",
     title: "I want drinks to finally make sense.",
     detail: "Start with the visual academy, field journeys, and quick terms before memorizing dense notes.",
+    outcomes: ["Plain-language path", "Visual memory anchors", "Room previews first"],
     previewRoute: "app/btg",
     actionRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "home-path-new-learner" }),
     actionLabel: "Start learning"
@@ -226,6 +228,7 @@ const customerPaths: CustomerPath[] = [
     label: "Hospitality",
     title: "I need better guest language.",
     detail: "Use maps, tasting practice, and recipe logic to explain drinks more confidently on the floor.",
+    outcomes: ["Service wording", "Recipe logic", "Fast study loops"],
     previewRoute: "app/recipes",
     actionRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "home-path-hospitality" }),
     actionLabel: "Train for service"
@@ -234,6 +237,7 @@ const customerPaths: CustomerPath[] = [
     label: "Certification prep",
     title: "I need structure beside my study book.",
     detail: "Turn regions, ingredients, terms, and production systems into visual memory anchors.",
+    outcomes: ["Region context", "Terms with sources", "Production systems"],
     previewRoute: "app/sipopedia",
     actionRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "home-path-certification" }),
     actionLabel: "Build my study path"
@@ -242,6 +246,7 @@ const customerPaths: CustomerPath[] = [
     label: "Not sure yet",
     title: "I want to preview before paying.",
     detail: "Watch the room trailers, open the public Launch Pad, or ask for assisted enrollment.",
+    outcomes: ["Watch before joining", "Ask a human", "Keep the path simple"],
     previewRoute: "app/launch",
     actionRoute: "support",
     actionLabel: "Ask for help"
@@ -375,6 +380,11 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
               <span>{path.label}</span>
               <h3>{path.title}</h3>
               <p>{path.detail}</p>
+              <ul className="marketing-customer-outcomes" aria-label={`${path.label} outcomes`}>
+                {path.outcomes.map((outcome) => (
+                  <li key={outcome}>{outcome}</li>
+                ))}
+              </ul>
               <div className="marketing-customer-path-actions">
                 <button type="button" onClick={() => onNavigate(path.previewRoute)}>
                   Preview

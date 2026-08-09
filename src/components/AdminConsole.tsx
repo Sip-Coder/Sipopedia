@@ -75,6 +75,12 @@ type LaunchSmokeStep = {
   evidencePrompt: string;
 };
 
+type LaunchTestScriptStep = {
+  label: string;
+  route: string;
+  detail: string;
+};
+
 type LaunchCustomerSegment = {
   label: string;
   signal: string;
@@ -84,6 +90,13 @@ type LaunchCustomerSegment = {
 type LaunchSmokeState = Record<string, { done: boolean; evidence: string }>;
 
 type StoredLaunchSmokeState = Partial<Record<string, Partial<{ done: boolean; evidence: string }>>>;
+
+type LaunchProofDetails = {
+  testAccountEmail: string;
+  stripeSessionId: string;
+  subscriptionReference: string;
+  paidRoomRoute: string;
+};
 
 type LaunchConnectionStatus = "pass" | "warn" | "fail" | "waiting";
 
@@ -96,6 +109,13 @@ type LaunchConnectionCheck = {
 };
 
 const launchSmokeStorageKey = "sipstudies:first-dollar-smoke:v1";
+const launchProofDetailsStorageKey = "sipstudies:first-dollar-proof-details:v1";
+const defaultLaunchProofDetails: LaunchProofDetails = {
+  testAccountEmail: "",
+  stripeSessionId: "",
+  subscriptionReference: "",
+  paidRoomRoute: "app/btg"
+};
 
 function buildDefaultLaunchSmokeState(): LaunchSmokeState {
   return launchSmokeSteps.reduce((accumulator, step) => {
@@ -132,6 +152,32 @@ function writeLaunchSmokeState(state: LaunchSmokeState) {
     // Local storage is only a convenience for the operator checklist.
   }
 };
+
+function readLaunchProofDetails(): LaunchProofDetails {
+  if (typeof window === "undefined") return defaultLaunchProofDetails;
+  try {
+    const stored = window.localStorage.getItem(launchProofDetailsStorageKey);
+    if (!stored) return defaultLaunchProofDetails;
+    const parsed = JSON.parse(stored) as Partial<LaunchProofDetails>;
+    return {
+      testAccountEmail: typeof parsed.testAccountEmail === "string" ? parsed.testAccountEmail : "",
+      stripeSessionId: typeof parsed.stripeSessionId === "string" ? parsed.stripeSessionId : "",
+      subscriptionReference: typeof parsed.subscriptionReference === "string" ? parsed.subscriptionReference : "",
+      paidRoomRoute: typeof parsed.paidRoomRoute === "string" && parsed.paidRoomRoute.trim() ? parsed.paidRoomRoute : "app/btg"
+    };
+  } catch {
+    return defaultLaunchProofDetails;
+  }
+}
+
+function writeLaunchProofDetails(details: LaunchProofDetails) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(launchProofDetailsStorageKey, JSON.stringify(details));
+  } catch {
+    // Local storage is only a convenience for the operator proof kit.
+  }
+}
 
 function functionErrorStatus(error: unknown): number | null {
   const context = (error as { context?: unknown })?.context;
@@ -304,6 +350,39 @@ const launchSmokeSteps: LaunchSmokeStep[] = [
   }
 ];
 
+const launchTestScriptSteps: LaunchTestScriptStep[] = [
+  {
+    label: "Open production",
+    route: "home",
+    detail: "Use sipopedia.com on the phone/account that will test payment."
+  },
+  {
+    label: "Preview and price",
+    route: "pricing",
+    detail: "Confirm the homepage promise, buyer path, $10 price, and trust links before checkout."
+  },
+  {
+    label: "Sign in first",
+    route: "login",
+    detail: "Use the production test learner account so Stripe can return to a real profile."
+  },
+  {
+    label: "Create checkout",
+    route: "checkout",
+    detail: "Start Stripe from Sipopedia and confirm Stripe shows the correct monthly membership."
+  },
+  {
+    label: "Return and refresh",
+    route: "success",
+    detail: "Confirm the success page shows session context, access refresh, Launch Pad, and support."
+  },
+  {
+    label: "Unlock the room",
+    route: "app/btg",
+    detail: "Open the saved paid room and verify access comes from subscription status."
+  }
+];
+
 const launchCustomerSegments: LaunchCustomerSegment[] = [
   {
     label: "Curious beverage learners",
@@ -376,6 +455,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     readBeverageNewsHealth()
   );
   const [launchSmokeState, setLaunchSmokeState] = useState<LaunchSmokeState>(() => readLaunchSmokeState());
+  const [launchProofDetails, setLaunchProofDetails] = useState<LaunchProofDetails>(() => readLaunchProofDetails());
   const [launchConnectionChecks, setLaunchConnectionChecks] = useState<LaunchConnectionCheck[]>(() =>
     initialLaunchConnectionChecks()
   );
@@ -462,6 +542,10 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   useEffect(() => {
     writeLaunchSmokeState(launchSmokeState);
   }, [launchSmokeState]);
+
+  useEffect(() => {
+    writeLaunchProofDetails(launchProofDetails);
+  }, [launchProofDetails]);
 
   const siteMapDirty = useMemo(
     () =>
@@ -558,15 +642,21 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const activeSubscriptionCount = subscriptions.filter((subscription) =>
     subscription.status === "trialing" || subscription.status === "active" || subscription.status === "past_due"
   ).length;
-  const launchNeedsProofCount = launchReadinessChecks.filter((check) => check.status === "needs-proof").length;
   const completedLaunchSmokeCount = launchSmokeSteps.filter((step) => launchSmokeState[step.id]?.done).length;
   const pendingLaunchSmokeCount = launchSmokeSteps.length - completedLaunchSmokeCount;
   const launchConnectionPassCount = launchConnectionChecks.filter((check) => check.status === "pass").length;
   const launchConnectionIssueCount = launchConnectionChecks.length - launchConnectionPassCount;
-  const launchReadyForPaidInvite = pendingLaunchSmokeCount === 0 && launchConnectionIssueCount === 0;
+  const launchProofMissingCount = [
+    launchProofDetails.testAccountEmail,
+    launchProofDetails.stripeSessionId,
+    launchProofDetails.subscriptionReference,
+    launchProofDetails.paidRoomRoute
+  ].filter((value) => !value.trim()).length;
+  const launchOutstandingProofCount = pendingLaunchSmokeCount + launchConnectionIssueCount + launchProofMissingCount;
+  const launchReadyForPaidInvite = pendingLaunchSmokeCount === 0 && launchConnectionIssueCount === 0 && launchProofMissingCount === 0;
   const launchDecisionDetail = launchReadyForPaidInvite
-    ? "All smoke-test proof is checked and every production connection probe is passing. Run one real signed-in Stripe checkout before inviting broader paid traffic."
-    : `${pendingLaunchSmokeCount} smoke step${pendingLaunchSmokeCount === 1 ? "" : "s"} and ${launchConnectionIssueCount} connection check${launchConnectionIssueCount === 1 ? "" : "s"} still need proof before the first paid invite.`;
+    ? "Smoke-test proof, production connection probes, and Stripe/access identifiers are complete. Review the proof log before inviting broader paid traffic."
+    : `${pendingLaunchSmokeCount} smoke step${pendingLaunchSmokeCount === 1 ? "" : "s"}, ${launchConnectionIssueCount} connection check${launchConnectionIssueCount === 1 ? "" : "s"}, and ${launchProofMissingCount} Stripe/access field${launchProofMissingCount === 1 ? "" : "s"} still need proof before the first paid invite.`;
   const beverageNewsNeedsAttention =
     beverageNewsHealth !== null &&
     isBeverageNewsHealthFresh(beverageNewsHealth) &&
@@ -622,6 +712,67 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
 
   const resetLaunchSmokeState = () => {
     setLaunchSmokeState(buildDefaultLaunchSmokeState());
+    setLaunchProofDetails(defaultLaunchProofDetails);
+  };
+
+  const updateLaunchProofDetail = (field: keyof LaunchProofDetails, value: string) => {
+    setLaunchProofDetails((current) => ({ ...current, [field]: value }));
+  };
+
+  const downloadLaunchProofLog = () => {
+    const generatedAt = new Date();
+    const smokeLines = launchSmokeSteps.flatMap((step, index) => {
+      const stepState = launchSmokeState[step.id] ?? { done: false, evidence: "" };
+      return [
+        `${index + 1}. ${step.label}: ${stepState.done ? "PROVEN" : "NEEDS PROOF"}`,
+        `   Route: ${step.route}`,
+        `   Expected: ${step.expected}`,
+        `   Evidence: ${stepState.evidence.trim() || "Not captured yet."}`
+      ];
+    });
+    const connectionLines = launchConnectionChecks.map((check) => (
+      `- ${check.label}: ${check.status.toUpperCase()} - ${check.detail}${check.checkedAt ? ` (${new Date(check.checkedAt).toLocaleString()})` : ""}`
+    ));
+    const body = [
+      "# Sipopedia First-Dollar Proof Log",
+      "",
+      `Generated: ${generatedAt.toLocaleString()}`,
+      `Origin: ${currentLaunchOrigin()}`,
+      `Decision: ${launchReadyForPaidInvite ? "Ready for controlled test" : "Hold paid invite"}`,
+      `Detail: ${launchDecisionDetail}`,
+      "",
+      "## Stripe And Access Proof",
+      `- Test account email: ${launchProofDetails.testAccountEmail.trim() || "Not captured yet."}`,
+      `- Stripe session id: ${launchProofDetails.stripeSessionId.trim() || "Not captured yet."}`,
+      `- Subscription reference: ${launchProofDetails.subscriptionReference.trim() || "Not captured yet."}`,
+      `- Paid room route: ${launchProofDetails.paidRoomRoute.trim() || "Not captured yet."}`,
+      "",
+      "## Likely First Customers",
+      ...launchCustomerSegments.map((segment) => `- ${segment.label}: ${segment.firstOffer}`),
+      "",
+      "## Production Smoke Test",
+      ...smokeLines,
+      "",
+      "## Connection Probe",
+      ...connectionLines,
+      "",
+      "## Remaining First-Dollar Gate",
+      "Run one real signed-in production Stripe checkout and confirm the billing webhook unlocks paid access without manual database edits."
+    ].join("\n");
+    const blob = new Blob([body], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `sipopedia-first-dollar-proof-${generatedAt.toISOString().slice(0, 10)}.md`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+    trackEvent("admin_launch_proof_download", {
+      completed: completedLaunchSmokeCount,
+      total: launchSmokeSteps.length,
+      ready: launchReadyForPaidInvite
+    });
   };
 
   const runLaunchConnectionProbe = async () => {
@@ -1012,8 +1163,8 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                     <h3>Ready to test, not ready to sell blind.</h3>
                   </div>
                   <span>
-                    <strong>{launchNeedsProofCount}</strong>
-                    proofs left
+                    <strong>{launchOutstandingProofCount}</strong>
+                    items left
                   </span>
                 </div>
                 <p>
@@ -1024,6 +1175,26 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   <span>{launchReadyForPaidInvite ? "Ready for controlled test" : "Hold paid invite"}</span>
                   <strong>{launchReadyForPaidInvite ? "First-customer path is proof-ready." : "Do not invite a paid customer yet."}</strong>
                   <small>{launchDecisionDetail}</small>
+                </div>
+                <div className="admin-launch-test-script" aria-label="First paid customer production test script">
+                  <div className="admin-launch-test-script-head">
+                    <p className="admin-eyebrow">First paid test script</p>
+                    <strong>Run this once, in order, before inviting anyone real.</strong>
+                  </div>
+                  <div className="admin-launch-test-script-grid">
+                    {launchTestScriptSteps.map((step, index) => (
+                      <article className="admin-launch-test-step" key={step.label}>
+                        <span>{String(index + 1).padStart(2, "0")}</span>
+                        <div>
+                          <strong>{step.label}</strong>
+                          <small>{step.detail}</small>
+                        </div>
+                        <button className="btn btn-light" type="button" onClick={() => onNavigate(step.route)}>
+                          Open
+                        </button>
+                      </article>
+                    ))}
+                  </div>
                 </div>
                 <div className="admin-launch-customer-grid" aria-label="Likely first customer segments">
                   {launchCustomerSegments.map((segment) => (
@@ -1043,15 +1214,59 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                     </div>
                   ))}
                 </div>
+                <div className="admin-launch-proof-fields" aria-label="Stripe and access proof details">
+                  <div className="admin-launch-test-script-head">
+                    <p className="admin-eyebrow">Stripe + access proof</p>
+                    <strong>Capture the identifiers from the real signed-in production test.</strong>
+                  </div>
+                  <label>
+                    Test account email
+                    <input
+                      value={launchProofDetails.testAccountEmail}
+                      onChange={(event) => updateLaunchProofDetail("testAccountEmail", event.target.value)}
+                      placeholder="learner@example.com"
+                      inputMode="email"
+                    />
+                  </label>
+                  <label>
+                    Stripe session id
+                    <input
+                      value={launchProofDetails.stripeSessionId}
+                      onChange={(event) => updateLaunchProofDetail("stripeSessionId", event.target.value)}
+                      placeholder="cs_live_or_test_..."
+                    />
+                  </label>
+                  <label>
+                    Subscription reference
+                    <input
+                      value={launchProofDetails.subscriptionReference}
+                      onChange={(event) => updateLaunchProofDetail("subscriptionReference", event.target.value)}
+                      placeholder="customer_subscriptions id or Stripe subscription"
+                    />
+                  </label>
+                  <label>
+                    Paid room route
+                    <input
+                      value={launchProofDetails.paidRoomRoute}
+                      onChange={(event) => updateLaunchProofDetail("paidRoomRoute", event.target.value)}
+                      placeholder="app/btg"
+                    />
+                  </label>
+                </div>
                 <div className="admin-launch-smoke-tracker" aria-label="Production smoke test tracker">
                   <div className="admin-launch-smoke-head">
                     <div>
                       <p className="admin-eyebrow">Production smoke test</p>
                       <h4>{completedLaunchSmokeCount} of {launchSmokeSteps.length} proven</h4>
                     </div>
-                    <button className="btn btn-light" type="button" onClick={resetLaunchSmokeState}>
-                      Reset proof
-                    </button>
+                    <div className="admin-launch-smoke-actions">
+                      <button className="btn btn-light" type="button" onClick={downloadLaunchProofLog}>
+                        Download proof log
+                      </button>
+                      <button className="btn btn-light" type="button" onClick={resetLaunchSmokeState}>
+                        Reset proof
+                      </button>
+                    </div>
                   </div>
                   {launchSmokeSteps.map((step) => {
                     const stepState = launchSmokeState[step.id] ?? { done: false, evidence: "" };

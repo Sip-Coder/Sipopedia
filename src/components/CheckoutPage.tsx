@@ -52,6 +52,7 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const nextRouteLabel = nextRoute ? nextRoute.replace(/^app\//, "").replace(/-/g, " ") : "Launch Pad";
   const checkoutReturnRoute = buildOnboardingRoute("checkout", { planId: selectedPlanId, source: "account-return", next: nextRoute });
   const loginBeforeCheckoutRoute = buildOnboardingRoute("login", { source: "checkout-account", next: checkoutReturnRoute });
+  const membershipSupportRoute = `support?lane=enrollment&source=checkout-help&urgency=soon&next=${encodeURIComponent(nextRoute ?? "")}`;
   const activeCheckoutStep = user ? 2 : 1;
   const isEmailValid = !email.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const isAssistedReady = Boolean(name.trim() && goal.trim() && email.trim() && isEmailValid);
@@ -247,7 +248,14 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
             </button>
           )}
           {checkoutNotice ? <p className="checkout-direct-status" role="status" aria-live="polite">{checkoutNotice}</p> : null}
-          {checkoutStatus === "failed" ? <p className="hint">Use Assisted Enrollment below if checkout cannot start automatically.</p> : null}
+          {checkoutStatus === "failed" ? (
+            <div className="checkout-failure-actions">
+              <p className="hint">Use Assisted Enrollment below, or open Membership Help with this checkout context attached.</p>
+              <button type="button" className="btn btn-light" onClick={() => onNavigate(membershipSupportRoute)}>
+                Open Membership Help
+              </button>
+            </div>
+          ) : null}
           <p className="checkout-disclosure">
             {selectedPlan.billingNote} Taxes, fees, and final payment terms are shown by Stripe before payment.
           </p>
@@ -339,8 +347,8 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
         <button className="btn btn-light" onClick={() => onNavigate("refund")}>
           Refund Policy
         </button>
-        <button className="btn btn-light" onClick={() => onNavigate("support")}>
-          Support
+        <button className="btn btn-light" onClick={() => onNavigate(membershipSupportRoute)}>
+          Membership Help
         </button>
       </div>
     </section>

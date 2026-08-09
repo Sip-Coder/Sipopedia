@@ -1514,6 +1514,9 @@ function App() {
   const pricingRecoveryRoute = checkoutRecoveryIntent
     ? buildOnboardingRoute("pricing", { planId: checkoutRecoveryIntent.planId, source: `${route}-recovery`, next: checkoutRecoveryIntent.next })
     : "pricing";
+  const checkoutSupportRoute = checkoutRecoveryIntent
+    ? `support?lane=enrollment&source=checkout-${route}&urgency=${route === "success" ? "urgent" : "soon"}&next=${encodeURIComponent(checkoutRecoveryIntent.next ?? "")}`
+    : `support?lane=enrollment&source=checkout-${route}&urgency=${route === "success" ? "urgent" : "soon"}`;
   const requiresResolvedAccess =
     route.startsWith("admin") ||
     route === "account" ||
@@ -1766,10 +1769,10 @@ function App() {
               </button>
             ) : null}
             <button className="btn btn-light" onClick={() => navigateFromString(checkoutRecoveryRoute)}>
-              Membership Help
+              Retry Checkout
             </button>
-            <button className="btn btn-light" onClick={() => navigate("support")}>
-              Support
+            <button className="btn btn-light" onClick={() => navigateFromString(checkoutSupportRoute)}>
+              Membership Help
             </button>
           </div>
         </section>
@@ -1802,7 +1805,7 @@ function App() {
             <button className="btn btn-primary" onClick={() => navigateFromString(checkoutRecoveryRoute)}>
               Retry Membership Checkout
             </button>
-            <button className="btn btn-light" onClick={() => navigateFromString(checkoutRecoveryRoute)}>
+            <button className="btn btn-light" onClick={() => navigateFromString(checkoutSupportRoute)}>
               Membership Support
             </button>
             <button className="btn btn-light" onClick={() => navigateFromString(pricingRecoveryRoute)}>
