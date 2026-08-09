@@ -335,7 +335,7 @@ export function AccessProvider({ children }: PropsWithChildren) {
     () => ({
       loading,
       tier,
-      isPaid: tier === "pro" || tier === "founding" || tier === "admin",
+      isPaid: tier === "pro" || tier === "founding",
       isAdmin: tier === "admin",
       profile,
       subscription,

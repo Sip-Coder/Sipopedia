@@ -94,7 +94,7 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
       planInterest: selectedPlan.title,
       urgency: "normal" as const,
       subject: `Assisted enrollment request: ${selectedPlan.title}`,
-      message: `Plan: ${selectedPlan.title} (${selectedPlanId})\nSource: ${source}\nNext route: ${nextRoute ?? "app/launch"}\nGoal: ${goal.trim()}`,
+      message: `Plan: ${selectedPlan.title} (${selectedPlanId})\nSource: ${source}\nSaved room: ${nextRouteLabel}\nNext route: ${nextRoute ?? "app/launch"}\nGoal: ${goal.trim()}`,
       sourceRoute: typeof window === "undefined" ? "checkout" : window.location.hash || "checkout"
     };
 
@@ -286,6 +286,10 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
           <p className="checkout-disclosure">
             Use the same email as the account that should receive paid access. Signed-in users are prefilled when an account email is available.
           </p>
+          <div className="checkout-route-chip">
+            <span>Saved room for handoff</span>
+            <strong>{nextRouteLabel}</strong>
+          </div>
           {checkoutNotice ? <p className="checkout-direct-status" role="status">{checkoutNotice}</p> : null}
           <label className="checkout-field">
             <span>Full name</span>

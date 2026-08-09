@@ -107,6 +107,7 @@ type LaunchProofDetails = {
   webhookEventId: string;
   subscriptionReference: string;
   paidRoomRoute: string;
+  mobileScreenshotProof: string;
 };
 
 type LaunchProofField = {
@@ -161,7 +162,8 @@ const defaultLaunchProofDetails: LaunchProofDetails = {
   stripeSessionId: "",
   webhookEventId: "",
   subscriptionReference: "",
-  paidRoomRoute: "app/btg"
+  paidRoomRoute: "app/btg",
+  mobileScreenshotProof: ""
 };
 
 function buildDefaultLaunchSmokeState(): LaunchSmokeState {
@@ -211,7 +213,8 @@ function readLaunchProofDetails(): LaunchProofDetails {
       stripeSessionId: typeof parsed.stripeSessionId === "string" ? parsed.stripeSessionId : "",
       webhookEventId: typeof parsed.webhookEventId === "string" ? parsed.webhookEventId : "",
       subscriptionReference: typeof parsed.subscriptionReference === "string" ? parsed.subscriptionReference : "",
-      paidRoomRoute: typeof parsed.paidRoomRoute === "string" && parsed.paidRoomRoute.trim() ? parsed.paidRoomRoute : "app/btg"
+      paidRoomRoute: typeof parsed.paidRoomRoute === "string" && parsed.paidRoomRoute.trim() ? parsed.paidRoomRoute : "app/btg",
+      mobileScreenshotProof: typeof parsed.mobileScreenshotProof === "string" ? parsed.mobileScreenshotProof : ""
     };
   } catch {
     return defaultLaunchProofDetails;
@@ -312,6 +315,9 @@ function launchProofFieldGap(field: LaunchProofField, value: string): LaunchProo
   }
   if (field.field === "paidRoomRoute" && !launchProofPaidRouteRe.test(trimmed)) {
     return { label: field.label, reason: "Needs an app route like app/btg" };
+  }
+  if (field.field === "mobileScreenshotProof" && trimmed.length < launchProofEvidenceMinLength) {
+    return { label: field.label, reason: "Needs a screenshot path, link, or note proving phone portrait and landscape were checked" };
   }
   return null;
 }
@@ -831,6 +837,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       field: "paidRoomRoute",
       label: "Paid room route",
       placeholder: "app/btg"
+    },
+    {
+      field: "mobileScreenshotProof",
+      label: "Mobile screenshot proof",
+      placeholder: "phone portrait + landscape screenshots saved in ..."
     }
   ];
   const completedLaunchSmokeCount = launchSmokeSteps.filter((step) => isLaunchSmokeStepProven(launchSmokeState, step.id)).length;
@@ -970,6 +981,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `- Webhook event id: ${launchProofDetails.webhookEventId.trim() || "Not captured yet."}`,
       `- Subscription reference: ${launchProofDetails.subscriptionReference.trim() || "Not captured yet."}`,
       `- Paid room route: ${launchProofDetails.paidRoomRoute.trim() || "Not captured yet."}`,
+      `- Mobile screenshot proof: ${launchProofDetails.mobileScreenshotProof.trim() || "Not captured yet."}`,
       `- Proof field status: ${launchProofMissingCount === 0 ? "All proof fields have plausible formats." : `${launchProofMissingCount} proof field${launchProofMissingCount === 1 ? "" : "s"} need review.`}`,
       "",
       "## Likely First Customers",

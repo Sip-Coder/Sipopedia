@@ -1518,6 +1518,32 @@ select option:checked {
   grid-template-columns: 1.5fr 1fr;
 }
 
+.auth-continuation-ribbon {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.auth-continuation-ribbon span {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+  border: 1px solid rgba(73, 132, 146, 0.32);
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+  color: var(--muted);
+  background: rgba(255, 250, 238, 0.42);
+  font-size: var(--type-small);
+}
+
+.auth-continuation-ribbon strong {
+  color: var(--accent-strong);
+  font-size: var(--type-caption);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .auth-actions {
   display: flex;
   flex-direction: column;

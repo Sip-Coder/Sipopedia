@@ -1823,8 +1823,8 @@ function App() {
                 Open Launch Pad
               </button>
             ) : null}
-            <button className="btn btn-light" onClick={() => navigateFromString(checkoutRecoveryRoute)}>
-              Retry Checkout
+            <button className="btn btn-light" onClick={() => navigateFromString(pricingRecoveryRoute)}>
+              View Membership Details
             </button>
             <button className="btn btn-light" onClick={() => navigateFromString(checkoutSupportRoute)}>
               Membership Help
