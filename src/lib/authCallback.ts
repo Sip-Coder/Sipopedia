@@ -121,7 +121,8 @@ export function resolveAuthPostLoginRoute(
 
 function parseHashParams(hash: string): URLSearchParams {
   const trimmed = hash.replace(/^#/, "");
-  return new URLSearchParams(trimmed);
+  const queryIndex = trimmed.indexOf("?");
+  return new URLSearchParams(queryIndex >= 0 ? trimmed.slice(queryIndex + 1) : trimmed);
 }
 
 function hasAuthCallbackParams(search: string, hash: string): boolean {
@@ -137,8 +138,22 @@ function hasAuthCallbackParams(search: string, hash: string): boolean {
   return false;
 }
 
-function cleanAuthCallbackUrl(pathname: string): string {
-  return `${pathname.replace(/\/+$/, "") || "/"}#login`;
+function loginHashFromCallback(hash: string): string {
+  const trimmed = hash.replace(/^#/, "");
+  const queryIndex = trimmed.indexOf("?");
+  if (queryIndex < 0 || trimmed.slice(0, queryIndex).toLowerCase() !== "login") {
+    return "#login";
+  }
+
+  const next = sanitizeAuthPostLoginRoute(new URLSearchParams(trimmed.slice(queryIndex + 1)).get("next"));
+  if (!next) return "#login";
+
+  const query = new URLSearchParams({ next });
+  return `#login?${query.toString()}`;
+}
+
+function cleanAuthCallbackUrl(pathname: string, hash = ""): string {
+  return `${pathname.replace(/\/+$/, "") || "/"}${loginHashFromCallback(hash)}`;
 }
 
 function mergeParams(target: URLSearchParams, source: URLSearchParams) {
@@ -167,7 +182,7 @@ export function captureAndScrubAuthCallbackFromUrl(): void {
     // URL cleanup is still more important than preserving callback state.
   }
 
-  window.history.replaceState({}, document.title, cleanAuthCallbackUrl(url.pathname));
+  window.history.replaceState({}, document.title, cleanAuthCallbackUrl(url.pathname, url.hash));
 }
 
 export function consumeAuthCallbackParams(): URLSearchParams {
@@ -202,5 +217,5 @@ export function consumeAuthCallbackParams(): URLSearchParams {
 
 export function cleanAuthCallbackUrlFromCurrentPath(): string {
   if (typeof window === "undefined") return "/#login";
-  return cleanAuthCallbackUrl(window.location.pathname);
+  return cleanAuthCallbackUrl(window.location.pathname, window.location.hash);
 }

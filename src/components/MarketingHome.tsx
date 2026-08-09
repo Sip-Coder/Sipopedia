@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CosmicSky } from "./CosmicSky";
-import { buildOnboardingRoute } from "../lib/onboardingIntent";
+import { buildMembershipSupportRoute, buildOnboardingRoute } from "../lib/onboardingIntent";
 import type { PageStatusMap } from "../lib/siteMap";
 
 import welcomeToSipStudies from "../assets/brand/welcome-to-sip-studies.png";
@@ -268,7 +268,11 @@ const customerPaths: CustomerPath[] = [
     detail: "Watch the room trailers, open the public Launch Pad, or ask for assisted enrollment.",
     outcomes: ["Watch before joining", "Ask a human", "Keep the path simple"],
     previewRoute: "app/launch",
-    actionRoute: "support",
+    actionRoute: buildMembershipSupportRoute({
+      source: "home-path-not-sure",
+      urgency: "normal",
+      next: "app/launch"
+    }),
     actionLabel: "Ask for help"
   }
 ];

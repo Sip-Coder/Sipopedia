@@ -361,7 +361,7 @@ const launchReadinessChecks: LaunchReadinessCheck[] = [
   {
     label: "Access model",
     status: "ready",
-    detail: "Profiles use Student/Admin; trials and paid access live on subscription records."
+    detail: "Profiles use Student/Admin; only active or trialing subscription records unlock paid access."
   },
   {
     label: "Stripe smoke test",
@@ -399,8 +399,15 @@ const launchSmokeSteps: LaunchSmokeStep[] = [
     id: "trust-links",
     label: "Trust Links",
     route: "pricing",
-    expected: "Terms, Privacy, Refunds, and Support are reachable before a buyer enters checkout.",
-    evidencePrompt: "Example: pricing trust links and checkout footer links each open correctly."
+    expected: "Terms, Privacy, Refunds, and Support are reachable before checkout without losing the saved room.",
+    evidencePrompt: "Example: pricing and checkout trust links open correctly, then continue enrollment with the same saved destination."
+  },
+  {
+    id: "login",
+    label: "Login",
+    route: "login",
+    expected: "Google login or email magic link signs in the test learner and preserves the saved checkout room.",
+    evidencePrompt: "Example: test account returns to checkout with the same saved destination after sign-in."
   },
   {
     id: "checkout",
@@ -427,8 +434,8 @@ const launchSmokeSteps: LaunchSmokeStep[] = [
     id: "paid-room",
     label: "Paid Room",
     route: "app/btg",
-    expected: "Subscription status unlocks the intended paid workspace without manual database edits.",
-    evidencePrompt: "Example: paid account opens Beyond The Glass."
+    expected: "Active or trialing subscription status unlocks the intended paid workspace without manual database edits.",
+    evidencePrompt: "Example: active paid account opens Beyond The Glass; canceled or past-due status does not."
   },
   {
     id: "support",
@@ -453,7 +460,7 @@ const launchTestScriptSteps: LaunchTestScriptStep[] = [
   {
     label: "Sign in first",
     route: "login",
-    detail: "Use the production test learner account so Stripe can return to a real profile."
+    detail: "Use the production test learner account and confirm Google or email magic link preserves the saved room."
   },
   {
     label: "Create checkout",

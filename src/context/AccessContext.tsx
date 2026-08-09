@@ -112,7 +112,7 @@ type SubscriptionRecord = {
 };
 
 const RECENT_SUBSCRIPTION_LIMIT = 20;
-const ENTITLING_SUBSCRIPTION_STATUSES = new Set<SubscriptionStatus>(["trialing", "active", "past_due"]);
+const ENTITLING_SUBSCRIPTION_STATUSES = new Set<SubscriptionStatus>(["trialing", "active"]);
 
 function isEntitlingSubscription(
   status: SubscriptionStatus,

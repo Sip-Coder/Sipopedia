@@ -18,7 +18,7 @@ type AuthContextValue = {
   authSettingsLoaded: boolean;
   errorMessage: string | null;
   signInWithGoogle: () => Promise<void>;
-  signInWithMagicLink: (email: string) => Promise<void>;
+  signInWithMagicLink: (email: string, postLoginRoute?: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -273,7 +273,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     window.location.href = data.url;
   };
 
-  const signInWithMagicLink = async (email: string) => {
+  const signInWithMagicLink = async (email: string, postLoginRoute?: string) => {
     if (!supabase) {
       setErrorMessage("Account access is temporarily unavailable. Please try again later.");
       return;
@@ -288,7 +288,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const { error } = await supabase.auth.signInWithOtp({
       email: normalizedEmail,
       options: {
-        emailRedirectTo: getAuthRedirectUrl()
+        emailRedirectTo: postLoginRoute
+          ? `${getAuthRedirectUrl()}#login?next=${encodeURIComponent(postLoginRoute)}`
+          : getAuthRedirectUrl()
       }
     });
 

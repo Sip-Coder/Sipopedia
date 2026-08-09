@@ -215,16 +215,16 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
             </button>
           </div>
           <div className="pricing-trust-links" aria-label="Membership trust links">
-            <button type="button" onClick={() => onNavigate("terms")}>
+            <button type="button" onClick={() => onNavigate(buildOnboardingRoute("terms", { planId: "pro", source: "pricing-policy", next: nextRoute }))}>
               Terms
             </button>
-            <button type="button" onClick={() => onNavigate("privacy")}>
+            <button type="button" onClick={() => onNavigate(buildOnboardingRoute("privacy", { planId: "pro", source: "pricing-policy", next: nextRoute }))}>
               Privacy
             </button>
-            <button type="button" onClick={() => onNavigate("refund")}>
+            <button type="button" onClick={() => onNavigate(buildOnboardingRoute("refund", { planId: "pro", source: "pricing-policy", next: nextRoute }))}>
               Refunds
             </button>
-            <button type="button" onClick={() => onNavigate("support")}>
+            <button type="button" onClick={() => onNavigate(buildOnboardingRoute("support", { planId: "pro", source: "pricing", next: nextRoute }))}>
               Support
             </button>
           </div>

@@ -54,6 +54,7 @@ When a visitor chooses a preview room from the homepage hero or customer cards, 
 - [ ] Pricing page confirms the saved preview destination before the buyer enters Checkout.
 - [ ] Pricing page answers three first-buyer objections: what paying unlocks, what can be reviewed before payment, and what happens if checkout stalls.
 - [ ] Login before checkout works on production.
+- [ ] Login offers a Google path and an email magic-link fallback that preserves the saved checkout room.
 - [ ] Stripe Checkout session starts from production for a signed-in test user.
 - [ ] Checkout fallback has a direct Membership Help route with `checkout-help` enrollment context attached.
 - [ ] Stripe success URL returns to `https://sipopedia.com/#success` with the session context intact.
@@ -62,12 +63,13 @@ When a visitor chooses a preview room from the homepage hero or customer cards, 
 - [ ] Success and cancel recovery buttons route membership help to Support with enrollment context prefilled.
 - [ ] Success-page Membership Help includes the Stripe checkout session id when Stripe returns it.
 - [ ] Checkout, success, and cancel Membership Help routes use the same enrollment-support builder so saved room and session evidence do not drift.
+- [ ] Locked paid rooms route billing-recovery help to Support with the saved room attached when a subscription is past-due, unpaid, incomplete, or canceled.
 - [ ] Stripe webhook writes or updates `customer_subscriptions` in Supabase.
 - [ ] Paid account receives Student/subscriber access without manual database edits.
-- [ ] Canceled or past-due subscription removes or limits paid access.
+- [ ] Canceled or past-due subscription removes paid-room access unless a new active or trialing subscription is present.
 - [ ] Profile roles are limited to Student and Admin; Trial access is issued through `customer_subscriptions.status = 'trialing'`.
 - [ ] Frontend access/admin views normalize any legacy or unknown profile role to Student unless the role is explicitly Admin.
-- [ ] Terms, Privacy, Refund, and billing support routes are reachable from Pricing and Checkout before payment.
+- [ ] Terms, Privacy, Refund, and billing support routes are reachable from Pricing and Checkout before payment without losing the saved room.
 - [ ] Assisted Enrollment submits to a support/admin workflow that someone will monitor.
 - [ ] Admin connection probe finds at least one Enrollment support request created by Membership Help or Assisted Enrollment.
 - [ ] Mobile portrait checkout path is readable from homepage to success.
@@ -122,11 +124,13 @@ Run this once, in order, from production before inviting a real buyer:
 1. Open `https://sipopedia.com` on the phone/account that will test payment.
 2. Confirm the homepage promise, preview path, $10 pricing, and trust links are clear before checkout.
 3. Select a homepage preview room, then start the $10/month path and confirm Pricing shows that same saved destination.
-4. Sign in with the production test learner account.
+4. Sign in with the production test learner account, and confirm the Google or email magic-link route preserves the saved checkout room.
 5. Start Stripe Checkout from Sipopedia and confirm Stripe shows the correct monthly membership. If checkout fails, confirm Membership Help opens Support with `checkout-help` enrollment context attached.
 6. Return to `https://sipopedia.com/#success` and confirm session context, Refresh Access, Launch Pad, and Support are visible.
 7. Open Membership Help from the success page and confirm the Support intake includes the saved room and Stripe checkout session id.
-8. Open the saved paid room and verify access comes from subscription status, not a manual profile role edit.
-9. Use Membership Help from cancel once and confirm Support opens the Enrollment lane with the checkout context prefilled.
-10. Mark the Admin Console smoke-test items only after the live proof is captured.
-11. Download the Admin proof log and keep it with the first-customer launch notes.
+8. Open the saved paid room and verify access comes from an active or trialing subscription status, not a manual profile role edit.
+9. Confirm a canceled or past-due subscription record does not keep paid-room access open.
+10. Use Membership Help from the locked-room paywall once and confirm Support opens with billing-recovery context and the saved room.
+11. Use Membership Help from cancel once and confirm Support opens the Enrollment lane with the checkout context prefilled.
+12. Mark the Admin Console smoke-test items only after the live proof is captured.
+13. Download the Admin proof log and keep it with the first-customer launch notes.

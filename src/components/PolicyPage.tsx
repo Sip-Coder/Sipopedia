@@ -1,4 +1,4 @@
-import { buildOnboardingRoute } from "../lib/onboardingIntent";
+import { buildOnboardingRoute, readOnboardingIntent } from "../lib/onboardingIntent";
 
 type PolicyKind = "terms" | "privacy" | "refund";
 
@@ -37,6 +37,12 @@ const content: Record<PolicyKind, { title: string; paragraphs: string[] }> = {
 
 export function PolicyPage({ kind, onNavigate }: PolicyPageProps) {
   const policy = content[kind];
+  const intent = readOnboardingIntent("pro");
+  const checkoutRoute = buildOnboardingRoute("checkout", {
+    planId: "pro",
+    source: `${kind}-policy`,
+    next: intent.next
+  });
   return (
     <section className="policy-page">
       <header className="section-header">
@@ -51,7 +57,7 @@ export function PolicyPage({ kind, onNavigate }: PolicyPageProps) {
         <button className="btn btn-light" onClick={() => onNavigate("home")}>
           Back Home
         </button>
-        <button className="btn btn-primary" onClick={() => onNavigate(buildOnboardingRoute("checkout", { planId: "pro", source: `${kind}-policy` }))}>
+        <button className="btn btn-primary" onClick={() => onNavigate(checkoutRoute)}>
           Continue to Enrollment
         </button>
       </div>

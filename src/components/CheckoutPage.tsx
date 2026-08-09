@@ -344,13 +344,13 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
         <button className="btn btn-light" onClick={() => onNavigate(buildOnboardingRoute("pricing", { planId: selectedPlanId, source: "checkout-back", next: nextRoute }))}>
           Back to Pricing
         </button>
-        <button className="btn btn-light" onClick={() => onNavigate("terms")}>
+        <button className="btn btn-light" onClick={() => onNavigate(buildOnboardingRoute("terms", { planId: selectedPlanId, source: "checkout-policy", next: nextRoute }))}>
           Terms
         </button>
-        <button className="btn btn-light" onClick={() => onNavigate("privacy")}>
+        <button className="btn btn-light" onClick={() => onNavigate(buildOnboardingRoute("privacy", { planId: selectedPlanId, source: "checkout-policy", next: nextRoute }))}>
           Privacy
         </button>
-        <button className="btn btn-light" onClick={() => onNavigate("refund")}>
+        <button className="btn btn-light" onClick={() => onNavigate(buildOnboardingRoute("refund", { planId: selectedPlanId, source: "checkout-policy", next: nextRoute }))}>
           Refund Policy
         </button>
         <button className="btn btn-light" onClick={() => onNavigate(membershipSupportRoute)}>

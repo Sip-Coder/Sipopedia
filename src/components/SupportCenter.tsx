@@ -196,10 +196,37 @@ function readSupportRouteContext(): SupportRouteContext {
         "Please help me attach the membership to the correct account and continue safely."
       ].join("\n")
     },
+    "paywall-billing-recovery": {
+      urgency: "urgent",
+      subject: "Membership billing recovery",
+      message: [
+        "A paid room is still locked and my subscription needs attention.",
+        destination ? `Saved room: ${destination}.` : "Saved room: not sure.",
+        "Please help me reconnect billing status to the correct account or restart membership safely."
+      ].join("\n")
+    },
+    "paywall-help": {
+      urgency: "soon",
+      subject: "Membership help from a locked room",
+      message: [
+        "I reached a locked room and need help choosing the right membership path.",
+        destination ? `Saved room: ${destination}.` : "Saved room: not sure.",
+        "Please help me continue without losing this route."
+      ].join("\n")
+    },
     pricing: {
       urgency: "normal",
       subject: "Membership question before checkout",
       message: "I have a question about the $10/month Sip Studies membership before I check out."
+    },
+    "home-path-not-sure": {
+      urgency: "normal",
+      subject: "Help choosing a Sip Studies path",
+      message: [
+        "I am previewing Sip Studies and want help choosing the right starting path.",
+        destination ? `Saved room: ${destination}.` : "Saved room: Launch Pad.",
+        "Please help me decide whether the $10/month membership fits my learning goal."
+      ].join("\n")
     }
   };
   const template = supportTemplates[source] ?? null;

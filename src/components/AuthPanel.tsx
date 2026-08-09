@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 import {
@@ -13,9 +13,11 @@ type AuthPanelProps = {
 };
 
 export function AuthPanel({ postLoginRoute }: AuthPanelProps) {
-  const { user, loading, isConfigured, googleEnabled, authSettingsLoaded, errorMessage, signInWithGoogle, signOut } =
+  const { user, loading, isConfigured, googleEnabled, authSettingsLoaded, errorMessage, signInWithGoogle, signInWithMagicLink, signOut } =
     useAuth();
   const [showLoginOptions, setShowLoginOptions] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailSending, setEmailSending] = useState(false);
 
   const loginQueryRoute =
     typeof window === "undefined"
@@ -40,6 +42,20 @@ export function AuthPanel({ postLoginRoute }: AuthPanelProps) {
       resolveAuthPostLoginRoute(postLoginRoute ?? loginQueryRoute, getDefaultAuthPostLoginRoute())
     );
     void signInWithGoogle();
+  };
+
+  const handleMagicLinkSignIn = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!email.trim() || emailSending) return;
+
+    const nextRoute = resolveAuthPostLoginRoute(postLoginRoute ?? loginQueryRoute, getDefaultAuthPostLoginRoute());
+    rememberAuthPostLoginRoute(nextRoute);
+    setEmailSending(true);
+    try {
+      await signInWithMagicLink(email, nextRoute);
+    } finally {
+      setEmailSending(false);
+    }
   };
 
   return (
@@ -73,6 +89,23 @@ export function AuthPanel({ postLoginRoute }: AuthPanelProps) {
                 {authSettingsLoaded && !googleEnabled ? (
                   <p className="hint">Google login is temporarily unavailable. Please try again later.</p>
                 ) : null}
+                <form className="auth-magic-link-form" onSubmit={handleMagicLinkSignIn}>
+                  <label>
+                    <span>Email magic link</span>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      placeholder="you@example.com"
+                      autoComplete="email"
+                      inputMode="email"
+                      disabled={!isConfigured || emailSending}
+                    />
+                  </label>
+                  <button className="btn btn-light" type="submit" disabled={!isConfigured || !email.trim() || emailSending}>
+                    {emailSending ? "Sending Link" : "Send Magic Link"}
+                  </button>
+                </form>
               </>
             )}
             {!isConfigured ? <p className="hint" role="status">Account access is temporarily unavailable. Please try again later.</p> : null}

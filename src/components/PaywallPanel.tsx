@@ -1,8 +1,10 @@
 import { AuthPanel } from "./AuthPanel";
 import { useAccess } from "../context/AccessContext";
-import { buildOnboardingRoute } from "../lib/onboardingIntent";
+import { buildMembershipSupportRoute, buildOnboardingRoute } from "../lib/onboardingIntent";
 import { WORKSPACE_NAV_ITEMS, buildWorkspaceLanePreviews, workspaceLabelForRoute } from "../lib/workspaceNavigation";
 import { configForRoute, type PageStatusMap } from "../lib/siteMap";
+
+const billingRecoveryStatuses = new Set(["past_due", "unpaid", "canceled", "incomplete", "incomplete_expired"]);
 
 type PaywallPanelProps = {
   onNavigate: (route: string) => void;
@@ -23,6 +25,12 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
   const pricingRoute = buildOnboardingRoute("pricing", { planId: "pro", source: "paywall", next: nextRoute });
   const checkoutRoute = buildOnboardingRoute("checkout", { planId: "pro", source: "paywall", next: nextRoute });
   const nextRouteLabel = workspaceLabelForRoute(nextRoute) ?? nextRoute.replace(/^app\//, "").replace(/-/g, " ");
+  const needsBillingRecovery = subscription ? billingRecoveryStatuses.has(subscription.status) : false;
+  const membershipSupportRoute = buildMembershipSupportRoute({
+    source: needsBillingRecovery ? "paywall-billing-recovery" : "paywall-help",
+    urgency: needsBillingRecovery ? "urgent" : "soon",
+    next: nextRoute
+  });
   const localPreviewAvailable =
     typeof window !== "undefined" && ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
 
@@ -36,8 +44,12 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
     <section className="paywall-panel">
       <header className="section-header paywall-hero">
         <p className="checkout-eyebrow">Access Checkpoint</p>
-        <h2>Unlock this room for $10 per month.</h2>
-        <p>One Sip Studies membership opens the Learn, Taste, and Connect workspace, and your route is already saved.</p>
+        <h2>{needsBillingRecovery ? "Refresh membership billing to reopen this room." : "Unlock this room for $10 per month."}</h2>
+        <p>
+          {needsBillingRecovery
+            ? "Your saved room is still attached, but the current subscription status is not unlocking paid access."
+            : "One Sip Studies membership opens the Learn, Taste, and Connect workspace, and your route is already saved."}
+        </p>
         <div className="paywall-route-chip" aria-label="Blocked route intent">
           <span>Trying to open</span>
           <strong>{nextRouteLabel}</strong>
@@ -54,9 +66,13 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
             <span className="access-state-chip access-state-preview">{isSignedIn ? "Included" : "Preview"}</span>
             <span className="access-state-chip access-state-locked">Locked room</span>
           </div>
-          <p className="paywall-tier">{isSignedIn ? "Launch Pad access" : "Public preview"}</p>
+          <p className="paywall-tier">
+            {needsBillingRecovery ? "Billing needs attention" : isSignedIn ? "Launch Pad access" : "Public preview"}
+          </p>
           <p>
-            {isSignedIn
+            {needsBillingRecovery
+              ? "Restart checkout or open Membership Help so we can reconnect access to the right account."
+              : isSignedIn
               ? "Your account can use the Launch Pad while you subscribe. Checkout starts from this same account."
               : "Public visitors can preview the Launch Pad. Log in before checkout so membership access attaches to the right account."}
           </p>
@@ -80,7 +96,10 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
               See the $10 Membership
             </button>
             <button className="btn btn-light" onClick={() => onNavigate(checkoutRoute)}>
-              Subscribe for $10/month
+              {needsBillingRecovery ? "Restart $10/month Checkout" : "Subscribe for $10/month"}
+            </button>
+            <button className="btn btn-light" onClick={() => onNavigate(membershipSupportRoute)}>
+              Membership Help
             </button>
           </div>
           {errorMessage ? <p className="error">{errorMessage}</p> : null}
@@ -109,7 +128,7 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
           <h3>Enrollment resumes here.</h3>
           <p>
             Membership details and checkout both carry <strong>{nextRouteLabel}</strong> as the next route, so you can return to the room
-            that triggered this checkpoint. Secure checkout opens only after sign-in.
+            that triggered this checkpoint. Secure checkout opens only after sign-in, and billing recovery keeps this same room attached.
           </p>
         </article>
       </div>
