@@ -60,6 +60,7 @@ Keep future homepage changes anchored to the first-customer decision, not the in
 - [ ] Pricing page clearly states $10/month, what unlocks, and how cancellation/help works.
 - [ ] Pricing page confirms the saved preview destination before the buyer enters Checkout.
 - [ ] Pricing page answers three first-buyer objections: what paying unlocks, what can be reviewed before payment, and what happens if checkout stalls.
+- [ ] Pricing page lets first customers preview or save the beginner, service, and study paths instead of only reading static segment cards.
 - [ ] Login before checkout works on production.
 - [ ] Login offers a Google path and an email magic-link fallback that preserves the saved checkout room.
 - [ ] If Google is unavailable, login clearly points buyers to email magic link while preserving the saved checkout room.
@@ -122,6 +123,7 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Confirm the public homepage promise and $10/month offer are still clear.
 - Review the likely first customer segments: curious learners, hospitality staff, certification-adjacent learners, and visual learners.
 - Use the Admin launch card to keep the decision anchored: individuals before teams, show/choose/join homepage hook, and one live proof loop before paid invites.
+- Use Copy answer brief when you need one paste-ready summary of the potential customer base, homepage simplification, before-first-dollar gates, and next work.
 - Use the Smoke test handoff to keep safe preflight separate from real payment proof. Safe preflight proves public wiring only; first-dollar proof still needs live checkout, webhook writeback, paid unlock, and lockout evidence from the same Student account.
 - Use the evidence split to separate code-ready foundations from live proof that only counts after a signed-in production checkout.
 - Open the smoke-test path: Homepage -> Pricing -> Trust Links -> Checkout -> Success -> Cancel Recovery -> Paid Room -> Support.
@@ -136,11 +138,13 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Treat the webhook proof as complete only when the same live test account has a `billing_webhook_events.event_id`, a `customer_subscriptions` row for the same Student user id with matching `metadata.stripe_event_id`, `metadata.stripe_session_id`, and `metadata.stripe_subscription_id`, and the paid room opens after Refresh Access without changing the profile role to Admin.
 - Use the Admin Console live paid proof ladder to reject false positives: localhost, Replit preview, Admin access, manually edited rows, mismatched Stripe IDs, and happy-path-only checks do not count.
 - Use each proof-ladder capture prompt as the minimum proof-note template, especially the full `cs_...` session id, the same subscription row, all three matching Stripe identifiers, Student role confirmation, and the tested lockout status.
-- Review the proof-gaps panel and the downloaded Missing Proof Checklist; do not invite paid traffic while any gap is still marked missing.
-- Use Copy proof log for phone clipboard handoff, then download the first-dollar proof log after the smoke test so the proof log includes the evidence split and saves deployed build, checkout, webhook, support, and access evidence outside browser memory.
+- Review the proof-gaps panel and use Copy missing proof when working from a phone to hand off only the current blockers; do not invite paid traffic while any gap is still marked missing.
+- Use Copy proof log for the full phone clipboard handoff, then download the first-dollar proof log after the smoke test so the proof log includes the evidence split and saves deployed build, checkout, webhook, support, and access evidence outside browser memory.
 - Use Copy live test script before the paid run when testing from a phone. It gives a short run order plus the required proof handoffs: Copy proof note, Latest checkout return -> Import checkout proof, Supabase metadata match, paid-room unlock, Copy lockout proof, and Latest lockout proof -> Import lockout proof.
+- Use Copy worksheet before the paid run when one phone note is easier than several panels. It keeps the Student email, saved room, Stripe session, webhook event, Supabase row, screenshots, and lockout proof tied to the same account.
 - On the success page, use the Checkout reference copy action to paste the exact `cs_...` session id into Admin proof or Membership Help instead of retyping it from a phone. Use Copy proof note when you want a fuller paste-ready record with the session id, saved room, access status, and the remaining Supabase metadata proof required.
 - After the success page appears in the same browser, open Admin and use Latest checkout return -> Import checkout proof to prefill the Stripe session id, paid room route, and success evidence before matching the Supabase webhook/subscription row.
+- Use Copy Supabase proof query after the `cs_`, `evt_`, Student user id, and subscription reference are captured. Paste it into Supabase SQL Editor and verify one `billing_webhook_events` event plus one `customer_subscriptions` row share the same Stripe metadata before marking paid access proven.
 - After testing a canceled, past-due, unpaid, incomplete, or expired subscription, use Copy lockout proof on the locked-room paywall, then use Latest lockout proof -> Import lockout proof in Admin to fill the Lockout proof field from the observed paywall state.
 - Keep the launch decision on hold until every smoke-test item is checked, every connection probe passes, and every Stripe + access proof field is filled.
 - Treat Stripe checkout and webhook unlock as unproven until a signed-in production test account completes the full loop.

@@ -14,15 +14,27 @@ type PricingPageProps = {
 const buyerFits = [
   {
     title: "Curious beginners",
-    detail: "Start with moving previews, field notes, and plain-language routes before dense study."
+    detail: "Start with moving previews, field notes, and plain-language routes before dense study.",
+    route: "app/btg",
+    source: "pricing-fit-beginner",
+    previewLabel: "Preview journey",
+    actionLabel: "Save this journey"
   },
   {
     title: "Hospitality staff",
-    detail: "Build confident guest language for wine, beer, spirits, coffee, tea, and service moments."
+    detail: "Build confident guest language for wine, beer, spirits, coffee, tea, and service moments.",
+    route: "app/recipes",
+    source: "pricing-fit-service",
+    previewLabel: "Preview recipes",
+    actionLabel: "Save service path"
   },
   {
     title: "Certification prep",
-    detail: "Use Sipopedia beside WSET, CMS, Cicerone, BarSmarts-style, and regional-study work."
+    detail: "Use Sipopedia beside WSET, CMS, Cicerone, BarSmarts-style, and regional-study work.",
+    route: "app/sipopedia",
+    source: "pricing-fit-study",
+    previewLabel: "Preview terms",
+    actionLabel: "Save study path"
   }
 ];
 
@@ -156,6 +168,21 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
             <article key={fit.title}>
               <h3>{fit.title}</h3>
               <p>{fit.detail}</p>
+              <div className="pricing-buyer-fit-actions">
+                <button type="button" onClick={() => onNavigate(fit.route)}>
+                  {fit.previewLabel}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate(buildOnboardingRoute("checkout", {
+                    planId: "pro",
+                    source: fit.source,
+                    next: fit.route
+                  }))}
+                >
+                  {fit.actionLabel}
+                </button>
+              </div>
             </article>
           ))}
         </div>

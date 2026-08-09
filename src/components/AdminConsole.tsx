@@ -212,6 +212,17 @@ const launchProofSubscriptionRe =
   /^(?:sub_[a-z0-9_]+|[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;
 const launchProofUuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const launchProofPaidRouteRe = /^app\/[a-z0-9-]+(?:\/[a-z0-9-]+)*$/i;
+
+function sqlTextOrNull(value: string): string {
+  const trimmed = value.trim();
+  return trimmed ? `'${trimmed.replace(/'/g, "''")}'` : "null";
+}
+
+function sqlUuidOrNull(value: string): string {
+  const trimmed = value.trim();
+  return launchProofUuidRe.test(trimmed) ? `${sqlTextOrNull(trimmed)}::uuid` : "null::uuid";
+}
+
 const defaultLaunchProofDetails: LaunchProofDetails = {
   testAccountEmail: "",
   studentUserId: "",
@@ -891,7 +902,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   );
   const [launchProbeRunning, setLaunchProbeRunning] = useState(false);
   const [launchProofCopyStatus, setLaunchProofCopyStatus] = useState("Proof log is ready to copy or download.");
+  const [missingProofCopyStatus, setMissingProofCopyStatus] = useState("Missing proof checklist not copied yet.");
+  const [supabaseProofQueryCopyStatus, setSupabaseProofQueryCopyStatus] = useState("Supabase proof query not copied yet.");
   const [launchTestScriptCopyStatus, setLaunchTestScriptCopyStatus] = useState("Live test script not copied yet.");
+  const [firstPaidWorksheetCopyStatus, setFirstPaidWorksheetCopyStatus] = useState("First paid test worksheet not copied yet.");
+  const [firstDollarBriefCopyStatus, setFirstDollarBriefCopyStatus] = useState("First-dollar answer brief not copied yet.");
   const [rgrdPreflightCopyStatus, setRgrdPreflightCopyStatus] = useState("RGRD preflight command not copied yet.");
   const [firstCustomerInviteCopyStatus, setFirstCustomerInviteCopyStatus] = useState("Invite not copied yet.");
   const [latestSuccessProof, setLatestSuccessProof] = useState<FirstDollarSuccessProof | null>(() => readFirstDollarSuccessProof());
@@ -1353,6 +1368,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `   Capture: ${step.capture}`,
       `   Paste into: ${step.pasteInto}`
     ]);
+    const supabaseProofQueryLines = buildSupabaseProofQueryBody(generatedAt).body.split("\n");
     const liveTestScriptLines = buildLaunchTestScriptBody(generatedAt).body.split("\n").slice(6);
     const firstCustomerInviteLines = launchFirstCustomerInvites.flatMap((invite) => [
       `- ${invite.label}: ${invite.audience}`,
@@ -1414,6 +1430,12 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `- Lockout proof: ${launchProofDetails.lockoutProof.trim() || "Not captured yet."}`,
       `- Proof field status: ${launchProofMissingCount === 0 ? "All proof fields have plausible formats." : `${launchProofMissingCount} proof field${launchProofMissingCount === 1 ? "" : "s"} need review.`}`,
       "",
+      "## Supabase Proof Query",
+      "Paste this into Supabase SQL Editor after the real checkout to match webhook and subscription evidence.",
+      "```sql",
+      ...supabaseProofQueryLines,
+      "```",
+      "",
       "## Likely First Customers",
       ...launchCustomerSegments.map((segment) => `- ${segment.label}: ${segment.firstOffer}`),
       "",
@@ -1432,6 +1454,176 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       "",
       "## Remaining First-Dollar Gate",
       "Run one real signed-in production Stripe checkout and confirm the billing webhook unlocks paid access without manual database edits."
+    ].join("\n");
+    return { body, generatedAt };
+  };
+
+  const buildMissingProofChecklistBody = (generatedAt = new Date()) => {
+    const gapLines = launchProofGapGroups.flatMap((group) => (
+      group.items.length
+        ? [`- ${group.label}: ${group.detail}`, ...group.items.map((item) => `  - ${item}`)]
+        : [`- ${group.label}: clear`]
+    ));
+    const body = [
+      "# Sipopedia Missing First-Dollar Proof Checklist",
+      "",
+      `Generated: ${generatedAt.toLocaleString()}`,
+      `Origin: ${currentLaunchOrigin()}`,
+      `Decision: ${launchReadyForPaidInvite ? "Ready for controlled paid test" : "Hold paid invite"}`,
+      `Detail: ${launchDecisionDetail}`,
+      "",
+      "## Current Blockers",
+      ...gapLines,
+      "",
+      "## Rule",
+      "Do not invite a paid customer until smoke proof, connection proof, and Stripe/access proof are all clear."
+    ].join("\n");
+    return { body, generatedAt };
+  };
+
+  const buildSupabaseProofQueryBody = (generatedAt = new Date()) => {
+    const stripeSessionSql = sqlTextOrNull(launchProofDetails.stripeSessionId);
+    const webhookEventSql = sqlTextOrNull(launchProofDetails.webhookEventId);
+    const studentUserSql = sqlUuidOrNull(launchProofDetails.studentUserId);
+    const subscriptionReference = launchProofDetails.subscriptionReference.trim();
+    const subscriptionRowSql = launchProofUuidRe.test(subscriptionReference) ? `${sqlTextOrNull(subscriptionReference)}::uuid` : "null::uuid";
+    const stripeSubscriptionSql = subscriptionReference.toLowerCase().startsWith("sub_")
+      ? sqlTextOrNull(subscriptionReference)
+      : "null";
+    const body = [
+      "-- Sipopedia first-dollar Supabase proof query",
+      `-- Generated: ${generatedAt.toLocaleString()}`,
+      "-- Paste into the Supabase SQL editor after the signed-in production Stripe checkout.",
+      "-- Pass condition: one webhook event and one customer_subscriptions row match the same Student account and Stripe identifiers.",
+      "",
+      "select",
+      "  event_id,",
+      "  provider,",
+      "  received_at",
+      "from public.billing_webhook_events",
+      `where event_id = ${webhookEventSql}`,
+      "order by received_at desc;",
+      "",
+      "select",
+      "  id,",
+      "  user_id,",
+      "  provider,",
+      "  provider_customer_id,",
+      "  provider_subscription_id,",
+      "  plan_code,",
+      "  status,",
+      "  current_period_end,",
+      "  cancel_at_period_end,",
+      "  updated_at,",
+      "  metadata ->> 'stripe_event_id' as stripe_event_id,",
+      "  metadata ->> 'stripe_session_id' as stripe_session_id,",
+      "  metadata ->> 'stripe_subscription_id' as stripe_subscription_id",
+      "from public.customer_subscriptions",
+      "where",
+      `  user_id = ${studentUserSql}`,
+      `  or id = ${subscriptionRowSql}`,
+      `  or provider_subscription_id = ${stripeSubscriptionSql}`,
+      `  or metadata ->> 'stripe_session_id' = ${stripeSessionSql}`,
+      `  or metadata ->> 'stripe_event_id' = ${webhookEventSql}`,
+      `  or metadata ->> 'stripe_subscription_id' = ${stripeSubscriptionSql}`,
+      "order by updated_at desc",
+      "limit 10;",
+      "",
+      "-- First-dollar pass condition:",
+      "-- The same customer_subscriptions row has status active or trialing, the Student user_id entered above, and matching stripe_event_id, stripe_session_id, and stripe_subscription_id metadata."
+    ].join("\n");
+    return { body, generatedAt };
+  };
+
+  const buildFirstPaidTestWorksheetBody = (generatedAt = new Date()) => {
+    const worksheetLines = launchProofCaptureSteps.flatMap((step, index) => [
+      `${index + 1}. [ ] ${step.label}`,
+      `   Capture: ${step.capture}`,
+      `   Paste into: ${step.pasteInto}`
+    ]);
+    const body = [
+      "# Sipopedia First Paid Test Worksheet",
+      "",
+      `Generated: ${generatedAt.toLocaleString()}`,
+      `Origin: ${currentLaunchOrigin()}`,
+      "Rule: use one signed-in production Student account from checkout through unlock and lockout.",
+      "",
+      "## Test Identity",
+      `- Student email: ${launchProofDetails.testAccountEmail.trim() || "________________"}`,
+      `- Student user id: ${launchProofDetails.studentUserId.trim() || "________________"}`,
+      `- Saved paid room route: ${launchProofDetails.paidRoomRoute.trim() || "app/btg"}`,
+      "",
+      "## Run Order",
+      ...worksheetLines,
+      "",
+      "## Stripe And Supabase Match",
+      `- Stripe checkout session id: ${launchProofDetails.stripeSessionId.trim() || "cs_________________"}`,
+      `- Stripe webhook event id: ${launchProofDetails.webhookEventId.trim() || "evt_________________"}`,
+      `- Subscription reference: ${launchProofDetails.subscriptionReference.trim() || "sub_ or customer_subscriptions UUID ________________"}`,
+      "- Supabase pass condition: one billing_webhook_events row and one customer_subscriptions row match the same Student user id, stripe_event_id, stripe_session_id, and stripe_subscription_id.",
+      "- Supabase proof note:",
+      `  ${launchProofDetails.supabaseMetadataProof.trim() || "________________"}`,
+      "",
+      "## Phone And Access Proof",
+      `- Mobile screenshot proof: ${launchProofDetails.mobileScreenshotProof.trim() || "portrait + landscape screenshots saved at ________________"}`,
+      "- Paid unlock proof: paid room opens for Student without Admin override.",
+      `- Lockout proof: ${launchProofDetails.lockoutProof.trim() || "canceled/past_due/unpaid/incomplete/incomplete_expired status blocks the paid room ________________"}`,
+      "",
+      "## Finish Line",
+      "- Rerun Admin connection probe.",
+      "- Confirm all proof gaps are clear.",
+      "- Copy or download the full proof log.",
+      "- Only then copy a first customer invite."
+    ].join("\n");
+    return { body, generatedAt };
+  };
+
+  const buildFirstDollarAnswerBriefBody = (generatedAt = new Date()) => {
+    const customerLines = launchCustomerSegments.map((segment) => (
+      `- ${segment.label}: ${segment.signal} First offer: ${segment.firstOffer}`
+    ));
+    const homepageLines = launchCommandCards
+      .find((card) => card.label === "Homepage hook")
+      ?.items.map((item) => `- ${item}`) ?? [];
+    const proofLines = launchProofGapGroups.flatMap((group) => (
+      group.items.length
+        ? [`- ${group.label}: ${group.detail}`, ...group.items.map((item) => `  - ${item}`)]
+        : [`- ${group.label}: clear`]
+    ));
+    const body = [
+      "# Sipopedia First-Dollar Answer Brief",
+      "",
+      `Generated: ${generatedAt.toLocaleString()}`,
+      `Origin: ${currentLaunchOrigin()}`,
+      "",
+      "## Potential Customer Base",
+      ...customerLines,
+      "",
+      "## Homepage Simplification",
+      "Use the repeated conversion path: show, choose, join.",
+      ...homepageLines,
+      "- Keep the homepage preview-first: videos, images, and room choices should do more selling than long copy.",
+      "",
+      "## Before First Dollar",
+      "Code-ready is not first-dollar ready. The website should ask for real paid traffic only after one production Student account proves the full loop.",
+      "- Production login preserves the saved room.",
+      "- Stripe Checkout starts on sipopedia.com and returns with the full session reference.",
+      "- Supabase records one webhook event and one customer_subscriptions row with matching Stripe metadata.",
+      "- Paid access unlocks from active or trialing subscription status without Admin override.",
+      "- Canceled, past_due, unpaid, incomplete, and incomplete_expired statuses lock paid rooms again.",
+      "",
+      "## Current Launch Decision",
+      `- Status: ${launchReadyForPaidInvite ? "Ready for controlled test" : "Hold paid invite"}`,
+      `- Detail: ${launchDecisionDetail}`,
+      "- Remaining proof:",
+      ...proofLines,
+      "",
+      "## Next Work",
+      "- Run the RGRD preflight before publishing first-dollar changes.",
+      "- Complete the first paid test worksheet with one signed-in production Student account.",
+      "- Copy the Supabase proof query and verify the same webhook event, subscription row, session id, and subscription id.",
+      "- Copy or download the full proof log.",
+      "- Only then copy and send the first customer invite."
     ].join("\n");
     return { body, generatedAt };
   };
@@ -1507,6 +1699,91 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       });
     } catch {
       setLaunchProofCopyStatus("Clipboard copy was blocked. Use Download proof log instead.");
+    }
+  };
+
+  const copyMissingProofChecklist = async () => {
+    const { body, generatedAt } = buildMissingProofChecklistBody();
+    if (!navigator.clipboard?.writeText) {
+      setMissingProofCopyStatus("Clipboard copy is unavailable in this browser. Use Copy proof log or download the proof log instead.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(body);
+      setMissingProofCopyStatus(`Missing proof checklist copied at ${generatedAt.toLocaleTimeString()}.`);
+      trackEvent("admin_launch_missing_proof_copy", {
+        outstanding: launchOutstandingProofCount,
+        smoke: pendingLaunchSmokeCount,
+        connection: launchConnectionIssueCount,
+        proofFields: launchProofMissingCount,
+        ready: launchReadyForPaidInvite
+      });
+    } catch {
+      setMissingProofCopyStatus("Clipboard copy was blocked. Use Copy proof log or download the proof log instead.");
+    }
+  };
+
+  const copySupabaseProofQuery = async () => {
+    const { body, generatedAt } = buildSupabaseProofQueryBody();
+    if (!navigator.clipboard?.writeText) {
+      setSupabaseProofQueryCopyStatus("Clipboard copy is unavailable in this browser. Use the visible Supabase proof query steps instead.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(body);
+      setSupabaseProofQueryCopyStatus(`Supabase proof query copied at ${generatedAt.toLocaleTimeString()}.`);
+      trackEvent("admin_launch_supabase_proof_query_copy", {
+        hasSession: launchProofCheckoutSessionRe.test(launchProofDetails.stripeSessionId.trim()),
+        hasEvent: launchProofWebhookEventRe.test(launchProofDetails.webhookEventId.trim()),
+        hasUser: launchProofUuidRe.test(launchProofDetails.studentUserId.trim()),
+        hasSubscription: launchProofSubscriptionRe.test(launchProofDetails.subscriptionReference.trim()),
+        ready: launchReadyForPaidInvite
+      });
+    } catch {
+      setSupabaseProofQueryCopyStatus("Clipboard copy was blocked. Use the visible Supabase proof query steps instead.");
+    }
+  };
+
+  const copyFirstPaidTestWorksheet = async () => {
+    const { body, generatedAt } = buildFirstPaidTestWorksheetBody();
+    if (!navigator.clipboard?.writeText) {
+      setFirstPaidWorksheetCopyStatus("Clipboard copy is unavailable in this browser. Use the live test script and proof fields instead.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(body);
+      setFirstPaidWorksheetCopyStatus(`First paid test worksheet copied at ${generatedAt.toLocaleTimeString()}.`);
+      trackEvent("admin_first_paid_test_worksheet_copy", {
+        steps: launchProofCaptureSteps.length,
+        hasSession: launchProofCheckoutSessionRe.test(launchProofDetails.stripeSessionId.trim()),
+        hasEvent: launchProofWebhookEventRe.test(launchProofDetails.webhookEventId.trim()),
+        ready: launchReadyForPaidInvite
+      });
+    } catch {
+      setFirstPaidWorksheetCopyStatus("Clipboard copy was blocked. Use the live test script and proof fields instead.");
+    }
+  };
+
+  const copyFirstDollarAnswerBrief = async () => {
+    const { body, generatedAt } = buildFirstDollarAnswerBriefBody();
+    if (!navigator.clipboard?.writeText) {
+      setFirstDollarBriefCopyStatus("Clipboard copy is unavailable in this browser. Use the visible launch card instead.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(body);
+      setFirstDollarBriefCopyStatus(`First-dollar answer brief copied at ${generatedAt.toLocaleTimeString()}.`);
+      trackEvent("admin_first_dollar_answer_brief_copy", {
+        customers: launchCustomerSegments.length,
+        outstanding: launchOutstandingProofCount,
+        ready: launchReadyForPaidInvite
+      });
+    } catch {
+      setFirstDollarBriefCopyStatus("Clipboard copy was blocked. Use the visible launch card instead.");
     }
   };
 
@@ -2038,6 +2315,24 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   <strong>{launchReadyForPaidInvite ? "First-customer path is proof-ready." : "Do not invite a paid customer yet."}</strong>
                   <small>{launchDecisionDetail}</small>
                 </div>
+                <div className="admin-first-dollar-brief" aria-label="First-dollar answer brief">
+                  <div className="admin-launch-test-script-head admin-launch-copy-head">
+                    <div>
+                      <p className="admin-eyebrow">First-dollar answer brief</p>
+                      <strong>Customer base, homepage focus, launch gate, and next work in one note.</strong>
+                    </div>
+                    <button className="btn btn-light" type="button" onClick={() => void copyFirstDollarAnswerBrief()}>
+                      Copy answer brief
+                    </button>
+                  </div>
+                  <div className="admin-first-dollar-brief-grid">
+                    <span>Who buys first</span>
+                    <span>Show, choose, join</span>
+                    <span>Proof before invite</span>
+                    <span>{launchOutstandingProofCount} gaps left</span>
+                  </div>
+                  <p className="admin-launch-copy-status" role="status">{firstDollarBriefCopyStatus}</p>
+                </div>
                 <div className="admin-launch-handoff" aria-label="First-dollar smoke test handoff">
                   <div className="admin-launch-test-script-head">
                     <p className="admin-eyebrow">Smoke test handoff</p>
@@ -2116,6 +2411,28 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                     ))}
                   </div>
                   <p className="admin-launch-copy-status" role="status">{launchTestScriptCopyStatus}</p>
+                </div>
+                <div className="admin-launch-worksheet" aria-label="First paid test worksheet">
+                  <div className="admin-launch-test-script-head admin-launch-copy-head">
+                    <div>
+                      <p className="admin-eyebrow">First paid test worksheet</p>
+                      <strong>One paste-ready note for the real checkout run.</strong>
+                    </div>
+                    <button className="btn btn-light" type="button" onClick={() => void copyFirstPaidTestWorksheet()}>
+                      Copy worksheet
+                    </button>
+                  </div>
+                  <p>
+                    Use this while testing from a phone so the Student email, saved room, Stripe session, webhook event,
+                    Supabase row, screenshots, and lockout proof stay tied to one account.
+                  </p>
+                  <div className="admin-launch-worksheet-strip">
+                    <span>Same Student</span>
+                    <span>Same Stripe IDs</span>
+                    <span>Same paid room</span>
+                    <span>Lockout proven</span>
+                  </div>
+                  <p className="admin-launch-copy-status" role="status">{firstPaidWorksheetCopyStatus}</p>
                 </div>
                 <div className="admin-launch-live-proof" aria-label="Live paid proof ladder">
                   <div className="admin-launch-test-script-head">
@@ -2253,6 +2570,30 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   </div>
                   <p className="admin-launch-copy-status" role="status">{lockoutProofImportStatus}</p>
                 </div>
+                <div className="admin-launch-success-import" aria-label="Supabase proof query">
+                  <div className="admin-launch-test-script-head">
+                    <p className="admin-eyebrow">Supabase proof query</p>
+                    <strong>Match the webhook event and subscription row before marking paid access proven.</strong>
+                  </div>
+                  <p>
+                    Copy a SQL Editor query that searches `billing_webhook_events` and `customer_subscriptions` using the
+                    Student user id, `cs_` session, `evt_` event, and subscription reference captured below.
+                  </p>
+                  <div className="admin-launch-success-proof-card">
+                    <span>Pass condition</span>
+                    <strong>One Student subscription row matches the same Stripe session, event, and subscription identifiers.</strong>
+                    <small>
+                      Active or trialing status proves the unlock path; canceled, past_due, unpaid, incomplete, or expired status
+                      must still prove the lockout path.
+                    </small>
+                  </div>
+                  <div className="admin-launch-smoke-actions">
+                    <button className="btn btn-light" type="button" onClick={() => void copySupabaseProofQuery()}>
+                      Copy Supabase proof query
+                    </button>
+                  </div>
+                  <p className="admin-launch-copy-status" role="status">{supabaseProofQueryCopyStatus}</p>
+                </div>
                 <div className="admin-launch-proof-fields" aria-label="Stripe and access proof details">
                   <div className="admin-launch-test-script-head">
                     <p className="admin-eyebrow">Stripe + access proof</p>
@@ -2281,6 +2622,16 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   })}
                 </div>
                 <div className="admin-launch-proof-gaps" aria-label="First-dollar proof gaps">
+                  <div className="admin-launch-proof-gap-head">
+                    <div>
+                      <p className="admin-eyebrow">Missing proof checklist</p>
+                      <strong>{launchOutstandingProofCount === 0 ? "All first-dollar proof gates are clear." : "Copy the blockers before the paid test."}</strong>
+                    </div>
+                    <button className="btn btn-light" type="button" onClick={() => void copyMissingProofChecklist()}>
+                      Copy missing proof
+                    </button>
+                  </div>
+                  <p className="admin-launch-copy-status" role="status">{missingProofCopyStatus}</p>
                   {launchProofGapGroups.map((group) => (
                     <article className={`status-${group.status}`} key={group.label}>
                       <span>{group.status === "clear" ? "Clear" : "Missing"}</span>
