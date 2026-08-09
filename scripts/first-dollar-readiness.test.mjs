@@ -22,6 +22,8 @@ const [
   schemaSource,
   productionProbeSource,
   preflightSource,
+  writeRgrdManifestSource,
+  verifyRgrdManifestSource,
   packageSource,
   mobileQaSource,
   customerPlanDoc,
@@ -40,6 +42,8 @@ const [
   readFile(new URL("../supabase/schema.sql", import.meta.url), "utf8"),
   readFile(new URL("./first-dollar-production-probe.mjs", import.meta.url), "utf8"),
   readFile(new URL("./first-dollar-preflight.mjs", import.meta.url), "utf8"),
+  readFile(new URL("./write-rgrd-manifest.mjs", import.meta.url), "utf8"),
+  readFile(new URL("./verify-rgrd-manifest.mjs", import.meta.url), "utf8"),
   readFile(new URL("../package.json", import.meta.url), "utf8"),
   readFile(new URL("./first-dollar-mobile-path-qa.mjs", import.meta.url), "utf8"),
   readFile(new URL("../docs/FIRST_DOLLAR_CUSTOMER_PLAN.md", import.meta.url), "utf8"),
@@ -129,6 +133,13 @@ test("homepage sells by first-customer fit before feature count", () => {
   assert.match(marketingHomeSource, /See the system/);
   assert.match(marketingHomeSource, /Practice the craft/);
   assert.match(marketingHomeSource, /Find the answer/);
+  assert.match(marketingHomeSource, /All Learn preview rooms/);
+  assert.match(marketingHomeSource, /learnPreviewReels\.map/);
+  assert.match(marketingHomeSource, /Sip Academy Map/);
+  assert.match(marketingHomeSource, /Living Palate/);
+  assert.match(marketingHomeSource, /Sip Game/);
+  assert.match(marketingHomeSource, /Bev Recipes/);
+  assert.match(marketingHomeSource, /Resources/);
   assert.match(marketingHomeSource, /Preview first/);
   assert.match(marketingHomeSource, /Cancel anytime/);
   assert.match(marketingHomeSource, /Works on phones/);
@@ -177,6 +188,8 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /Live RGRD build/);
   assert.match(adminSource, /rgrd\.json\?admin_probe=/);
   assert.match(adminSource, /Live RGRD manifest: \$\{manifest\.repository\}@\$\{shortCommit\}/);
+  assert.match(adminSource, /sourceCommit/);
+  assert.match(adminSource, /from GitHub source \$\{shortSourceCommit\}/);
   assert.match(adminSource, /rgrd: nextChecks\.find\(\(check\) => check\.id === "rgrd-manifest"\)\?\.status/);
   assert.match(adminSource, /First-dollar evidence split/);
   assert.match(adminSource, /Live paid proof ladder/);
@@ -207,6 +220,9 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /IDs captured across different rows or different test accounts/);
   assert.match(adminSource, /Opening the room while the account is Admin/);
   assert.match(adminSource, /Only testing the happy path/);
+  assert.match(adminSource, /Full cs_test_\.\.\. or cs_live_\.\.\. session id copied from the Sipopedia success page/);
+  assert.match(adminSource, /One sentence naming the same row and all three matching Stripe identifiers/);
+  assert.match(adminSource, /Capture: \$\{step\.capture\}/);
   assert.match(adminSource, /## Launch Card/);
   assert.match(adminSource, /## Live Paid Proof Ladder/);
   assert.match(adminSource, /## Smoke Test Handoff/);
@@ -231,6 +247,11 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /Lockout proof: \$\{launchProofDetails\.lockoutProof/);
   assert.match(adminSource, /const userLabel = latestStudentUserId \? ` for user \$\{latestStudentUserId\}` : ""/);
   assert.match(adminSource, /Add a specific proof note before this counts as proven/);
+  assert.match(adminSource, /buildLaunchProofLogBody/);
+  assert.match(adminSource, /copyLaunchProofLog/);
+  assert.match(adminSource, /Copy proof log/);
+  assert.match(adminSource, /admin_launch_proof_copy/);
+  assert.match(adminSource, /Clipboard copy is unavailable in this browser/);
 });
 
 test("checkout Edge Function sanitizes source and next before Stripe session creation", () => {
@@ -291,7 +312,21 @@ test("safe production probe reports remaining paid-access proof", () => {
   assert.match(productionProbeSource, /Stripe webhook writes billing_webhook_events and customer_subscriptions/);
   assert.match(productionProbeSource, /customer_subscriptions\.metadata contains matching Stripe event, session, and subscription identifiers/);
   assert.match(productionProbeSource, /paid room opens from active or trialing subscription status without Admin override/);
+  assert.match(productionProbeSource, /sourceCommit/);
+  assert.match(productionProbeSource, /Replit build stamp/);
+  assert.match(productionProbeSource, /expected GitHub source commit/);
   assert.match(productionProbeSource, /public wiring is ready for the real paid smoke test; paid access is still unproven/);
+});
+
+test("RGRD manifest keeps Replit publish stamps separate from GitHub source commits", () => {
+  assert.match(writeRgrdManifestSource, /sourceCommitMetadata/);
+  assert.match(writeRgrdManifestSource, /isReplitPublishCommit/);
+  assert.match(writeRgrdManifestSource, /\^published your app\$/i);
+  assert.match(writeRgrdManifestSource, /sourceCommit: sourceCommit\.sha/);
+  assert.match(writeRgrdManifestSource, /sourceCommitTime: sourceCommit\.commitTime/);
+  assert.match(writeRgrdManifestSource, /sourceCommitSubject: sourceCommit\.subject/);
+  assert.match(verifyRgrdManifestSource, /manifest\.sourceCommit \?\? manifest\.commit/);
+  assert.match(verifyRgrdManifestSource, /RGRD manifest source commit/);
 });
 
 test("first-dollar preflight runs safe production and mobile checks together", () => {
@@ -326,6 +361,8 @@ test("short first-dollar customer plan matches the live proof gates", () => {
   assert.match(customerPlanDoc, /stripe_subscription_id/);
   assert.match(customerPlanDoc, /These commands do not create a Stripe session, write a subscription, or prove paid access/);
   assert.match(customerPlanDoc, /Confirm canceled or past-due status locks the room again/);
+  assert.match(customerPlanDoc, /expected RGRD GitHub source commit/);
+  assert.match(customerPlanDoc, /Replit adds its own publish-stamp commit/);
 });
 
 test("readiness checklist documents the same first-dollar proof requirements", () => {
@@ -342,6 +379,8 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /Safe preflight proves public wiring only/);
   assert.match(readinessDoc, /Live RGRD build/);
   assert.match(readinessDoc, /exact deployed `rgrd\.json` commit/);
+  assert.match(readinessDoc, /GitHub source commit when Replit adds a publish stamp/);
+  assert.match(readinessDoc, /deployed Replit build stamp when present/);
   assert.match(readinessDoc, /Proof capture run sheet/);
   assert.match(readinessDoc, /Stripe, Supabase, paid access, and phone screenshots all point to the same signed-in Student test/);
   assert.match(readinessDoc, /Supabase Student user id/);
@@ -353,6 +392,8 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /localhost, Replit preview, Admin access, manually edited rows, mismatched Stripe IDs, and happy-path-only checks do not count/);
   assert.match(readinessDoc, /phone screenshot proof location/);
   assert.match(readinessDoc, /proof log includes the evidence split/);
+  assert.match(readinessDoc, /Copy proof log/);
+  assert.match(readinessDoc, /phone clipboard/);
   assert.match(readinessDoc, /first-visit decision rail offers Watch, Choose, Join, and Help actions/);
   assert.match(readinessDoc, /Homepage Help actions prefill Support/);
   assert.match(readinessDoc, /Google is unavailable, login clearly points buyers to email magic link/);

@@ -24,6 +24,31 @@ function githubRepository(remoteUrl) {
   return match ? `${match[1]}/${match[2]}` : "unknown";
 }
 
+function commitMetadata(rev) {
+  const output = git(["show", "-s", "--format=%H%x00%an%x00%s%x00%cI", rev]);
+  const [sha = "", author = "", subject = "", commitTime = ""] = output.split("\0");
+  return { sha, author, subject, commitTime };
+}
+
+function isReplitPublishCommit(metadata) {
+  return /replit/i.test(metadata.author) && /^published your app$/i.test(metadata.subject);
+}
+
+function sourceCommitMetadata(currentCommit) {
+  const history = git(["log", "--format=%H%x00%an%x00%s%x00%cI", "-n", "30"]);
+  if (!history) return commitMetadata(currentCommit);
+
+  const commits = history
+    .split(/\r?\n/)
+    .map((line) => {
+      const [sha = "", author = "", subject = "", commitTime = ""] = line.split("\0");
+      return { sha, author, subject, commitTime };
+    })
+    .filter((metadata) => /^[a-f0-9]{40}$/i.test(metadata.sha));
+
+  return commits.find((metadata) => !isReplitPublishCommit(metadata)) ?? commitMetadata(currentCommit);
+}
+
 const commit = git(["rev-parse", "HEAD"]);
 if (!/^[a-f0-9]{40}$/i.test(commit)) {
   throw new Error("Unable to resolve the Git commit for the RGRD build manifest.");
@@ -32,6 +57,7 @@ if (!/^[a-f0-9]{40}$/i.test(commit)) {
 const branch = git(["branch", "--show-current"]) || process.env.GITHUB_REF_NAME || "detached";
 const repository = process.env.GITHUB_REPOSITORY || githubRepository(git(["remote", "get-url", "origin"]));
 const commitTime = git(["show", "-s", "--format=%cI", "HEAD"]);
+const sourceCommit = sourceCommitMetadata(commit);
 const provider = process.env.REPL_ID
   ? "replit"
   : process.env.GITHUB_ACTIONS === "true"
@@ -44,6 +70,9 @@ const manifest = {
   commit,
   branch,
   commitTime,
+  sourceCommit: sourceCommit.sha,
+  sourceCommitTime: sourceCommit.commitTime,
+  sourceCommitSubject: sourceCommit.subject,
   builtAt: new Date().toISOString(),
   provider
 };

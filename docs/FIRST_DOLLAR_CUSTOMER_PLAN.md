@@ -90,7 +90,7 @@ Do not lead with team plans, custom training, or enterprise features until the o
 
 Code-ready is not the same as first-dollar ready. Before asking a real customer to pay, prove:
 
-- Production homepage is on the expected RGRD commit.
+- Production homepage is on the expected RGRD GitHub source commit, even when Replit adds its own publish-stamp commit.
 - Pricing, Login, Checkout, Success, Cancel, Support, Terms, Privacy, and Refund are reachable on phone.
 - Login preserves the saved room.
 - Stripe Checkout starts from a signed-in production account.

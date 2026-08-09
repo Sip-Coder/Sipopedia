@@ -130,13 +130,14 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Add specific proof notes, not placeholder text; each checked smoke-test item should name what was observed.
 - Use the Proof capture run sheet so Stripe, Supabase, paid access, and phone screenshots all point to the same signed-in Student test.
 - Fill in the Stripe + access proof fields with plausible live evidence: valid test account email, Supabase Student user id, full `cs_test_...` or `cs_live_...` Stripe Checkout session id, full `evt_...` webhook event id, a `sub_...` Stripe subscription id or `customer_subscriptions` UUID, Supabase metadata proof showing the same row contains the matching Stripe identifiers, paid `app/...` route, the phone screenshot proof location, and Lockout proof showing canceled, past-due, unpaid, incomplete, or expired status locks paid access.
-- Run the connection probe and confirm the Live RGRD build check captures the exact deployed `rgrd.json` commit, subscription checks show safe counts, webhook/session metadata when available, and support checks find at least one Enrollment request with latest status metadata.
+- Run the connection probe and confirm the Live RGRD build check captures the exact deployed `rgrd.json` commit plus the GitHub source commit when Replit adds a publish stamp, subscription checks show safe counts, webhook/session metadata when available, and support checks find at least one Enrollment request with latest status metadata.
 - After entering the Supabase Student user id, Stripe session id, or subscription reference, rerun the connection probe and confirm it says "Matched entered proof row"; if it says no entered proof matched recent rows, stop and inspect the account before inviting paid traffic.
 - After the real checkout, rerun the connection probe and confirm it prefills or displays the latest `cs_`, `evt_`, and subscription proof from `customer_subscriptions.metadata`.
 - Treat the webhook proof as complete only when the same live test account has a `billing_webhook_events.event_id`, a `customer_subscriptions` row for the same Student user id with matching `metadata.stripe_event_id`, `metadata.stripe_session_id`, and `metadata.stripe_subscription_id`, and the paid room opens after Refresh Access without changing the profile role to Admin.
 - Use the Admin Console live paid proof ladder to reject false positives: localhost, Replit preview, Admin access, manually edited rows, mismatched Stripe IDs, and happy-path-only checks do not count.
+- Use each proof-ladder capture prompt as the minimum proof-note template, especially the full `cs_...` session id, the same subscription row, all three matching Stripe identifiers, Student role confirmation, and the tested lockout status.
 - Review the proof-gaps panel and the downloaded Missing Proof Checklist; do not invite paid traffic while any gap is still marked missing.
-- Download the first-dollar proof log after the smoke test so the proof log includes the evidence split and saves deployed build, checkout, webhook, support, and access evidence outside browser memory.
+- Use Copy proof log for phone clipboard handoff, then download the first-dollar proof log after the smoke test so the proof log includes the evidence split and saves deployed build, checkout, webhook, support, and access evidence outside browser memory.
 - On the success page, use the Checkout reference copy action to paste the exact `cs_...` session id into Admin proof or Membership Help instead of retyping it from a phone.
 - Keep the launch decision on hold until every smoke-test item is checked, every connection probe passes, and every Stripe + access proof field is filled.
 - Treat Stripe checkout and webhook unlock as unproven until a signed-in production test account completes the full loop.
@@ -159,7 +160,7 @@ npm run first-dollar:probe
 npm run first-dollar:mobile-qa -- --base-url https://sipopedia.com
 ```
 
-The probe checks the live `https://sipopedia.com/rgrd.json` commit, the homepage app shell, the public Supabase configuration in the production bundle, the unauthenticated checkout guard, and the unsigned billing-webhook guard. It does not create a Stripe Checkout Session, write subscription rows, submit payment, or use secret keys.
+The probe checks the live `https://sipopedia.com/rgrd.json` GitHub source commit, the deployed Replit build stamp when present, the homepage app shell, the public Supabase configuration in the production bundle, the unauthenticated checkout guard, and the unsigned billing-webhook guard. It does not create a Stripe Checkout Session, write subscription rows, submit payment, or use secret keys.
 
 Passing this probe means the public wiring is reachable. It does not replace the final first-dollar smoke test, because only a signed-in production Stripe checkout can prove the webhook writes `customer_subscriptions` and unlocks paid access. The probe prints the remaining live-proof list every time so a green safe probe is not mistaken for paid-access proof.
 

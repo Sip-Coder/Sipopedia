@@ -15878,6 +15878,65 @@ select option:checked {
   text-transform: uppercase;
 }
 
+.marketing-learn-preview-rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(112px, 0.72fr);
+  gap: 0.42rem;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding: 0.1rem 0 0.35rem;
+  scrollbar-color: rgba(159, 218, 245, 0.42) transparent;
+  scrollbar-width: thin;
+}
+
+.marketing-learn-preview-rail button {
+  display: grid;
+  gap: 0.16rem;
+  min-width: 0;
+  min-height: 62px;
+  border: 1px solid rgba(159, 218, 245, 0.2);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(237, 212, 168, 0.12), transparent 48%),
+    rgba(3, 18, 28, 0.72);
+  color: #fff1d1;
+  cursor: pointer;
+  padding: 0.52rem 0.56rem;
+  text-align: left;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.marketing-learn-preview-rail button:hover,
+.marketing-learn-preview-rail button:focus-visible,
+.marketing-learn-preview-rail button[aria-pressed="true"] {
+  border-color: rgba(237, 212, 168, 0.72);
+  background:
+    linear-gradient(135deg, rgba(10, 84, 77, 0.88), rgba(117, 70, 28, 0.62)),
+    rgba(3, 18, 28, 0.76);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.marketing-learn-preview-rail span {
+  color: #9de6ec;
+  font-size: 0.56rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.marketing-learn-preview-rail strong {
+  color: #fff1d1;
+  font-size: 0.78rem;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+
 .marketing-hero-switchboard {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -20717,6 +20776,17 @@ select option:checked {
   line-height: 1.35;
 }
 
+.admin-launch-live-proof-grid em {
+  display: block;
+  border-left: 2px solid rgba(237, 212, 168, 0.54);
+  padding-left: 0.52rem;
+  color: rgba(255, 242, 211, 0.88);
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 820;
+  line-height: 1.32;
+}
+
 .admin-launch-live-proof-grid small {
   color: #edcfa5;
   font-size: 0.7rem;
@@ -21094,6 +21164,14 @@ select option:checked {
   min-height: 2.35rem;
   padding-inline: 0.78rem;
   white-space: nowrap;
+}
+
+.admin-launch-copy-status {
+  margin: -0.24rem 0 0;
+  color: rgba(237, 212, 168, 0.78);
+  font-size: 0.74rem;
+  font-weight: 760;
+  line-height: 1.3;
 }
 
 .admin-launch-smoke-step {
@@ -33670,6 +33748,14 @@ button.journal-note-row.journal-note-select .journal-note-copy {
   .marketing-home-preview .marketing-hero-actions .btn {
     width: 100%;
     white-space: normal;
+  }
+
+  .marketing-learn-preview-rail {
+    grid-auto-columns: minmax(104px, 52vw);
+  }
+
+  .marketing-learn-preview-rail button {
+    min-height: 58px;
   }
 
   .marketing-hero-switchboard {

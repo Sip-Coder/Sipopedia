@@ -179,17 +179,22 @@ async function main() {
     checks.push(result("live RGRD manifest", "fail", `Could not read ${manifestUrl}.`, { httpStatus: manifestResult.response.status }));
   } else {
     const manifest = manifestResult.json;
-    const commitMatches = manifest.commit === expectedCommit;
+    const sourceCommit = typeof manifest.sourceCommit === "string" ? manifest.sourceCommit : manifest.commit;
+    const commitMatches = sourceCommit === expectedCommit;
     const repositoryMatches = manifest.repository === expectedRepository;
+    const deployCommitDetail = typeof manifest.commit === "string" && manifest.commit !== sourceCommit
+      ? `; Replit build stamp ${manifest.commit.slice(0, 12)}`
+      : "";
     checks.push(result(
       "live RGRD manifest",
       commitMatches && repositoryMatches ? "pass" : "fail",
       commitMatches && repositoryMatches
-        ? `Production serves ${manifest.repository}@${manifest.commit.slice(0, 12)}.`
-        : "Production manifest does not match the expected GitHub commit or repository.",
+        ? `Production serves ${manifest.repository}@${sourceCommit.slice(0, 12)}${deployCommitDetail}.`
+        : "Production manifest does not match the expected GitHub source commit or repository.",
       {
         repository: manifest.repository,
         commit: manifest.commit,
+        sourceCommit,
         expectedCommit,
         provider: manifest.provider,
         builtAt: manifest.builtAt

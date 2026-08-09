@@ -113,6 +113,7 @@ type LaunchProofHandoffStep = {
 type LaunchLiveProofStep = {
   label: string;
   mustShow: string;
+  capture: string;
   notEnough: string;
 };
 
@@ -163,6 +164,7 @@ type LaunchConnectionCheck = {
 type LaunchRgrdManifest = {
   repository?: unknown;
   commit?: unknown;
+  sourceCommit?: unknown;
   branch?: unknown;
   builtAt?: unknown;
   provider?: unknown;
@@ -731,31 +733,37 @@ const launchLiveProofSteps: LaunchLiveProofStep[] = [
   {
     label: "Signed-in buyer",
     mustShow: "Student test account starts Stripe Checkout from sipopedia.com with the saved room attached.",
+    capture: "Student email, Supabase user id, saved room route, and production origin.",
     notEnough: "Admin access, localhost checkout, or a Replit preview URL."
   },
   {
     label: "Stripe return",
     mustShow: "Success page shows the full Stripe Checkout session reference after payment.",
+    capture: "Full cs_test_... or cs_live_... session id copied from the Sipopedia success page.",
     notEnough: "A Stripe dashboard payment without the Sipopedia success return."
   },
   {
     label: "Webhook writeback",
     mustShow: "Supabase has a billing_webhook_events event and one customer_subscriptions row for the same account.",
+    capture: "billing_webhook_events evt_ id plus the customer_subscriptions row id or Stripe sub_ id.",
     notEnough: "A manually edited subscription row or profile role change."
   },
   {
     label: "Metadata match",
     mustShow: "That same subscription row contains matching stripe_event_id, stripe_session_id, and stripe_subscription_id metadata.",
+    capture: "One sentence naming the same row and all three matching Stripe identifiers.",
     notEnough: "IDs captured across different rows or different test accounts."
   },
   {
     label: "Access unlock",
     mustShow: "The saved paid room opens from active or trialing subscription status after Refresh Access.",
+    capture: "Paid app/... route, subscription status, and confirmation the profile role stayed Student.",
     notEnough: "Opening the room while the account is Admin."
   },
   {
     label: "Lockout check",
     mustShow: "Canceled, past-due, unpaid, incomplete, and expired statuses do not keep paid access open.",
+    capture: "The locked status tested, paywall or recovery screen observed, and Membership Help billing context.",
     notEnough: "Only testing the happy path."
   }
 ];
@@ -837,6 +845,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     initialLaunchConnectionChecks()
   );
   const [launchProbeRunning, setLaunchProbeRunning] = useState(false);
+  const [launchProofCopyStatus, setLaunchProofCopyStatus] = useState("Proof log is ready to copy or download.");
   draftPageStatusesRef.current = draftPageStatuses;
 
   useEffect(() => {
@@ -1163,8 +1172,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     setLaunchProofDetails((current) => ({ ...current, [field]: value }));
   };
 
-  const downloadLaunchProofLog = () => {
-    const generatedAt = new Date();
+  const buildLaunchProofLogBody = (generatedAt = new Date()) => {
     const launchCardLines = launchCommandCards.flatMap((card) => [
       `- ${card.label}: ${card.title}`,
       `  ${card.detail}`,
@@ -1180,6 +1188,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     const liveProofLines = launchLiveProofSteps.flatMap((step, index) => [
       `${index + 1}. ${step.label}`,
       `   Must show: ${step.mustShow}`,
+      `   Capture: ${step.capture}`,
       `   Not enough: ${step.notEnough}`
     ]);
     const proofCaptureLines = launchProofCaptureSteps.flatMap((step, index) => [
@@ -1255,6 +1264,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       "## Remaining First-Dollar Gate",
       "Run one real signed-in production Stripe checkout and confirm the billing webhook unlocks paid access without manual database edits."
     ].join("\n");
+    return { body, generatedAt };
+  };
+
+  const downloadLaunchProofLog = () => {
+    const { body, generatedAt } = buildLaunchProofLogBody();
     const blob = new Blob([body], { type: "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -1269,6 +1283,26 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       total: launchSmokeSteps.length,
       ready: launchReadyForPaidInvite
     });
+  };
+
+  const copyLaunchProofLog = async () => {
+    const { body, generatedAt } = buildLaunchProofLogBody();
+    if (!navigator.clipboard?.writeText) {
+      setLaunchProofCopyStatus("Clipboard copy is unavailable in this browser. Use Download proof log instead.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(body);
+      setLaunchProofCopyStatus(`Proof log copied at ${generatedAt.toLocaleTimeString()}.`);
+      trackEvent("admin_launch_proof_copy", {
+        completed: completedLaunchSmokeCount,
+        total: launchSmokeSteps.length,
+        ready: launchReadyForPaidInvite
+      });
+    } catch {
+      setLaunchProofCopyStatus("Clipboard copy was blocked. Use Download proof log instead.");
+    }
   };
 
   const runLaunchConnectionProbe = async () => {
@@ -1296,11 +1330,15 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       } else {
         const manifest = await manifestResponse.json() as LaunchRgrdManifest;
         const shortCommit = shortLaunchCommit(manifest.commit);
+        const shortSourceCommit = shortLaunchCommit(manifest.sourceCommit);
+        const sourceDetail = shortSourceCommit && shortSourceCommit !== shortCommit
+          ? ` from GitHub source ${shortSourceCommit}`
+          : "";
         if (manifest.repository === "Sip-Coder/Sipopedia" && shortCommit) {
           updateCheck(
             "rgrd-manifest",
             "pass",
-            `Live RGRD manifest: ${manifest.repository}@${shortCommit} on ${typeof manifest.branch === "string" ? manifest.branch : "unknown branch"}, built ${formatLaunchProbeTime(typeof manifest.builtAt === "string" ? manifest.builtAt : null)} via ${typeof manifest.provider === "string" ? manifest.provider : "unknown provider"}.`
+            `Live RGRD manifest: ${manifest.repository}@${shortCommit}${sourceDetail} on ${typeof manifest.branch === "string" ? manifest.branch : "unknown branch"}, built ${formatLaunchProbeTime(typeof manifest.builtAt === "string" ? manifest.builtAt : null)} via ${typeof manifest.provider === "string" ? manifest.provider : "unknown provider"}.`
           );
         } else {
           updateCheck(
@@ -1852,6 +1890,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                         <div>
                           <strong>{step.label}</strong>
                           <p>{step.mustShow}</p>
+                          <em>Capture: {step.capture}</em>
                           <small>Not enough: {step.notEnough}</small>
                         </div>
                       </article>
@@ -1944,6 +1983,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                       <h4>{completedLaunchSmokeCount} of {launchSmokeSteps.length} proven</h4>
                     </div>
                     <div className="admin-launch-smoke-actions">
+                      <button className="btn btn-light" type="button" onClick={() => void copyLaunchProofLog()}>
+                        Copy proof log
+                      </button>
                       <button className="btn btn-light" type="button" onClick={downloadLaunchProofLog}>
                         Download proof log
                       </button>
@@ -1952,6 +1994,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                       </button>
                     </div>
                   </div>
+                  <p className="admin-launch-copy-status" role="status">{launchProofCopyStatus}</p>
                   {launchSmokeSteps.map((step) => {
                     const stepState = launchSmokeState[step.id] ?? { done: false, evidence: "" };
                     const stepIsProven = isLaunchSmokeStepProven(launchSmokeState, step.id);

@@ -22,8 +22,12 @@ if (manifest.schemaVersion !== 1) {
 if (!/^[a-f0-9]{40}$/i.test(manifest.commit ?? "")) {
   throw new Error("RGRD manifest does not contain a full Git commit SHA.");
 }
-if (manifest.commit.toLowerCase() !== expectedCommit.toLowerCase()) {
-  throw new Error(`RGRD manifest commit ${manifest.commit} does not match ${expectedCommit}.`);
+if (!/^[a-f0-9]{40}$/i.test(manifest.sourceCommit ?? manifest.commit ?? "")) {
+  throw new Error("RGRD manifest does not contain a valid source Git commit SHA.");
+}
+const sourceCommit = manifest.sourceCommit ?? manifest.commit;
+if (sourceCommit.toLowerCase() !== expectedCommit.toLowerCase()) {
+  throw new Error(`RGRD manifest source commit ${sourceCommit} does not match ${expectedCommit}.`);
 }
 if (manifest.repository !== expectedRepository) {
   throw new Error(
@@ -33,6 +37,9 @@ if (manifest.repository !== expectedRepository) {
 if (!Number.isFinite(Date.parse(manifest.commitTime))) {
   throw new Error("RGRD manifest commit timestamp is invalid.");
 }
+if (manifest.sourceCommitTime && !Number.isFinite(Date.parse(manifest.sourceCommitTime))) {
+  throw new Error("RGRD manifest source commit timestamp is invalid.");
+}
 if (!Number.isFinite(Date.parse(manifest.builtAt))) {
   throw new Error("RGRD manifest build timestamp is invalid.");
 }
@@ -40,4 +47,4 @@ if (!["github-actions", "local", "replit"].includes(manifest.provider)) {
   throw new Error(`RGRD manifest provider is invalid: ${manifest.provider ?? "missing"}.`);
 }
 
-console.log(`RGRD manifest verified for ${manifest.repository}@${manifest.commit.slice(0, 12)}.`);
+console.log(`RGRD manifest verified for ${manifest.repository}@${sourceCommit.slice(0, 12)}.`);

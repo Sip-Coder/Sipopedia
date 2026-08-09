@@ -482,6 +482,20 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
               <span>Works on phones</span>
               <span>Source-backed terms</span>
             </div>
+            <div className="marketing-learn-preview-rail" aria-label="All Learn preview rooms">
+              {learnPreviewReels.map((reel) => (
+                <button
+                  key={reel.id}
+                  type="button"
+                  onClick={() => setActiveReelId(reel.id)}
+                  aria-pressed={activeReel.id === reel.id}
+                  title={reel.detail}
+                >
+                  <span>{reel.label}</span>
+                  <strong>{reel.title}</strong>
+                </button>
+              ))}
+            </div>
             <div className="marketing-hero-switchboard" aria-label="Featured preview videos">
               {heroReelIds.map((reelId) => {
                 const reel = learnPreviewReels.find((item) => item.id === reelId);
