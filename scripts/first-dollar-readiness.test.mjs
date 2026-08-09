@@ -155,6 +155,15 @@ test("homepage sells by first-customer fit before feature count", () => {
   assert.match(marketingHomeSource, /home-path-hospitality/);
   assert.match(marketingHomeSource, /home-path-certification/);
   assert.match(marketingHomeSource, /home-path-not-sure/);
+  assert.match(marketingHomeSource, /MarketSignal/);
+  assert.match(marketingHomeSource, /marketSignals/);
+  assert.match(marketingHomeSource, /First customer market signals/);
+  assert.match(marketingHomeSource, /Built for real beverage learners, not just feature browsing/);
+  assert.match(marketingHomeSource, /5\.0M/);
+  assert.match(marketingHomeSource, /15\.8M/);
+  assert.match(marketingHomeSource, /134K/);
+  assert.match(marketingHomeSource, /150K\+/);
+  assert.match(marketingHomeSource, /visual memory beside official study/);
   assert.match(marketingHomeSource, /See the system/);
   assert.match(marketingHomeSource, /Practice the craft/);
   assert.match(marketingHomeSource, /Find the answer/);
@@ -435,6 +444,12 @@ test("short first-dollar customer plan matches the live proof gates", () => {
   assert.match(customerPlanDoc, /Who buys first: individual beverage learners, hospitality staff, and certification-adjacent students before team plans/);
   assert.match(customerPlanDoc, /Homepage hook: show, choose, join/);
   assert.match(customerPlanDoc, /First-dollar gate: one live proof loop/);
+  assert.match(customerPlanDoc, /Market Evidence Snapshot/);
+  assert.match(customerPlanDoc, /BLS reports about 5\.0 million U\.S\. food-and-beverage serving jobs/);
+  assert.match(customerPlanDoc, /National Restaurant Association's 2026 industry outlook projects 15\.8 million restaurant jobs/);
+  assert.match(customerPlanDoc, /WSET reported 134,000 candidates took a qualification/);
+  assert.match(customerPlanDoc, /more than 150,000 people worldwide have earned recognition through the program/);
+  assert.match(customerPlanDoc, /sell the \$10\/month individual membership as a visual confidence tool before selling teams/);
   assert.match(customerPlanDoc, /Hospitality Workers/);
   assert.match(customerPlanDoc, /Certification-Adjacent Students/);
   assert.match(customerPlanDoc, /Curious Previewers/);
@@ -457,6 +472,10 @@ test("short first-dollar customer plan matches the live proof gates", () => {
   assert.match(customerPlanDoc, /I’m opening a small first Sip Studies test group/);
   assert.match(customerPlanDoc, /Preview the academy, pick a room, then join/);
   assert.match(customerPlanDoc, /visual learners, hospitality\/service confidence, and certification-adjacent study companions/);
+  assert.match(customerPlanDoc, /https:\/\/www\.bls\.gov\/ooh\/food-preparation-and-serving\/food-and-beverage-serving-and-related-workers\.htm/);
+  assert.match(customerPlanDoc, /https:\/\/restaurant\.org\/research-and-media\/research\/research-reports\/state-of-the-industry\//);
+  assert.match(customerPlanDoc, /https:\/\/www\.wsetglobal\.com\/news-events\/news\/2024\/rise-in-number-of-diploma-students-as-wset-celebrates-55th-anniversary/);
+  assert.match(customerPlanDoc, /https:\/\/www\.cicerone\.org\/us-en\/cicerone-certification-levels/);
 });
 
 test("readiness checklist documents the same first-dollar proof requirements", () => {

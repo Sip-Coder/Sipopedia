@@ -16217,6 +16217,7 @@ select option:checked {
 
 .marketing-buyer-journey,
 .marketing-first-visit,
+.marketing-market-signals,
 .marketing-customer-paths,
 .marketing-reel-wall,
 .marketing-room-preview {
@@ -16301,6 +16302,74 @@ select option:checked {
   background: linear-gradient(135deg, rgba(10, 84, 77, 0.86), rgba(117, 70, 28, 0.48));
   outline: none;
   transform: translateY(-1px);
+}
+
+.marketing-market-signals {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.66fr) minmax(0, 1.34fr);
+  align-items: stretch;
+  gap: clamp(0.65rem, 1.4vw, 0.95rem);
+  background:
+    radial-gradient(circle at 12% 14%, rgba(237, 212, 168, 0.12), transparent 34%),
+    linear-gradient(135deg, rgba(4, 18, 30, 0.82), rgba(5, 55, 61, 0.62));
+}
+
+.marketing-market-signals > div:first-child {
+  display: grid;
+  align-content: center;
+  gap: 0.28rem;
+  min-width: 0;
+}
+
+.marketing-market-signals h2 {
+  margin: 0;
+  color: #fff1d1;
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  line-height: 1.05;
+}
+
+.marketing-market-signal-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.marketing-market-signal-grid article {
+  display: grid;
+  align-content: start;
+  gap: 0.22rem;
+  min-width: 0;
+  min-height: 118px;
+  border: 1px solid rgba(237, 212, 168, 0.2);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(255, 241, 209, 0.09), transparent 48%),
+    rgba(3, 16, 27, 0.72);
+  padding: clamp(0.68rem, 1vw, 0.82rem);
+}
+
+.marketing-market-signal-grid strong {
+  color: #fff1d1;
+  font-size: clamp(1.25rem, 2.4vw, 1.85rem);
+  line-height: 1;
+}
+
+.marketing-market-signal-grid span {
+  color: #9de6ec;
+  font-size: 0.64rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  line-height: 1.12;
+  text-transform: uppercase;
+}
+
+.marketing-market-signal-grid p {
+  margin: 0;
+  color: rgba(217, 247, 255, 0.78);
+  font-size: 0.76rem;
+  font-weight: 680;
+  line-height: 1.28;
 }
 
 .marketing-buyer-journey {
@@ -33988,6 +34057,19 @@ button.journal-note-row.journal-note-select .journal-note-copy {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .marketing-market-signals {
+    grid-template-columns: 1fr;
+  }
+
+  .marketing-market-signal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .marketing-market-signal-grid article {
+    min-height: 112px;
+    padding: 0.68rem;
+  }
+
   .marketing-first-visit article {
     padding: 0.68rem;
   }
@@ -34071,7 +34153,8 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
 @media (max-width: 320px) and (orientation: portrait) {
   .marketing-first-visit,
-  .marketing-fit-strip {
+  .marketing-fit-strip,
+  .marketing-market-signal-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -34127,6 +34210,39 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
   .marketing-buyer-journey {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .marketing-market-signals {
+    grid-template-columns: minmax(180px, 0.54fr) minmax(0, 1.46fr);
+    gap: 0.55rem;
+  }
+
+  .marketing-market-signals h2 {
+    font-size: 1.08rem;
+  }
+
+  .marketing-market-signal-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+
+  .marketing-market-signal-grid article {
+    min-height: 104px;
+    padding: 0.58rem;
+  }
+
+  .marketing-market-signal-grid strong {
+    font-size: 1.16rem;
+  }
+
+  .marketing-market-signal-grid span {
+    font-size: 0.54rem;
+    letter-spacing: 0.07em;
+  }
+
+  .marketing-market-signal-grid p {
+    font-size: 0.66rem;
+    line-height: 1.2;
   }
 
   .marketing-buyer-journey article {

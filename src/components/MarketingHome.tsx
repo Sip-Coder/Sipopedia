@@ -58,6 +58,12 @@ type BuyerJourneyStep = {
   detail: string;
 };
 
+type MarketSignal = {
+  metric: string;
+  label: string;
+  detail: string;
+};
+
 type FirstVisitDecision = {
   label: string;
   title: string;
@@ -368,6 +374,29 @@ const buyerJourneySteps: BuyerJourneyStep[] = [
   }
 ];
 
+const marketSignals: MarketSignal[] = [
+  {
+    metric: "5.0M",
+    label: "U.S. service roles",
+    detail: "Hospitality learners need clear guest language that fits a phone."
+  },
+  {
+    metric: "15.8M",
+    label: "restaurant jobs",
+    detail: "Restaurants keep investing in faster training and workforce confidence."
+  },
+  {
+    metric: "134K",
+    label: "WSET candidates",
+    detail: "Certification learners need visual memory beside official study."
+  },
+  {
+    metric: "150K+",
+    label: "Cicerone recognitions",
+    detail: "Beer and service learners already enter through structured education."
+  }
+];
+
 const firstVisitDecisions: FirstVisitDecision[] = [
   {
     label: "Watch",
@@ -553,6 +582,22 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
             </button>
           </article>
         ))}
+      </section>
+
+      <section className="marketing-market-signals" aria-label="First customer market signals">
+        <div>
+          <p className="marketing-kicker">Who It Serves</p>
+          <h2>Built for real beverage learners, not just feature browsing.</h2>
+        </div>
+        <div className="marketing-market-signal-grid">
+          {marketSignals.map((signal) => (
+            <article key={signal.label}>
+              <strong>{signal.metric}</strong>
+              <span>{signal.label}</span>
+              <p>{signal.detail}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="marketing-buyer-journey" aria-label="How Sip Studies starts">

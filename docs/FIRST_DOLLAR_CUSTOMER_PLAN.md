@@ -8,6 +8,17 @@ This is the simple first-dollar operating brief: who Sipopedia should sell to fi
 - Homepage hook: show, choose, join. Let moving previews and visual rooms sell the promise before payment.
 - First-dollar gate: one live proof loop from production login to Stripe Checkout, webhook sync, paid-room unlock, and canceled/past-due lockout.
 
+## Market Evidence Snapshot
+
+Use these signals to keep the first offer narrow and believable:
+
+- Hospitality is a large, repeating training market. BLS reports about 5.0 million U.S. food-and-beverage serving jobs in 2024, 5 percent projected growth from 2024 to 2034, and about 1,159,600 openings per year. This supports practical, phone-friendly training for workers who need guest language quickly.
+- Restaurants are still a large employer and technology buyer. The National Restaurant Association's 2026 industry outlook projects 15.8 million restaurant jobs and says operators are looking at technology that improves efficiency, guest connection, and workforce development.
+- Certification study is a real companion market. WSET reported 134,000 candidates took a qualification in the prior academic year and highlighted launches in beer and sake alongside wine and spirits, which supports Sipopedia as a visual study companion rather than a replacement for official programs.
+- Beer education has a broad entry funnel. Cicerone describes four certification levels and says more than 150,000 people worldwide have earned recognition through the program, which supports beer learners and hospitality staff as a parallel first-customer path.
+
+First-dollar implication: sell the $10/month individual membership as a visual confidence tool before selling teams, credentials, or enterprise training. The homepage should prove "I can understand this now" in the first few seconds.
+
 ## Best First Customers
 
 ### 1. Visual Beverage Learners
@@ -154,8 +165,9 @@ The Admin Console includes copyable invite variants for visual learners, hospita
 
 ## Source Notes
 
-- U.S. Bureau of Labor Statistics, Food and Beverage Serving and Related Workers: projected 5 percent employment growth from 2024 to 2034 and about 1,159,600 openings per year.
-- National Restaurant Association, Restaurant Employee Demographics: restaurant and foodservice industry provides 15.7 million U.S. jobs.
+- U.S. Bureau of Labor Statistics, Food and Beverage Serving and Related Workers: https://www.bls.gov/ooh/food-preparation-and-serving/food-and-beverage-serving-and-related-workers.htm
+- National Restaurant Association, 2026 State of the Restaurant Industry: https://restaurant.org/research-and-media/research/research-reports/state-of-the-industry/
+- National Restaurant Association, Restaurant Employee Demographics: https://restaurant.org/research-and-media/u-s-restaurant-employee-demographics/
 - National Restaurant Association, workforce technology report: recruitment and retention remain a major operator challenge, supporting lightweight training demand.
-- WSET public materials and annual-report filings show established demand for formal drinks qualifications.
-- Cicerone Certification Program public certification pages show a structured beer-education pathway for beverage professionals.
+- WSET, Rise in number of Diploma students as WSET celebrates 55th anniversary: https://www.wsetglobal.com/news-events/news/2024/rise-in-number-of-diploma-students-as-wset-celebrates-55th-anniversary
+- Cicerone Certification Program, Certification Levels: https://www.cicerone.org/us-en/cicerone-certification-levels
