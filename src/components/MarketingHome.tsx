@@ -31,6 +31,15 @@ type PreviewReelGroup = {
   reelIds: string[];
 };
 
+type CustomerPath = {
+  label: string;
+  title: string;
+  detail: string;
+  previewRoute: string;
+  actionRoute: string;
+  actionLabel: string;
+};
+
 type PreviewRoom = {
   title: string;
   detail: string;
@@ -198,6 +207,41 @@ const previewReelGroups: PreviewReelGroup[] = [
   }
 ];
 
+const customerPaths: CustomerPath[] = [
+  {
+    label: "New learner",
+    title: "I want drinks to finally make sense.",
+    detail: "Start with the visual academy, field journeys, and quick terms before memorizing dense notes.",
+    previewRoute: "app/btg",
+    actionRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "home-path-new-learner" }),
+    actionLabel: "Start learning"
+  },
+  {
+    label: "Hospitality",
+    title: "I need better guest language.",
+    detail: "Use maps, tasting practice, and recipe logic to explain drinks more confidently on the floor.",
+    previewRoute: "app/recipes",
+    actionRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "home-path-hospitality" }),
+    actionLabel: "Train for service"
+  },
+  {
+    label: "Certification prep",
+    title: "I need structure beside my study book.",
+    detail: "Turn regions, ingredients, terms, and production systems into visual memory anchors.",
+    previewRoute: "app/sipopedia",
+    actionRoute: buildOnboardingRoute("pricing", { planId: "pro", source: "home-path-certification" }),
+    actionLabel: "Build my study path"
+  },
+  {
+    label: "Not sure yet",
+    title: "I want to preview before paying.",
+    detail: "Watch the room trailers, open the public Launch Pad, or ask for assisted enrollment.",
+    previewRoute: "app/launch",
+    actionRoute: "support",
+    actionLabel: "Ask for help"
+  }
+];
+
 const previewRooms: PreviewRoom[] = [
   {
     title: "Learn",
@@ -283,6 +327,30 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
           </aside>
         </div>
       </div>
+
+      <section className="marketing-customer-paths" aria-labelledby="customer-paths-title">
+        <div className="marketing-section-intro">
+          <p className="marketing-kicker">Start Here</p>
+          <h2 id="customer-paths-title">Pick the reason you came.</h2>
+        </div>
+        <div className="marketing-customer-path-grid">
+          {customerPaths.map((path) => (
+            <article className="marketing-customer-path-card" key={path.label}>
+              <span>{path.label}</span>
+              <h3>{path.title}</h3>
+              <p>{path.detail}</p>
+              <div className="marketing-customer-path-actions">
+                <button type="button" onClick={() => onNavigate(path.previewRoute)}>
+                  Preview
+                </button>
+                <button type="button" onClick={() => onNavigate(path.actionRoute)}>
+                  {path.actionLabel}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <section className="marketing-parallax-story" aria-labelledby="soil-to-sip-title">
         <div className="marketing-parallax-intro">

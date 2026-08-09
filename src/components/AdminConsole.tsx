@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { ArrowDown, ArrowUp, DotsSixVertical } from "@phosphor-icons/react";
 import { useAccess } from "../context/AccessContext";
-import { supabase } from "../lib/supabase";
+import { isSupabaseConfigured, supabase } from "../lib/supabase";
 import { trackEvent } from "../lib/analytics";
 import {
   isBeverageNewsHealthFresh,
@@ -68,9 +68,138 @@ type LaunchReadinessCheck = {
 };
 
 type LaunchSmokeStep = {
+  id: string;
   label: string;
   route: string;
+  expected: string;
+  evidencePrompt: string;
 };
+
+type LaunchCustomerSegment = {
+  label: string;
+  signal: string;
+  firstOffer: string;
+};
+
+type LaunchSmokeState = Record<string, { done: boolean; evidence: string }>;
+
+type StoredLaunchSmokeState = Partial<Record<string, Partial<{ done: boolean; evidence: string }>>>;
+
+type LaunchConnectionStatus = "pass" | "warn" | "fail" | "waiting";
+
+type LaunchConnectionCheck = {
+  id: string;
+  label: string;
+  status: LaunchConnectionStatus;
+  detail: string;
+  checkedAt?: string;
+};
+
+const launchSmokeStorageKey = "sipstudies:first-dollar-smoke:v1";
+
+function buildDefaultLaunchSmokeState(): LaunchSmokeState {
+  return launchSmokeSteps.reduce((accumulator, step) => {
+    accumulator[step.id] = { done: false, evidence: "" };
+    return accumulator;
+  }, {} as LaunchSmokeState);
+}
+
+function readLaunchSmokeState(): LaunchSmokeState {
+  const fallback = buildDefaultLaunchSmokeState();
+  if (typeof window === "undefined") return fallback;
+  try {
+    const stored = window.localStorage.getItem(launchSmokeStorageKey);
+    if (!stored) return fallback;
+    const parsed = JSON.parse(stored) as StoredLaunchSmokeState;
+    return launchSmokeSteps.reduce((accumulator, step) => {
+      const saved = parsed[step.id];
+      accumulator[step.id] = {
+        done: saved?.done === true,
+        evidence: typeof saved?.evidence === "string" ? saved.evidence : ""
+      };
+      return accumulator;
+    }, {} as LaunchSmokeState);
+  } catch {
+    return fallback;
+  }
+}
+
+function writeLaunchSmokeState(state: LaunchSmokeState) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(launchSmokeStorageKey, JSON.stringify(state));
+  } catch {
+    // Local storage is only a convenience for the operator checklist.
+  }
+};
+
+function functionErrorStatus(error: unknown): number | null {
+  const context = (error as { context?: unknown })?.context;
+  if (context instanceof Response) return context.status;
+  if (context && typeof context === "object" && "status" in context) {
+    const status = Number((context as { status?: unknown }).status);
+    return Number.isFinite(status) ? status : null;
+  }
+  return null;
+}
+
+async function functionErrorMessage(error: unknown): Promise<string> {
+  const context = (error as { context?: unknown })?.context;
+  if (context instanceof Response) {
+    try {
+      const payload = await context.clone().json();
+      if (typeof payload?.error === "string") return payload.error;
+    } catch {
+      // Fall through to generic message.
+    }
+  }
+  return error instanceof Error ? error.message : "Unable to read the function response.";
+}
+
+function currentLaunchOrigin(): string {
+  if (typeof window === "undefined") return "server render";
+  return window.location.origin;
+}
+
+function initialLaunchConnectionChecks(): LaunchConnectionCheck[] {
+  const origin = currentLaunchOrigin();
+  return [
+    {
+      id: "origin",
+      label: "Production origin",
+      status: origin.includes("sipopedia.com") ? "pass" : "warn",
+      detail: origin.includes("sipopedia.com")
+        ? "Running on Sipopedia production."
+        : `Currently checking from ${origin}. Re-run on sipopedia.com before taking payment.`
+    },
+    {
+      id: "supabase-client",
+      label: "Supabase client",
+      status: isSupabaseConfigured ? "pass" : "fail",
+      detail: isSupabaseConfigured
+        ? "Browser client is configured with public Supabase project settings."
+        : "Missing public Supabase URL or anon key in this environment."
+    },
+    {
+      id: "checkout-edge",
+      label: "Checkout Edge Function",
+      status: "waiting",
+      detail: "Run the probe to confirm the checkout function answers before Stripe is tested."
+    },
+    {
+      id: "subscription-table",
+      label: "Subscription records",
+      status: "waiting",
+      detail: "Run the probe to confirm subscription rows are reachable through the admin session."
+    },
+    {
+      id: "support-queue",
+      label: "Support queue",
+      status: "waiting",
+      detail: "Run the probe to confirm assisted-enrollment requests are reachable."
+    }
+  ];
+}
 
 type SocialPlatformKey = "instagram" | "facebook" | "linkedin" | "x" | "tiktok" | "youtube";
 
@@ -118,11 +247,71 @@ const launchReadinessChecks: LaunchReadinessCheck[] = [
 ];
 
 const launchSmokeSteps: LaunchSmokeStep[] = [
-  { label: "Homepage", route: "home" },
-  { label: "Pricing", route: "pricing" },
-  { label: "Checkout", route: "checkout" },
-  { label: "Support", route: "support" },
-  { label: "Paid Room", route: "app/btg" }
+  {
+    id: "homepage",
+    label: "Homepage",
+    route: "home",
+    expected: "A new visitor understands the visual beverage academy and sees the $10 membership path.",
+    evidencePrompt: "Example: hero, previews, and CTA readable on phone."
+  },
+  {
+    id: "pricing",
+    label: "Pricing",
+    route: "pricing",
+    expected: "$10/month, preview-first value, cancellation, and support feel clear before checkout.",
+    evidencePrompt: "Example: offer and help language visible without zooming."
+  },
+  {
+    id: "checkout",
+    label: "Checkout",
+    route: "checkout",
+    expected: "A signed-in test account can start Stripe Checkout from production.",
+    evidencePrompt: "Example: Stripe opens from sipopedia.com account flow."
+  },
+  {
+    id: "success",
+    label: "Success",
+    route: "success",
+    expected: "Stripe returns to Sipopedia with the session context intact.",
+    evidencePrompt: "Example: success page confirms membership and next room."
+  },
+  {
+    id: "paid-room",
+    label: "Paid Room",
+    route: "app/btg",
+    expected: "Subscription status unlocks the intended paid workspace without manual database edits.",
+    evidencePrompt: "Example: paid account opens Beyond The Glass."
+  },
+  {
+    id: "support",
+    label: "Support",
+    route: "support",
+    expected: "A confused buyer can request assisted enrollment and get a human follow-up path.",
+    evidencePrompt: "Example: support request path submitted and monitored."
+  }
+];
+
+const launchCustomerSegments: LaunchCustomerSegment[] = [
+  {
+    label: "Curious beverage learners",
+    signal: "They want drinks explained visually before heavy textbook study.",
+    firstOffer: "Lead with cinematic previews and one simple $10 path."
+  },
+  {
+    label: "Hospitality staff",
+    signal: "They need better guest language for wine, beer, spirits, coffee, and service.",
+    firstOffer: "Show practical field notes, recipes, maps, and tasting practice."
+  },
+  {
+    label: "Certification-adjacent learners",
+    signal: "They already study WSET, CMS, Cicerone, or BarSmarts-style material.",
+    firstOffer: "Position Sipopedia as a visual companion, not a replacement textbook."
+  },
+  {
+    label: "Visual learners",
+    signal: "They need systems, movement, and memory hooks before memorizing terms.",
+    firstOffer: "Make previews, maps, and video blocks do most of the selling."
+  }
 ];
 
 const socialPlatforms: SocialPlatform[] = [
@@ -173,6 +362,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const [beverageNewsHealth, setBeverageNewsHealth] = useState<BeverageNewsHealth | null>(() =>
     readBeverageNewsHealth()
   );
+  const [launchSmokeState, setLaunchSmokeState] = useState<LaunchSmokeState>(() => readLaunchSmokeState());
+  const [launchConnectionChecks, setLaunchConnectionChecks] = useState<LaunchConnectionCheck[]>(() =>
+    initialLaunchConnectionChecks()
+  );
+  const [launchProbeRunning, setLaunchProbeRunning] = useState(false);
   draftPageStatusesRef.current = draftPageStatuses;
 
   useEffect(() => {
@@ -251,6 +445,10 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     refreshHealth();
     return subscribeToBeverageNewsHealth(refreshHealth);
   }, [isAdmin]);
+
+  useEffect(() => {
+    writeLaunchSmokeState(launchSmokeState);
+  }, [launchSmokeState]);
 
   const siteMapDirty = useMemo(
     () =>
@@ -348,6 +546,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     subscription.status === "trialing" || subscription.status === "active" || subscription.status === "past_due"
   ).length;
   const launchNeedsProofCount = launchReadinessChecks.filter((check) => check.status === "needs-proof").length;
+  const completedLaunchSmokeCount = launchSmokeSteps.filter((step) => launchSmokeState[step.id]?.done).length;
   const beverageNewsNeedsAttention =
     beverageNewsHealth !== null &&
     isBeverageNewsHealthFresh(beverageNewsHealth) &&
@@ -379,6 +578,105 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const toggleTargetPlatform = (platformId: SocialPlatformKey) => {
     if (!connectedPlatforms[platformId]) return;
     setTargetPlatforms((current) => ({ ...current, [platformId]: !current[platformId] }));
+  };
+
+  const toggleLaunchSmokeStep = (stepId: string) => {
+    setLaunchSmokeState((current) => ({
+      ...current,
+      [stepId]: {
+        done: !current[stepId]?.done,
+        evidence: current[stepId]?.evidence ?? ""
+      }
+    }));
+  };
+
+  const updateLaunchSmokeEvidence = (stepId: string, evidence: string) => {
+    setLaunchSmokeState((current) => ({
+      ...current,
+      [stepId]: {
+        done: current[stepId]?.done ?? false,
+        evidence
+      }
+    }));
+  };
+
+  const resetLaunchSmokeState = () => {
+    setLaunchSmokeState(buildDefaultLaunchSmokeState());
+  };
+
+  const runLaunchConnectionProbe = async () => {
+    const checkedAt = new Date().toISOString();
+    const nextChecks = initialLaunchConnectionChecks().map((check) => ({ ...check, checkedAt }));
+
+    if (!supabase) {
+      setLaunchConnectionChecks(nextChecks.map((check) =>
+        check.id === "checkout-edge" || check.id === "subscription-table" || check.id === "support-queue"
+          ? { ...check, status: "fail", detail: "Supabase is not configured in this environment.", checkedAt }
+          : check
+      ));
+      return;
+    }
+
+    setLaunchProbeRunning(true);
+    try {
+      const [checkoutResult, subscriptionResult, supportResult] = await Promise.allSettled([
+        supabase.functions.invoke<Record<string, unknown>>("create-checkout-session", {
+          body: { planId: "__readiness_probe__", source: "admin-connection-probe", next: "app/btg" }
+        }),
+        supabase.from("customer_subscriptions").select("id", { count: "exact", head: true }),
+        supabase.from("support_requests").select("id", { count: "exact", head: true })
+      ]);
+
+      const updateCheck = (id: string, status: LaunchConnectionStatus, detail: string) => {
+        const target = nextChecks.find((check) => check.id === id);
+        if (target) {
+          target.status = status;
+          target.detail = detail;
+        }
+      };
+
+      if (checkoutResult.status === "rejected") {
+        updateCheck("checkout-edge", "fail", "Checkout function could not be reached from this browser session.");
+      } else if (checkoutResult.value.error) {
+        const status = functionErrorStatus(checkoutResult.value.error);
+        const message = await functionErrorMessage(checkoutResult.value.error);
+        if (status === 400 && message.toLowerCase().includes("unsupported checkout plan")) {
+          updateCheck("checkout-edge", "pass", "Checkout function is reachable and stopped the harmless probe before Stripe.");
+        } else if (status === 401) {
+          updateCheck("checkout-edge", "warn", "Checkout function is reachable; sign in before the real Stripe test.");
+        } else {
+          updateCheck("checkout-edge", "fail", `Checkout function responded with ${status ?? "an unexpected status"}: ${message}`);
+        }
+      } else {
+        updateCheck("checkout-edge", "warn", "Checkout function returned data to the probe. Review before running a real payment test.");
+      }
+
+      if (subscriptionResult.status === "rejected") {
+        updateCheck("subscription-table", "fail", "Subscription table probe could not run.");
+      } else if (subscriptionResult.value.error) {
+        updateCheck("subscription-table", "fail", subscriptionResult.value.error.message);
+      } else {
+        updateCheck("subscription-table", "pass", "Subscription table is reachable from the current admin session.");
+      }
+
+      if (supportResult.status === "rejected") {
+        updateCheck("support-queue", "fail", "Support queue probe could not run.");
+      } else if (supportResult.value.error) {
+        updateCheck("support-queue", "warn", `Support queue needs review: ${supportResult.value.error.message}`);
+      } else {
+        updateCheck("support-queue", "pass", "Support request queue is reachable for assisted enrollment follow-up.");
+      }
+
+      setLaunchConnectionChecks(nextChecks);
+      trackEvent("admin_launch_connection_probe", {
+        origin: currentLaunchOrigin(),
+        checkout: nextChecks.find((check) => check.id === "checkout-edge")?.status,
+        subscriptions: nextChecks.find((check) => check.id === "subscription-table")?.status,
+        support: nextChecks.find((check) => check.id === "support-queue")?.status
+      });
+    } finally {
+      setLaunchProbeRunning(false);
+    }
   };
 
   const generateSocialPostDraft = () => {
@@ -684,6 +982,15 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   The product story and checkout path are in place. Before a real customer pays, run one production
                   smoke test that proves login, Stripe, webhook sync, and paid access all connect.
                 </p>
+                <div className="admin-launch-customer-grid" aria-label="Likely first customer segments">
+                  {launchCustomerSegments.map((segment) => (
+                    <div className="admin-launch-customer" key={segment.label}>
+                      <strong>{segment.label}</strong>
+                      <span>{segment.signal}</span>
+                      <small>{segment.firstOffer}</small>
+                    </div>
+                  ))}
+                </div>
                 <div className="admin-launch-check-grid" aria-label="First dollar launch checks">
                   {launchReadinessChecks.map((check) => (
                     <div className={`admin-launch-check status-${check.status}`} key={check.label}>
@@ -693,12 +1000,65 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                     </div>
                   ))}
                 </div>
-                <div className="admin-launch-smoke-path" aria-label="Production smoke test path">
-                  {launchSmokeSteps.map((step) => (
-                    <button className="btn btn-light" type="button" key={step.label} onClick={() => onNavigate(step.route)}>
-                      {step.label}
+                <div className="admin-launch-smoke-tracker" aria-label="Production smoke test tracker">
+                  <div className="admin-launch-smoke-head">
+                    <div>
+                      <p className="admin-eyebrow">Production smoke test</p>
+                      <h4>{completedLaunchSmokeCount} of {launchSmokeSteps.length} proven</h4>
+                    </div>
+                    <button className="btn btn-light" type="button" onClick={resetLaunchSmokeState}>
+                      Reset proof
                     </button>
-                  ))}
+                  </div>
+                  {launchSmokeSteps.map((step) => {
+                    const stepState = launchSmokeState[step.id] ?? { done: false, evidence: "" };
+                    return (
+                      <article className={`admin-launch-smoke-step ${stepState.done ? "is-complete" : ""}`} key={step.id}>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={stepState.done}
+                            onChange={() => toggleLaunchSmokeStep(step.id)}
+                          />
+                          <span>
+                            <strong>{step.label}</strong>
+                            <small>{step.expected}</small>
+                          </span>
+                        </label>
+                        <button className="btn btn-light" type="button" onClick={() => onNavigate(step.route)}>
+                          Open
+                        </button>
+                        <textarea
+                          aria-label={`${step.label} proof note`}
+                          value={stepState.evidence}
+                          onChange={(event) => updateLaunchSmokeEvidence(step.id, event.target.value)}
+                          placeholder={step.evidencePrompt}
+                          rows={2}
+                        />
+                      </article>
+                    );
+                  })}
+                </div>
+                <div className="admin-launch-connection-probe" aria-label="Production connection probe">
+                  <div className="admin-launch-smoke-head">
+                    <div>
+                      <p className="admin-eyebrow">Connection probe</p>
+                      <h4>Check safe wiring before the real Stripe test.</h4>
+                    </div>
+                    <button className="btn btn-light" type="button" onClick={() => void runLaunchConnectionProbe()} disabled={launchProbeRunning}>
+                      {launchProbeRunning ? "Checking..." : "Run probe"}
+                    </button>
+                  </div>
+                  <div className="admin-launch-connection-grid">
+                    {launchConnectionChecks.map((check) => (
+                      <article className={`admin-launch-connection-check status-${check.status}`} key={check.id}>
+                        <span>{check.status === "pass" ? "Pass" : check.status === "warn" ? "Review" : check.status === "fail" ? "Fix" : "Waiting"}</span>
+                        <strong>{check.label}</strong>
+                        <small>{check.detail}</small>
+                        {check.checkedAt ? <em>{new Date(check.checkedAt).toLocaleTimeString()}</em> : null}
+                      </article>
+                    ))}
+                  </div>
                 </div>
               </article>
               <article className="admin-card admin-launch-metric-card">

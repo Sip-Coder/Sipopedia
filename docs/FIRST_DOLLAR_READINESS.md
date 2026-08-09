@@ -10,6 +10,8 @@ This checklist tracks what must be true before Sipopedia should ask a real custo
 - Visual learners who need maps, videos, field notes, and practice loops before dense textbook memorization.
 - Small hospitality teams later, after the individual membership converts cleanly.
 
+The first paid offer should stay individual and simple. Sell the visual academy first; team plans, custom training, and deeper admin workflows can wait until one-person checkout and access unlock are proven.
+
 ## Homepage Selling Promise
 
 Primary promise:
@@ -67,6 +69,9 @@ Confirm these without exposing secret values in chat, Git, logs, or frontend cod
 The Admin Console overview includes a first-dollar readiness panel. Use it before inviting a real customer:
 
 - Confirm the public homepage promise and $10/month offer are still clear.
-- Open the smoke-test path: Homepage -> Pricing -> Checkout -> Support -> Paid Room.
+- Review the likely first customer segments: curious learners, hospitality staff, certification-adjacent learners, and visual learners.
+- Open the smoke-test path: Homepage -> Pricing -> Checkout -> Success -> Paid Room -> Support.
+- Mark each smoke-test item only after a real production check proves it.
+- Add a short proof note for each step so the operator can see what was verified and what is still assumed.
 - Treat Stripe checkout and webhook unlock as unproven until a signed-in production test account completes the full loop.
 - Watch Assisted Enrollment/support requests daily while the first customers are being invited.
