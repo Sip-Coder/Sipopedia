@@ -47,10 +47,13 @@ The first-visit decision rail should keep those steps visible without forcing a 
 
 When a visitor chooses a preview room from the homepage hero or customer cards, that room should stay attached through Pricing and Checkout so the purchase path feels like continuing the demo, not starting over.
 
+Keep future homepage changes anchored to the first-customer decision, not the internal feature inventory. A strong first screen should make one of these paths obvious within a few seconds: beginner learning, service confidence, certification support, visual preview, or $10 membership.
+
 ## Ready-To-Sell Gates
 
 - [ ] Production homepage clearly explains who Sipopedia is for before asking for payment.
 - [ ] Homepage shows the simple buyer path: preview first, choose a use case, join once.
+- [ ] Homepage sells by first-customer fit before feature count: beginner, hospitality, certification, and visual-preview paths stay obvious.
 - [ ] Homepage first-visit decision rail offers Watch, Choose, Join, and Help actions without adding a wall of copy.
 - [ ] Homepage Help actions prefill Support with the saved room, membership question, and first-visit context.
 - [ ] Homepage hero preview choices carry the selected room into Pricing and Checkout.
@@ -101,7 +104,7 @@ Confirm these without exposing secret values in chat, Git, logs, or frontend cod
 - Stripe product/price matches the public $10/month membership.
 - Supabase profile roles are limited to Student and Admin.
 - Trial access is represented by a time-boxed subscription record, not a separate profile role.
-- Admin proof fields capture the production test account email, Stripe session id, Stripe webhook event id, subscription reference, paid room route, and mobile screenshot proof used for the first-dollar smoke test.
+- Admin proof fields capture the production test account email, Stripe session id, Stripe webhook event id, subscription reference, Supabase metadata proof, paid room route, and mobile screenshot proof used for the first-dollar smoke test.
 
 ## Next Build Priorities
 
@@ -122,9 +125,10 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Mark each smoke-test item only after a real production check proves it.
 - Add a short proof note for each step; checked items without notes remain missing from the launch-ready count.
 - Add specific proof notes, not placeholder text; each checked smoke-test item should name what was observed.
-- Fill in the Stripe + access proof fields with plausible live evidence: valid test account email, full `cs_test_...` or `cs_live_...` Stripe Checkout session id, full `evt_...` webhook event id, a `sub_...` Stripe subscription id or `customer_subscriptions` UUID, paid `app/...` route, and the phone screenshot proof location.
+- Fill in the Stripe + access proof fields with plausible live evidence: valid test account email, full `cs_test_...` or `cs_live_...` Stripe Checkout session id, full `evt_...` webhook event id, a `sub_...` Stripe subscription id or `customer_subscriptions` UUID, Supabase metadata proof showing the same row contains the matching Stripe identifiers, paid `app/...` route, and the phone screenshot proof location.
 - Run the connection probe and confirm subscription checks show safe counts, webhook/session metadata when available, and support checks find at least one Enrollment request with latest status metadata.
 - After the real checkout, rerun the connection probe and confirm it prefills or displays the latest `cs_`, `evt_`, and subscription proof from `customer_subscriptions.metadata`.
+- Treat the webhook proof as complete only when the same live test account has a `billing_webhook_events.event_id`, a `customer_subscriptions` row with matching `metadata.stripe_event_id`, `metadata.stripe_session_id`, and `metadata.stripe_subscription_id`, and the paid room opens after Refresh Access without changing the profile role to Admin.
 - Review the proof-gaps panel and the downloaded Missing Proof Checklist; do not invite paid traffic while any gap is still marked missing.
 - Download the first-dollar proof log after the smoke test so the proof log includes the evidence split and saves checkout, webhook, support, and access evidence outside browser memory.
 - Keep the launch decision on hold until every smoke-test item is checked, every connection probe passes, and every Stripe + access proof field is filled.
@@ -136,12 +140,21 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 Run this after each RGRD publish and before the real Stripe test:
 
 ```powershell
+npm run first-dollar:preflight
+```
+
+The preflight runs both the safe production probe and the mobile buyer path QA against `https://sipopedia.com`, then prints the remaining live-payment proof list.
+
+Run the pieces separately only when you need a narrower check:
+
+```powershell
 npm run first-dollar:probe
+npm run first-dollar:mobile-qa -- --base-url https://sipopedia.com
 ```
 
 The probe checks the live `https://sipopedia.com/rgrd.json` commit, the homepage app shell, the public Supabase configuration in the production bundle, the unauthenticated checkout guard, and the unsigned billing-webhook guard. It does not create a Stripe Checkout Session, write subscription rows, submit payment, or use secret keys.
 
-Passing this probe means the public wiring is reachable. It does not replace the final first-dollar smoke test, because only a signed-in production Stripe checkout can prove the webhook writes `customer_subscriptions` and unlocks paid access.
+Passing this probe means the public wiring is reachable. It does not replace the final first-dollar smoke test, because only a signed-in production Stripe checkout can prove the webhook writes `customer_subscriptions` and unlocks paid access. The probe prints the remaining live-proof list every time so a green safe probe is not mistaken for paid-access proof.
 
 ## Mobile Buyer Path QA
 
@@ -167,10 +180,11 @@ Run this once, in order, from production before inviting a real buyer:
 7. Return to `https://sipopedia.com/#success` and confirm the full checkout session reference, Refresh Access, Launch Pad, and Support are visible.
 8. Open Membership Help from the success page and confirm the Support intake includes the saved room and Stripe checkout session id.
 9. Capture the Stripe `evt_` webhook event id and the resulting subscription reference from Supabase proof.
-10. Open the saved paid room and verify access comes from an active or trialing subscription status, not a manual profile role edit.
-11. Confirm a canceled or past-due subscription record does not keep paid-room access open.
-12. Use Membership Help from the locked-room paywall once and confirm Support opens with billing-recovery context and the saved room.
+10. Confirm the Supabase proof row has the same Stripe event, session, and subscription identifiers in `customer_subscriptions.metadata`.
+11. Open the saved paid room and verify access comes from an active or trialing subscription status, not a manual profile role edit.
+12. Confirm a canceled or past-due subscription record does not keep paid-room access open.
+13. Use Membership Help from the locked-room paywall once and confirm Support opens with billing-recovery context and the saved room.
     If the blocked account has a `past_due`, `unpaid`, `incomplete`, or `canceled` subscription status, confirm Support opens the Billing lane and includes that status in the request details.
-13. Use Membership Help from cancel once and confirm Support opens the Enrollment lane with the checkout context prefilled.
-14. Mark the Admin Console smoke-test items only after the live proof is captured.
-15. Download the Admin proof log and keep it with the first-customer launch notes.
+14. Use Membership Help from cancel once and confirm Support opens the Enrollment lane with the checkout context prefilled.
+15. Mark the Admin Console smoke-test items only after the live proof is captured.
+16. Download the Admin proof log and keep it with the first-customer launch notes.

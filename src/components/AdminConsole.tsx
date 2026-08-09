@@ -106,6 +106,7 @@ type LaunchProofDetails = {
   stripeSessionId: string;
   webhookEventId: string;
   subscriptionReference: string;
+  supabaseMetadataProof: string;
   paidRoomRoute: string;
   mobileScreenshotProof: string;
 };
@@ -133,6 +134,8 @@ type LaunchConnectionCheck = {
 };
 
 type LaunchSubscriptionProbeRow = {
+  id?: string | null;
+  user_id?: string | null;
   status?: string | null;
   plan_code?: string | null;
   provider_subscription_id?: string | null;
@@ -162,6 +165,7 @@ const defaultLaunchProofDetails: LaunchProofDetails = {
   stripeSessionId: "",
   webhookEventId: "",
   subscriptionReference: "",
+  supabaseMetadataProof: "",
   paidRoomRoute: "app/btg",
   mobileScreenshotProof: ""
 };
@@ -213,6 +217,7 @@ function readLaunchProofDetails(): LaunchProofDetails {
       stripeSessionId: typeof parsed.stripeSessionId === "string" ? parsed.stripeSessionId : "",
       webhookEventId: typeof parsed.webhookEventId === "string" ? parsed.webhookEventId : "",
       subscriptionReference: typeof parsed.subscriptionReference === "string" ? parsed.subscriptionReference : "",
+      supabaseMetadataProof: typeof parsed.supabaseMetadataProof === "string" ? parsed.supabaseMetadataProof : "",
       paidRoomRoute: typeof parsed.paidRoomRoute === "string" && parsed.paidRoomRoute.trim() ? parsed.paidRoomRoute : "app/btg",
       mobileScreenshotProof: typeof parsed.mobileScreenshotProof === "string" ? parsed.mobileScreenshotProof : ""
     };
@@ -312,6 +317,12 @@ function launchProofFieldGap(field: LaunchProofField, value: string): LaunchProo
   }
   if (field.field === "subscriptionReference" && !launchProofSubscriptionRe.test(trimmed)) {
     return { label: field.label, reason: "Needs a customer_subscriptions UUID or Stripe sub_ id" };
+  }
+  if (field.field === "supabaseMetadataProof" && trimmed.length < launchProofEvidenceMinLength) {
+    return {
+      label: field.label,
+      reason: "Needs a note that the same customer_subscriptions row contains matching Stripe event, session, and subscription metadata"
+    };
   }
   if (field.field === "paidRoomRoute" && !launchProofPaidRouteRe.test(trimmed)) {
     return { label: field.label, reason: "Needs an app route like app/btg" };
@@ -834,6 +845,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       placeholder: "customer_subscriptions id or Stripe subscription"
     },
     {
+      field: "supabaseMetadataProof",
+      label: "Supabase metadata proof",
+      placeholder: "customer_subscriptions row ... has matching stripe_event_id, stripe_session_id, and stripe_subscription_id"
+    },
+    {
       field: "paidRoomRoute",
       label: "Paid room route",
       placeholder: "app/btg"
@@ -980,6 +996,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `- Stripe session id: ${launchProofDetails.stripeSessionId.trim() || "Not captured yet."}`,
       `- Webhook event id: ${launchProofDetails.webhookEventId.trim() || "Not captured yet."}`,
       `- Subscription reference: ${launchProofDetails.subscriptionReference.trim() || "Not captured yet."}`,
+      `- Supabase metadata proof: ${launchProofDetails.supabaseMetadataProof.trim() || "Not captured yet."}`,
       `- Paid room route: ${launchProofDetails.paidRoomRoute.trim() || "Not captured yet."}`,
       `- Mobile screenshot proof: ${launchProofDetails.mobileScreenshotProof.trim() || "Not captured yet."}`,
       `- Proof field status: ${launchProofMissingCount === 0 ? "All proof fields have plausible formats." : `${launchProofMissingCount} proof field${launchProofMissingCount === 1 ? "" : "s"} need review.`}`,
@@ -1033,6 +1050,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       let latestStripeSessionId: string | null = null;
       let latestStripeEventId: string | null = null;
       let latestSubscriptionReference: string | null = null;
+      let latestSupabaseMetadataProof: string | null = null;
       const [checkoutResult, billingWebhookResult, subscriptionResult, supportResult] = await Promise.allSettled([
         supabase.functions.invoke<Record<string, unknown>>("create-checkout-session", {
           body: { planId: "__readiness_probe__", source: "admin-connection-probe", next: "app/btg" }
@@ -1042,7 +1060,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         }),
         supabase
           .from("customer_subscriptions")
-          .select("status, plan_code, provider_subscription_id, updated_at, metadata", { count: "exact" })
+          .select("id,user_id,status,plan_code,provider_subscription_id,updated_at,metadata", { count: "exact" })
           .order("updated_at", { ascending: false })
           .limit(1),
         supabase
@@ -1103,6 +1121,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         latestSubscriptionReference = metadataStringValue(latestSubscription?.metadata, "stripe_subscription_id")
           ?? latestSubscription?.provider_subscription_id
           ?? null;
+        if (latestSubscription && latestStripeEventId && latestStripeSessionId && latestSubscriptionReference) {
+          const rowLabel = latestSubscription.id ? `customer_subscriptions row ${latestSubscription.id}` : "latest customer_subscriptions row";
+          latestSupabaseMetadataProof =
+            `${rowLabel} has matching stripe_event_id ${latestStripeEventId}, stripe_session_id ${latestStripeSessionId}, and stripe_subscription_id ${latestSubscriptionReference}.`;
+        }
         const metadataProof = [
           latestStripeEventId ? `event ${latestStripeEventId}` : null,
           latestStripeSessionId ? `session ${latestStripeSessionId}` : null,
@@ -1133,14 +1156,17 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         );
       }
 
-      if (latestStripeSessionId || latestStripeEventId || latestSubscriptionReference) {
+      if (latestStripeSessionId || latestStripeEventId || latestSubscriptionReference || latestSupabaseMetadataProof) {
         setLaunchProofDetails((current) => ({
           ...current,
           stripeSessionId: current.stripeSessionId.trim() ? current.stripeSessionId : latestStripeSessionId ?? current.stripeSessionId,
           webhookEventId: current.webhookEventId.trim() ? current.webhookEventId : latestStripeEventId ?? current.webhookEventId,
           subscriptionReference: current.subscriptionReference.trim()
             ? current.subscriptionReference
-            : latestSubscriptionReference ?? current.subscriptionReference
+            : latestSubscriptionReference ?? current.subscriptionReference,
+          supabaseMetadataProof: current.supabaseMetadataProof.trim()
+            ? current.supabaseMetadataProof
+            : latestSupabaseMetadataProof ?? current.supabaseMetadataProof
         }));
       }
 

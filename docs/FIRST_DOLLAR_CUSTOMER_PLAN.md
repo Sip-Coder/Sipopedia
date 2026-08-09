@@ -90,6 +90,7 @@ Code-ready is not the same as first-dollar ready. Before asking a real customer 
 - Stripe Checkout starts from a signed-in production account.
 - Stripe returns to Sipopedia success with the checkout session reference.
 - Stripe webhook writes or updates `customer_subscriptions`.
+- The same Supabase subscription row shows matching Stripe event, session, and subscription metadata.
 - Paid room access unlocks from active or trialing subscription status.
 - Admin override is not counted as paid proof.
 - Canceled or past-due subscription does not keep paid access open.
@@ -100,10 +101,17 @@ Code-ready is not the same as first-dollar ready. Before asking a real customer 
 Run this after each RGRD publish:
 
 ```powershell
-npm run first-dollar:probe
+npm run first-dollar:preflight
 ```
 
-That probe confirms public wiring only. It does not create a Stripe session, write a subscription, or prove paid access.
+That one command runs both checks below:
+
+```powershell
+npm run first-dollar:probe
+npm run first-dollar:mobile-qa -- --base-url https://sipopedia.com
+```
+
+The safe probe confirms public wiring only. The mobile QA confirms the phone portrait and landscape buyer path through Homepage, Pricing, Checkout, and Login. These commands do not create a Stripe session, write a subscription, or prove paid access.
 
 ## First Paid Test
 
@@ -117,9 +125,11 @@ Use one production test learner account. Walk this path:
 6. Complete test-mode checkout.
 7. Confirm success page shows the session reference.
 8. Confirm Supabase has a matching `customer_subscriptions` row.
-9. Open the saved paid room.
-10. Confirm access comes from subscription status, not admin role.
-11. Download or record the first-dollar proof log.
+9. Confirm that row contains matching `stripe_event_id`, `stripe_session_id`, and `stripe_subscription_id` metadata.
+10. Open the saved paid room.
+11. Confirm access comes from subscription status, not admin role.
+12. Confirm canceled or past-due status locks the room again.
+13. Download or record the first-dollar proof log.
 
 Only after that loop passes should Sipopedia invite the first real paying customer.
 

@@ -18,8 +18,13 @@ const [
   accessContextSource,
   policyPageSource,
   checkoutFunctionSource,
+  billingWebhookSource,
+  schemaSource,
+  productionProbeSource,
+  preflightSource,
   packageSource,
   mobileQaSource,
+  customerPlanDoc,
   readinessDoc
 ] = await Promise.all([
   readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
@@ -31,8 +36,13 @@ const [
   readFile(new URL("../src/context/AccessContext.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/PolicyPage.tsx", import.meta.url), "utf8"),
   readFile(new URL("../supabase/functions/create-checkout-session/index.ts", import.meta.url), "utf8"),
+  readFile(new URL("../supabase/functions/billing-webhook/index.ts", import.meta.url), "utf8"),
+  readFile(new URL("../supabase/schema.sql", import.meta.url), "utf8"),
+  readFile(new URL("./first-dollar-production-probe.mjs", import.meta.url), "utf8"),
+  readFile(new URL("./first-dollar-preflight.mjs", import.meta.url), "utf8"),
   readFile(new URL("../package.json", import.meta.url), "utf8"),
   readFile(new URL("./first-dollar-mobile-path-qa.mjs", import.meta.url), "utf8"),
+  readFile(new URL("../docs/FIRST_DOLLAR_CUSTOMER_PLAN.md", import.meta.url), "utf8"),
   readFile(new URL("../docs/FIRST_DOLLAR_READINESS.md", import.meta.url), "utf8")
 ]);
 
@@ -95,6 +105,28 @@ test("homepage gives first visitors a short conversion decision rail", () => {
   assert.match(marketingHomeSource, /home-decision-help/);
 });
 
+test("homepage sells by first-customer fit before feature count", () => {
+  assert.match(marketingHomeSource, /Curious beginners/);
+  assert.match(marketingHomeSource, /Hospitality staff/);
+  assert.match(marketingHomeSource, /Certification prep/);
+  assert.match(marketingHomeSource, /Visual learners/);
+  assert.match(marketingHomeSource, /New learner/);
+  assert.match(marketingHomeSource, /I need better guest language/);
+  assert.match(marketingHomeSource, /I need structure beside my study book/);
+  assert.match(marketingHomeSource, /I want to preview before paying/);
+  assert.match(marketingHomeSource, /home-path-new-learner/);
+  assert.match(marketingHomeSource, /home-path-hospitality/);
+  assert.match(marketingHomeSource, /home-path-certification/);
+  assert.match(marketingHomeSource, /home-path-not-sure/);
+  assert.match(marketingHomeSource, /See the system/);
+  assert.match(marketingHomeSource, /Practice the craft/);
+  assert.match(marketingHomeSource, /Find the answer/);
+  assert.match(marketingHomeSource, /Preview first/);
+  assert.match(marketingHomeSource, /Cancel anytime/);
+  assert.match(marketingHomeSource, /Works on phones/);
+  assert.match(marketingHomeSource, /Source-backed terms/);
+});
+
 test("login fallback keeps checkout buyers moving when Google is unavailable", () => {
   assert.doesNotMatch(authPanelSource, /showLoginOptions/);
   assert.match(authPanelSource, /Choose a sign-in option\. The saved checkout room stays attached\./);
@@ -127,9 +159,13 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.equal(adminSource.includes("const launchProofWebhookEventRe = /^evt_[a-z0-9_]+$/i;"), true);
   assert.match(adminSource, /launchProofSubscriptionRe =[\s\S]*?sub_/);
   assert.match(adminSource, /customer_subscriptions UUID or Stripe sub_ id/);
+  assert.match(adminSource, /supabaseMetadataProof/);
+  assert.match(adminSource, /same customer_subscriptions row contains matching Stripe event, session, and subscription metadata/);
+  assert.match(adminSource, /matching stripe_event_id \$\{latestStripeEventId\}, stripe_session_id \$\{latestStripeSessionId\}, and stripe_subscription_id \$\{latestSubscriptionReference\}/);
   assert.match(adminSource, /mobileScreenshotProof/);
   assert.match(adminSource, /Mobile screenshot proof/);
   assert.match(adminSource, /phone portrait and landscape were checked/);
+  assert.match(adminSource, /Supabase metadata proof: \$\{launchProofDetails\.supabaseMetadataProof/);
   assert.match(adminSource, /Mobile screenshot proof: \$\{launchProofDetails\.mobileScreenshotProof/);
   assert.match(adminSource, /Add a specific proof note before this counts as proven/);
 });
@@ -142,6 +178,32 @@ test("checkout Edge Function sanitizes source and next before Stripe session cre
   assert.match(checkoutFunctionSource, /const source = cleanCheckoutSource\(payload\.source\)/);
   assert.match(checkoutFunctionSource, /const next = cleanCheckoutNext\(payload\.next\)/);
   assert.match(checkoutFunctionSource, /success_url: buildReturnUrl\(baseUrl, "success", plan, source, next\)/);
+});
+
+test("billing webhook preserves the Stripe-to-Supabase paid access proof chain", () => {
+  assert.match(billingWebhookSource, /"checkout\.session\.completed"/);
+  assert.match(billingWebhookSource, /"checkout\.session\.async_payment_succeeded"/);
+  assert.match(billingWebhookSource, /"customer\.subscription\.created"/);
+  assert.match(billingWebhookSource, /"customer\.subscription\.updated"/);
+  assert.match(billingWebhookSource, /"customer\.subscription\.deleted"/);
+  assert.match(billingWebhookSource, /STRIPE_WEBHOOK_SECRET/);
+  assert.match(billingWebhookSource, /verifyStripeSignature\(rawBody, secret, stripeSignature\)/);
+  assert.match(billingWebhookSource, /\.from\("billing_webhook_events"\)[\s\S]*?\.select\("event_id"\)/);
+  assert.match(billingWebhookSource, /\.from\("customer_subscriptions"\)\.upsert/);
+  assert.match(billingWebhookSource, /onConflict: "provider,provider_subscription_id"/);
+  assert.match(billingWebhookSource, /stripe_event_id: event\.id/);
+  assert.match(billingWebhookSource, /stripe_session_id: sessionId/);
+  assert.match(billingWebhookSource, /stripe_subscription_id: subscriptionId/);
+  assert.match(billingWebhookSource, /stripe_livemode: event\.livemode === true/);
+  assert.match(billingWebhookSource, /eventType === "customer\.subscription\.deleted"[\s\S]*?\? "canceled"/);
+  assert.match(schemaSource, /create table if not exists public\.customer_subscriptions/);
+  assert.match(schemaSource, /unique \(provider, provider_subscription_id\)/);
+  assert.match(schemaSource, /alter table public\.customer_subscriptions enable row level security/);
+  assert.match(schemaSource, /create policy "users read own subscriptions"/);
+  assert.match(schemaSource, /create policy "service role manages subscriptions"/);
+  assert.match(schemaSource, /create table if not exists public\.billing_webhook_events/);
+  assert.match(schemaSource, /event_id text primary key/);
+  assert.match(schemaSource, /alter table public\.billing_webhook_events enable row level security/);
 });
 
 test("assisted enrollment carries saved room context into the support handoff", () => {
@@ -158,11 +220,49 @@ test("paid subscriber proof stays separate from admin override access", () => {
   assert.doesNotMatch(accessContextSource, /isPaid:[^\n]*tier === "admin"/);
 });
 
+test("safe production probe reports remaining paid-access proof", () => {
+  assert.match(productionProbeSource, /remainingLiveProof/);
+  assert.match(productionProbeSource, /signed-in learner account starts Stripe Checkout from production/);
+  assert.match(productionProbeSource, /Stripe webhook writes billing_webhook_events and customer_subscriptions/);
+  assert.match(productionProbeSource, /customer_subscriptions\.metadata contains matching Stripe event, session, and subscription identifiers/);
+  assert.match(productionProbeSource, /paid room opens from active or trialing subscription status without Admin override/);
+  assert.match(productionProbeSource, /public wiring is ready for the real paid smoke test; paid access is still unproven/);
+});
+
+test("first-dollar preflight runs safe production and mobile checks together", () => {
+  assert.match(packageSource, /"first-dollar:preflight": "node scripts\/first-dollar-preflight\.mjs"/);
+  assert.match(preflightSource, /first-dollar-production-probe\.mjs/);
+  assert.match(preflightSource, /first-dollar-mobile-path-qa\.mjs/);
+  assert.match(preflightSource, /--base-url/);
+  assert.match(preflightSource, /Preflight passed\. Remaining live proof before inviting a real customer/);
+  assert.match(preflightSource, /paid room opens from active or trialing subscription status without Admin override/);
+});
+
+test("short first-dollar customer plan matches the live proof gates", () => {
+  assert.match(customerPlanDoc, /Visual Beverage Learners/);
+  assert.match(customerPlanDoc, /Hospitality Workers/);
+  assert.match(customerPlanDoc, /Certification-Adjacent Students/);
+  assert.match(customerPlanDoc, /Curious Previewers/);
+  assert.match(customerPlanDoc, /Preview the world/);
+  assert.match(customerPlanDoc, /Choose the reason you came/);
+  assert.match(customerPlanDoc, /Join once for \$10\/month/);
+  assert.match(customerPlanDoc, /npm run first-dollar:probe/);
+  assert.match(customerPlanDoc, /npm run first-dollar:preflight/);
+  assert.match(customerPlanDoc, /npm run first-dollar:mobile-qa -- --base-url https:\/\/sipopedia\.com/);
+  assert.match(customerPlanDoc, /same Supabase subscription row shows matching Stripe event, session, and subscription metadata/);
+  assert.match(customerPlanDoc, /stripe_event_id/);
+  assert.match(customerPlanDoc, /stripe_session_id/);
+  assert.match(customerPlanDoc, /stripe_subscription_id/);
+  assert.match(customerPlanDoc, /These commands do not create a Stripe session, write a subscription, or prove paid access/);
+  assert.match(customerPlanDoc, /Confirm canceled or past-due status locks the room again/);
+});
+
 test("readiness checklist documents the same first-dollar proof requirements", () => {
   assert.match(readinessDoc, /Billing support lane with the saved room and visible subscription status/);
   assert.match(readinessDoc, /Checkout server code sanitizes saved source and destination routes/);
   assert.match(readinessDoc, /full `cs_test_\.\.\.` or `cs_live_\.\.\.`/);
   assert.match(readinessDoc, /`sub_\.\.\.` Stripe subscription id or `customer_subscriptions` UUID/);
+  assert.match(readinessDoc, /Supabase metadata proof/);
   assert.match(readinessDoc, /phone screenshot proof location/);
   assert.match(readinessDoc, /proof log includes the evidence split/);
   assert.match(readinessDoc, /first-visit decision rail offers Watch, Choose, Join, and Help actions/);
@@ -172,6 +272,7 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /Success recovery avoids duplicate-checkout prompts/);
   assert.match(readinessDoc, /Assisted Enrollment shows and submits the saved room/);
   assert.match(readinessDoc, /Admin override access is not paid subscriber proof/);
+  assert.match(readinessDoc, /npm run first-dollar:preflight/);
   assert.match(packageSource, /"first-dollar:mobile-qa": "node scripts\/first-dollar-mobile-path-qa\.mjs"/);
   assert.match(readinessDoc, /Mobile Buyer Path QA/);
   assert.match(readinessDoc, /Homepage -> Pricing -> Checkout -> Login/);

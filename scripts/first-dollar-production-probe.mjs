@@ -3,6 +3,14 @@ import process from "node:process";
 
 const defaultBaseUrl = "https://sipopedia.com";
 const expectedRepository = "Sip-Coder/Sipopedia";
+const remainingLiveProof = [
+  "signed-in learner account starts Stripe Checkout from production",
+  "Stripe returns to Sipopedia success with the full checkout session reference",
+  "Stripe webhook writes billing_webhook_events and customer_subscriptions",
+  "customer_subscriptions.metadata contains matching Stripe event, session, and subscription identifiers",
+  "paid room opens from active or trialing subscription status without Admin override",
+  "canceled or past-due subscription status does not keep paid access open"
+];
 
 function parseArgs(argv) {
   const options = {
@@ -235,6 +243,10 @@ async function main() {
     baseUrl: options.baseUrl,
     expectedCommit,
     generatedAt: new Date().toISOString(),
+    decision: failed.length
+      ? "Fix failing public wiring checks before running the real paid smoke test."
+      : "Public wiring is ready for the real paid smoke test; paid access is still unproven.",
+    remainingLiveProof,
     summary: {
       passed: checks.filter((check) => check.status === "pass").length,
       warned: warned.length,
@@ -250,6 +262,15 @@ async function main() {
     console.log(`Expected commit: ${expectedCommit || "unknown"}`);
     for (const check of checks) {
       console.log(`[${statusIcon(check.status)}] ${check.name}: ${check.detail}`);
+    }
+    console.log(
+      failed.length
+        ? "Decision: fix failing public wiring checks before running the real paid smoke test."
+        : "Decision: public wiring is ready for the real paid smoke test; paid access is still unproven."
+    );
+    console.log("Remaining live proof:");
+    for (const item of remainingLiveProof) {
+      console.log(`- ${item}`);
     }
   }
 
