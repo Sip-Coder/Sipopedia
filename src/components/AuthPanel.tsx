@@ -16,7 +16,6 @@ type AuthPanelProps = {
 export function AuthPanel({ postLoginRoute }: AuthPanelProps) {
   const { user, loading, isConfigured, googleEnabled, authSettingsLoaded, errorMessage, signInWithGoogle, signInWithMagicLink, signOut } =
     useAuth();
-  const [showLoginOptions, setShowLoginOptions] = useState(false);
   const [email, setEmail] = useState("");
   const [emailSending, setEmailSending] = useState(false);
   const googleUnavailable = authSettingsLoaded && !googleEnabled;
@@ -101,41 +100,33 @@ export function AuthPanel({ postLoginRoute }: AuthPanelProps) {
           </>
         ) : (
           <div className="auth-login-flow">
-            {!showLoginOptions ? (
-              <button className="btn btn-primary" disabled={!isConfigured} onClick={() => setShowLoginOptions(true)}>
-                {isConfigured ? "Log In" : "Log In Unavailable"}
+            <p className="hint">Choose a sign-in option. The saved checkout room stays attached.</p>
+            <button onClick={handleGoogleSignIn} className="btn btn-primary" disabled={!isConfigured || googleUnavailable}>
+              {googleUnavailable ? "Google Login Unavailable" : "Log In with Google"}
+            </button>
+            {googleUnavailable ? (
+              <p className="hint" role="status">
+                Google login is temporarily unavailable. Use the email magic link below to keep your saved room attached.
+              </p>
+            ) : null}
+            <form className="auth-magic-link-form" onSubmit={handleMagicLinkSignIn}>
+              <label>
+                <span>Email magic link</span>
+                <span className="hint">Email magic link keeps the saved checkout room attached.</span>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  inputMode="email"
+                  disabled={!isConfigured || emailSending}
+                />
+              </label>
+              <button className="btn btn-light" type="submit" disabled={!isConfigured || !email.trim() || emailSending}>
+                {emailSending ? "Sending Link" : "Send Magic Link"}
               </button>
-            ) : (
-              <>
-                <p className="hint">Select login type.</p>
-                <button onClick={handleGoogleSignIn} className="btn btn-primary" disabled={!isConfigured || googleUnavailable}>
-                  {googleUnavailable ? "Google Login Unavailable" : "Log In with Google"}
-                </button>
-                {googleUnavailable ? (
-                  <p className="hint" role="status">
-                    Google login is temporarily unavailable. Use the email magic link below to keep your saved room attached.
-                  </p>
-                ) : null}
-                <form className="auth-magic-link-form" onSubmit={handleMagicLinkSignIn}>
-                  <label>
-                    <span>Email magic link</span>
-                    <span className="hint">Email magic link keeps the saved checkout room attached.</span>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
-                      placeholder="you@example.com"
-                      autoComplete="email"
-                      inputMode="email"
-                      disabled={!isConfigured || emailSending}
-                    />
-                  </label>
-                  <button className="btn btn-light" type="submit" disabled={!isConfigured || !email.trim() || emailSending}>
-                    {emailSending ? "Sending Link" : "Send Magic Link"}
-                  </button>
-                </form>
-              </>
-            )}
+            </form>
             {!isConfigured ? <p className="hint" role="status">Account access is temporarily unavailable. Please try again later.</p> : null}
           </div>
         )}

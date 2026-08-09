@@ -143,6 +143,17 @@ The probe checks the live `https://sipopedia.com/rgrd.json` commit, the homepage
 
 Passing this probe means the public wiring is reachable. It does not replace the final first-dollar smoke test, because only a signed-in production Stripe checkout can prove the webhook writes `customer_subscriptions` and unlocks paid access.
 
+## Mobile Buyer Path QA
+
+Run this against localhost before RGRD and against production after RGRD when checkout-facing UI changes:
+
+```powershell
+npm run first-dollar:mobile-qa
+npm run first-dollar:mobile-qa -- --base-url https://sipopedia.com
+```
+
+The mobile QA walks phone portrait and phone landscape through Homepage -> Pricing -> Checkout -> Login. It fails if the homepage promise, $10 membership signal, saved Beyond The Glass room, login-before-payment guard, Assisted Enrollment fallback, Google login, email magic-link fallback, or Send Magic Link button disappear or become hidden outside the phone viewport. Screenshots and `report.json` are saved under `.tmp/first-dollar-mobile-path-qa-*` for proof review; keep those files local unless a specific screenshot is approved for release.
+
 ## First Paid Test Script
 
 Run this once, in order, from production before inviting a real buyer:

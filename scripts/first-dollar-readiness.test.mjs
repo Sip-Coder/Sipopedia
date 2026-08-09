@@ -18,6 +18,8 @@ const [
   accessContextSource,
   policyPageSource,
   checkoutFunctionSource,
+  packageSource,
+  mobileQaSource,
   readinessDoc
 ] = await Promise.all([
   readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
@@ -29,6 +31,8 @@ const [
   readFile(new URL("../src/context/AccessContext.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/PolicyPage.tsx", import.meta.url), "utf8"),
   readFile(new URL("../supabase/functions/create-checkout-session/index.ts", import.meta.url), "utf8"),
+  readFile(new URL("../package.json", import.meta.url), "utf8"),
+  readFile(new URL("./first-dollar-mobile-path-qa.mjs", import.meta.url), "utf8"),
   readFile(new URL("../docs/FIRST_DOLLAR_READINESS.md", import.meta.url), "utf8")
 ]);
 
@@ -92,6 +96,8 @@ test("homepage gives first visitors a short conversion decision rail", () => {
 });
 
 test("login fallback keeps checkout buyers moving when Google is unavailable", () => {
+  assert.doesNotMatch(authPanelSource, /showLoginOptions/);
+  assert.match(authPanelSource, /Choose a sign-in option\. The saved checkout room stays attached\./);
   assert.match(authPanelSource, /googleUnavailable/);
   assert.match(authPanelSource, /Saved login destination/);
   assert.match(authPanelSource, /After login/);
@@ -166,4 +172,10 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /Success recovery avoids duplicate-checkout prompts/);
   assert.match(readinessDoc, /Assisted Enrollment shows and submits the saved room/);
   assert.match(readinessDoc, /Admin override access is not paid subscriber proof/);
+  assert.match(packageSource, /"first-dollar:mobile-qa": "node scripts\/first-dollar-mobile-path-qa\.mjs"/);
+  assert.match(readinessDoc, /Mobile Buyer Path QA/);
+  assert.match(readinessDoc, /Homepage -> Pricing -> Checkout -> Login/);
+  assert.match(mobileQaSource, /phone-portrait/);
+  assert.match(mobileQaSource, /phone-landscape/);
+  assert.match(mobileQaSource, /Email magic-link field is not fully visible/);
 });
