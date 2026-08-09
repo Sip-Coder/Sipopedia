@@ -20,6 +20,17 @@ type PreviewReel = {
   detail: string;
 };
 
+type PreviewAudience = {
+  label: string;
+  detail: string;
+};
+
+type PreviewReelGroup = {
+  title: string;
+  detail: string;
+  reelIds: string[];
+};
+
 type PreviewRoom = {
   title: string;
   detail: string;
@@ -162,6 +173,31 @@ const learnPreviewReels: PreviewReel[] = [
   }
 ];
 
+const previewAudiences: PreviewAudience[] = [
+  { label: "Curious beginners", detail: "Start without textbook intimidation." },
+  { label: "Hospitality staff", detail: "Build confident guest language fast." },
+  { label: "Certification prep", detail: "Support WSET, CMS, Cicerone, and BarSmarts-style study." },
+  { label: "Visual learners", detail: "See systems before memorizing terms." }
+];
+
+const previewReelGroups: PreviewReelGroup[] = [
+  {
+    title: "See the system",
+    detail: "Follow drinks from source to service with cinematic maps and field journeys.",
+    reelIds: ["btg", "sip-academy-map", "maps", "regions"]
+  },
+  {
+    title: "Practice the craft",
+    detail: "Train sensory memory, service moves, game checkpoints, and recipe logic.",
+    reelIds: ["living-palate", "sip-game", "recipes"]
+  },
+  {
+    title: "Find the answer",
+    detail: "Use terms, ingredients, and reference lists when you need a quick study anchor.",
+    reelIds: ["sipopedia", "grapes-grains", "resources"]
+  }
+];
+
 const previewRooms: PreviewRoom[] = [
   {
     title: "Learn",
@@ -190,6 +226,9 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
 
     void video.play().catch(() => undefined);
   };
+  const scrollToPreviews = () => {
+    document.getElementById("marketing-preview-reels")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <section className="marketing-home marketing-home-preview">
@@ -198,17 +237,29 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
         <div className="marketing-preview-hero-grid">
           <div className="marketing-preview-copy">
             <p className="marketing-kicker">Sip Studies</p>
-            <h1>Preview the academy before you unlock the rooms.</h1>
+            <h1>Learn drinks visually, from source to service.</h1>
             <p className="marketing-lead">
-              Watch the globe, field journeys, sensory rooms, maps, recipes, and Sipopedia come alive in short previews.
+              Sipopedia turns wine, beer, spirits, coffee, tea, and more into moving maps, field notes, games, and guided
+              tasting practice.
             </p>
+            <div className="marketing-audience-chips" aria-label="Best fit customers">
+              {previewAudiences.map((audience) => (
+                <span key={audience.label} title={audience.detail}>{audience.label}</span>
+              ))}
+            </div>
             <div className="marketing-hero-actions">
               <button className="btn btn-primary" onClick={() => onNavigate(buildOnboardingRoute("pricing", { planId: "pro", source: "home-video-hero" }))}>
-                Join for $10/month
+                Start for $10/month
               </button>
-              <button className="btn btn-light" onClick={() => onNavigate(activeReel.route)}>
-                Open {activeReel.title}
+              <button className="btn btn-light" onClick={scrollToPreviews}>
+                Watch previews
               </button>
+            </div>
+            <div className="marketing-trust-strip" aria-label="Membership trust signals">
+              <span>Preview first</span>
+              <span>Cancel anytime</span>
+              <span>Works on phones</span>
+              <span>Source-backed terms</span>
             </div>
           </div>
 
@@ -256,41 +307,56 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
         </div>
       </section>
 
-      <section className="marketing-reel-wall" aria-label="Learn page preview reel">
+      <section className="marketing-reel-wall" id="marketing-preview-reels" aria-label="Learn page preview reel">
         <div className="marketing-section-intro">
-          <p className="marketing-kicker">Learn Preview Reel</p>
-          <h2>Every room gets a moving preview.</h2>
+          <p className="marketing-kicker">Preview The Academy</p>
+          <h2>Choose the outcome, then open the room.</h2>
         </div>
-        <div className="marketing-reel-grid">
-          {learnPreviewReels.map((reel) => (
-            <article
-              key={reel.id}
-              className={`marketing-reel-card ${activeReel.id === reel.id ? "active" : ""}`}
-            >
-              <video
-                src={reel.src}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="auto"
-                poster={welcomeToSipStudies}
-                onLoadedMetadata={(event) => startPreviewPastLoader(event.currentTarget)}
-              />
-              <div className="marketing-reel-card-copy">
-                <span>{reel.label}</span>
-                <strong>{reel.title}</strong>
-                <p>{reel.detail}</p>
-                <div className="marketing-reel-card-actions">
-                  <button type="button" onClick={() => setActiveReelId(reel.id)} aria-pressed={activeReel.id === reel.id}>
-                    Preview
-                  </button>
-                  <button type="button" onClick={() => onNavigate(reel.route)}>
-                    Open
-                  </button>
-                </div>
+        <div className="marketing-reel-groups">
+          {previewReelGroups.map((group) => (
+            <section className="marketing-reel-group" key={group.title} aria-label={group.title}>
+              <div className="marketing-reel-group-head">
+                <h3>{group.title}</h3>
+                <p>{group.detail}</p>
               </div>
-            </article>
+              <div className="marketing-reel-grid">
+                {group.reelIds.map((reelId) => {
+                  const reel = learnPreviewReels.find((item) => item.id === reelId);
+                  if (!reel) return null;
+
+                  return (
+                    <article
+                      key={reel.id}
+                      className={`marketing-reel-card ${activeReel.id === reel.id ? "active" : ""}`}
+                    >
+                      <video
+                        src={reel.src}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="auto"
+                        poster={welcomeToSipStudies}
+                        onLoadedMetadata={(event) => startPreviewPastLoader(event.currentTarget)}
+                      />
+                      <div className="marketing-reel-card-copy">
+                        <span>{reel.label}</span>
+                        <strong>{reel.title}</strong>
+                        <p>{reel.detail}</p>
+                        <div className="marketing-reel-card-actions">
+                          <button type="button" onClick={() => setActiveReelId(reel.id)} aria-pressed={activeReel.id === reel.id}>
+                            Preview
+                          </button>
+                          <button type="button" onClick={() => onNavigate(reel.route)}>
+                            Open
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
           ))}
         </div>
       </section>
