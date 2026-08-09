@@ -36,6 +36,21 @@ const launchProof = [
   "Terms, Privacy, Refund, and Support stay reachable before payment"
 ];
 
+const membershipPromises = [
+  {
+    label: "What paying unlocks",
+    detail: "The full visual workspace: academy rooms, maps, terms, games, recipes, and tasting practice."
+  },
+  {
+    label: "Before you pay",
+    detail: "Public previews, policies, refund details, and support stay available so the decision is not blind."
+  },
+  {
+    label: "If checkout stalls",
+    detail: "Membership Help carries your saved room and checkout context to the support desk."
+  }
+];
+
 export function PricingPage({ onNavigate }: PricingPageProps) {
   const intent = readOnboardingIntent("pro");
   const membership = getPlanById("pro");
@@ -92,6 +107,15 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="pricing-membership-promises" aria-label="Membership decision support">
+        {membershipPromises.map((promise) => (
+          <article key={promise.label}>
+            <span>{promise.label}</span>
+            <p>{promise.detail}</p>
+          </article>
+        ))}
       </section>
 
       <div className="pricing-grid pricing-grid-single">

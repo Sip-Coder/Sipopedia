@@ -165,6 +165,7 @@ function readSupportRouteContext(): SupportRouteContext {
   const laneId = normalizeSupportLane(params.get("lane"));
   const urgency = normalizeSupportUrgency(params.get("urgency"));
   const destination = params.get("next")?.replace(/^app\//, "").replace(/-/g, " ") ?? "";
+  const checkoutSessionId = params.get("session_id")?.trim() ?? "";
   const supportTemplates: Record<string, Pick<SupportRouteContext, "subject" | "message" | "urgency">> = {
     "checkout-success": {
       urgency: "urgent",
@@ -172,6 +173,7 @@ function readSupportRouteContext(): SupportRouteContext {
       message: [
         "I completed checkout and need help confirming access.",
         destination ? `Saved room: ${destination}.` : "Saved room: not sure.",
+        checkoutSessionId ? `Stripe checkout session: ${checkoutSessionId}.` : "Stripe checkout session: not shown.",
         "Please check whether the Stripe return, webhook sync, and membership access are connected."
       ].join("\n")
     },

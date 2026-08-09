@@ -41,6 +41,12 @@ type CustomerPath = {
   actionLabel: string;
 };
 
+type CustomerSignal = {
+  audience: string;
+  pain: string;
+  paidOutcome: string;
+};
+
 type BuyerJourneyStep = {
   label: string;
   title: string;
@@ -253,6 +259,24 @@ const customerPaths: CustomerPath[] = [
   }
 ];
 
+const customerSignals: CustomerSignal[] = [
+  {
+    audience: "First-time beverage learner",
+    pain: "Too many terms, regions, and production steps arrive at once.",
+    paidOutcome: "A visual route that makes the whole drink system easier to remember."
+  },
+  {
+    audience: "Restaurant, bar, retail, or tasting-room staff",
+    pain: "Guests ask practical questions before staff feel ready to answer.",
+    paidOutcome: "Clear service language, tasting confidence, and fast study loops."
+  },
+  {
+    audience: "Certification-adjacent student",
+    pain: "Books and flashcards explain facts without enough mental geography.",
+    paidOutcome: "Maps, citations, source-to-service context, and repeatable review rooms."
+  }
+];
+
 const buyerJourneySteps: BuyerJourneyStep[] = [
   {
     label: "01",
@@ -373,6 +397,15 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
         <div className="marketing-section-intro">
           <p className="marketing-kicker">Start Here</p>
           <h2 id="customer-paths-title">Pick the reason you came.</h2>
+        </div>
+        <div className="marketing-customer-signal-grid" aria-label="Best first customers and paid outcomes">
+          {customerSignals.map((signal) => (
+            <article className="marketing-customer-signal" key={signal.audience}>
+              <span>{signal.audience}</span>
+              <p>{signal.pain}</p>
+              <strong>{signal.paidOutcome}</strong>
+            </article>
+          ))}
         </div>
         <div className="marketing-customer-path-grid">
           {customerPaths.map((path) => (

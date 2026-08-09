@@ -98,6 +98,13 @@ type LaunchProofDetails = {
   paidRoomRoute: string;
 };
 
+type LaunchProofField = {
+  field: keyof LaunchProofDetails;
+  label: string;
+  placeholder: string;
+  inputMode?: "email" | "text";
+};
+
 type LaunchConnectionStatus = "pass" | "warn" | "fail" | "waiting";
 
 type LaunchConnectionCheck = {
@@ -106,6 +113,19 @@ type LaunchConnectionCheck = {
   status: LaunchConnectionStatus;
   detail: string;
   checkedAt?: string;
+};
+
+type LaunchSubscriptionProbeRow = {
+  status?: string | null;
+  plan_code?: string | null;
+  updated_at?: string | null;
+};
+
+type LaunchSupportProbeRow = {
+  lane_id?: string | null;
+  urgency?: string | null;
+  status?: string | null;
+  created_at?: string | null;
 };
 
 const launchSmokeStorageKey = "sipstudies:first-dollar-smoke:v1";
@@ -205,6 +225,18 @@ async function functionErrorMessage(error: unknown): Promise<string> {
 function currentLaunchOrigin(): string {
   if (typeof window === "undefined") return "server render";
   return window.location.origin;
+}
+
+function formatLaunchProbeTime(value: string | null | undefined): string {
+  if (!value) return "unknown time";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "unknown time";
+  return date.toLocaleString();
+}
+
+function countLabel(count: number | null | undefined, singular: string, plural: string): string {
+  const safeCount = typeof count === "number" ? count : 0;
+  return `${safeCount.toLocaleString()} ${safeCount === 1 ? singular : plural}`;
 }
 
 function initialLaunchConnectionChecks(): LaunchConnectionCheck[] {
@@ -642,21 +674,61 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const activeSubscriptionCount = subscriptions.filter((subscription) =>
     subscription.status === "trialing" || subscription.status === "active" || subscription.status === "past_due"
   ).length;
+  const launchProofFields: LaunchProofField[] = [
+    {
+      field: "testAccountEmail",
+      label: "Test account email",
+      placeholder: "learner@example.com",
+      inputMode: "email"
+    },
+    {
+      field: "stripeSessionId",
+      label: "Stripe session id",
+      placeholder: "cs_live_or_test_..."
+    },
+    {
+      field: "subscriptionReference",
+      label: "Subscription reference",
+      placeholder: "customer_subscriptions id or Stripe subscription"
+    },
+    {
+      field: "paidRoomRoute",
+      label: "Paid room route",
+      placeholder: "app/btg"
+    }
+  ];
   const completedLaunchSmokeCount = launchSmokeSteps.filter((step) => launchSmokeState[step.id]?.done).length;
-  const pendingLaunchSmokeCount = launchSmokeSteps.length - completedLaunchSmokeCount;
-  const launchConnectionPassCount = launchConnectionChecks.filter((check) => check.status === "pass").length;
-  const launchConnectionIssueCount = launchConnectionChecks.length - launchConnectionPassCount;
-  const launchProofMissingCount = [
-    launchProofDetails.testAccountEmail,
-    launchProofDetails.stripeSessionId,
-    launchProofDetails.subscriptionReference,
-    launchProofDetails.paidRoomRoute
-  ].filter((value) => !value.trim()).length;
+  const incompleteLaunchSmokeSteps = launchSmokeSteps.filter((step) => !launchSmokeState[step.id]?.done);
+  const pendingLaunchSmokeCount = incompleteLaunchSmokeSteps.length;
+  const incompleteLaunchConnectionChecks = launchConnectionChecks.filter((check) => check.status !== "pass");
+  const launchConnectionIssueCount = incompleteLaunchConnectionChecks.length;
+  const missingLaunchProofFields = launchProofFields.filter((proofField) => !launchProofDetails[proofField.field].trim());
+  const launchProofMissingCount = missingLaunchProofFields.length;
   const launchOutstandingProofCount = pendingLaunchSmokeCount + launchConnectionIssueCount + launchProofMissingCount;
   const launchReadyForPaidInvite = pendingLaunchSmokeCount === 0 && launchConnectionIssueCount === 0 && launchProofMissingCount === 0;
   const launchDecisionDetail = launchReadyForPaidInvite
     ? "Smoke-test proof, production connection probes, and Stripe/access identifiers are complete. Review the proof log before inviting broader paid traffic."
     : `${pendingLaunchSmokeCount} smoke step${pendingLaunchSmokeCount === 1 ? "" : "s"}, ${launchConnectionIssueCount} connection check${launchConnectionIssueCount === 1 ? "" : "s"}, and ${launchProofMissingCount} Stripe/access field${launchProofMissingCount === 1 ? "" : "s"} still need proof before the first paid invite.`;
+  const launchProofGapGroups = [
+    {
+      label: "Smoke proof",
+      status: pendingLaunchSmokeCount === 0 ? "clear" : "missing",
+      detail: pendingLaunchSmokeCount === 0 ? "Every production smoke step is marked proven." : `${pendingLaunchSmokeCount} step${pendingLaunchSmokeCount === 1 ? "" : "s"} still need live evidence.`,
+      items: incompleteLaunchSmokeSteps.map((step) => step.label)
+    },
+    {
+      label: "Connection proof",
+      status: launchConnectionIssueCount === 0 ? "clear" : "missing",
+      detail: launchConnectionIssueCount === 0 ? "Every safe connection probe is passing." : `${launchConnectionIssueCount} probe${launchConnectionIssueCount === 1 ? "" : "s"} need a pass result on production.`,
+      items: incompleteLaunchConnectionChecks.map((check) => check.label)
+    },
+    {
+      label: "Stripe/access proof",
+      status: launchProofMissingCount === 0 ? "clear" : "missing",
+      detail: launchProofMissingCount === 0 ? "All checkout and access identifiers are captured." : `${launchProofMissingCount} identifier${launchProofMissingCount === 1 ? "" : "s"} still need to be captured.`,
+      items: missingLaunchProofFields.map((field) => field.label)
+    }
+  ];
   const beverageNewsNeedsAttention =
     beverageNewsHealth !== null &&
     isBeverageNewsHealthFresh(beverageNewsHealth) &&
@@ -733,6 +805,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     const connectionLines = launchConnectionChecks.map((check) => (
       `- ${check.label}: ${check.status.toUpperCase()} - ${check.detail}${check.checkedAt ? ` (${new Date(check.checkedAt).toLocaleString()})` : ""}`
     ));
+    const gapLines = launchProofGapGroups.flatMap((group) => (
+      group.items.length
+        ? [`- ${group.label}: ${group.detail}`, ...group.items.map((item) => `  - ${item}`)]
+        : [`- ${group.label}: clear`]
+    ));
     const body = [
       "# Sipopedia First-Dollar Proof Log",
       "",
@@ -755,6 +832,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       "",
       "## Connection Probe",
       ...connectionLines,
+      "",
+      "## Missing Proof Checklist",
+      ...gapLines,
       "",
       "## Remaining First-Dollar Gate",
       "Run one real signed-in production Stripe checkout and confirm the billing webhook unlocks paid access without manual database edits."
@@ -797,8 +877,16 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
         supabase.functions.invoke<Record<string, unknown>>("billing-webhook", {
           body: { readinessProbe: true }
         }),
-        supabase.from("customer_subscriptions").select("id", { count: "exact", head: true }),
-        supabase.from("support_requests").select("id", { count: "exact", head: true })
+        supabase
+          .from("customer_subscriptions")
+          .select("status, plan_code, updated_at", { count: "exact" })
+          .order("updated_at", { ascending: false })
+          .limit(1),
+        supabase
+          .from("support_requests")
+          .select("lane_id, urgency, status, created_at", { count: "exact" })
+          .order("created_at", { ascending: false })
+          .limit(1)
       ]);
 
       const updateCheck = (id: string, status: LaunchConnectionStatus, detail: string) => {
@@ -844,7 +932,15 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       } else if (subscriptionResult.value.error) {
         updateCheck("subscription-table", "fail", subscriptionResult.value.error.message);
       } else {
-        updateCheck("subscription-table", "pass", "Subscription table is reachable from the current admin session.");
+        const latestSubscription = (subscriptionResult.value.data?.[0] ?? null) as LaunchSubscriptionProbeRow | null;
+        const subscriptionCount = countLabel(subscriptionResult.value.count, "subscription record", "subscription records");
+        updateCheck(
+          "subscription-table",
+          "pass",
+          latestSubscription
+            ? `${subscriptionCount} reachable. Latest: ${latestSubscription.status ?? "unknown status"} ${latestSubscription.plan_code ?? "membership"} updated ${formatLaunchProbeTime(latestSubscription.updated_at)}.`
+            : `${subscriptionCount} reachable. Run the real checkout smoke test to create webhook proof.`
+        );
       }
 
       if (supportResult.status === "rejected") {
@@ -852,7 +948,15 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       } else if (supportResult.value.error) {
         updateCheck("support-queue", "warn", `Support queue needs review: ${supportResult.value.error.message}`);
       } else {
-        updateCheck("support-queue", "pass", "Support request queue is reachable for assisted enrollment follow-up.");
+        const latestSupport = (supportResult.value.data?.[0] ?? null) as LaunchSupportProbeRow | null;
+        const supportCount = countLabel(supportResult.value.count, "support request", "support requests");
+        updateCheck(
+          "support-queue",
+          "pass",
+          latestSupport
+            ? `${supportCount} reachable. Latest: ${latestSupport.status ?? "unknown status"} ${latestSupport.lane_id ?? "support"} request, ${latestSupport.urgency ?? "normal"} urgency, created ${formatLaunchProbeTime(latestSupport.created_at)}.`
+            : `${supportCount} reachable. Submit a test assisted-enrollment request before inviting paid traffic.`
+        );
       }
 
       setLaunchConnectionChecks(nextChecks);
@@ -1219,39 +1323,41 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                     <p className="admin-eyebrow">Stripe + access proof</p>
                     <strong>Capture the identifiers from the real signed-in production test.</strong>
                   </div>
-                  <label>
-                    Test account email
-                    <input
-                      value={launchProofDetails.testAccountEmail}
-                      onChange={(event) => updateLaunchProofDetail("testAccountEmail", event.target.value)}
-                      placeholder="learner@example.com"
-                      inputMode="email"
-                    />
-                  </label>
-                  <label>
-                    Stripe session id
-                    <input
-                      value={launchProofDetails.stripeSessionId}
-                      onChange={(event) => updateLaunchProofDetail("stripeSessionId", event.target.value)}
-                      placeholder="cs_live_or_test_..."
-                    />
-                  </label>
-                  <label>
-                    Subscription reference
-                    <input
-                      value={launchProofDetails.subscriptionReference}
-                      onChange={(event) => updateLaunchProofDetail("subscriptionReference", event.target.value)}
-                      placeholder="customer_subscriptions id or Stripe subscription"
-                    />
-                  </label>
-                  <label>
-                    Paid room route
-                    <input
-                      value={launchProofDetails.paidRoomRoute}
-                      onChange={(event) => updateLaunchProofDetail("paidRoomRoute", event.target.value)}
-                      placeholder="app/btg"
-                    />
-                  </label>
+                  {launchProofFields.map((proofField) => {
+                    const isCaptured = launchProofDetails[proofField.field].trim().length > 0;
+                    return (
+                      <label key={proofField.field}>
+                        <span className="admin-launch-proof-label-row">
+                          {proofField.label}
+                          <em className={isCaptured ? "is-complete" : "is-missing"}>
+                            {isCaptured ? "Captured" : "Missing"}
+                          </em>
+                        </span>
+                        <input
+                          value={launchProofDetails[proofField.field]}
+                          onChange={(event) => updateLaunchProofDetail(proofField.field, event.target.value)}
+                          placeholder={proofField.placeholder}
+                          inputMode={proofField.inputMode}
+                        />
+                      </label>
+                    );
+                  })}
+                </div>
+                <div className="admin-launch-proof-gaps" aria-label="First-dollar proof gaps">
+                  {launchProofGapGroups.map((group) => (
+                    <article className={`status-${group.status}`} key={group.label}>
+                      <span>{group.status === "clear" ? "Clear" : "Missing"}</span>
+                      <strong>{group.label}</strong>
+                      <small>{group.detail}</small>
+                      {group.items.length > 0 ? (
+                        <ul>
+                          {group.items.map((item) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </article>
+                  ))}
                 </div>
                 <div className="admin-launch-smoke-tracker" aria-label="Production smoke test tracker">
                   <div className="admin-launch-smoke-head">

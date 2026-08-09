@@ -16140,6 +16140,51 @@ select option:checked {
   line-height: 1.05;
 }
 
+.marketing-customer-signal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.55rem, 1.3vw, 0.8rem);
+  margin-bottom: 0.9rem;
+}
+
+.marketing-customer-signal {
+  display: grid;
+  gap: 0.42rem;
+  min-width: 0;
+  border: 1px solid rgba(237, 212, 168, 0.22);
+  border-radius: 14px;
+  padding: clamp(0.72rem, 1.35vw, 0.92rem);
+  background:
+    linear-gradient(135deg, rgba(237, 212, 168, 0.1), transparent 42%),
+    rgba(3, 16, 25, 0.76);
+}
+
+.marketing-customer-signal span {
+  color: #9de6ec;
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.marketing-customer-signal p,
+.marketing-customer-signal strong {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.34;
+}
+
+.marketing-customer-signal p {
+  color: rgba(217, 247, 255, 0.74);
+  font-weight: 650;
+}
+
+.marketing-customer-signal strong {
+  color: #fff1d1;
+  font-weight: 900;
+}
+
 .marketing-customer-path-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -16748,6 +16793,42 @@ select option:checked {
   font-size: 0.9rem;
   font-weight: 650;
   line-height: 1.45;
+}
+
+.pricing-membership-promises {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  width: min(100%, 980px);
+  margin: -0.25rem auto 1rem;
+}
+
+.pricing-membership-promises article {
+  display: grid;
+  gap: 0.34rem;
+  min-width: 0;
+  border: 1px solid rgba(237, 212, 168, 0.24);
+  border-radius: 16px;
+  padding: 0.85rem;
+  background:
+    linear-gradient(135deg, rgba(237, 212, 168, 0.1), transparent 48%),
+    rgba(4, 18, 29, 0.76);
+}
+
+.pricing-membership-promises span {
+  color: #9de6ec;
+  font-size: 0.66rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pricing-membership-promises p {
+  margin: 0;
+  color: rgba(217, 247, 255, 0.82);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.38;
 }
 
 .pricing-route-builder {
@@ -20095,6 +20176,39 @@ select option:checked {
   text-transform: uppercase;
 }
 
+.admin-launch-proof-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.admin-launch-proof-label-row em {
+  border: 1px solid rgba(159, 218, 245, 0.24);
+  border-radius: 999px;
+  color: rgba(221, 246, 252, 0.84);
+  flex: 0 0 auto;
+  font-size: 0.58rem;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  padding: 0.26rem 0.4rem;
+}
+
+.admin-launch-proof-label-row em.is-complete {
+  background: rgba(117, 198, 161, 0.13);
+  border-color: rgba(117, 198, 161, 0.42);
+  color: #c7f3dc;
+}
+
+.admin-launch-proof-label-row em.is-missing {
+  background: rgba(237, 212, 168, 0.1);
+  border-color: rgba(237, 212, 168, 0.44);
+  color: #f0d9a9;
+}
+
 .admin-launch-proof-fields input {
   width: 100%;
   border: 1px solid rgba(159, 218, 245, 0.24);
@@ -20112,6 +20226,77 @@ select option:checked {
 
 .admin-launch-proof-fields input::placeholder {
   color: rgba(201, 232, 240, 0.54);
+}
+
+.admin-launch-proof-gaps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+.admin-launch-proof-gaps article {
+  display: grid;
+  align-content: start;
+  gap: 0.32rem;
+  min-width: 0;
+  border: 1px solid rgba(237, 212, 168, 0.24);
+  border-radius: 12px;
+  padding: 0.68rem;
+  background: rgba(4, 15, 26, 0.54);
+}
+
+.admin-launch-proof-gaps span {
+  width: fit-content;
+  border: 1px solid rgba(237, 212, 168, 0.32);
+  border-radius: 999px;
+  padding: 0.2rem 0.44rem;
+  color: #f1ddb0;
+  font-size: 0.56rem;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.admin-launch-proof-gaps strong {
+  color: #fff2d3;
+  font-size: 0.88rem;
+  line-height: 1.15;
+}
+
+.admin-launch-proof-gaps small {
+  color: #a8cad7;
+  font-size: 0.72rem;
+  line-height: 1.32;
+}
+
+.admin-launch-proof-gaps ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.28rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-launch-proof-gaps li {
+  border: 1px solid rgba(159, 218, 245, 0.18);
+  border-radius: 999px;
+  padding: 0.22rem 0.38rem;
+  color: rgba(217, 247, 255, 0.82);
+  font-size: 0.62rem;
+  font-weight: 820;
+  line-height: 1;
+}
+
+.admin-launch-proof-gaps article.status-clear {
+  border-color: rgba(80, 220, 171, 0.34);
+  background: linear-gradient(145deg, rgba(21, 92, 75, 0.2), rgba(4, 15, 26, 0.54));
+}
+
+.admin-launch-proof-gaps article.status-clear span {
+  border-color: rgba(80, 220, 171, 0.42);
+  color: #9df0ce;
 }
 
 .admin-launch-smoke-path {
@@ -21418,6 +21603,7 @@ select option:checked {
   .pricing-intent-ribbon,
   .pricing-proof-strip,
   .pricing-buyer-fit-grid,
+  .pricing-membership-promises,
   .admin-launch-customer-grid,
   .admin-launch-check-grid,
   .admin-launch-connection-grid,
@@ -21440,6 +21626,7 @@ select option:checked {
 @media (max-width: 960px) and (orientation: landscape) {
   .pricing-proof-strip,
   .pricing-buyer-fit-grid,
+  .pricing-membership-promises,
   .admin-launch-customer-grid,
   .admin-launch-check-grid,
   .admin-launch-connection-grid,
@@ -21463,6 +21650,7 @@ select option:checked {
 
   .pricing-proof-strip span,
   .pricing-buyer-fit-grid article,
+  .pricing-membership-promises article,
   .admin-launch-customer,
   .admin-launch-check,
   .admin-launch-connection-check,
@@ -21474,6 +21662,11 @@ select option:checked {
   .pricing-buyer-fit-grid p {
     font-size: 0.82rem;
     line-height: 1.34;
+  }
+
+  .pricing-membership-promises p {
+    font-size: 0.76rem;
+    line-height: 1.28;
   }
 }
 
@@ -21511,6 +21704,7 @@ select option:checked {
   .admin-launch-customer-grid,
   .admin-launch-test-script-grid,
   .admin-launch-proof-fields,
+  .admin-launch-proof-gaps,
   .admin-launch-connection-grid {
     grid-template-columns: 1fr;
   }
@@ -32588,6 +32782,10 @@ button.journal-note-row.journal-note-select .journal-note-copy {
     grid-template-columns: 1fr;
   }
 
+  .marketing-customer-signal-grid {
+    grid-template-columns: 1fr;
+  }
+
   .marketing-customer-path-card {
     min-height: 0;
   }
@@ -32676,6 +32874,26 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
   .marketing-customer-path-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .marketing-customer-signal-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .marketing-customer-signal {
+    gap: 0.32rem;
+    padding: 0.62rem;
+  }
+
+  .marketing-customer-signal span {
+    font-size: 0.58rem;
+  }
+
+  .marketing-customer-signal p,
+  .marketing-customer-signal strong {
+    font-size: 0.7rem;
+    line-height: 1.25;
   }
 
   .marketing-customer-path-card {

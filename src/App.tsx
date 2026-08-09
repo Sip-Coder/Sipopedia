@@ -1514,9 +1514,14 @@ function App() {
   const pricingRecoveryRoute = checkoutRecoveryIntent
     ? buildOnboardingRoute("pricing", { planId: checkoutRecoveryIntent.planId, source: `${route}-recovery`, next: checkoutRecoveryIntent.next })
     : "pricing";
-  const checkoutSupportRoute = checkoutRecoveryIntent
-    ? `support?lane=enrollment&source=checkout-${route}&urgency=${route === "success" ? "urgent" : "soon"}&next=${encodeURIComponent(checkoutRecoveryIntent.next ?? "")}`
-    : `support?lane=enrollment&source=checkout-${route}&urgency=${route === "success" ? "urgent" : "soon"}`;
+  const checkoutSupportParams = new URLSearchParams({
+    lane: "enrollment",
+    source: `checkout-${route}`,
+    urgency: route === "success" ? "urgent" : "soon"
+  });
+  if (checkoutRecoveryIntent?.next) checkoutSupportParams.set("next", checkoutRecoveryIntent.next);
+  if (checkoutSessionId) checkoutSupportParams.set("session_id", checkoutSessionId);
+  const checkoutSupportRoute = `support?${checkoutSupportParams.toString()}`;
   const requiresResolvedAccess =
     route.startsWith("admin") ||
     route === "account" ||
