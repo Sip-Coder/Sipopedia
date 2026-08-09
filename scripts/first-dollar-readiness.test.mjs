@@ -8,9 +8,10 @@ import {
 } from "../src/lib/onboardingIntent.ts";
 import { workspaceLabelForRoute } from "../src/lib/workspaceNavigation.ts";
 
-const [appSource, adminSource, supportSource, checkoutPageSource, policyPageSource, checkoutFunctionSource, readinessDoc] = await Promise.all([
+const [appSource, adminSource, marketingHomeSource, supportSource, checkoutPageSource, policyPageSource, checkoutFunctionSource, readinessDoc] = await Promise.all([
   readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/AdminConsole.tsx", import.meta.url), "utf8"),
+  readFile(new URL("../src/components/MarketingHome.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/SupportCenter.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/CheckoutPage.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/PolicyPage.tsx", import.meta.url), "utf8"),
@@ -56,6 +57,7 @@ test("onboarding labels hide route metadata from first buyers", () => {
   assert.equal(formatOnboardingRouteLabel("app/recipes"), "Bev Recipes");
   assert.equal(formatOnboardingRouteLabel(null), "Launch Pad");
   assert.equal(formatOnboardingSourceLabel("home-video-sip-academy-map"), "Homepage preview");
+  assert.equal(formatOnboardingSourceLabel("home-decision-join"), "Homepage decision");
   assert.equal(formatOnboardingSourceLabel("home-fit-service"), "Homepage customer path");
   assert.equal(formatOnboardingSourceLabel("paywall"), "Locked room");
   assert.match(checkoutPageSource, /Started from/);
@@ -66,10 +68,20 @@ test("onboarding labels hide route metadata from first buyers", () => {
   assert.match(appSource, /\{checkoutRecoveryTargetLabel\} remains attached/);
 });
 
+test("homepage gives first visitors a short conversion decision rail", () => {
+  assert.match(marketingHomeSource, /firstVisitDecisions/);
+  assert.match(marketingHomeSource, /First visit decision guide/);
+  assert.match(marketingHomeSource, /See the product first/);
+  assert.match(marketingHomeSource, /home-decision-join/);
+  assert.match(marketingHomeSource, /home-decision-help/);
+});
+
 test("support intake renders human room labels and billing status in recovery messages", () => {
   assert.match(supportSource, /workspaceLabelForRoute\(destinationRoute\)/);
   assert.match(supportSource, /Visible subscription status: \$\{billingStatus\}\./);
   assert.match(supportSource, /"paywall-billing-recovery"[\s\S]*?subject: "Membership billing recovery"/);
+  assert.match(supportSource, /"home-decision-help"[\s\S]*?subject: "Help before joining Sip Studies"/);
+  assert.match(supportSource, /"home-fit-preview"[\s\S]*?subject: "Help choosing a Sip Studies preview path"/);
 });
 
 test("admin launch gate requires meaningful Stripe and access proof", () => {
@@ -77,6 +89,9 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /Code-ready foundation/);
   assert.match(adminSource, /Needs live proof/);
   assert.match(adminSource, /First-dollar evidence split/);
+  assert.match(adminSource, /## Evidence Split/);
+  assert.match(adminSource, /reviewable before payment/);
+  assert.match(adminSource, /live proof required/);
   assert.equal(adminSource.includes("const launchProofCheckoutSessionRe = /^cs_(?:test|live)_[a-z0-9_]+$/i;"), true);
   assert.equal(adminSource.includes("const launchProofWebhookEventRe = /^evt_[a-z0-9_]+$/i;"), true);
   assert.match(adminSource, /launchProofSubscriptionRe =[\s\S]*?sub_/);
@@ -99,4 +114,7 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /Checkout server code sanitizes saved source and destination routes/);
   assert.match(readinessDoc, /full `cs_test_\.\.\.` or `cs_live_\.\.\.`/);
   assert.match(readinessDoc, /`sub_\.\.\.` Stripe subscription id or `customer_subscriptions` UUID/);
+  assert.match(readinessDoc, /proof log includes the evidence split/);
+  assert.match(readinessDoc, /first-visit decision rail offers Watch, Choose, Join, and Help actions/);
+  assert.match(readinessDoc, /Homepage Help actions prefill Support/);
 });

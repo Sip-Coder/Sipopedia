@@ -43,12 +43,16 @@ The homepage conversion path should stay simple enough to repeat in ads, demos, 
 2. Choose the reason you came.
 3. Join once for $10/month.
 
+The first-visit decision rail should keep those steps visible without forcing a new buyer to read the full page: watch the previews, choose a path, review the $10 membership, or ask for help.
+
 When a visitor chooses a preview room from the homepage hero or customer cards, that room should stay attached through Pricing and Checkout so the purchase path feels like continuing the demo, not starting over.
 
 ## Ready-To-Sell Gates
 
 - [ ] Production homepage clearly explains who Sipopedia is for before asking for payment.
 - [ ] Homepage shows the simple buyer path: preview first, choose a use case, join once.
+- [ ] Homepage first-visit decision rail offers Watch, Choose, Join, and Help actions without adding a wall of copy.
+- [ ] Homepage Help actions prefill Support with the saved room, membership question, and first-visit context.
 - [ ] Homepage hero preview choices carry the selected room into Pricing and Checkout.
 - [ ] Pricing page clearly states $10/month, what unlocks, and how cancellation/help works.
 - [ ] Pricing page confirms the saved preview destination before the buyer enters Checkout.
@@ -117,7 +121,7 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Run the connection probe and confirm subscription checks show safe counts, webhook/session metadata when available, and support checks find at least one Enrollment request with latest status metadata.
 - After the real checkout, rerun the connection probe and confirm it prefills or displays the latest `cs_`, `evt_`, and subscription proof from `customer_subscriptions.metadata`.
 - Review the proof-gaps panel and the downloaded Missing Proof Checklist; do not invite paid traffic while any gap is still marked missing.
-- Download the first-dollar proof log after the smoke test so the checkout, webhook, support, and access evidence is saved outside browser memory.
+- Download the first-dollar proof log after the smoke test so the proof log includes the evidence split and saves checkout, webhook, support, and access evidence outside browser memory.
 - Keep the launch decision on hold until every smoke-test item is checked, every connection probe passes, and every Stripe + access proof field is filled.
 - Treat Stripe checkout and webhook unlock as unproven until a signed-in production test account completes the full loop.
 - Watch Assisted Enrollment/support requests daily while the first customers are being invited.

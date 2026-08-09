@@ -148,6 +148,7 @@ export function formatOnboardingSourceLabel(source: string | null | undefined): 
   const normalized = (source ?? "").trim();
   if (!normalized || normalized === "direct") return "Direct visit";
   if (normalized.startsWith("home-video-")) return "Homepage preview";
+  if (normalized.startsWith("home-decision-")) return "Homepage decision";
   if (normalized.startsWith("home-path-") || normalized.startsWith("home-fit-")) return "Homepage customer path";
   if (normalized.startsWith("paywall")) return "Locked room";
   if (normalized.includes("policy")) return "Policy review";

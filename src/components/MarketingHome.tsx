@@ -57,6 +57,15 @@ type BuyerJourneyStep = {
   detail: string;
 };
 
+type FirstVisitDecision = {
+  label: string;
+  title: string;
+  detail: string;
+  actionLabel: string;
+  actionRoute?: string;
+  scrollTarget?: string;
+};
+
 type PreviewRoom = {
   title: string;
   detail: string;
@@ -354,6 +363,45 @@ const buyerJourneySteps: BuyerJourneyStep[] = [
   }
 ];
 
+const firstVisitDecisions: FirstVisitDecision[] = [
+  {
+    label: "Watch",
+    title: "See the product first",
+    detail: "Ten short room previews show the academy before anyone pays.",
+    actionLabel: "Watch previews",
+    scrollTarget: "marketing-preview-reels"
+  },
+  {
+    label: "Choose",
+    title: "Pick a starting reason",
+    detail: "Begin as a new learner, service pro, certification student, or visual explorer.",
+    actionLabel: "Choose path",
+    scrollTarget: "customer-paths-title"
+  },
+  {
+    label: "Join",
+    title: "One simple membership",
+    detail: "$10/month opens the full workspace and keeps the saved room attached.",
+    actionLabel: "See membership",
+    actionRoute: buildOnboardingRoute("pricing", {
+      planId: "pro",
+      source: "home-decision-join",
+      next: "app/launch"
+    })
+  },
+  {
+    label: "Help",
+    title: "Ask before checkout",
+    detail: "Assisted enrollment keeps questions, account context, and next room together.",
+    actionLabel: "Ask support",
+    actionRoute: buildMembershipSupportRoute({
+      source: "home-decision-help",
+      urgency: "normal",
+      next: "app/launch"
+    })
+  }
+];
+
 const previewRooms: PreviewRoom[] = [
   {
     title: "Learn",
@@ -384,6 +432,16 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
   };
   const scrollToPreviews = () => {
     document.getElementById("marketing-preview-reels")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const handleDecision = (decision: FirstVisitDecision) => {
+    if (decision.actionRoute) {
+      onNavigate(decision.actionRoute);
+      return;
+    }
+
+    if (decision.scrollTarget) {
+      document.getElementById(decision.scrollTarget)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   return (
@@ -464,6 +522,19 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
           </aside>
         </div>
       </div>
+
+      <section className="marketing-first-visit" aria-label="First visit decision guide">
+        {firstVisitDecisions.map((decision) => (
+          <article key={decision.label}>
+            <span>{decision.label}</span>
+            <strong>{decision.title}</strong>
+            <p>{decision.detail}</p>
+            <button type="button" onClick={() => handleDecision(decision)}>
+              {decision.actionLabel}
+            </button>
+          </article>
+        ))}
+      </section>
 
       <section className="marketing-buyer-journey" aria-label="How Sip Studies starts">
         {buyerJourneySteps.map((step) => (

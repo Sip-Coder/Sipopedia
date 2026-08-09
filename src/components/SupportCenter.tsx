@@ -241,6 +241,24 @@ function readSupportRouteContext(): SupportRouteContext {
         "Please help me decide whether the $10/month membership fits my learning goal."
       ].join("\n")
     },
+    "home-decision-help": {
+      urgency: "normal",
+      subject: "Help before joining Sip Studies",
+      message: [
+        "I used the first-visit Help path and want to ask a question before checkout.",
+        destination ? `Saved room: ${destination}.` : "Saved room: Launch Pad.",
+        "Please help me decide whether the $10/month membership fits my learning goal."
+      ].join("\n")
+    },
+    "home-fit-preview": {
+      urgency: "normal",
+      subject: "Help choosing a Sip Studies preview path",
+      message: [
+        "I am previewing Sip Studies and want help choosing where to start.",
+        destination ? `Saved room: ${destination}.` : "Saved room: Launch Pad.",
+        "Please help me choose the right room before I join."
+      ].join("\n")
+    },
     "terms-policy-help": {
       urgency: "soon",
       subject: "Question about membership terms",

@@ -569,7 +569,6 @@ const launchEvidenceLanes: LaunchEvidenceLane[] = [
   }
 ];
 
-
 const socialPlatforms: SocialPlatform[] = [
   { id: "instagram", label: "Instagram", handle: "@sipstudies", postType: "Feed, Reel, Story", limit: 2200 },
   { id: "facebook", label: "Facebook", handle: "Sip Studies", postType: "Page post", limit: 63206 },
@@ -932,6 +931,10 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
 
   const downloadLaunchProofLog = () => {
     const generatedAt = new Date();
+    const evidenceLaneLines = launchEvidenceLanes.flatMap((lane) => [
+      `- ${lane.label} (${lane.status === "code-ready" ? "reviewable before payment" : "live proof required"}): ${lane.detail}`,
+      ...lane.items.map((item) => `  - ${item}`)
+    ]);
     const smokeLines = launchSmokeSteps.flatMap((step, index) => {
       const stepState = launchSmokeState[step.id] ?? { done: false, evidence: "" };
       const stepIsProven = isLaunchSmokeStepProven(launchSmokeState, step.id);
@@ -957,6 +960,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `Origin: ${currentLaunchOrigin()}`,
       `Decision: ${launchReadyForPaidInvite ? "Ready for controlled test" : "Hold paid invite"}`,
       `Detail: ${launchDecisionDetail}`,
+      "",
+      "## Evidence Split",
+      ...evidenceLaneLines,
       "",
       "## Stripe And Access Proof",
       `- Test account email: ${launchProofDetails.testAccountEmail.trim() || "Not captured yet."}`,
