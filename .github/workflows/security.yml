@@ -33,6 +33,10 @@ jobs:
           else
             changed_files="$(git ls-files)"
           fi
+          if [ -z "$changed_files" ]; then
+            echo "No changed files to scan."
+            exit 0
+          fi
           STAGED_FILES="$changed_files" npm run security:secrets
 
       - name: Secret Guard Regression Test
