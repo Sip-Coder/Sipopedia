@@ -219,6 +219,15 @@ function readSupportRouteContext(): SupportRouteContext {
       subject: "Membership question before checkout",
       message: "I have a question about the $10/month Sip Studies membership before I check out."
     },
+    "pricing-help": {
+      urgency: "soon",
+      subject: "Membership question before checkout",
+      message: [
+        "I have a question about the $10/month Sip Studies membership before I check out.",
+        destination ? `Saved room: ${destination}.` : "Saved room: Launch Pad.",
+        checkoutSessionId ? `Stripe checkout session: ${checkoutSessionId}.` : "Stripe checkout session: not started."
+      ].join("\n")
+    },
     "home-path-not-sure": {
       urgency: "normal",
       subject: "Help choosing a Sip Studies path",

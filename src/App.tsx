@@ -1372,7 +1372,8 @@ function App() {
   const [route, setRoute] = useState<AppRoute>(() => parseRoute());
   const [pageStatuses, setPageStatuses] = useState<PageStatusMap>(() => readPageStatusMap());
   const [pageStatusesReady, setPageStatusesReady] = useState(false);
-  const [successAccessStatus, setSuccessAccessStatus] = useState<"idle" | "checking" | "checked" | "failed">("idle");
+  const [successAccessStatus, setSuccessAccessStatus] = useState<"idle" | "checking" | "checked" | "waiting" | "failed">("idle");
+  const [successAccessAttempts, setSuccessAccessAttempts] = useState(0);
   const { loading: accessLoading, isPaid, isAdmin, refreshProfile } = useAccess();
 
   useEffect(() => {
@@ -1397,11 +1398,13 @@ function App() {
   useEffect(() => {
     if (route !== "success") {
       setSuccessAccessStatus("idle");
+      setSuccessAccessAttempts(0);
       return;
     }
 
     let active = true;
     setSuccessAccessStatus("checking");
+    setSuccessAccessAttempts(1);
     refreshProfile()
       .then(() => {
         if (active) setSuccessAccessStatus("checked");
@@ -1414,6 +1417,26 @@ function App() {
       active = false;
     };
   }, [route]);
+
+  useEffect(() => {
+    if (route !== "success" || isPaid || isAdmin) return;
+    if (successAccessAttempts >= 4) return;
+    if (successAccessStatus === "checked") {
+      setSuccessAccessStatus("waiting");
+      return;
+    }
+    if (successAccessStatus !== "waiting") return;
+
+    const timer = window.setTimeout(() => {
+      setSuccessAccessStatus("checking");
+      setSuccessAccessAttempts((attempts) => attempts + 1);
+      refreshProfile()
+        .then(() => setSuccessAccessStatus("checked"))
+        .catch(() => setSuccessAccessStatus("failed"));
+    }, 3500);
+
+    return () => window.clearTimeout(timer);
+  }, [isAdmin, isPaid, refreshProfile, route, successAccessAttempts, successAccessStatus]);
 
   useEffect(() => {
     const refreshPageStatuses = () => setPageStatuses(readPageStatusMap());
@@ -1506,6 +1529,11 @@ function App() {
   const successIntent = route === "success" ? checkoutRecoveryIntent : null;
   const checkoutSessionId = successIntent?.sessionId;
   const hasConfirmedMembershipAccess = isPaid || isAdmin;
+  const successAccessRetryLimitReached =
+    route === "success" &&
+    !hasConfirmedMembershipAccess &&
+    successAccessStatus === "checked" &&
+    successAccessAttempts >= 4;
   const successTargetRoute = paymentSuccessRoute(isPaid, isAdmin, successIntent?.next);
   const successTargetLabel = formatRouteLabel(successTargetRoute);
   const checkoutRecoveryRoute = checkoutRecoveryIntent
@@ -1729,11 +1757,27 @@ function App() {
                 ? "Checking paid access for this account..."
                 : successAccessStatus === "failed"
                   ? "Access refresh did not complete. Try again or request membership help."
+                  : successAccessStatus === "waiting"
+                    ? "Waiting for Stripe to finish syncing membership access..."
                   : hasConfirmedMembershipAccess
                     ? "Access confirmed."
-                    : "Checkout return received; access may still be processing."}
+                    : successAccessRetryLimitReached
+                      ? "Access is not confirmed yet. Refresh again or open Membership Help with the checkout reference."
+                    : successAccessAttempts > 1
+                      ? "Checkout return received; still checking for membership access."
+                      : "Checkout return received; access may still be processing."}
               {checkoutSessionId ? ` Session: ${checkoutSessionId.slice(0, 18)}...` : ""}
             </div>
+            {!hasConfirmedMembershipAccess && successAccessStatus === "waiting" && successAccessAttempts < 4 ? (
+              <p className="checkout-auto-refresh-note" role="status">
+                Sipopedia will recheck access automatically for a few seconds. You can also refresh manually or open Membership Help.
+              </p>
+            ) : null}
+            {successAccessRetryLimitReached ? (
+              <p className="checkout-auto-refresh-note checkout-auto-refresh-note-action" role="status">
+                Automatic checks paused. Keep the checkout reference visible and use Membership Help if the room is still locked.
+              </p>
+            ) : null}
             {checkoutSessionId ? (
               <div className="checkout-session-reference" aria-label="Stripe checkout reference">
                 <span>Checkout reference</span>
@@ -1765,6 +1809,7 @@ function App() {
               className={hasConfirmedMembershipAccess ? "btn btn-light" : "btn btn-primary"}
               onClick={() => {
                 setSuccessAccessStatus("checking");
+                setSuccessAccessAttempts((attempts) => Math.max(attempts, 1) + 1);
                 refreshProfile()
                   .then(() => setSuccessAccessStatus("checked"))
                   .catch(() => setSuccessAccessStatus("failed"));

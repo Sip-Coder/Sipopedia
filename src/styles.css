@@ -16226,26 +16226,34 @@ select option:checked {
   line-height: 1.05;
 }
 
-.marketing-customer-signal-grid {
+.marketing-fit-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(0.55rem, 1.3vw, 0.8rem);
-  margin-bottom: 0.9rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.55rem, 1.25vw, 0.78rem);
+  margin-bottom: 1rem;
 }
 
-.marketing-customer-signal {
+.marketing-fit-tile {
   display: grid;
+  align-content: start;
   gap: 0.42rem;
   min-width: 0;
   border: 1px solid rgba(237, 212, 168, 0.22);
   border-radius: 14px;
   padding: clamp(0.72rem, 1.35vw, 0.92rem);
   background:
+    radial-gradient(circle at 16% 0%, rgba(157, 230, 236, 0.14), transparent 38%),
     linear-gradient(135deg, rgba(237, 212, 168, 0.1), transparent 42%),
     rgba(3, 16, 25, 0.76);
+  color: #fff1d1;
 }
 
-.marketing-customer-signal span {
+.marketing-fit-tile span {
+  width: fit-content;
+  border: 1px solid rgba(157, 230, 236, 0.28);
+  border-radius: 999px;
+  padding: 0.28rem 0.48rem;
+  background: rgba(102, 199, 183, 0.09);
   color: #9de6ec;
   font-size: 0.66rem;
   font-weight: 950;
@@ -16254,21 +16262,65 @@ select option:checked {
   text-transform: uppercase;
 }
 
-.marketing-customer-signal p,
-.marketing-customer-signal strong {
+.marketing-fit-tile strong,
+.marketing-fit-tile p,
+.marketing-fit-tile small {
   margin: 0;
-  font-size: 0.78rem;
-  line-height: 1.34;
 }
 
-.marketing-customer-signal p {
-  color: rgba(217, 247, 255, 0.74);
-  font-weight: 650;
-}
-
-.marketing-customer-signal strong {
+.marketing-fit-tile strong {
   color: #fff1d1;
+  font-size: clamp(1rem, 1.35vw, 1.22rem);
+  line-height: 1.08;
+}
+
+.marketing-fit-tile p {
+  color: #9de6ec;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.marketing-fit-tile small {
+  color: rgba(217, 247, 255, 0.78);
+  font-size: 0.76rem;
+  font-weight: 650;
+  line-height: 1.32;
+}
+
+.marketing-fit-actions {
+  display: grid;
+  grid-template-columns: 0.82fr 1.18fr;
+  gap: 0.42rem;
+  margin-top: 0.2rem;
+}
+
+.marketing-fit-actions button {
+  appearance: none;
+  min-height: 38px;
+  border: 1px solid rgba(159, 218, 245, 0.26);
+  border-radius: 10px;
+  background: rgba(4, 17, 27, 0.78);
+  color: #d9f7ff;
+  cursor: pointer;
+  font-size: 0.72rem;
   font-weight: 900;
+  line-height: 1.08;
+  padding: 0.45rem;
+}
+
+.marketing-fit-actions button:last-child {
+  border-color: rgba(237, 212, 168, 0.58);
+  background: linear-gradient(135deg, rgba(10, 84, 77, 0.9), rgba(117, 70, 28, 0.86));
+  color: #fff1d1;
+}
+
+.marketing-fit-actions button:hover,
+.marketing-fit-actions button:focus-visible {
+  border-color: rgba(237, 212, 168, 0.72);
+  outline: none;
 }
 
 .marketing-customer-path-grid {
@@ -19513,6 +19565,26 @@ select option:checked {
   font-size: 0.82rem;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+.checkout-auto-refresh-note {
+  margin: 0.72rem 0 0;
+  max-width: 820px;
+  border: 1px solid rgba(159, 218, 245, 0.22);
+  border-radius: 14px;
+  background: rgba(2, 18, 28, 0.56);
+  color: rgba(217, 247, 255, 0.82);
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.35;
+  padding: 0.7rem 0.78rem;
+}
+
+.checkout-auto-refresh-note-action {
+  border-color: rgba(237, 212, 168, 0.34);
+  background:
+    linear-gradient(135deg, rgba(237, 212, 168, 0.1), rgba(2, 18, 28, 0.58));
+  color: #fff1d1;
 }
 
 .checkout-stage-list {
@@ -32947,8 +33019,21 @@ button.journal-note-row.journal-note-select .journal-note-copy {
     grid-template-columns: 1fr;
   }
 
-  .marketing-customer-signal-grid {
+  .marketing-fit-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .marketing-fit-tile {
+    gap: 0.36rem;
+    padding: 0.68rem;
+  }
+
+  .marketing-fit-actions {
     grid-template-columns: 1fr;
+  }
+
+  .marketing-fit-actions button {
+    width: 100%;
   }
 
   .marketing-customer-path-card {
@@ -32983,6 +33068,12 @@ button.journal-note-row.journal-note-select .journal-note-copy {
 
   .marketing-hero-switchboard button {
     min-height: 50px;
+  }
+}
+
+@media (max-width: 320px) and (orientation: portrait) {
+  .marketing-fit-strip {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -33068,24 +33159,39 @@ button.journal-note-row.journal-note-select .journal-note-copy {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .marketing-customer-signal-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .marketing-fit-strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.5rem;
   }
 
-  .marketing-customer-signal {
+  .marketing-fit-tile {
     gap: 0.32rem;
     padding: 0.62rem;
   }
 
-  .marketing-customer-signal span {
+  .marketing-fit-tile span {
     font-size: 0.58rem;
   }
 
-  .marketing-customer-signal p,
-  .marketing-customer-signal strong {
+  .marketing-fit-tile strong {
+    font-size: 0.9rem;
+  }
+
+  .marketing-fit-tile p,
+  .marketing-fit-tile small {
     font-size: 0.7rem;
     line-height: 1.25;
+  }
+
+  .marketing-fit-actions {
+    grid-template-columns: 1fr;
+    gap: 0.34rem;
+  }
+
+  .marketing-fit-actions button {
+    min-height: 34px;
+    font-size: 0.66rem;
+    padding: 0.36rem;
   }
 
   .marketing-customer-path-card {

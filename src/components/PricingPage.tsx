@@ -1,4 +1,5 @@
 import {
+  buildMembershipSupportRoute,
   buildOnboardingRoute,
   getPlanById,
   readOnboardingIntent
@@ -99,6 +100,12 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
     planId: "pro",
     source: checkoutSource,
     next: nextRoute
+  });
+  const membershipSupportRoute = buildMembershipSupportRoute({
+    source: "pricing-help",
+    urgency: "soon",
+    next: nextRoute,
+    sessionId: intent.sessionId
   });
 
   return (
@@ -224,7 +231,7 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
             <button type="button" onClick={() => onNavigate(buildOnboardingRoute("refund", { planId: "pro", source: "pricing-policy", next: nextRoute }))}>
               Refunds
             </button>
-            <button type="button" onClick={() => onNavigate(buildOnboardingRoute("support", { planId: "pro", source: "pricing", next: nextRoute }))}>
+            <button type="button" onClick={() => onNavigate(membershipSupportRoute)}>
               Support
             </button>
           </div>
@@ -257,7 +264,7 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
           <button type="button" className="btn btn-light" onClick={() => onNavigate("study-paths")}>
             Credential Paths
           </button>
-          <button type="button" className="btn btn-light" onClick={() => onNavigate("support")}>
+          <button type="button" className="btn btn-light" onClick={() => onNavigate(membershipSupportRoute)}>
             Support &amp; Teams
           </button>
         </div>

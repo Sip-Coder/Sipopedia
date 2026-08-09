@@ -41,10 +41,14 @@ type CustomerPath = {
   actionLabel: string;
 };
 
-type CustomerSignal = {
-  audience: string;
-  pain: string;
-  paidOutcome: string;
+type CustomerFitTile = {
+  label: string;
+  title: string;
+  room: string;
+  outcome: string;
+  previewRoute: string;
+  actionRoute: string;
+  actionLabel: string;
 };
 
 type BuyerJourneyStep = {
@@ -277,21 +281,58 @@ const customerPaths: CustomerPath[] = [
   }
 ];
 
-const customerSignals: CustomerSignal[] = [
+const customerFitTiles: CustomerFitTile[] = [
   {
-    audience: "First-time beverage learner",
-    pain: "Too many terms, regions, and production steps arrive at once.",
-    paidOutcome: "A visual route that makes the whole drink system easier to remember."
+    label: "I'm new",
+    title: "Make drinks finally click.",
+    room: "Beyond The Glass",
+    outcome: "Start with cinematic source-to-service journeys.",
+    previewRoute: "app/btg",
+    actionRoute: buildOnboardingRoute("pricing", {
+      planId: "pro",
+      source: "home-fit-new",
+      next: "app/btg"
+    }),
+    actionLabel: "Join this path"
   },
   {
-    audience: "Restaurant, bar, retail, or tasting-room staff",
-    pain: "Guests ask practical questions before staff feel ready to answer.",
-    paidOutcome: "Clear service language, tasting confidence, and fast study loops."
+    label: "I work service",
+    title: "Speak with more confidence.",
+    room: "Recipes + Palate",
+    outcome: "Practice guest language, flavor memory, and build logic.",
+    previewRoute: "app/recipes",
+    actionRoute: buildOnboardingRoute("pricing", {
+      planId: "pro",
+      source: "home-fit-service",
+      next: "app/recipes"
+    }),
+    actionLabel: "Train for service"
   },
   {
-    audience: "Certification-adjacent student",
-    pain: "Books and flashcards explain facts without enough mental geography.",
-    paidOutcome: "Maps, citations, source-to-service context, and repeatable review rooms."
+    label: "I'm studying",
+    title: "Give facts a mental map.",
+    room: "Sipopedia",
+    outcome: "Use source-backed terms, maps, and visual memory anchors.",
+    previewRoute: "app/sipopedia",
+    actionRoute: buildOnboardingRoute("pricing", {
+      planId: "pro",
+      source: "home-fit-study",
+      next: "app/sipopedia"
+    }),
+    actionLabel: "Build study path"
+  },
+  {
+    label: "I'm previewing",
+    title: "Look around before paying.",
+    room: "Launch Pad",
+    outcome: "Watch trailers, open public rooms, or ask for help.",
+    previewRoute: "app/launch",
+    actionRoute: buildMembershipSupportRoute({
+      source: "home-fit-preview",
+      urgency: "normal",
+      next: "app/launch"
+    }),
+    actionLabel: "Ask support"
   }
 ];
 
@@ -439,14 +480,23 @@ export function MarketingHome({ onNavigate }: MarketingHomeProps) {
       <section className="marketing-customer-paths" aria-labelledby="customer-paths-title">
         <div className="marketing-section-intro">
           <p className="marketing-kicker">Start Here</p>
-          <h2 id="customer-paths-title">Pick the reason you came.</h2>
+          <h2 id="customer-paths-title">Choose your first room.</h2>
         </div>
-        <div className="marketing-customer-signal-grid" aria-label="Best first customers and paid outcomes">
-          {customerSignals.map((signal) => (
-            <article className="marketing-customer-signal" key={signal.audience}>
-              <span>{signal.audience}</span>
-              <p>{signal.pain}</p>
-              <strong>{signal.paidOutcome}</strong>
+        <div className="marketing-fit-strip" aria-label="Customer fit shortcuts">
+          {customerFitTiles.map((tile) => (
+            <article className="marketing-fit-tile" key={tile.label}>
+              <span>{tile.label}</span>
+              <strong>{tile.title}</strong>
+              <p>{tile.room}</p>
+              <small>{tile.outcome}</small>
+              <div className="marketing-fit-actions">
+                <button type="button" onClick={() => onNavigate(tile.previewRoute)}>
+                  Preview
+                </button>
+                <button type="button" onClick={() => onNavigate(tile.actionRoute)}>
+                  {tile.actionLabel}
+                </button>
+              </div>
             </article>
           ))}
         </div>
