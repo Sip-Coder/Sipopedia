@@ -90,6 +90,13 @@ type LaunchCustomerSegment = {
   firstOffer: string;
 };
 
+type LaunchCommandCard = {
+  label: string;
+  title: string;
+  detail: string;
+  items: string[];
+};
+
 type LaunchEvidenceLane = {
   label: string;
   status: "code-ready" | "live-proof";
@@ -427,6 +434,39 @@ const launchReadinessChecks: LaunchReadinessCheck[] = [
     label: "Human rescue path",
     status: "operator",
     detail: "Review assisted enrollment/support inbox daily before inviting the first paid users."
+  }
+];
+
+const launchCommandCards: LaunchCommandCard[] = [
+  {
+    label: "Who buys first",
+    title: "Individuals before teams",
+    detail: "Sell the first membership to people already trying to understand drinks, service, or certification study.",
+    items: [
+      "Curious learners need vocabulary, maps, and production steps to feel less intimidating.",
+      "Hospitality staff need practical guest language they can use on shift.",
+      "Certification-adjacent students need visual memory anchors beside official materials."
+    ]
+  },
+  {
+    label: "Homepage hook",
+    title: "Show, choose, join",
+    detail: "The homepage should let videos and visual rooms do the selling before it asks for payment.",
+    items: [
+      "Lead with the moving preview and the promise: learn drinks visually, from source to service.",
+      "Route visitors by reason: new learner, service confidence, study structure, or preview first.",
+      "Keep the offer simple: one $10/month path with support and cancellation clarity."
+    ]
+  },
+  {
+    label: "First-dollar gate",
+    title: "One live proof loop",
+    detail: "Do not invite paid traffic until the same Student account proves checkout, webhook, access, and lockout.",
+    items: [
+      "Stripe Checkout starts from sipopedia.com after login and returns with the session reference.",
+      "Supabase records matching Stripe event, session, and subscription metadata on one row.",
+      "Paid rooms unlock from active/trialing status, while canceled or past-due status locks them again."
+    ]
   }
 ];
 
@@ -997,6 +1037,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
 
   const downloadLaunchProofLog = () => {
     const generatedAt = new Date();
+    const launchCardLines = launchCommandCards.flatMap((card) => [
+      `- ${card.label}: ${card.title}`,
+      `  ${card.detail}`,
+      ...card.items.map((item) => `  - ${item}`)
+    ]);
     const evidenceLaneLines = launchEvidenceLanes.flatMap((lane) => [
       `- ${lane.label} (${lane.status === "code-ready" ? "reviewable before payment" : "live proof required"}): ${lane.detail}`,
       ...lane.items.map((item) => `  - ${item}`)
@@ -1031,6 +1076,9 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `Origin: ${currentLaunchOrigin()}`,
       `Decision: ${launchReadyForPaidInvite ? "Ready for controlled test" : "Hold paid invite"}`,
       `Detail: ${launchDecisionDetail}`,
+      "",
+      "## Launch Card",
+      ...launchCardLines,
       "",
       "## Evidence Split",
       ...evidenceLaneLines,
@@ -1537,6 +1585,20 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   <span>{launchReadyForPaidInvite ? "Ready for controlled test" : "Hold paid invite"}</span>
                   <strong>{launchReadyForPaidInvite ? "First-customer path is proof-ready." : "Do not invite a paid customer yet."}</strong>
                   <small>{launchDecisionDetail}</small>
+                </div>
+                <div className="admin-launch-command-grid" aria-label="First-dollar launch card">
+                  {launchCommandCards.map((card) => (
+                    <article key={card.label}>
+                      <span>{card.label}</span>
+                      <strong>{card.title}</strong>
+                      <p>{card.detail}</p>
+                      <ul>
+                        {card.items.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </article>
+                  ))}
                 </div>
                 <div className="admin-launch-evidence-split" aria-label="First-dollar evidence split">
                   {launchEvidenceLanes.map((lane) => (

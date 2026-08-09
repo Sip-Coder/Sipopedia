@@ -120,6 +120,7 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 
 - Confirm the public homepage promise and $10/month offer are still clear.
 - Review the likely first customer segments: curious learners, hospitality staff, certification-adjacent learners, and visual learners.
+- Use the Admin launch card to keep the decision anchored: individuals before teams, show/choose/join homepage hook, and one live proof loop before paid invites.
 - Use the evidence split to separate code-ready foundations from live proof that only counts after a signed-in production checkout.
 - Open the smoke-test path: Homepage -> Pricing -> Trust Links -> Checkout -> Success -> Cancel Recovery -> Paid Room -> Support.
 - Mark each smoke-test item only after a real production check proves it.

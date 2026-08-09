@@ -2,6 +2,12 @@
 
 This is the simple first-dollar operating brief: who Sipopedia should sell to first, what the homepage should make obvious, and what must be proven before asking a real customer to pay.
 
+## First-Dollar Launch Card
+
+- Who buys first: individual beverage learners, hospitality staff, and certification-adjacent students before team plans.
+- Homepage hook: show, choose, join. Let moving previews and visual rooms sell the promise before payment.
+- First-dollar gate: one live proof loop from production login to Stripe Checkout, webhook sync, paid-room unlock, and canceled/past-due lockout.
+
 ## Best First Customers
 
 ### 1. Visual Beverage Learners

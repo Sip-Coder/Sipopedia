@@ -20361,6 +20361,73 @@ select option:checked {
   background: linear-gradient(135deg, rgba(124, 88, 36, 0.2), rgba(4, 13, 24, 0.5));
 }
 
+.admin-launch-command-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.admin-launch-command-grid article {
+  display: grid;
+  align-content: start;
+  gap: 0.38rem;
+  min-width: 0;
+  border: 1px solid rgba(237, 212, 168, 0.24);
+  border-radius: 14px;
+  padding: 0.82rem;
+  background:
+    linear-gradient(145deg, rgba(42, 191, 205, 0.08), rgba(237, 212, 168, 0.06)),
+    rgba(4, 18, 30, 0.62);
+}
+
+.admin-launch-command-grid span {
+  width: fit-content;
+  border: 1px solid rgba(159, 218, 245, 0.28);
+  border-radius: 999px;
+  padding: 0.2rem 0.45rem;
+  color: #9fdaf5;
+  font-size: 0.58rem;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.admin-launch-command-grid strong {
+  color: #fff2d3;
+  font-size: 1rem;
+  line-height: 1.14;
+}
+
+.admin-launch-command-grid p {
+  margin: 0;
+  color: #dff8ff;
+  font-size: 0.76rem;
+  font-weight: 760;
+  line-height: 1.34;
+}
+
+.admin-launch-command-grid ul {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0.1rem 0 0;
+  padding: 0;
+}
+
+.admin-launch-command-grid li {
+  color: #c9e8f0;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  list-style: none;
+}
+
+.admin-launch-command-grid li::before {
+  color: #edcfa5;
+  content: "•";
+  font-weight: 900;
+  margin-right: 0.36rem;
+}
+
 .admin-launch-evidence-split {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -22145,6 +22212,7 @@ select option:checked {
   .pricing-proof-strip,
   .pricing-buyer-fit-grid,
   .pricing-membership-promises,
+  .admin-launch-command-grid,
   .admin-launch-evidence-split,
   .admin-launch-live-proof-grid,
   .admin-launch-customer-grid,
@@ -22240,6 +22308,7 @@ select option:checked {
   .pricing-proof-strip,
   .pricing-buyer-fit-grid,
   .pricing-membership-promises,
+  .admin-launch-command-grid,
   .admin-launch-evidence-split,
   .admin-launch-customer-grid,
   .admin-launch-check-grid,
@@ -22265,6 +22334,7 @@ select option:checked {
   .pricing-proof-strip span,
   .pricing-buyer-fit-grid article,
   .pricing-membership-promises article,
+  .admin-launch-command-grid article,
   .admin-launch-evidence-split article,
   .admin-launch-live-proof-grid article,
   .admin-launch-customer,
@@ -22320,6 +22390,7 @@ select option:checked {
 
   .admin-launch-customer-grid,
   .admin-launch-test-script-grid,
+  .admin-launch-command-grid,
   .admin-launch-evidence-split,
   .admin-launch-proof-fields,
   .admin-launch-proof-gaps,

@@ -155,6 +155,14 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /launchProofEvidenceMinLength = 12/);
   assert.match(adminSource, /Code-ready foundation/);
   assert.match(adminSource, /Needs live proof/);
+  assert.match(adminSource, /launchCommandCards/);
+  assert.match(adminSource, /First-dollar launch card/);
+  assert.match(adminSource, /Who buys first/);
+  assert.match(adminSource, /Individuals before teams/);
+  assert.match(adminSource, /Homepage hook/);
+  assert.match(adminSource, /Show, choose, join/);
+  assert.match(adminSource, /First-dollar gate/);
+  assert.match(adminSource, /One live proof loop/);
   assert.match(adminSource, /First-dollar evidence split/);
   assert.match(adminSource, /Live paid proof ladder/);
   assert.match(adminSource, /same Student account/);
@@ -164,6 +172,7 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /IDs captured across different rows or different test accounts/);
   assert.match(adminSource, /Opening the room while the account is Admin/);
   assert.match(adminSource, /Only testing the happy path/);
+  assert.match(adminSource, /## Launch Card/);
   assert.match(adminSource, /## Live Paid Proof Ladder/);
   assert.match(adminSource, /## Evidence Split/);
   assert.match(adminSource, /reviewable before payment/);
@@ -253,6 +262,10 @@ test("first-dollar preflight runs safe production and mobile checks together", (
 
 test("short first-dollar customer plan matches the live proof gates", () => {
   assert.match(customerPlanDoc, /Visual Beverage Learners/);
+  assert.match(customerPlanDoc, /First-Dollar Launch Card/);
+  assert.match(customerPlanDoc, /Who buys first: individual beverage learners, hospitality staff, and certification-adjacent students before team plans/);
+  assert.match(customerPlanDoc, /Homepage hook: show, choose, join/);
+  assert.match(customerPlanDoc, /First-dollar gate: one live proof loop/);
   assert.match(customerPlanDoc, /Hospitality Workers/);
   assert.match(customerPlanDoc, /Certification-Adjacent Students/);
   assert.match(customerPlanDoc, /Curious Previewers/);
@@ -277,6 +290,8 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /`sub_\.\.\.` Stripe subscription id or `customer_subscriptions` UUID/);
   assert.match(readinessDoc, /Supabase metadata proof/);
   assert.match(readinessDoc, /Admin Console live paid proof ladder/);
+  assert.match(readinessDoc, /Admin launch card/);
+  assert.match(readinessDoc, /individuals before teams, show\/choose\/join homepage hook, and one live proof loop/);
   assert.match(readinessDoc, /localhost, Replit preview, Admin access, manually edited rows, mismatched Stripe IDs, and happy-path-only checks do not count/);
   assert.match(readinessDoc, /phone screenshot proof location/);
   assert.match(readinessDoc, /proof log includes the evidence split/);
