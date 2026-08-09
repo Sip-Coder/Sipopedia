@@ -19776,6 +19776,12 @@ select option:checked {
   padding: 0.55rem 0.78rem;
 }
 
+@media (max-width: 620px) {
+  .checkout-session-reference .btn {
+    flex: 1 1 150px;
+  }
+}
+
 .checkout-auto-refresh-note {
   margin: 0.72rem 0 0;
   max-width: 820px;
@@ -20128,6 +20134,18 @@ select option:checked {
   font-weight: 800;
   color: #f2cd82;
   margin: 0.25rem 0 0.4rem;
+}
+
+.paywall-proof-status {
+  border: 1px solid rgba(159, 218, 245, 0.2);
+  border-radius: 12px;
+  margin: 0.62rem 0 0;
+  padding: 0.52rem 0.62rem;
+  background: rgba(2, 18, 28, 0.5);
+  color: #d3eaf3;
+  font-size: 0.78rem;
+  font-weight: 760;
+  line-height: 1.35;
 }
 
 .paywall-hero {
@@ -20836,6 +20854,77 @@ select option:checked {
   line-height: 1.28;
 }
 
+.admin-launch-invite-kit {
+  border: 1px solid rgba(237, 212, 168, 0.28);
+  border-radius: 16px;
+  margin-top: 0.9rem;
+  padding: 0.85rem;
+  background:
+    linear-gradient(135deg, rgba(237, 212, 168, 0.13), rgba(8, 42, 48, 0.42)),
+    rgba(4, 13, 24, 0.6);
+}
+
+.admin-launch-invite-kit > p {
+  max-width: 74ch;
+  margin: 0.42rem 0 0;
+  color: #d3eaf3;
+  font-size: 0.8rem;
+  line-height: 1.42;
+}
+
+.admin-launch-invite-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.72rem;
+}
+
+.admin-launch-invite-grid article {
+  display: grid;
+  gap: 0.42rem;
+  min-width: 0;
+  border: 1px solid rgba(159, 218, 245, 0.2);
+  border-radius: 12px;
+  padding: 0.72rem;
+  background: rgba(2, 18, 27, 0.62);
+}
+
+.admin-launch-invite-grid span {
+  width: fit-content;
+  border: 1px solid rgba(237, 212, 168, 0.28);
+  border-radius: 999px;
+  padding: 0.18rem 0.42rem;
+  color: #f1ddb0;
+  font-size: 0.58rem;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.admin-launch-invite-grid strong {
+  color: #fff2d3;
+  font-size: 0.84rem;
+  line-height: 1.2;
+}
+
+.admin-launch-invite-grid p {
+  margin: 0;
+  color: #d3eaf3;
+  font-size: 0.76rem;
+  line-height: 1.38;
+}
+
+.admin-launch-invite-grid .btn {
+  justify-self: start;
+  min-height: 36px;
+  padding: 0.45rem 0.7rem;
+}
+
+.admin-launch-invite-grid .btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
 .admin-launch-check {
   display: grid;
   gap: 0.28rem;
@@ -20960,6 +21049,56 @@ select option:checked {
   font-size: 0.68rem;
   font-weight: 820;
   line-height: 1.28;
+}
+
+.admin-launch-success-import {
+  display: grid;
+  gap: 0.62rem;
+  border: 1px solid rgba(159, 218, 245, 0.26);
+  border-radius: 16px;
+  margin-top: 0.9rem;
+  padding: 0.82rem;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(159, 218, 245, 0.14), transparent 34%),
+    linear-gradient(135deg, rgba(6, 54, 65, 0.48), rgba(4, 13, 24, 0.68));
+}
+
+.admin-launch-success-import > p {
+  margin: 0;
+  color: #d3eaf3;
+  font-size: 0.8rem;
+  line-height: 1.38;
+}
+
+.admin-launch-success-proof-card {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+  border: 1px solid rgba(237, 212, 168, 0.22);
+  border-radius: 12px;
+  padding: 0.72rem;
+  background: rgba(2, 18, 27, 0.58);
+}
+
+.admin-launch-success-proof-card span {
+  color: #9fdaf5;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.admin-launch-success-proof-card strong {
+  color: #fff2d3;
+  font-size: 0.86rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.admin-launch-success-proof-card small {
+  color: #d3eaf3;
+  font-size: 0.74rem;
+  line-height: 1.35;
 }
 
 .admin-launch-proof-fields {
@@ -22434,6 +22573,7 @@ select option:checked {
   .admin-launch-evidence-split,
   .admin-launch-live-proof-grid,
   .admin-launch-customer-grid,
+  .admin-launch-invite-grid,
   .admin-launch-check-grid,
   .admin-launch-connection-grid,
   .checkout-intent-ribbon,
@@ -22531,6 +22671,7 @@ select option:checked {
   .admin-launch-evidence-split,
   .admin-launch-proof-capture-grid,
   .admin-launch-customer-grid,
+  .admin-launch-invite-grid,
   .admin-launch-check-grid,
   .admin-launch-connection-grid,
   .checkout-safety-strip,

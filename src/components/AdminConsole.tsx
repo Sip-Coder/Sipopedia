@@ -24,6 +24,12 @@ import {
   publishPageStatusMap,
   readPageStatusMap,
 } from "../lib/siteMap";
+import {
+  readFirstDollarLockoutProof,
+  readFirstDollarSuccessProof,
+  type FirstDollarLockoutProof,
+  type FirstDollarSuccessProof
+} from "../lib/firstDollarProof";
 
 type AdminConsoleProps = {
   onNavigate: (route: string) => void;
@@ -121,6 +127,12 @@ type LaunchProofCaptureStep = {
   label: string;
   capture: string;
   pasteInto: string;
+};
+
+type LaunchFirstCustomerInvite = {
+  label: string;
+  audience: string;
+  message: string;
 };
 
 type LaunchSmokeState = Record<string, { done: boolean; evidence: string }>;
@@ -791,6 +803,27 @@ const launchProofCaptureSteps: LaunchProofCaptureStep[] = [
   }
 ];
 
+const launchFirstCustomerInvites: LaunchFirstCustomerInvite[] = [
+  {
+    label: "Visual learner",
+    audience: "Curious beverage learners who want the world explained before dense study.",
+    message:
+      "I’m opening a small first Sip Studies test group. It is $10/month and built for visual beverage learning: preview the academy, pick a room, then use maps, field journeys, recipes, terms, and tasting practice to learn drinks from source to service. Start here: https://sipopedia.com"
+  },
+  {
+    label: "Service confidence",
+    audience: "Servers, bartenders, tasting-room staff, retail staff, and beverage teams in training.",
+    message:
+      "I’m inviting a few first Sip Studies members who want stronger beverage language for service. It is $10/month and gives you visual rooms for terms, maps, recipes, tasting practice, and source-to-service journeys. Preview first, then join here: https://sipopedia.com"
+  },
+  {
+    label: "Study companion",
+    audience: "Certification-adjacent learners who need visual memory anchors beside official materials.",
+    message:
+      "Sip Studies is opening its first small member group for people studying wine, beer, spirits, coffee, tea, recipes, maps, and beverage language. It is $10/month and works as a visual study companion, not another textbook. Preview the academy here: https://sipopedia.com"
+  }
+];
+
 const socialPlatforms: SocialPlatform[] = [
   { id: "instagram", label: "Instagram", handle: "@sipstudies", postType: "Feed, Reel, Story", limit: 2200 },
   { id: "facebook", label: "Facebook", handle: "Sip Studies", postType: "Page post", limit: 63206 },
@@ -846,6 +879,11 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   );
   const [launchProbeRunning, setLaunchProbeRunning] = useState(false);
   const [launchProofCopyStatus, setLaunchProofCopyStatus] = useState("Proof log is ready to copy or download.");
+  const [firstCustomerInviteCopyStatus, setFirstCustomerInviteCopyStatus] = useState("Invite not copied yet.");
+  const [latestSuccessProof, setLatestSuccessProof] = useState<FirstDollarSuccessProof | null>(() => readFirstDollarSuccessProof());
+  const [successProofImportStatus, setSuccessProofImportStatus] = useState("No checkout return proof imported yet.");
+  const [latestLockoutProof, setLatestLockoutProof] = useState<FirstDollarLockoutProof | null>(() => readFirstDollarLockoutProof());
+  const [lockoutProofImportStatus, setLockoutProofImportStatus] = useState("No lockout proof imported yet.");
   draftPageStatusesRef.current = draftPageStatuses;
 
   useEffect(() => {
@@ -1172,6 +1210,80 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     setLaunchProofDetails((current) => ({ ...current, [field]: value }));
   };
 
+  const refreshLatestSuccessProof = () => {
+    const proof = readFirstDollarSuccessProof();
+    setLatestSuccessProof(proof);
+    setSuccessProofImportStatus(
+      proof
+        ? `Latest checkout return found from ${new Date(proof.capturedAt).toLocaleString()}.`
+        : "No checkout return proof found in this browser yet."
+    );
+  };
+
+  const importLatestSuccessProof = () => {
+    const proof = readFirstDollarSuccessProof();
+    setLatestSuccessProof(proof);
+    if (!proof) {
+      setSuccessProofImportStatus("No checkout return proof found. Complete the success-page return first.");
+      return;
+    }
+
+    setLaunchProofDetails((current) => ({
+      ...current,
+      stripeSessionId: proof.stripeSessionId,
+      paidRoomRoute: proof.savedRoomRoute || current.paidRoomRoute
+    }));
+    setLaunchSmokeState((current) => ({
+      ...current,
+      success: {
+        done: current.success?.done ?? false,
+        evidence: proof.proofNote || `Stripe checkout return captured for ${proof.stripeSessionId}.`
+      }
+    }));
+    setSuccessProofImportStatus(`Imported checkout session ${proof.stripeSessionId.slice(0, 18)}... into Admin proof.`);
+    trackEvent("admin_first_dollar_success_proof_import", {
+      accessStatus: proof.accessStatus,
+      route: proof.savedRoomRoute
+    });
+  };
+
+  const refreshLatestLockoutProof = () => {
+    const proof = readFirstDollarLockoutProof();
+    setLatestLockoutProof(proof);
+    setLockoutProofImportStatus(
+      proof
+        ? `Latest lockout proof found from ${new Date(proof.capturedAt).toLocaleString()}.`
+        : "No lockout proof found in this browser yet."
+    );
+  };
+
+  const importLatestLockoutProof = () => {
+    const proof = readFirstDollarLockoutProof();
+    setLatestLockoutProof(proof);
+    if (!proof) {
+      setLockoutProofImportStatus("No lockout proof found. Copy lockout proof from the locked-room paywall first.");
+      return;
+    }
+
+    setLaunchProofDetails((current) => ({
+      ...current,
+      paidRoomRoute: proof.lockedRoute || current.paidRoomRoute,
+      lockoutProof: proof.proofNote
+    }));
+    setLaunchSmokeState((current) => ({
+      ...current,
+      "paid-room": {
+        done: current["paid-room"]?.done ?? false,
+        evidence: `${current["paid-room"]?.evidence ? `${current["paid-room"].evidence.trim()}\n\n` : ""}${proof.proofNote}`.trim()
+      }
+    }));
+    setLockoutProofImportStatus(`Imported ${proof.subscriptionStatus} lockout proof for ${proof.lockedRouteLabel}.`);
+    trackEvent("admin_first_dollar_lockout_proof_import", {
+      status: proof.subscriptionStatus,
+      route: proof.lockedRoute
+    });
+  };
+
   const buildLaunchProofLogBody = (generatedAt = new Date()) => {
     const launchCardLines = launchCommandCards.flatMap((card) => [
       `- ${card.label}: ${card.title}`,
@@ -1195,6 +1307,10 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       `${index + 1}. ${step.label}`,
       `   Capture: ${step.capture}`,
       `   Paste into: ${step.pasteInto}`
+    ]);
+    const firstCustomerInviteLines = launchFirstCustomerInvites.flatMap((invite) => [
+      `- ${invite.label}: ${invite.audience}`,
+      `  ${invite.message}`
     ]);
     const smokeLines = launchSmokeSteps.flatMap((step, index) => {
       const stepState = launchSmokeState[step.id] ?? { done: false, evidence: "" };
@@ -1252,6 +1368,10 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       "## Likely First Customers",
       ...launchCustomerSegments.map((segment) => `- ${segment.label}: ${segment.firstOffer}`),
       "",
+      "## First Customer Invite Kit",
+      "Use only after the live paid proof ladder is complete.",
+      ...firstCustomerInviteLines,
+      "",
       "## Production Smoke Test",
       ...smokeLines,
       "",
@@ -1302,6 +1422,24 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       });
     } catch {
       setLaunchProofCopyStatus("Clipboard copy was blocked. Use Download proof log instead.");
+    }
+  };
+
+  const copyFirstCustomerInvite = async (invite: LaunchFirstCustomerInvite) => {
+    if (!navigator.clipboard?.writeText) {
+      setFirstCustomerInviteCopyStatus("Clipboard copy is unavailable in this browser. Use the visible invite copy instead.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(invite.message);
+      setFirstCustomerInviteCopyStatus(`${invite.label} invite copied. Use it only after live proof passes.`);
+      trackEvent("admin_first_customer_invite_copy", {
+        audience: invite.label,
+        ready: launchReadyForPaidInvite
+      });
+    } catch {
+      setFirstCustomerInviteCopyStatus("Clipboard copy was blocked. Use the visible invite copy instead.");
     }
   };
 
@@ -1906,6 +2044,34 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                     </div>
                   ))}
                 </div>
+                <div className="admin-launch-invite-kit" aria-label="First customer invite kit">
+                  <div className="admin-launch-test-script-head">
+                    <p className="admin-eyebrow">First customer invite kit</p>
+                    <strong>Use after live proof passes.</strong>
+                  </div>
+                  <p>
+                    These short invites keep the first ask simple: preview the academy, choose a room, and join once for
+                    $10/month. Do not send them until checkout, webhook, unlock, and lockout proof all pass.
+                  </p>
+                  <div className="admin-launch-invite-grid">
+                    {launchFirstCustomerInvites.map((invite) => (
+                      <article key={invite.label}>
+                        <span>{invite.label}</span>
+                        <strong>{invite.audience}</strong>
+                        <p>{invite.message}</p>
+                        <button
+                          className="btn btn-light"
+                          type="button"
+                          disabled={!launchReadyForPaidInvite}
+                          onClick={() => void copyFirstCustomerInvite(invite)}
+                        >
+                          Copy invite
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                  <p className="admin-launch-copy-status" role="status">{firstCustomerInviteCopyStatus}</p>
+                </div>
                 <div className="admin-launch-check-grid" aria-label="First dollar launch checks">
                   {launchReadinessChecks.map((check) => (
                     <div className={`admin-launch-check status-${check.status}`} key={check.label}>
@@ -1932,6 +2098,59 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                       </article>
                     ))}
                   </div>
+                </div>
+                <div className="admin-launch-success-import" aria-label="Latest checkout return proof">
+                  <div className="admin-launch-test-script-head">
+                    <p className="admin-eyebrow">Latest checkout return</p>
+                    <strong>Import the success-page proof before matching Supabase rows.</strong>
+                  </div>
+                  {latestSuccessProof ? (
+                    <div className="admin-launch-success-proof-card">
+                      <span>{new Date(latestSuccessProof.capturedAt).toLocaleString()}</span>
+                      <strong>{latestSuccessProof.stripeSessionId}</strong>
+                      <small>
+                        Saved room: {latestSuccessProof.savedRoomLabel} ({latestSuccessProof.savedRoomRoute}) · Access status:
+                        {" "}{latestSuccessProof.accessStatus}
+                      </small>
+                    </div>
+                  ) : (
+                    <p>No success-page checkout return has been saved in this browser yet.</p>
+                  )}
+                  <div className="admin-launch-smoke-actions">
+                    <button className="btn btn-light" type="button" onClick={refreshLatestSuccessProof}>
+                      Refresh latest return
+                    </button>
+                    <button className="btn btn-light" type="button" disabled={!latestSuccessProof} onClick={importLatestSuccessProof}>
+                      Import checkout proof
+                    </button>
+                  </div>
+                  <p className="admin-launch-copy-status" role="status">{successProofImportStatus}</p>
+                </div>
+                <div className="admin-launch-success-import" aria-label="Latest lockout proof">
+                  <div className="admin-launch-test-script-head">
+                    <p className="admin-eyebrow">Latest lockout proof</p>
+                    <strong>Import the locked-room proof after testing canceled or past-due access.</strong>
+                  </div>
+                  {latestLockoutProof ? (
+                    <div className="admin-launch-success-proof-card">
+                      <span>{new Date(latestLockoutProof.capturedAt).toLocaleString()}</span>
+                      <strong>{latestLockoutProof.subscriptionStatus} blocked {latestLockoutProof.lockedRouteLabel}</strong>
+                      <small>
+                        Locked route: {latestLockoutProof.lockedRoute} · Support lane: {latestLockoutProof.supportLane}
+                      </small>
+                    </div>
+                  ) : (
+                    <p>No locked-room proof has been saved in this browser yet.</p>
+                  )}
+                  <div className="admin-launch-smoke-actions">
+                    <button className="btn btn-light" type="button" onClick={refreshLatestLockoutProof}>
+                      Refresh lockout proof
+                    </button>
+                    <button className="btn btn-light" type="button" disabled={!latestLockoutProof} onClick={importLatestLockoutProof}>
+                      Import lockout proof
+                    </button>
+                  </div>
+                  <p className="admin-launch-copy-status" role="status">{lockoutProofImportStatus}</p>
                 </div>
                 <div className="admin-launch-proof-fields" aria-label="Stripe and access proof details">
                   <div className="admin-launch-test-script-head">

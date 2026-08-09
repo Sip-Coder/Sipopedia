@@ -138,7 +138,9 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Use each proof-ladder capture prompt as the minimum proof-note template, especially the full `cs_...` session id, the same subscription row, all three matching Stripe identifiers, Student role confirmation, and the tested lockout status.
 - Review the proof-gaps panel and the downloaded Missing Proof Checklist; do not invite paid traffic while any gap is still marked missing.
 - Use Copy proof log for phone clipboard handoff, then download the first-dollar proof log after the smoke test so the proof log includes the evidence split and saves deployed build, checkout, webhook, support, and access evidence outside browser memory.
-- On the success page, use the Checkout reference copy action to paste the exact `cs_...` session id into Admin proof or Membership Help instead of retyping it from a phone.
+- On the success page, use the Checkout reference copy action to paste the exact `cs_...` session id into Admin proof or Membership Help instead of retyping it from a phone. Use Copy proof note when you want a fuller paste-ready record with the session id, saved room, access status, and the remaining Supabase metadata proof required.
+- After the success page appears in the same browser, open Admin and use Latest checkout return -> Import checkout proof to prefill the Stripe session id, paid room route, and success evidence before matching the Supabase webhook/subscription row.
+- After testing a canceled, past-due, unpaid, incomplete, or expired subscription, use Copy lockout proof on the locked-room paywall, then use Latest lockout proof -> Import lockout proof in Admin to fill the Lockout proof field from the observed paywall state.
 - Keep the launch decision on hold until every smoke-test item is checked, every connection probe passes, and every Stripe + access proof field is filled.
 - Treat Stripe checkout and webhook unlock as unproven until a signed-in production test account completes the full loop.
 - Watch Assisted Enrollment/support requests daily while the first customers are being invited.
@@ -173,7 +175,7 @@ npm run first-dollar:mobile-qa
 npm run first-dollar:mobile-qa -- --base-url https://sipopedia.com
 ```
 
-The mobile QA walks phone portrait and phone landscape through Homepage -> Pricing -> Checkout -> Login -> Success -> Cancel. It fails if the homepage promise, $10 membership signal, saved Beyond The Glass room, login-before-payment guard, Assisted Enrollment fallback, Google login, email magic-link fallback, Send Magic Link button, success checkout-reference copy action, success recovery actions, or cancel recovery actions disappear or become unreachable in the phone viewport. Screenshots and `report.json` are saved under `.tmp/first-dollar-mobile-path-qa-*` for proof review; keep those files local unless a specific screenshot is approved for release.
+The mobile QA walks phone portrait and phone landscape through Homepage -> Pricing -> Checkout -> Login -> Success -> Cancel. It fails if the homepage promise, $10 membership signal, saved Beyond The Glass room, login-before-payment guard, Assisted Enrollment fallback, Google login, email magic-link fallback, Send Magic Link button, success checkout-reference copy action, success proof-note copy action, success recovery actions, or cancel recovery actions disappear or become unreachable in the phone viewport. Screenshots and `report.json` are saved under `.tmp/first-dollar-mobile-path-qa-*` for proof review; keep those files local unless a specific screenshot is approved for release.
 
 ## First Paid Test Script
 
@@ -185,12 +187,12 @@ Run this once, in order, from production before inviting a real buyer:
 4. Open Terms, Privacy, and Refund from the membership path, then confirm Membership Details, Ask Support, and Continue Enrollment preserve the saved room.
 5. Sign in with the production test learner account, and confirm the Google or email magic-link route preserves the saved checkout room.
 6. Start Stripe Checkout from Sipopedia and confirm Stripe shows the correct monthly membership. If checkout fails, confirm Membership Help opens Support with `checkout-help` enrollment context attached.
-7. Return to `https://sipopedia.com/#success` and confirm the full checkout session reference, copy action, Refresh Access, Launch Pad, and Support are visible.
+7. Return to `https://sipopedia.com/#success` and confirm the full checkout session reference, copy action, Copy proof note action, Refresh Access, Launch Pad, and Support are visible.
 8. Open Membership Help from the success page and confirm the Support intake includes the saved room and Stripe checkout session id.
-9. Capture the Supabase Student user id, Stripe `evt_` webhook event id, and resulting subscription reference from Supabase proof.
+9. Open Admin, import the latest checkout return proof, then capture the Supabase Student user id, Stripe `evt_` webhook event id, and resulting subscription reference from Supabase proof.
 10. Confirm the Supabase proof row belongs to the same Student user id and has the same Stripe event, session, and subscription identifiers in `customer_subscriptions.metadata`.
 11. Open the saved paid room and verify access comes from an active or trialing subscription status, not a manual profile role edit.
-12. Confirm a canceled or past-due subscription record does not keep paid-room access open, then paste that Lockout proof into Admin.
+12. Confirm a canceled or past-due subscription record does not keep paid-room access open, use Copy lockout proof on the locked-room paywall, then import that Lockout proof into Admin.
 13. Use Membership Help from the locked-room paywall once and confirm Support opens with billing-recovery context and the saved room.
     If the blocked account has a `past_due`, `unpaid`, `incomplete`, or `canceled` subscription status, confirm Support opens the Billing lane and includes that status in the request details.
 14. Use Membership Help from cancel once and confirm Support opens the Enrollment lane with the checkout context prefilled.

@@ -15,6 +15,7 @@ const [
   marketingHomeSource,
   supportSource,
   checkoutPageSource,
+  paywallSource,
   accessContextSource,
   policyPageSource,
   checkoutFunctionSource,
@@ -26,6 +27,7 @@ const [
   verifyRgrdManifestSource,
   packageSource,
   mobileQaSource,
+  firstDollarProofSource,
   customerPlanDoc,
   readinessDoc
 ] = await Promise.all([
@@ -35,6 +37,7 @@ const [
   readFile(new URL("../src/components/MarketingHome.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/SupportCenter.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/CheckoutPage.tsx", import.meta.url), "utf8"),
+  readFile(new URL("../src/components/PaywallPanel.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/context/AccessContext.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/components/PolicyPage.tsx", import.meta.url), "utf8"),
   readFile(new URL("../supabase/functions/create-checkout-session/index.ts", import.meta.url), "utf8"),
@@ -46,6 +49,7 @@ const [
   readFile(new URL("./verify-rgrd-manifest.mjs", import.meta.url), "utf8"),
   readFile(new URL("../package.json", import.meta.url), "utf8"),
   readFile(new URL("./first-dollar-mobile-path-qa.mjs", import.meta.url), "utf8"),
+  readFile(new URL("../src/lib/firstDollarProof.ts", import.meta.url), "utf8"),
   readFile(new URL("../docs/FIRST_DOLLAR_CUSTOMER_PLAN.md", import.meta.url), "utf8"),
   readFile(new URL("../docs/FIRST_DOLLAR_READINESS.md", import.meta.url), "utf8")
 ]);
@@ -104,6 +108,22 @@ test("onboarding labels hide route metadata from first buyers", () => {
   assert.match(appSource, /copySuccessCheckoutReference/);
   assert.match(appSource, /checkout_success_reference_copy/);
   assert.match(appSource, /Copy into Admin proof or Membership Help if access is still syncing/);
+  assert.match(appSource, /copySuccessProofBundle/);
+  assert.match(appSource, /checkout_success_proof_bundle_copy/);
+  assert.match(appSource, /writeFirstDollarSuccessProof/);
+  assert.match(appSource, /Copy proof note/);
+  assert.match(appSource, /Sipopedia first-dollar checkout return proof/);
+  assert.match(appSource, /Next proof needed: match this session to billing_webhook_events/);
+  assert.match(appSource, /Admin override does not count as paid proof/);
+  assert.match(firstDollarProofSource, /firstDollarSuccessProofStorageKey/);
+  assert.match(firstDollarProofSource, /sipstudies:first-dollar-success-proof:v1/);
+  assert.match(firstDollarProofSource, /firstDollarLockoutProofStorageKey/);
+  assert.match(firstDollarProofSource, /sipstudies:first-dollar-lockout-proof:v1/);
+  assert.match(firstDollarProofSource, /writeFirstDollarSuccessProof/);
+  assert.match(firstDollarProofSource, /readFirstDollarSuccessProof/);
+  assert.match(firstDollarProofSource, /writeFirstDollarLockoutProof/);
+  assert.match(firstDollarProofSource, /readFirstDollarLockoutProof/);
+  assert.match(firstDollarProofSource, /stripeSessionId\.startsWith\("cs_"\)/);
   assert.match(appSource, /\{checkoutRecoveryTargetLabel\} remains attached/);
   assert.match(appSource, /route === "success"[\s\S]*?View Membership Details[\s\S]*?Membership Help/);
   assert.match(appSource, /route === "cancel"[\s\S]*?Retry Membership Checkout/);
@@ -164,6 +184,12 @@ test("support intake renders human room labels and billing status in recovery me
   assert.match(supportSource, /"paywall-billing-recovery"[\s\S]*?subject: "Membership billing recovery"/);
   assert.match(supportSource, /"home-decision-help"[\s\S]*?subject: "Help before joining Sip Studies"/);
   assert.match(supportSource, /"home-fit-preview"[\s\S]*?subject: "Help choosing a Sip Studies preview path"/);
+  assert.match(paywallSource, /copyLockoutProof/);
+  assert.match(paywallSource, /Copy lockout proof/);
+  assert.match(paywallSource, /Sipopedia first-dollar lockout proof/);
+  assert.match(paywallSource, /writeFirstDollarLockoutProof/);
+  assert.match(paywallSource, /Lockout proof copied and saved for Admin import/);
+  assert.match(paywallSource, /Membership Help opens the billing lane with saved room and visible subscription status/);
 });
 
 test("admin launch gate requires meaningful Stripe and access proof", () => {
@@ -252,6 +278,28 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /Copy proof log/);
   assert.match(adminSource, /admin_launch_proof_copy/);
   assert.match(adminSource, /Clipboard copy is unavailable in this browser/);
+  assert.match(adminSource, /readFirstDollarSuccessProof/);
+  assert.match(adminSource, /Latest checkout return/);
+  assert.match(adminSource, /Import checkout proof/);
+  assert.match(adminSource, /admin_first_dollar_success_proof_import/);
+  assert.match(adminSource, /Imported checkout session/);
+  assert.match(adminSource, /Latest lockout proof/);
+  assert.match(adminSource, /Import lockout proof/);
+  assert.match(adminSource, /readFirstDollarLockoutProof/);
+  assert.match(adminSource, /admin_first_dollar_lockout_proof_import/);
+  assert.match(adminSource, /Imported \$\{proof\.subscriptionStatus\} lockout proof/);
+  assert.match(adminSource, /setLaunchSmokeState/);
+  assert.match(adminSource, /launchFirstCustomerInvites/);
+  assert.match(adminSource, /First Customer Invite Kit/);
+  assert.match(adminSource, /Use only after the live paid proof ladder is complete/);
+  assert.match(adminSource, /copyFirstCustomerInvite/);
+  assert.match(adminSource, /Copy invite/);
+  assert.match(adminSource, /disabled=\{!launchReadyForPaidInvite\}/);
+  assert.match(adminSource, /admin_first_customer_invite_copy/);
+  assert.match(adminSource, /Visual learner/);
+  assert.match(adminSource, /Service confidence/);
+  assert.match(adminSource, /Study companion/);
+  assert.match(adminSource, /preview the academy, pick a room/);
 });
 
 test("checkout Edge Function sanitizes source and next before Stripe session creation", () => {
@@ -363,6 +411,11 @@ test("short first-dollar customer plan matches the live proof gates", () => {
   assert.match(customerPlanDoc, /Confirm canceled or past-due status locks the room again/);
   assert.match(customerPlanDoc, /expected RGRD GitHub source commit/);
   assert.match(customerPlanDoc, /Replit adds its own publish-stamp commit/);
+  assert.match(customerPlanDoc, /First Customer Invite Kit/);
+  assert.match(customerPlanDoc, /Use short invites only after the live paid proof ladder passes/);
+  assert.match(customerPlanDoc, /I’m opening a small first Sip Studies test group/);
+  assert.match(customerPlanDoc, /Preview the academy, pick a room, then join/);
+  assert.match(customerPlanDoc, /visual learners, hospitality\/service confidence, and certification-adjacent study companions/);
 });
 
 test("readiness checklist documents the same first-dollar proof requirements", () => {
@@ -394,6 +447,12 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /proof log includes the evidence split/);
   assert.match(readinessDoc, /Copy proof log/);
   assert.match(readinessDoc, /phone clipboard/);
+  assert.match(readinessDoc, /Latest checkout return -> Import checkout proof/);
+  assert.match(readinessDoc, /prefill the Stripe session id, paid room route, and success evidence/);
+  assert.match(readinessDoc, /Copy proof note action/);
+  assert.match(readinessDoc, /Copy lockout proof/);
+  assert.match(readinessDoc, /Latest lockout proof -> Import lockout proof/);
+  assert.match(readinessDoc, /fill the Lockout proof field from the observed paywall state/);
   assert.match(readinessDoc, /first-visit decision rail offers Watch, Choose, Join, and Help actions/);
   assert.match(readinessDoc, /Homepage Help actions prefill Support/);
   assert.match(readinessDoc, /Google is unavailable, login clearly points buyers to email magic link/);

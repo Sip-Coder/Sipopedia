@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { AuthPanel } from "./AuthPanel";
 import { useAccess } from "../context/AccessContext";
 import { buildMembershipSupportRoute, buildOnboardingRoute } from "../lib/onboardingIntent";
 import { WORKSPACE_NAV_ITEMS, buildWorkspaceLanePreviews, workspaceLabelForRoute } from "../lib/workspaceNavigation";
 import { configForRoute, type PageStatusMap } from "../lib/siteMap";
+import { writeFirstDollarLockoutProof } from "../lib/firstDollarProof";
 
 const billingRecoveryStatuses = new Set(["past_due", "unpaid", "canceled", "incomplete", "incomplete_expired"]);
 
@@ -15,6 +17,7 @@ type PaywallPanelProps = {
 
 export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: PaywallPanelProps) {
   const { tier, errorMessage, subscription, profile } = useAccess();
+  const [lockoutProofStatus, setLockoutProofStatus] = useState("Lockout proof not copied yet.");
   const publishedWorkspaceItems = WORKSPACE_NAV_ITEMS.filter((item) => {
     const config = configForRoute(item.route, pageStatuses);
     return config.status === "public" && config.room !== "Boss";
@@ -40,6 +43,38 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
     if (!localPreviewAvailable) return;
     window.localStorage.setItem("sipstudies:local-preview-access", "1");
     window.dispatchEvent(new Event("sipstudies:local-preview-access-changed"));
+  };
+
+  const copyLockoutProof = async () => {
+    if (!needsBillingRecovery || !subscription) return;
+    const proofNote = [
+      "Sipopedia first-dollar lockout proof",
+      `Locked route: ${nextRouteLabel} (${nextRoute})`,
+      `Subscription status shown: ${subscription.status}`,
+      "Observed result: paid room stayed locked and showed the billing-recovery paywall.",
+      "Support route: Membership Help opens the billing lane with saved room and visible subscription status.",
+      "First-dollar meaning: canceled, past-due, unpaid, incomplete, or expired status does not keep paid access open."
+    ].join("\n");
+    writeFirstDollarLockoutProof({
+      capturedAt: new Date().toISOString(),
+      lockedRoute: nextRoute,
+      lockedRouteLabel: nextRouteLabel,
+      subscriptionStatus: subscription.status,
+      supportLane: "billing",
+      proofNote
+    });
+
+    if (!navigator.clipboard?.writeText) {
+      setLockoutProofStatus("Lockout proof saved in this browser. Clipboard copy is unavailable.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(proofNote);
+      setLockoutProofStatus("Lockout proof copied and saved for Admin import.");
+    } catch {
+      setLockoutProofStatus("Lockout proof saved in this browser. Clipboard copy was blocked.");
+    }
   };
 
   return (
@@ -103,7 +138,13 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
             <button className="btn btn-light" onClick={() => onNavigate(membershipSupportRoute)}>
               Membership Help
             </button>
+            {needsBillingRecovery ? (
+              <button className="btn btn-light" type="button" onClick={() => void copyLockoutProof()}>
+                Copy lockout proof
+              </button>
+            ) : null}
           </div>
+          {needsBillingRecovery ? <p className="paywall-proof-status" role="status">{lockoutProofStatus}</p> : null}
           {errorMessage ? <p className="error">{errorMessage}</p> : null}
         </article>
 

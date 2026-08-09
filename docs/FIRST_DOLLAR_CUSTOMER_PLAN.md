@@ -139,6 +139,19 @@ Use one production test learner account. Walk this path:
 
 Only after that loop passes should Sipopedia invite the first real paying customer.
 
+## First Customer Invite Kit
+
+Use short invites only after the live paid proof ladder passes. The first message should not try to explain every room; it should make one promise, name the $10/month membership, and send people to `https://sipopedia.com`.
+
+Best first invite structure:
+
+1. "I’m opening a small first Sip Studies test group."
+2. "$10/month for visual beverage learning."
+3. "Preview the academy, pick a room, then join."
+4. "Start here: https://sipopedia.com"
+
+The Admin Console includes copyable invite variants for visual learners, hospitality/service confidence, and certification-adjacent study companions. Keep them gated until checkout, webhook, paid-room unlock, and lockout proof all pass.
+
 ## Source Notes
 
 - U.S. Bureau of Labor Statistics, Food and Beverage Serving and Related Workers: projected 5 percent employment growth from 2024 to 2034 and about 1,159,600 openings per year.

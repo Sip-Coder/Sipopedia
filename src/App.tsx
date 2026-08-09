@@ -46,6 +46,7 @@ import {
   type WorkspaceSectionId
 } from "./lib/workspaceNavigation";
 import { searchTerminologyCommandResults, type TerminologyCommandResult } from "./lib/terminology";
+import { writeFirstDollarSuccessProof } from "./lib/firstDollarProof";
 import {
   PAGE_STATUS_EVENT,
   type PageStatusMap,
@@ -1375,6 +1376,7 @@ function App() {
   const [successAccessStatus, setSuccessAccessStatus] = useState<"idle" | "checking" | "checked" | "waiting" | "failed">("idle");
   const [successAccessAttempts, setSuccessAccessAttempts] = useState(0);
   const [successReferenceCopied, setSuccessReferenceCopied] = useState(false);
+  const [successProofBundleCopied, setSuccessProofBundleCopied] = useState(false);
   const { loading: accessLoading, isPaid, isAdmin, refreshProfile } = useAccess();
 
   useEffect(() => {
@@ -1405,6 +1407,7 @@ function App() {
       setSuccessAccessStatus("idle");
       setSuccessAccessAttempts(0);
       setSuccessReferenceCopied(false);
+      setSuccessProofBundleCopied(false);
       return;
     }
 
@@ -1555,6 +1558,30 @@ function App() {
     next: checkoutRecoveryIntent?.next,
     sessionId: checkoutSessionId
   });
+  const successProofNote = checkoutSessionId
+    ? [
+        "Sipopedia first-dollar checkout return proof",
+        `Stripe checkout session id: ${checkoutSessionId}`,
+        `Saved room: ${successTargetLabel}`,
+        `Saved room route: ${successIntent?.next ?? "app/starter"}`,
+        `Access status on success page: ${hasConfirmedMembershipAccess ? "confirmed" : successAccessStatus}`,
+        "Next proof needed: match this session to billing_webhook_events, customer_subscriptions, stripe_event_id, stripe_session_id, and stripe_subscription_id for the same Student account.",
+        "Admin override does not count as paid proof."
+      ].join("\n")
+    : "";
+
+  useEffect(() => {
+    if (route !== "success" || !checkoutSessionId) return;
+    writeFirstDollarSuccessProof({
+      capturedAt: new Date().toISOString(),
+      stripeSessionId: checkoutSessionId,
+      savedRoomRoute: successIntent?.next ?? "app/starter",
+      savedRoomLabel: successTargetLabel,
+      accessStatus: hasConfirmedMembershipAccess ? "confirmed" : successAccessStatus,
+      proofNote: successProofNote
+    });
+  }, [checkoutSessionId, hasConfirmedMembershipAccess, route, successAccessStatus, successIntent?.next, successProofNote, successTargetLabel]);
+
   const copySuccessCheckoutReference = async () => {
     if (!checkoutSessionId) return;
     try {
@@ -1563,6 +1590,16 @@ function App() {
       trackEvent("checkout_success_reference_copy", { source: "success", next: successIntent?.next });
     } catch {
       setSuccessReferenceCopied(false);
+    }
+  };
+  const copySuccessProofBundle = async () => {
+    if (!successProofNote) return;
+    try {
+      await navigator.clipboard.writeText(successProofNote);
+      setSuccessProofBundleCopied(true);
+      trackEvent("checkout_success_proof_bundle_copy", { source: "success", next: successIntent?.next });
+    } catch {
+      setSuccessProofBundleCopied(false);
     }
   };
   const requiresResolvedAccess =
@@ -1804,6 +1841,9 @@ function App() {
                 <code>{checkoutSessionId}</code>
                 <button className="btn btn-light" type="button" onClick={() => void copySuccessCheckoutReference()}>
                   {successReferenceCopied ? "Copied" : "Copy"}
+                </button>
+                <button className="btn btn-light" type="button" onClick={() => void copySuccessProofBundle()}>
+                  {successProofBundleCopied ? "Proof copied" : "Copy proof note"}
                 </button>
               </div>
             ) : null}
