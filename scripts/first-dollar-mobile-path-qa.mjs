@@ -464,6 +464,7 @@ async function runViewportFlow(client, sessionId, baseUrl, outputDir, routeTimeo
   check(() => assertText(state, "Copy proof note", "Success page proof-note copy action is missing."));
   check(() => assertText(state, "Same account", "Success page live-proof same-account cue is missing."));
   check(() => assertText(state, "Same row", "Success page live-proof same-row cue is missing."));
+  check(() => assertText(state, "No override", "Success page live-proof no-Admin-override cue is missing."));
   check(() => assertVisibleCritical(state, "Checkout reference", "Checkout reference is not fully visible in the success viewport."));
   check(() => assertVisibleCritical(state, "Copy", "Checkout reference copy action is not fully visible in the success viewport."));
   check(() => assertVisibleCritical(state, "Copy proof note", "Success proof-note copy action is not fully visible in the success viewport."));

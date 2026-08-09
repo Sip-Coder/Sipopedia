@@ -193,7 +193,7 @@ npm run first-dollar:mobile-qa
 npm run first-dollar:mobile-qa -- --base-url https://sipopedia.com
 ```
 
-The mobile QA walks phone portrait and phone landscape through Homepage -> Pricing -> Checkout -> Login -> Success -> Cancel. It fails if the homepage promise, $10 membership signal, saved Beyond The Glass room, login-before-payment guard, Assisted Enrollment fallback, Google login, email magic-link fallback, Send Magic Link button, success checkout-reference copy action, success proof-note copy action, success recovery actions, or cancel recovery actions disappear or become unreachable in the phone viewport. Screenshots and `report.json` are saved under `.tmp/first-dollar-mobile-path-qa-*` for proof review; keep those files local unless a specific screenshot is approved for release.
+The mobile QA walks phone portrait and phone landscape through Homepage -> customer-path cards -> Pricing -> pricing save/preview actions -> Checkout -> Login -> Success -> Cancel. It fails if the homepage promise, preview/save/join proof badges, customer-path CTAs, $10 membership signal, saved Beyond The Glass room, pricing preview/save actions, login-before-payment guard, Assisted Enrollment fallback, Google login, email magic-link fallback, Send Magic Link button, success checkout-reference copy action, success proof-note copy action, success recovery actions, or cancel recovery actions disappear or become unreachable in the phone viewport. Screenshots and `report.json` are saved under `.tmp/first-dollar-mobile-path-qa-*` for proof review; keep those files local unless a specific screenshot is approved for release.
 
 ## First Paid Test Script
 

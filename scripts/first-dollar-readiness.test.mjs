@@ -115,6 +115,11 @@ test("onboarding labels hide route metadata from first buyers", () => {
   assert.match(appSource, /writeFirstDollarSuccessProof/);
   assert.match(appSource, /Copy proof note/);
   assert.match(appSource, /Sipopedia first-dollar checkout return proof/);
+  assert.match(appSource, /admin override only - not paid proof/);
+  assert.match(appSource, /admin_override_not_paid_proof/);
+  assert.match(appSource, /Admin account can open rooms, but first-dollar proof still needs a Student account/);
+  assert.match(appSource, /Admin override is visible; do not count this as paid subscriber proof/);
+  assert.match(appSource, /Admin access is separate from paid Student proof/);
   assert.match(appSource, /Next proof needed: match this session to billing_webhook_events/);
   assert.match(appSource, /Admin override does not count as paid proof/);
   assert.match(firstDollarProofSource, /firstDollarSuccessProofStorageKey/);
@@ -345,6 +350,11 @@ test("admin launch gate requires meaningful Stripe and access proof", () => {
   assert.match(adminSource, /Do not count Admin override, localhost, Replit preview, manual database edits, or mismatched Stripe IDs/);
   assert.match(adminSource, /Clipboard copy is unavailable in this browser/);
   assert.match(adminSource, /readFirstDollarSuccessProof/);
+  assert.match(adminSource, /isAdminOverrideSuccessProof/);
+  assert.match(adminSource, /Checkout return was captured under Admin override/);
+  assert.match(adminSource, /Repeat the paid proof with a Student account/);
+  assert.match(adminSource, /Admin access cannot be imported/);
+  assert.match(adminSource, /admin_first_dollar_success_proof_rejected/);
   assert.match(adminSource, /Latest checkout return/);
   assert.match(adminSource, /Import checkout proof/);
   assert.match(adminSource, /admin_first_dollar_success_proof_import/);
@@ -389,6 +399,10 @@ test("billing webhook preserves the Stripe-to-Supabase paid access proof chain",
   assert.match(billingWebhookSource, /STRIPE_WEBHOOK_SECRET/);
   assert.match(billingWebhookSource, /verifyStripeSignature\(rawBody, secret, stripeSignature\)/);
   assert.match(billingWebhookSource, /\.from\("billing_webhook_events"\)[\s\S]*?\.select\("event_id"\)/);
+  assert.match(billingWebhookSource, /existingSubscriptionMetadata/);
+  assert.match(billingWebhookSource, /mergeSubscriptionMetadata/);
+  assert.match(billingWebhookSource, /billing-webhook existing subscription metadata lookup failed/);
+  assert.match(billingWebhookSource, /const mergedMetadata = mergeSubscriptionMetadata\(existingMetadata, payload\.metadata\)/);
   assert.match(billingWebhookSource, /\.from\("customer_subscriptions"\)\.upsert/);
   assert.match(billingWebhookSource, /onConflict: "provider,provider_subscription_id"/);
   assert.match(billingWebhookSource, /stripe_event_id: event\.id/);
@@ -512,6 +526,7 @@ test("short first-dollar customer plan matches the live proof gates", () => {
   assert.match(customerPlanDoc, /Preview the world/);
   assert.match(customerPlanDoc, /Choose the reason you came/);
   assert.match(customerPlanDoc, /Join once for \$10\/month/);
+  assert.match(customerPlanDoc, /Customer-path proof badges that make the choice obvious: preview first, save the room, then join for \$10\/month/);
   assert.match(customerPlanDoc, /npm run first-dollar:probe/);
   assert.match(customerPlanDoc, /npm run first-dollar:preflight/);
   assert.match(customerPlanDoc, /npm run first-dollar:mobile-qa -- --base-url https:\/\/sipopedia\.com/);
@@ -519,6 +534,7 @@ test("short first-dollar customer plan matches the live proof gates", () => {
   assert.match(customerPlanDoc, /stripe_event_id/);
   assert.match(customerPlanDoc, /stripe_session_id/);
   assert.match(customerPlanDoc, /stripe_subscription_id/);
+  assert.match(customerPlanDoc, /customer-path cards, Pricing, pricing save\/preview actions, Checkout, Login, Success, and Cancel/);
   assert.match(customerPlanDoc, /These commands do not create a Stripe session, write a subscription, or prove paid access/);
   assert.match(customerPlanDoc, /Confirm canceled or past-due status locks the room again/);
   assert.match(customerPlanDoc, /expected RGRD GitHub source commit/);
@@ -586,11 +602,15 @@ test("readiness checklist documents the same first-dollar proof requirements", (
   assert.match(readinessDoc, /npm run first-dollar:preflight/);
   assert.match(packageSource, /"first-dollar:mobile-qa": "node scripts\/first-dollar-mobile-path-qa\.mjs"/);
   assert.match(readinessDoc, /Mobile Buyer Path QA/);
-  assert.match(readinessDoc, /Homepage -> Pricing -> Checkout -> Login -> Success -> Cancel/);
+  assert.match(readinessDoc, /Homepage -> customer-path cards -> Pricing -> pricing save\/preview actions -> Checkout -> Login -> Success -> Cancel/);
+  assert.match(readinessDoc, /preview\/save\/join proof badges/);
+  assert.match(readinessDoc, /customer-path CTAs/);
+  assert.match(readinessDoc, /pricing preview\/save actions/);
   assert.match(mobileQaSource, /phone-portrait/);
   assert.match(mobileQaSource, /phone-landscape/);
   assert.match(mobileQaSource, /05-success-proof/);
   assert.match(mobileQaSource, /06-success-actions/);
+  assert.match(mobileQaSource, /Success page live-proof no-Admin-override cue is missing/);
   assert.match(mobileQaSource, /07-cancel-proof/);
   assert.match(mobileQaSource, /08-cancel-actions/);
   assert.match(mobileQaSource, /Checkout reference copy action is not fully visible/);

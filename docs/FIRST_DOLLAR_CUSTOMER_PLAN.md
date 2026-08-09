@@ -84,6 +84,7 @@ Keep the homepage centered on one repeatable conversion path:
 Avoid adding more explanation above the fold. The homepage should sell by showing:
 - A moving preview.
 - Four customer paths with their own visual preview clips.
+- Customer-path proof badges that make the choice obvious: preview first, save the room, then join for $10/month.
 - One membership price.
 - Trust signals: preview first, cancel anytime, works on phones, source-backed terms.
 
@@ -128,7 +129,7 @@ npm run first-dollar:probe
 npm run first-dollar:mobile-qa -- --base-url https://sipopedia.com
 ```
 
-The safe probe confirms public wiring only. The mobile QA confirms the phone portrait and landscape buyer path through Homepage, Pricing, Checkout, and Login. These commands do not create a Stripe session, write a subscription, or prove paid access.
+The safe probe confirms public wiring only. The mobile QA confirms the phone portrait and landscape buyer path through Homepage, customer-path cards, Pricing, pricing save/preview actions, Checkout, Login, Success, and Cancel. These commands do not create a Stripe session, write a subscription, or prove paid access.
 
 ## First Paid Test
 

@@ -396,6 +396,11 @@ function isLaunchSmokeStepProven(state: LaunchSmokeState, stepId: string): boole
   return Boolean(stepState?.done && stepState.evidence.trim().length >= launchProofEvidenceMinLength);
 }
 
+function isAdminOverrideSuccessProof(accessStatus: string): boolean {
+  const normalized = accessStatus.toLowerCase();
+  return normalized.includes("admin_override") || normalized.includes("admin override");
+}
+
 function launchSmokeStepGapLabel(state: LaunchSmokeState, step: LaunchSmokeStep): string {
   const stepState = state[step.id];
   if (!stepState?.done) return step.label;
@@ -1254,6 +1259,16 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
     setLatestSuccessProof(proof);
     if (!proof) {
       setSuccessProofImportStatus("No checkout return proof found. Complete the success-page return first.");
+      return;
+    }
+    if (isAdminOverrideSuccessProof(proof.accessStatus)) {
+      setSuccessProofImportStatus(
+        "Checkout return was captured under Admin override. Repeat the paid proof with a Student account; Admin access cannot be imported."
+      );
+      trackEvent("admin_first_dollar_success_proof_rejected", {
+        accessStatus: proof.accessStatus,
+        route: proof.savedRoomRoute
+      });
       return;
     }
 

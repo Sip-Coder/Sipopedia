@@ -225,6 +225,36 @@ async function existingSubscriptionContext(
   };
 }
 
+async function existingSubscriptionMetadata(
+  supabase: AdminSupabaseClient,
+  provider: string,
+  providerSubscriptionId: string
+): Promise<Record<string, unknown> | null> {
+  const { data, error } = await supabase
+    .from("customer_subscriptions")
+    .select("metadata")
+    .eq("provider", provider)
+    .eq("provider_subscription_id", providerSubscriptionId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("billing-webhook existing subscription metadata lookup failed", { error });
+    return null;
+  }
+
+  return isRecord(data?.metadata) ? data.metadata : null;
+}
+
+function mergeSubscriptionMetadata(
+  existingMetadata: Record<string, unknown> | null,
+  incomingMetadata: Record<string, unknown> | undefined
+): Record<string, unknown> {
+  return {
+    ...(existingMetadata ?? {}),
+    ...(incomingMetadata ?? {})
+  };
+}
+
 async function stripeCheckoutSessionPayload(event: StripeEvent): Promise<WebhookPayload | null> {
   const session = event.data?.object;
   if (!isRecord(session)) return null;
@@ -351,17 +381,25 @@ async function processBillingPayload({
     return json(400, { error: "Missing user_id in webhook payload." });
   }
 
+  const providerSubscriptionId = payload.provider_subscription_id ?? eventId;
+  const existingMetadata = await existingSubscriptionMetadata(
+    supabase,
+    payload.provider ?? provider,
+    providerSubscriptionId
+  );
+  const mergedMetadata = mergeSubscriptionMetadata(existingMetadata, payload.metadata);
+
   const { error } = await supabase.from("customer_subscriptions").upsert(
     {
       user_id: payload.user_id,
       provider: payload.provider ?? provider,
       provider_customer_id: payload.provider_customer_id ?? null,
-      provider_subscription_id: payload.provider_subscription_id ?? eventId,
+      provider_subscription_id: providerSubscriptionId,
       plan_code: payload.plan_code ?? "pro_monthly",
       status: payload.status ?? "incomplete",
       current_period_end: payload.current_period_end ?? null,
       cancel_at_period_end: payload.cancel_at_period_end ?? false,
-      metadata: payload.metadata ?? {}
+      metadata: mergedMetadata
     },
     { onConflict: "provider,provider_subscription_id" }
   );

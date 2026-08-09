@@ -1537,10 +1537,12 @@ function App() {
   const checkoutRecoveryIntent = route === "success" || route === "cancel" ? readOnboardingIntent("pro") : null;
   const successIntent = route === "success" ? checkoutRecoveryIntent : null;
   const checkoutSessionId = successIntent?.sessionId;
-  const hasConfirmedMembershipAccess = isPaid || isAdmin;
+  const hasConfirmedPaidMembershipAccess = isPaid;
+  const hasAdminOnlyWorkspaceAccess = isAdmin && !isPaid;
   const successAccessRetryLimitReached =
     route === "success" &&
-    !hasConfirmedMembershipAccess &&
+    !hasConfirmedPaidMembershipAccess &&
+    !hasAdminOnlyWorkspaceAccess &&
     successAccessStatus === "checked" &&
     successAccessAttempts >= 4;
   const successTargetRoute = paymentSuccessRoute(isPaid, isAdmin, successIntent?.next);
@@ -1564,7 +1566,9 @@ function App() {
         `Stripe checkout session id: ${checkoutSessionId}`,
         `Saved room: ${successTargetLabel}`,
         `Saved room route: ${successIntent?.next ?? "app/starter"}`,
-        `Access status on success page: ${hasConfirmedMembershipAccess ? "confirmed" : successAccessStatus}`,
+        `Access status on success page: ${
+          hasConfirmedPaidMembershipAccess ? "paid subscription confirmed" : hasAdminOnlyWorkspaceAccess ? "admin override only - not paid proof" : successAccessStatus
+        }`,
         "Next proof needed: match this session to billing_webhook_events, customer_subscriptions, stripe_event_id, stripe_session_id, and stripe_subscription_id for the same Student account.",
         "Admin override does not count as paid proof."
       ].join("\n")
@@ -1577,10 +1581,10 @@ function App() {
       stripeSessionId: checkoutSessionId,
       savedRoomRoute: successIntent?.next ?? "app/starter",
       savedRoomLabel: successTargetLabel,
-      accessStatus: hasConfirmedMembershipAccess ? "confirmed" : successAccessStatus,
+      accessStatus: hasConfirmedPaidMembershipAccess ? "paid_subscription_confirmed" : hasAdminOnlyWorkspaceAccess ? "admin_override_not_paid_proof" : successAccessStatus,
       proofNote: successProofNote
     });
-  }, [checkoutSessionId, hasConfirmedMembershipAccess, route, successAccessStatus, successIntent?.next, successProofNote, successTargetLabel]);
+  }, [checkoutSessionId, hasAdminOnlyWorkspaceAccess, hasConfirmedPaidMembershipAccess, route, successAccessStatus, successIntent?.next, successProofNote, successTargetLabel]);
 
   const copySuccessCheckoutReference = async () => {
     if (!checkoutSessionId) return;
@@ -1802,8 +1806,10 @@ function App() {
             <p className="checkout-eyebrow">Checkout Return</p>
             <h1>Membership Checkout Complete</h1>
             <p>
-              {hasConfirmedMembershipAccess
+              {hasConfirmedPaidMembershipAccess
                 ? "Your membership access is active. The saved room is ready."
+                : hasAdminOnlyWorkspaceAccess
+                  ? "This Admin account can open rooms, but first-dollar proof still needs a Student account with active subscription access."
                 : "Your signed-in account is being updated. A short Stripe sync delay can happen; refresh access or use membership help if the room is not open yet."}
             </p>
             <div className="checkout-direct-status" role="status" aria-live="polite">
@@ -1813,8 +1819,10 @@ function App() {
                   ? "Access refresh did not complete. Try again or request membership help."
                   : successAccessStatus === "waiting"
                     ? "Waiting for Stripe to finish syncing membership access..."
-                  : hasConfirmedMembershipAccess
-                    ? "Access confirmed."
+                  : hasConfirmedPaidMembershipAccess
+                    ? "Paid subscription access confirmed."
+                  : hasAdminOnlyWorkspaceAccess
+                    ? "Admin override is visible; do not count this as paid subscriber proof."
                     : successAccessRetryLimitReached
                       ? "Access is not confirmed yet. Refresh again or open Membership Help with the checkout reference."
                     : successAccessAttempts > 1
@@ -1822,7 +1830,7 @@ function App() {
                       : "Checkout return received; access may still be processing."}
               {checkoutSessionId ? ` Session: ${checkoutSessionId.slice(0, 18)}...` : ""}
             </div>
-            {!hasConfirmedMembershipAccess && successAccessStatus === "waiting" && successAccessAttempts < 4 ? (
+            {!hasConfirmedPaidMembershipAccess && !hasAdminOnlyWorkspaceAccess && successAccessStatus === "waiting" && successAccessAttempts < 4 ? (
               <p className="checkout-auto-refresh-note" role="status">
                 Sipopedia will recheck access automatically for a few seconds. You can also refresh manually or open Membership Help.
               </p>
@@ -1854,11 +1862,15 @@ function App() {
               </span>
               <span>
                 <strong>Access check</strong>
-                {hasConfirmedMembershipAccess ? "Billing status confirms membership access." : "Waiting for billing status to confirm access."}
+                {hasConfirmedPaidMembershipAccess
+                  ? "Billing status confirms membership access."
+                  : hasAdminOnlyWorkspaceAccess
+                    ? "Admin access is separate from paid Student proof."
+                    : "Waiting for billing status to confirm access."}
               </span>
               <span>
                 <strong>Saved room</strong>
-                {hasConfirmedMembershipAccess ? `Next stop: ${successTargetLabel}.` : `${successTargetLabel} stays attached while access updates.`}
+                {hasConfirmedPaidMembershipAccess ? `Next stop: ${successTargetLabel}.` : `${successTargetLabel} stays attached while access updates.`}
               </span>
             </div>
             <div className="checkout-live-proof-cue" aria-label="First-dollar live proof cues">
@@ -1877,13 +1889,13 @@ function App() {
             </div>
           </header>
           <div className="checkout-links">
-            {hasConfirmedMembershipAccess ? (
+            {hasConfirmedPaidMembershipAccess ? (
               <button className="btn btn-primary" onClick={() => navigate(successTargetRoute)}>
                 Open {successTargetLabel}
               </button>
             ) : null}
             <button
-              className={hasConfirmedMembershipAccess ? "btn btn-light" : "btn btn-primary"}
+              className={hasConfirmedPaidMembershipAccess ? "btn btn-light" : "btn btn-primary"}
               onClick={() => {
                 setSuccessAccessStatus("checking");
                 setSuccessAccessAttempts((attempts) => Math.max(attempts, 1) + 1);
@@ -1894,7 +1906,7 @@ function App() {
             >
               Refresh Access
             </button>
-            {!hasConfirmedMembershipAccess ? (
+            {!hasConfirmedPaidMembershipAccess ? (
               <button className="btn btn-light" onClick={() => navigate("app/starter")}>
                 Open Launch Pad
               </button>
