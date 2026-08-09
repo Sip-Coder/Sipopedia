@@ -33,6 +33,7 @@ Homepage should keep proving three buyer outcomes:
 - [ ] Stripe webhook writes or updates `customer_subscriptions` in Supabase.
 - [ ] Paid account receives Student/subscriber access without manual database edits.
 - [ ] Canceled or past-due subscription removes or limits paid access.
+- [ ] Profile roles are limited to Student and Admin; Trial access is issued through `customer_subscriptions.status = 'trialing'`.
 - [ ] Terms, Privacy, Refund, and billing support routes are reachable before checkout.
 - [ ] Assisted Enrollment submits to a support/admin workflow that someone will monitor.
 - [ ] Mobile portrait checkout path is readable from homepage to success.
@@ -50,7 +51,8 @@ Confirm these without exposing secret values in chat, Git, logs, or frontend cod
 - Supabase Edge Function has a safe production return origin for `https://sipopedia.com`.
 - Stripe webhook endpoint is deployed and has its signing secret configured.
 - Stripe product/price matches the public $10/month membership.
-- Supabase roles are limited to Student, Trial, and Admin.
+- Supabase profile roles are limited to Student and Admin.
+- Trial access is represented by a time-boxed subscription record, not a separate profile role.
 
 ## Next Build Priorities
 
@@ -59,3 +61,12 @@ Confirm these without exposing secret values in chat, Git, logs, or frontend cod
 3. Confirm Supabase subscription sync and paid access unlock.
 4. Capture phone screenshots of homepage, pricing, login, checkout, success, and the first paid room.
 5. Only then invite the first real customer or run paid traffic.
+
+## Operator Console
+
+The Admin Console overview includes a first-dollar readiness panel. Use it before inviting a real customer:
+
+- Confirm the public homepage promise and $10/month offer are still clear.
+- Open the smoke-test path: Homepage -> Pricing -> Checkout -> Support -> Paid Room.
+- Treat Stripe checkout and webhook unlock as unproven until a signed-in production test account completes the full loop.
+- Watch Assisted Enrollment/support requests daily while the first customers are being invited.

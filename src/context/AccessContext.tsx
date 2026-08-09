@@ -4,7 +4,7 @@ import { useAuth } from "./AuthContext";
 import { supabase } from "../lib/supabase";
 import { isPrivilegedAdminEmail } from "../lib/adminAccess";
 
-export type AccessRole = "student" | "mentor" | "admin";
+export type AccessRole = "student" | "admin";
 export type AccessTier = "public" | "starter" | "pro" | "founding" | "admin";
 
 export type AccessProfile = {
@@ -83,7 +83,6 @@ function readLocalPreviewAccess(): boolean {
 
 function tierFromRole(role: AccessRole): AccessTier {
   if (role === "admin") return "admin";
-  if (role === "mentor") return "pro";
   return "starter";
 }
 
@@ -97,7 +96,7 @@ function tierFromPlanCode(planCode: string | null | undefined): AccessTier {
 type ProfileRecord = {
   id: string;
   display_name: string | null;
-  role: AccessRole;
+  role: AccessRole | "mentor";
   created_at: string | null;
 };
 
@@ -139,6 +138,10 @@ function mapProfileError(error: PostgrestError): string {
     return "Profile record not found. Sign out and sign in again to trigger profile creation.";
   }
   return error.message;
+}
+
+function normalizeAccessRole(role: ProfileRecord["role"]): AccessRole {
+  return role === "admin" ? "admin" : "student";
 }
 
 export function AccessProvider({ children }: PropsWithChildren) {
@@ -215,7 +218,7 @@ export function AccessProvider({ children }: PropsWithChildren) {
     setProfile({
       id: profileResult.data.id,
       displayName: profileResult.data.display_name,
-      role: profileResult.data.role,
+      role: normalizeAccessRole(profileResult.data.role),
       createdAt: profileResult.data.created_at
     });
     setSubscription(normalizeSubscription(selectSubscriptionRecord(subscriptionResult.data)));
@@ -296,7 +299,7 @@ export function AccessProvider({ children }: PropsWithChildren) {
         setProfile({
           id: profileResult.data.id,
           displayName: profileResult.data.display_name,
-          role: profileResult.data.role,
+          role: normalizeAccessRole(profileResult.data.role),
           createdAt: profileResult.data.created_at
         });
         setSubscription(normalizeSubscription(selectSubscriptionRecord(subscriptionResult.data)));

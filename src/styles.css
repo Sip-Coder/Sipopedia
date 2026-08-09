@@ -19585,6 +19585,126 @@ select option:checked {
     #0f171c;
 }
 
+.admin-overview-grid .admin-launch-readiness-card {
+  flex: 1 1 min(720px, 100%);
+  border-color: rgba(237, 212, 168, 0.28);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(237, 212, 168, 0.1), transparent 34%),
+    linear-gradient(145deg, rgba(8, 35, 43, 0.82), rgba(4, 13, 24, 0.92));
+}
+
+.admin-overview-grid .admin-launch-metric-card {
+  flex: 0 1 220px;
+}
+
+.admin-launch-readiness-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-launch-readiness-head h3 {
+  margin-bottom: 0.4rem;
+}
+
+.admin-launch-readiness-head > span {
+  min-width: 86px;
+  border: 1px solid rgba(237, 212, 168, 0.34);
+  border-radius: 12px;
+  padding: 0.55rem 0.65rem;
+  background: rgba(237, 212, 168, 0.08);
+  color: #f1ddb0;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1.05;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.admin-launch-readiness-head strong {
+  display: block;
+  color: #fff2d3;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.admin-launch-check-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+
+.admin-launch-check {
+  display: grid;
+  gap: 0.28rem;
+  min-width: 0;
+  border: 1px solid rgba(159, 218, 245, 0.18);
+  border-radius: 12px;
+  padding: 0.72rem;
+  background: rgba(4, 13, 24, 0.56);
+}
+
+.admin-launch-check span {
+  width: fit-content;
+  border: 1px solid rgba(159, 218, 245, 0.22);
+  border-radius: 999px;
+  padding: 0.18rem 0.42rem;
+  color: #bfe1ee;
+  font-size: 0.58rem;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.admin-launch-check strong {
+  color: #fff2d3;
+  line-height: 1.2;
+}
+
+.admin-launch-check small {
+  color: #a8cad7;
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.admin-launch-check.status-ready {
+  border-color: rgba(80, 220, 171, 0.32);
+  background: linear-gradient(145deg, rgba(21, 92, 75, 0.28), rgba(4, 13, 24, 0.58));
+}
+
+.admin-launch-check.status-ready span {
+  border-color: rgba(80, 220, 171, 0.42);
+  color: #9df0ce;
+}
+
+.admin-launch-check.status-needs-proof {
+  border-color: rgba(237, 212, 168, 0.38);
+  background: linear-gradient(145deg, rgba(124, 88, 36, 0.26), rgba(4, 13, 24, 0.58));
+}
+
+.admin-launch-check.status-needs-proof span {
+  border-color: rgba(237, 212, 168, 0.46);
+  color: #f1ddb0;
+}
+
+.admin-launch-check.status-operator {
+  border-color: rgba(159, 218, 245, 0.32);
+}
+
+.admin-launch-smoke-path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+}
+
+.admin-launch-smoke-path .btn {
+  min-height: 42px;
+  padding-inline: 0.9rem;
+}
+
 .admin-operations-alert-header {
   display: flex;
   justify-content: space-between;
@@ -20685,6 +20805,7 @@ select option:checked {
   .pricing-intent-ribbon,
   .pricing-proof-strip,
   .pricing-buyer-fit-grid,
+  .admin-launch-check-grid,
   .checkout-intent-ribbon,
   .checkout-safety-strip,
   .checkout-result-proof,
@@ -20704,6 +20825,7 @@ select option:checked {
 @media (max-width: 960px) and (orientation: landscape) {
   .pricing-proof-strip,
   .pricing-buyer-fit-grid,
+  .admin-launch-check-grid,
   .checkout-safety-strip,
   .checkout-result-proof {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -20724,6 +20846,7 @@ select option:checked {
 
   .pricing-proof-strip span,
   .pricing-buyer-fit-grid article,
+  .admin-launch-check,
   .checkout-safety-strip span,
   .checkout-result-proof span {
     padding: 0.62rem;
@@ -20732,6 +20855,38 @@ select option:checked {
   .pricing-buyer-fit-grid p {
     font-size: 0.82rem;
     line-height: 1.34;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-overview-group {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-overview-group-label {
+    align-self: start;
+    margin-bottom: -0.2rem;
+  }
+
+  .admin-overview-grid .admin-card {
+    flex-basis: 100%;
+  }
+
+  .admin-launch-readiness-head {
+    display: grid;
+  }
+
+  .admin-launch-readiness-head > span {
+    justify-self: start;
+  }
+
+  .admin-launch-smoke-path {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-launch-smoke-path .btn {
+    width: 100%;
   }
 }
 

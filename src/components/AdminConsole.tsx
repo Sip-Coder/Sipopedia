@@ -32,14 +32,16 @@ type AdminConsoleProps = {
 type UserRow = {
   id: string;
   display_name: string | null;
-  role: "student" | "mentor" | "admin";
+  role: "student" | "admin" | "mentor";
   created_at: string | null;
 };
 
+type EditableUserRole = "student" | "admin";
+
 const adminRoleLabels: Record<UserRow["role"], string> = {
-  student: "student (subscription)",
-  mentor: "investor (contribution)",
-  admin: "admin"
+  student: "student",
+  admin: "admin",
+  mentor: "legacy mentor - convert to student"
 };
 
 type DashboardStats = {
@@ -59,6 +61,17 @@ type SubscriptionRow = {
   updated_at: string;
 };
 
+type LaunchReadinessCheck = {
+  label: string;
+  status: "ready" | "needs-proof" | "operator";
+  detail: string;
+};
+
+type LaunchSmokeStep = {
+  label: string;
+  route: string;
+};
+
 type SocialPlatformKey = "instagram" | "facebook" | "linkedin" | "x" | "tiktok" | "youtube";
 
 type SocialPlatform = {
@@ -70,6 +83,47 @@ type SocialPlatform = {
 };
 
 const defaultStats: DashboardStats = { profiles: 0, terms: 0, notes: 0, subscriptions: 0 };
+
+const launchReadinessChecks: LaunchReadinessCheck[] = [
+  {
+    label: "Public promise",
+    status: "ready",
+    detail: "Homepage previews explain the visual academy before payment."
+  },
+  {
+    label: "Simple offer",
+    status: "ready",
+    detail: "$10/month membership, account-first checkout, and assisted enrollment are visible."
+  },
+  {
+    label: "Access model",
+    status: "ready",
+    detail: "Profiles use Student/Admin; trials and paid access live on subscription records."
+  },
+  {
+    label: "Stripe smoke test",
+    status: "needs-proof",
+    detail: "Run production checkout with a signed-in test account and confirm Stripe return."
+  },
+  {
+    label: "Webhook unlock",
+    status: "needs-proof",
+    detail: "Confirm Stripe webhook writes customer_subscriptions and unlocks the paid room."
+  },
+  {
+    label: "Human rescue path",
+    status: "operator",
+    detail: "Review assisted enrollment/support inbox daily before inviting the first paid users."
+  }
+];
+
+const launchSmokeSteps: LaunchSmokeStep[] = [
+  { label: "Homepage", route: "home" },
+  { label: "Pricing", route: "pricing" },
+  { label: "Checkout", route: "checkout" },
+  { label: "Support", route: "support" },
+  { label: "Paid Room", route: "app/btg" }
+];
 
 const socialPlatforms: SocialPlatform[] = [
   { id: "instagram", label: "Instagram", handle: "@sipstudies", postType: "Feed, Reel, Story", limit: 2200 },
@@ -244,12 +298,15 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   );
 
   const roleCounts = useMemo(() => {
-    const counts = { student: 0, mentor: 0, admin: 0 };
-    for (const user of users) counts[user.role] += 1;
+    const counts = { student: 0, admin: 0 };
+    for (const user of users) {
+      if (user.role === "admin") counts.admin += 1;
+      else counts.student += 1;
+    }
     return counts;
   }, [users]);
 
-  const updateRole = async (id: string, role: "student" | "mentor" | "admin") => {
+  const updateRole = async (id: string, role: EditableUserRole) => {
     if (!supabase) return;
     if (!isAdmin) {
       setError("Admin access required.");
@@ -287,6 +344,10 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
   const selectedPlatformLabels = socialPlatforms
     .filter((platform) => targetPlatforms[platform.id])
     .map((platform) => platform.label);
+  const activeSubscriptionCount = subscriptions.filter((subscription) =>
+    subscription.status === "trialing" || subscription.status === "active" || subscription.status === "past_due"
+  ).length;
+  const launchNeedsProofCount = launchReadinessChecks.filter((check) => check.status === "needs-proof").length;
   const beverageNewsNeedsAttention =
     beverageNewsHealth !== null &&
     isBeverageNewsHealthFresh(beverageNewsHealth) &&
@@ -559,7 +620,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                 <p className="admin-metric">{stats.profiles}</p>
                 <div className="admin-stat-subpills" aria-label="Audience by role">
                   <span><strong>{roleCounts.student}</strong> Students</span>
-                  <span><strong>{roleCounts.mentor}</strong> Investors</span>
+                  <span><strong>{subscriptions.filter((subscription) => subscription.status === "trialing").length}</strong> Trials</span>
                   <span><strong>{roleCounts.admin}</strong> Admins</span>
                 </div>
               </article>
@@ -601,6 +662,49 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                   <span><strong>{siteMapCounts.statuses.edit}</strong> Edit</span>
                   <span><strong>{siteMapCounts.statuses.off}</strong> Off</span>
                 </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="admin-overview-group" aria-label="First dollar readiness">
+            <p className="admin-overview-group-label">Launch:</p>
+            <div className="admin-overview-grid">
+              <article className="admin-card admin-launch-readiness-card">
+                <div className="admin-launch-readiness-head">
+                  <div>
+                    <p className="admin-eyebrow">First-dollar readiness</p>
+                    <h3>Ready to test, not ready to sell blind.</h3>
+                  </div>
+                  <span>
+                    <strong>{launchNeedsProofCount}</strong>
+                    proofs left
+                  </span>
+                </div>
+                <p>
+                  The product story and checkout path are in place. Before a real customer pays, run one production
+                  smoke test that proves login, Stripe, webhook sync, and paid access all connect.
+                </p>
+                <div className="admin-launch-check-grid" aria-label="First dollar launch checks">
+                  {launchReadinessChecks.map((check) => (
+                    <div className={`admin-launch-check status-${check.status}`} key={check.label}>
+                      <span>{check.status === "ready" ? "Ready" : check.status === "needs-proof" ? "Needs proof" : "Operator"}</span>
+                      <strong>{check.label}</strong>
+                      <small>{check.detail}</small>
+                    </div>
+                  ))}
+                </div>
+                <div className="admin-launch-smoke-path" aria-label="Production smoke test path">
+                  {launchSmokeSteps.map((step) => (
+                    <button className="btn btn-light" type="button" key={step.label} onClick={() => onNavigate(step.route)}>
+                      {step.label}
+                    </button>
+                  ))}
+                </div>
+              </article>
+              <article className="admin-card admin-launch-metric-card">
+                <p className="admin-eyebrow">Entitlements</p>
+                <p className="admin-metric">{activeSubscriptionCount}</p>
+                <small>Trialing, active, or past-due records that currently unlock paid workspace access.</small>
               </article>
             </div>
           </section>
@@ -960,8 +1064,8 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
       {activeTab === "access" ? (
         <article className="admin-card">
           <h3>User Access Control</h3>
-          <p>Use visitor for unauthenticated/public users, student for subscription access, investor for contribution access, and admin for back-office privileges.</p>
-          <p className="hint">Visitor is public/no profile role needed.</p>
+          <p>Keep profile roles simple: student for learners and admin for back-office privileges. Trial access lives in subscription status, not a profile role.</p>
+          <p className="hint">Visitor is public/no profile role needed. Trialing, active, and past-due subscription records can unlock the paid workspace.</p>
           <div className="admin-user-table">
             <table>
               <thead>
@@ -979,9 +1083,8 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                     <td>{adminRoleLabels[user.role]}</td>
                     <td>{user.created_at ? new Date(user.created_at).toLocaleDateString() : "-"}</td>
                     <td>
-                      <select value={user.role} onChange={(event) => void updateRole(user.id, event.target.value as UserRow["role"])}>
-                        <option value="student">student (subscription)</option>
-                        <option value="mentor">investor (contribution)</option>
+                      <select value={user.role === "mentor" ? "student" : user.role} onChange={(event) => void updateRole(user.id, event.target.value as EditableUserRole)}>
+                        <option value="student">student</option>
                         <option value="admin">admin</option>
                       </select>
                     </td>
