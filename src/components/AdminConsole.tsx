@@ -142,6 +142,13 @@ type LaunchSupportProbeRow = {
 
 const launchSmokeStorageKey = "sipstudies:first-dollar-smoke:v1";
 const launchProofDetailsStorageKey = "sipstudies:first-dollar-proof-details:v1";
+const launchProofEvidenceMinLength = 12;
+const launchProofEmailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const launchProofCheckoutSessionRe = /^cs_(?:test|live)_[a-z0-9_]+$/i;
+const launchProofWebhookEventRe = /^evt_[a-z0-9_]+$/i;
+const launchProofSubscriptionRe =
+  /^(?:sub_[a-z0-9_]+|[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i;
+const launchProofPaidRouteRe = /^app\/[a-z0-9-]+(?:\/[a-z0-9-]+)*$/i;
 const defaultLaunchProofDetails: LaunchProofDetails = {
   testAccountEmail: "",
   stripeSessionId: "",
@@ -271,32 +278,32 @@ function normalizeAdminUserRow(row: RawUserRow): UserRow {
 
 function isLaunchSmokeStepProven(state: LaunchSmokeState, stepId: string): boolean {
   const stepState = state[stepId];
-  return Boolean(stepState?.done && stepState.evidence.trim());
+  return Boolean(stepState?.done && stepState.evidence.trim().length >= launchProofEvidenceMinLength);
 }
 
 function launchSmokeStepGapLabel(state: LaunchSmokeState, step: LaunchSmokeStep): string {
   const stepState = state[step.id];
   if (!stepState?.done) return step.label;
-  if (!stepState.evidence.trim()) return `${step.label} evidence note`;
+  if (stepState.evidence.trim().length < launchProofEvidenceMinLength) return `${step.label} detailed proof note`;
   return step.label;
 }
 
 function launchProofFieldGap(field: LaunchProofField, value: string): LaunchProofFieldGap | null {
   const trimmed = value.trim();
   if (!trimmed) return { label: field.label, reason: "Missing" };
-  if (field.field === "testAccountEmail" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+  if (field.field === "testAccountEmail" && !launchProofEmailRe.test(trimmed)) {
     return { label: field.label, reason: "Needs a valid email" };
   }
-  if (field.field === "stripeSessionId" && !trimmed.startsWith("cs_")) {
-    return { label: field.label, reason: "Needs a Stripe Checkout session id" };
+  if (field.field === "stripeSessionId" && !launchProofCheckoutSessionRe.test(trimmed)) {
+    return { label: field.label, reason: "Needs a full cs_test_ or cs_live_ session id" };
   }
-  if (field.field === "webhookEventId" && !trimmed.startsWith("evt_")) {
-    return { label: field.label, reason: "Needs a Stripe webhook event id" };
+  if (field.field === "webhookEventId" && !launchProofWebhookEventRe.test(trimmed)) {
+    return { label: field.label, reason: "Needs a full Stripe evt_ id" };
   }
-  if (field.field === "subscriptionReference" && trimmed.length < 8) {
-    return { label: field.label, reason: "Needs the subscription row or Stripe subscription reference" };
+  if (field.field === "subscriptionReference" && !launchProofSubscriptionRe.test(trimmed)) {
+    return { label: field.label, reason: "Needs a customer_subscriptions UUID or Stripe sub_ id" };
   }
-  if (field.field === "paidRoomRoute" && !trimmed.startsWith("app/")) {
+  if (field.field === "paidRoomRoute" && !launchProofPaidRouteRe.test(trimmed)) {
     return { label: field.label, reason: "Needs an app route like app/btg" };
   }
   return null;
@@ -1531,7 +1538,7 @@ export function AdminConsole({ onNavigate }: AdminConsoleProps) {
                           placeholder={step.evidencePrompt}
                           rows={2}
                         />
-                        {stepState.done && !stepIsProven ? <small className="hint">Add a proof note before this counts as proven.</small> : null}
+                        {stepState.done && !stepIsProven ? <small className="hint">Add a specific proof note before this counts as proven.</small> : null}
                       </article>
                     );
                   })}

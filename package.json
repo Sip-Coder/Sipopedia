@@ -17,7 +17,7 @@
     "smoke:routes": "node scripts/smoke-routes.mjs",
     "assets:check": "node scripts/lfs-pointer-guard.mjs dist/starter-thumbs",
     "test:security": "node --test scripts/guard-secrets.test.mjs",
-    "test:navigation": "node --experimental-strip-types --test scripts/navigation-policy.test.mjs scripts/site-map-order.test.mjs",
+    "test:navigation": "node --experimental-strip-types --test scripts/navigation-policy.test.mjs scripts/site-map-order.test.mjs scripts/first-dollar-readiness.test.mjs",
     "test:btg:voices": "node --experimental-strip-types --test scripts/beyond-the-glass-voice-selection.test.mjs",
     "qa:btg:mobile": "node scripts/beyond-the-glass-mobile-qa.mjs",
     "qa:btg:responsive": "node --experimental-strip-types scripts/beyond-the-glass-responsive-qa.mjs",

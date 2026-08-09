@@ -58,6 +58,7 @@ import {
   updateCloudTeamAssignmentCompletion,
   type TeamTrainingPlan
 } from "../lib/teamPlanner";
+import { workspaceLabelForRoute } from "../lib/workspaceNavigation";
 
 type SupportCenterProps = {
   onNavigate: (route: string) => void;
@@ -164,8 +165,10 @@ function readSupportRouteContext(): SupportRouteContext {
   const source = params.get("source") ?? "";
   const laneId = normalizeSupportLane(params.get("lane"));
   const urgency = normalizeSupportUrgency(params.get("urgency"));
-  const destination = params.get("next")?.replace(/^app\//, "").replace(/-/g, " ") ?? "";
+  const destinationRoute = params.get("next") ?? "";
+  const destination = workspaceLabelForRoute(destinationRoute) ?? destinationRoute.replace(/^app\//, "").replace(/-/g, " ");
   const checkoutSessionId = params.get("session_id")?.trim() ?? "";
+  const billingStatus = params.get("billing_status")?.trim() ?? "";
   const supportTemplates: Record<string, Pick<SupportRouteContext, "subject" | "message" | "urgency">> = {
     "checkout-success": {
       urgency: "urgent",
@@ -202,6 +205,7 @@ function readSupportRouteContext(): SupportRouteContext {
       message: [
         "A paid room is still locked and my subscription needs attention.",
         destination ? `Saved room: ${destination}.` : "Saved room: not sure.",
+        billingStatus ? `Visible subscription status: ${billingStatus}.` : "Visible subscription status: not shown.",
         "Please help me reconnect billing status to the correct account or restart membership safely."
       ].join("\n")
     },

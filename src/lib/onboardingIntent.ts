@@ -83,19 +83,24 @@ export function buildMembershipSupportRoute({
   source,
   next,
   sessionId,
-  urgency = "soon"
+  urgency = "soon",
+  lane = "enrollment",
+  billingStatus
 }: {
   source: string;
   next?: string | null;
   sessionId?: string | null;
   urgency?: "normal" | "soon" | "urgent";
+  lane?: "enrollment" | "billing";
+  billingStatus?: string | null;
 }): string {
   const params = new URLSearchParams({
-    lane: "enrollment",
+    lane,
     source,
     urgency
   });
   if (next) params.set("next", next);
   if (sessionId) params.set("session_id", sessionId);
+  if (billingStatus) params.set("billing_status", billingStatus);
   return `support?${params.toString()}`;
 }

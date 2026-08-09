@@ -29,7 +29,9 @@ export function PaywallPanel({ onNavigate, postLoginRoute, pageStatuses }: Paywa
   const membershipSupportRoute = buildMembershipSupportRoute({
     source: needsBillingRecovery ? "paywall-billing-recovery" : "paywall-help",
     urgency: needsBillingRecovery ? "urgent" : "soon",
-    next: nextRoute
+    lane: needsBillingRecovery ? "billing" : "enrollment",
+    next: nextRoute,
+    billingStatus: needsBillingRecovery ? subscription?.status : null
   });
   const localPreviewAvailable =
     typeof window !== "undefined" && ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);

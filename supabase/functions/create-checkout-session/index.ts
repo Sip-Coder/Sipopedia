@@ -21,6 +21,8 @@ type PlanConfig = {
 
 const STRIPE_API_VERSION = "2026-02-25.clover";
 const CANONICAL_APP_ORIGIN = "https://sipopedia.com";
+const SAFE_CHECKOUT_SOURCE_RE = /^[a-z0-9][a-z0-9:_-]{0,64}$/i;
+const SAFE_CHECKOUT_NEXT_RE = /^(?:app\/[a-z0-9-]+(?:\/[a-z0-9-]+)*|home|starter)$/i;
 const BUILT_IN_ALLOWED_ORIGINS = [
   CANONICAL_APP_ORIGIN,
   "https://www.sipopedia.com",
@@ -107,6 +109,17 @@ function json(request: Request, status: number, body: Record<string, unknown>) {
 function cleanMetadataValue(value: string | null | undefined, fallback: string): string {
   const cleaned = (value ?? "").trim();
   return (cleaned || fallback).slice(0, 500);
+}
+
+function cleanCheckoutSource(value: string | null | undefined): string {
+  const cleaned = cleanMetadataValue(value, "checkout").slice(0, 65);
+  return SAFE_CHECKOUT_SOURCE_RE.test(cleaned) ? cleaned : "checkout";
+}
+
+function cleanCheckoutNext(value: string | null | undefined): string | null {
+  const cleaned = (value ?? "").replace(/^#+/, "").split("?")[0].trim();
+  if (!cleaned) return null;
+  return SAFE_CHECKOUT_NEXT_RE.test(cleaned) ? cleaned : "app/launch";
 }
 
 function getBearerToken(request: Request): string {
@@ -303,8 +316,8 @@ Deno.serve(async (request) => {
     return json(request, 400, { error: "Unsupported checkout plan." });
   }
 
-  const source = cleanMetadataValue(payload.source, "checkout");
-  const next = payload.next === null || payload.next === undefined ? null : cleanMetadataValue(payload.next, "app/launch");
+  const source = cleanCheckoutSource(payload.source);
+  const next = cleanCheckoutNext(payload.next);
   const result = await createStripeCheckoutSession({ request, plan, user, source, next });
   return json(request, result.status, result.body);
 });

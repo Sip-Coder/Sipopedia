@@ -63,7 +63,8 @@ When a visitor chooses a preview room from the homepage hero or customer cards, 
 - [ ] Success and cancel recovery buttons route membership help to Support with enrollment context prefilled.
 - [ ] Success-page Membership Help includes the Stripe checkout session id when Stripe returns it.
 - [ ] Checkout, success, and cancel Membership Help routes use the same enrollment-support builder so saved room and session evidence do not drift.
-- [ ] Locked paid rooms route billing-recovery help to Support with the saved room attached when a subscription is past-due, unpaid, incomplete, or canceled.
+- [ ] Locked paid rooms route billing-recovery help to the Billing support lane with the saved room and visible subscription status attached when a subscription is past-due, unpaid, incomplete, or canceled.
+- [ ] Checkout server code sanitizes saved source and destination routes before creating Stripe metadata, success URLs, or cancel URLs.
 - [ ] Stripe webhook writes or updates `customer_subscriptions` in Supabase.
 - [ ] Paid account receives Student/subscriber access without manual database edits.
 - [ ] Canceled or past-due subscription removes paid-room access unless a new active or trialing subscription is present.
@@ -110,7 +111,8 @@ The Admin Console overview includes a first-dollar readiness panel. Use it befor
 - Open the smoke-test path: Homepage -> Pricing -> Trust Links -> Checkout -> Success -> Cancel Recovery -> Paid Room -> Support.
 - Mark each smoke-test item only after a real production check proves it.
 - Add a short proof note for each step; checked items without notes remain missing from the launch-ready count.
-- Fill in the Stripe + access proof fields with plausible live evidence: valid test account email, `cs_` Stripe session id, `evt_` webhook event id, subscription reference, and paid `app/...` route.
+- Add specific proof notes, not placeholder text; each checked smoke-test item should name what was observed.
+- Fill in the Stripe + access proof fields with plausible live evidence: valid test account email, full `cs_test_...` or `cs_live_...` Stripe Checkout session id, full `evt_...` webhook event id, a `sub_...` Stripe subscription id or `customer_subscriptions` UUID, and paid `app/...` route.
 - Run the connection probe and confirm subscription checks show safe counts, webhook/session metadata when available, and support checks find at least one Enrollment request with latest status metadata.
 - After the real checkout, rerun the connection probe and confirm it prefills or displays the latest `cs_`, `evt_`, and subscription proof from `customer_subscriptions.metadata`.
 - Review the proof-gaps panel and the downloaded Missing Proof Checklist; do not invite paid traffic while any gap is still marked missing.
@@ -135,6 +137,7 @@ Run this once, in order, from production before inviting a real buyer:
 10. Open the saved paid room and verify access comes from an active or trialing subscription status, not a manual profile role edit.
 11. Confirm a canceled or past-due subscription record does not keep paid-room access open.
 12. Use Membership Help from the locked-room paywall once and confirm Support opens with billing-recovery context and the saved room.
+    If the blocked account has a `past_due`, `unpaid`, `incomplete`, or `canceled` subscription status, confirm Support opens the Billing lane and includes that status in the request details.
 13. Use Membership Help from cancel once and confirm Support opens the Enrollment lane with the checkout context prefilled.
 14. Mark the Admin Console smoke-test items only after the live proof is captured.
 15. Download the Admin proof log and keep it with the first-customer launch notes.
