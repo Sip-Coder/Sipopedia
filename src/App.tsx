@@ -1709,12 +1709,13 @@ function App() {
       {route === "refund" ? <PolicyPage kind="refund" onNavigate={navigateFromString} /> : null}
       {route === "success" ? (
         <section className="checkout-page">
-          <header className="section-header">
+          <header className="section-header checkout-result-hero">
+            <p className="checkout-eyebrow">Checkout Return</p>
             <h1>Membership Checkout Complete</h1>
             <p>
               {isPaid || isAdmin
                 ? "Your membership access is active. The saved room is ready."
-                : "Your signed-in account is being updated. If webhook delivery is still pending, refresh access or use membership help."}
+                : "Your signed-in account is being updated. A short Stripe sync delay can happen; refresh access or use membership help if the room is not open yet."}
             </p>
             <div className="checkout-direct-status" role="status" aria-live="polite">
               {successAccessStatus === "checking"
@@ -1725,6 +1726,20 @@ function App() {
                     ? "Access confirmed."
                     : "Checkout return received; access may still be processing."}
               {checkoutSessionId ? ` Session: ${checkoutSessionId.slice(0, 18)}...` : ""}
+            </div>
+            <div className="checkout-result-proof" aria-label="Checkout completion status">
+              <span>
+                <strong>Payment return</strong>
+                Stripe sent this session back to Sipopedia.
+              </span>
+              <span>
+                <strong>Access check</strong>
+                Your account refreshes against billing status.
+              </span>
+              <span>
+                <strong>Saved room</strong>
+                Next stop: {successTargetLabel}.
+              </span>
             </div>
           </header>
           <div className="checkout-links">
@@ -1750,9 +1765,27 @@ function App() {
       ) : null}
       {route === "cancel" ? (
         <section className="checkout-page">
-          <header className="section-header">
+          <header className="section-header checkout-result-hero">
+            <p className="checkout-eyebrow">Checkout Recovery</p>
             <h1>Membership Checkout Canceled</h1>
-            <p>No charge was applied. Your account step and saved destination are still preserved, so you can retry the $10/month membership checkout or ask for help without losing context.</p>
+            <p>
+              No charge was applied. Your account step and saved destination are still preserved, so you can retry the
+              $10/month membership checkout or ask for help without losing context.
+            </p>
+            <div className="checkout-result-proof" aria-label="Canceled checkout status">
+              <span>
+                <strong>No charge</strong>
+                Payment was not completed.
+              </span>
+              <span>
+                <strong>Route saved</strong>
+                The intended room remains attached.
+              </span>
+              <span>
+                <strong>Safe retry</strong>
+                Restart checkout or review details first.
+              </span>
+            </div>
           </header>
           <div className="checkout-links">
             <button className="btn btn-primary" onClick={() => navigateFromString(checkoutRecoveryRoute)}>

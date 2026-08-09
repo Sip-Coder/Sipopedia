@@ -21,6 +21,18 @@ const checkoutSteps = [
   { label: "Launch", detail: "Enter workspace" }
 ];
 
+const checkoutSafetySignals = [
+  { label: "Account first", detail: "Access attaches to the signed-in learner." },
+  { label: "Stripe hosted", detail: "Payment details stay with secure checkout." },
+  { label: "Route saved", detail: "Return to the room that brought you here." }
+];
+
+const checkoutFallbackProof = [
+  "No card form appears inside Sipopedia.",
+  "Assisted Enrollment captures your goal if checkout cannot start.",
+  "Terms, Privacy, Refund, and Support stay available before payment."
+];
+
 export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
   const { user, isConfigured: isAuthConfigured } = useAuth();
   const initialIntent = useMemo(() => readOnboardingIntent("pro"), []);
@@ -145,6 +157,14 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
             {nextRouteLabel}
           </span>
         </div>
+        <div className="checkout-safety-strip" aria-label="Checkout safety signals">
+          {checkoutSafetySignals.map((signal) => (
+            <span key={signal.label}>
+              <strong>{signal.label}</strong>
+              {signal.detail}
+            </span>
+          ))}
+        </div>
       </header>
 
       <ol className="checkout-stage-list" aria-label="Enrollment steps">
@@ -210,7 +230,10 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
         <article className="checkout-card checkout-card-accent">
           <p className="checkout-eyebrow">Fast path</p>
           <h3>Secure Checkout Session</h3>
-          <p>When your account is attached, Sip Studies creates a server-side Stripe Checkout Session for the $10 monthly membership.</p>
+          <p>
+            When your account is attached, Sip Studies creates a server-side Stripe Checkout Session for the $10 monthly
+            membership and sends you to Stripe to finish payment.
+          </p>
           {!user ? (
             <>
               <p className="checkout-direct-status" role="status">Complete the Account step above before opening secure checkout.</p>
@@ -295,6 +318,11 @@ export function CheckoutPage({ onNavigate }: CheckoutPageProps) {
             Sip Studies keeps the membership, original CTA, and intended destination together so new users do not lose context and returning
             users can resume the room they tried to enter.
           </p>
+          <ul className="checkout-fallback-proof">
+            {checkoutFallbackProof.map((proof) => (
+              <li key={proof}>{proof}</li>
+            ))}
+          </ul>
         </article>
       </div>
 

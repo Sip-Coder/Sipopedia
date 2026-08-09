@@ -16459,6 +16459,82 @@ select option:checked {
   text-transform: uppercase;
 }
 
+.pricing-proof-strip {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0.35rem auto 0;
+  width: min(100%, 760px);
+}
+
+.pricing-proof-strip span {
+  border: 1px solid rgba(159, 218, 245, 0.24);
+  border-radius: 14px;
+  background: rgba(2, 18, 28, 0.68);
+  color: rgba(225, 249, 246, 0.86);
+  display: grid;
+  gap: 0.18rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
+  padding: 0.72rem 0.8rem;
+}
+
+.pricing-proof-strip strong {
+  color: #f4d9a2;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pricing-buyer-fit {
+  border: 1px solid rgba(159, 218, 245, 0.22);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(75, 205, 198, 0.12), transparent 34%),
+    rgba(1, 18, 28, 0.72);
+  box-shadow: 0 18px 40px rgba(0, 8, 18, 0.24);
+  display: grid;
+  gap: 1rem;
+  margin: 0 auto 1rem;
+  padding: clamp(1rem, 2vw, 1.4rem);
+  width: min(100%, 980px);
+}
+
+.pricing-buyer-fit h2,
+.pricing-buyer-fit h3 {
+  margin: 0;
+  color: #fff1d1;
+}
+
+.pricing-buyer-fit h2 {
+  font-size: clamp(1.35rem, 2.5vw, 2rem);
+  line-height: 1.08;
+}
+
+.pricing-buyer-fit-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.pricing-buyer-fit-grid article {
+  border: 1px solid rgba(237, 212, 168, 0.24);
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(10, 84, 77, 0.48), rgba(3, 18, 28, 0.74));
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.95rem;
+}
+
+.pricing-buyer-fit-grid p {
+  margin: 0;
+  color: rgba(217, 247, 255, 0.8);
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
 .pricing-route-builder {
   border: 1px solid rgba(159, 218, 245, 0.2);
   border-radius: 22px;
@@ -18886,6 +18962,17 @@ select option:checked {
   box-shadow: 0 24px 70px rgba(0, 8, 18, 0.28);
 }
 
+.checkout-result-hero {
+  border: 1px solid rgba(237, 212, 168, 0.26);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(237, 212, 168, 0.16), transparent 36%),
+    radial-gradient(circle at 92% 10%, rgba(102, 199, 183, 0.14), transparent 34%),
+    linear-gradient(145deg, rgba(5, 15, 27, 0.9), rgba(10, 35, 46, 0.76));
+  padding: clamp(1.2rem, 3vw, 2rem);
+  box-shadow: 0 22px 58px rgba(0, 8, 18, 0.24);
+}
+
 .checkout-hero h1 {
   max-width: 760px;
   color: #fff1d1;
@@ -18923,6 +19010,63 @@ select option:checked {
   color: rgba(237, 212, 168, 0.92);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.checkout-safety-strip {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 0.72rem;
+  width: min(100%, 760px);
+}
+
+.checkout-safety-strip span {
+  border: 1px solid rgba(237, 212, 168, 0.24);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(10, 84, 77, 0.42), rgba(3, 18, 28, 0.68));
+  color: rgba(225, 249, 246, 0.86);
+  display: grid;
+  gap: 0.16rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
+  padding: 0.7rem 0.78rem;
+}
+
+.checkout-safety-strip strong {
+  color: #f4d9a2;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.checkout-result-proof {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 0.85rem;
+  width: min(100%, 820px);
+}
+
+.checkout-result-proof span {
+  border: 1px solid rgba(159, 218, 245, 0.24);
+  border-radius: 14px;
+  background: rgba(2, 18, 28, 0.68);
+  color: rgba(225, 249, 246, 0.86);
+  display: grid;
+  gap: 0.18rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.28;
+  padding: 0.72rem 0.8rem;
+}
+
+.checkout-result-proof strong {
+  color: #f4d9a2;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -19119,6 +19263,20 @@ select option:checked {
 .checkout-mini-proof {
   align-content: center;
   border-style: dashed;
+}
+
+.checkout-fallback-proof {
+  display: grid;
+  gap: 0.42rem;
+  margin: 0.82rem 0 0;
+  padding-left: 1.05rem;
+}
+
+.checkout-fallback-proof li {
+  color: rgba(217, 247, 255, 0.82);
+  font-size: 0.9rem;
+  font-weight: 740;
+  line-height: 1.38;
 }
 
 .checkout-field {
@@ -20525,7 +20683,11 @@ select option:checked {
   }
 
   .pricing-intent-ribbon,
+  .pricing-proof-strip,
+  .pricing-buyer-fit-grid,
   .checkout-intent-ribbon,
+  .checkout-safety-strip,
+  .checkout-result-proof,
   .checkout-stage-list {
     grid-template-columns: 1fr;
   }
@@ -20536,6 +20698,40 @@ select option:checked {
 
   .pricing-route-builder-track section::after {
     display: none;
+  }
+}
+
+@media (max-width: 960px) and (orientation: landscape) {
+  .pricing-proof-strip,
+  .pricing-buyer-fit-grid,
+  .checkout-safety-strip,
+  .checkout-result-proof {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .checkout-stage-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .checkout-stage-list li {
+    padding: 0.62rem;
+  }
+
+  .checkout-stage-list small {
+    font-size: 0.72rem;
+    line-height: 1.22;
+  }
+
+  .pricing-proof-strip span,
+  .pricing-buyer-fit-grid article,
+  .checkout-safety-strip span,
+  .checkout-result-proof span {
+    padding: 0.62rem;
+  }
+
+  .pricing-buyer-fit-grid p {
+    font-size: 0.82rem;
+    line-height: 1.34;
   }
 }
 

@@ -9,6 +9,33 @@ type PricingPageProps = {
   onNavigate: (route: string) => void;
 };
 
+const buyerFits = [
+  {
+    title: "Curious beginners",
+    detail: "Start with moving previews, field notes, and plain-language routes before dense study."
+  },
+  {
+    title: "Hospitality staff",
+    detail: "Build confident guest language for wine, beer, spirits, coffee, tea, and service moments."
+  },
+  {
+    title: "Certification prep",
+    detail: "Use Sipopedia beside WSET, CMS, Cicerone, BarSmarts-style, and regional-study work."
+  }
+];
+
+const proofPoints = [
+  { label: "Preview first", value: "Public demos stay open" },
+  { label: "One price", value: "$10 monthly" },
+  { label: "No dead end", value: "Assisted enrollment fallback" }
+];
+
+const launchProof = [
+  "Secure checkout attaches to the signed-in account",
+  "Membership access follows live billing status",
+  "Terms, Privacy, Refund, and Support stay reachable before payment"
+];
+
 export function PricingPage({ onNavigate }: PricingPageProps) {
   const intent = readOnboardingIntent("pro");
   const membership = getPlanById("pro");
@@ -29,8 +56,8 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
         <p className="checkout-eyebrow">One Membership</p>
         <h1>Everything in Sip Studies for $10 per month.</h1>
         <p>
-          One monthly membership unlocks the full Learn, Taste, and Connect
-          workspace. There are no pricing tiers to compare.
+          One monthly membership opens the visual academy: preview first, join once, then keep your saved room attached
+          through checkout.
         </p>
         <div className="pricing-intent-ribbon pricing-intent-ribbon-single" aria-label="Membership checkout context">
           <span>
@@ -42,7 +69,30 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
             {nextRouteLabel}
           </span>
         </div>
+        <div className="pricing-proof-strip" aria-label="Membership proof points">
+          {proofPoints.map((point) => (
+            <span key={point.label}>
+              <strong>{point.label}</strong>
+              {point.value}
+            </span>
+          ))}
+        </div>
       </header>
+
+      <section className="pricing-buyer-fit" aria-label="Who Sip Studies is for">
+        <div>
+          <p className="checkout-eyebrow">Built For First Customers</p>
+          <h2>Start where the learner already is.</h2>
+        </div>
+        <div className="pricing-buyer-fit-grid">
+          {buyerFits.map((fit) => (
+            <article key={fit.title}>
+              <h3>{fit.title}</h3>
+              <p>{fit.detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <div className="pricing-grid pricing-grid-single">
         <article className="pricing-card pricing-card-membership selected">
@@ -77,16 +127,15 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
       </div>
 
       <article className="pricing-compare pricing-membership-note">
-        <h3>Simple access, separate future launches.</h3>
+        <h3>What $10/month unlocks now.</h3>
         <p>
-          Public previews remain available from the Launch Pad. Cohorts, team
-          programs, and future community-funded projects will return as
-          separate launches instead of competing membership tiers.
+          The membership keeps the public preview promise simple: see the product first, then unlock the study rooms
+          without comparing tiers or losing your next destination.
         </p>
         <ul>
-          <li>Private workspace routes unlock after successful checkout</li>
-          <li>Membership access follows live billing status</li>
-          <li>Your intended room remains saved through checkout</li>
+          {launchProof.map((proof) => (
+            <li key={proof}>{proof}</li>
+          ))}
         </ul>
       </article>
 

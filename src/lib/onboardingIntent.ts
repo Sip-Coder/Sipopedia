@@ -23,10 +23,15 @@ export const onboardingPlans: {
     title: "Sip Studies Membership",
     price: "$10",
     cadence: "per month",
-    audience: "Beverage learners and hospitality professionals",
+    audience: "Curious learners, hospitality staff, and visual credential prep",
     checkoutMode: "subscription",
     billingNote: "Billed in USD as a monthly subscription. Cancel or request billing help from the account dashboard.",
-    features: ["Full Sip Academy mission access", "Quiz + terminology workflows", "Journal and tasting practice tools", "Priority support"]
+    features: [
+      "Visual academy routes from source to service",
+      "Sipopedia terms, maps, recipes, and reference lists",
+      "Tasting practice, quiz loops, and guided notes",
+      "Billing, support, and assisted enrollment help"
+    ]
   }
 ];
 
