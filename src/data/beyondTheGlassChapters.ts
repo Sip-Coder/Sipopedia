@@ -91,11 +91,11 @@ const scenes: BeyondTheGlassScene[] = [
   {
     id: "academy-plaza",
     number: "01",
-    title: "Wine Plaza",
+    title: "Wine Campus",
     range: [0, 0.05],
     eyebrow: "Wine Academy hub",
     summary:
-      "The Wine Plaza is the internal hub for the From Rain to First Sip field journey.",
+      "The Wine Campus is the internal hub for the From Rain to First Sip field journey.",
     checkpoint: "Wine journey ready",
     motion: "establish",
     artwork: {
@@ -121,7 +121,7 @@ const scenes: BeyondTheGlassScene[] = [
         speaker: "Sippy",
         durationSeconds: 7,
         text:
-          "Welcome to the Wine Plaza. From here, we follow one drop across vineyard, winery, market, service, and the final table."
+          "Welcome to the Wine Campus. From here, we follow one drop across vineyard, winery, market, service, and the final table."
       }
     ]
   },

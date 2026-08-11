@@ -90,12 +90,12 @@ export const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
   {
     id: "academy-plaza",
     route: "app/academy-plaza",
-    label: "Plaza",
+    label: "Campus",
     section: "learn",
     signal: "Wine academy hub",
-    description: "Revisit the Wine Plaza, meet the field team, and return to the Wine Academy journey.",
-    keywords: ["plaza", "wine plaza", "academy hub", "guides", "wine"],
-    previewBullets: ["Wine hub", "Field team", "Return point"],
+    description: "Revisit the Wine Campus, meet the field team, and return to the Wine Academy journey.",
+    keywords: ["campus", "wine campus", "plaza", "academy hub", "guides", "wine"],
+    previewBullets: ["Wine campus", "Field team", "Return point"],
     previewImage: "/beyond-the-glass/sip-academy-960.webp",
     defaultRoom: "Lobby"
   },

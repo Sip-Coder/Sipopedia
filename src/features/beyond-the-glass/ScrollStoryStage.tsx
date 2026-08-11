@@ -327,7 +327,7 @@ function ReducedMotionStory({ chapter }: ScrollStoryStageProps) {
       {!isWineJourney || sceneIndex > 0 ? (
         <nav aria-label="Academy journey shortcuts" className="btg-reduced__toolbar">
           <button
-            aria-label="Return to the Plaza"
+            aria-label="Return to the Campus"
             className="btg-academy-return"
             onClick={returnToAcademy}
             type="button"
@@ -782,12 +782,12 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
             {activeScene.id !== "academy-plaza" ? (
               <div className="btg-stage__actions">
                 <button
-                  aria-label="Return to the Plaza"
+                  aria-label="Return to the Campus"
                   className="btg-academy-return"
                   onClick={requestAcademy}
                   type="button"
                 >
-                  Plaza
+                  Campus
                 </button>
                 <button
                   aria-label="Return to the Academy map"
@@ -1207,10 +1207,10 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
                 aria-label={
                   sceneIndex === 0
                     ? activeJourneyKey === "wine"
-                      ? "Already at the Plaza"
+                      ? "Already at the Campus"
                       : isDisconnectedJourney
                         ? "Exit this standalone field trip"
-                        : "Return to the Plaza"
+                        : "Return to the Campus"
                     : `Go back to ${chapter.scenes[sceneIndex - 1]?.title ?? "the previous stop"}`
                 }
                 className="btg-dock-action btg-dock-action--back"
@@ -1233,7 +1233,7 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
                   {sceneIndex === 0 && activeJourneyKey !== "wine"
                     ? isDisconnectedJourney
                       ? "Exit"
-                      : "Plaza"
+                      : "Campus"
                     : "Back"}
                 </span>
               </button>

@@ -39,7 +39,7 @@ const onboardingRouteLabels: Record<string, string> = {
   "academy-map": "Academy",
   "beverage-news": "Beverage News",
   "beverage-quiz": "Beverage Quiz",
-  "academy-plaza": "Plaza",
+  "academy-plaza": "Campus",
   "beyond-the-glass": "Beyond The Glass",
   btg: "Beyond The Glass",
   cocktails: "Bev Recipes",
