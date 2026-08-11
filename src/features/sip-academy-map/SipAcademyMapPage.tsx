@@ -500,7 +500,7 @@ export function SipAcademyMapPage() {
       <header className="sam-hero">
         <div className="sam-hero-copy">
           <span className="sam-kicker"><GlobeHemisphereWest aria-hidden="true" weight="duotone" /> SIP Academy · World Atlas</span>
-          <h1>Sip Academy Map</h1>
+          <h1>Academy</h1>
           <p>Orbit one living campus world. Five guild continents contain fifteen academy countries, each shaped by the land, water, and production systems it teaches.</p>
         </div>
         <dl className="sam-world-stats" aria-label="Academy world overview">

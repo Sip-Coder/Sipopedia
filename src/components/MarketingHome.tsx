@@ -136,15 +136,15 @@ const parallaxJourneyFrames: ParallaxJourneyFrame[] = [
 const learnPreviewReels: PreviewReel[] = [
   {
     id: "btg",
-    title: "Beyond The Glass",
-    label: "Cinematic journeys",
+    title: "Wine Academy",
+    label: "From Rain to First Sip",
     route: "app/btg",
     src: "/home-preview/learn/01-beyond-the-glass.mp4",
-    detail: "Interactive field-atlas scenes, guide notes, and story checkpoints."
+    detail: "Enter cinematic field-atlas journeys from source to service."
   },
   {
     id: "sip-academy-map",
-    title: "Sip Academy Map",
+    title: "Academy",
     label: "360 guild world",
     route: "app/sip-academy-map",
     src: "/home-preview/learn/02-sip-academy-map.mp4",
@@ -302,7 +302,7 @@ const customerFitTiles: CustomerFitTile[] = [
   {
     label: "I'm new",
     title: "Make drinks finally click.",
-    room: "Beyond The Glass",
+    room: "Wine Academy",
     outcome: "Start with cinematic source-to-service journeys.",
     proof: ["Preview story", "Save room", "$10 join"],
     reelId: "btg",

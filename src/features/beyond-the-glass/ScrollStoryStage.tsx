@@ -314,7 +314,7 @@ function ReducedMotionStory({ chapter }: ScrollStoryStageProps) {
       setSceneIndex(0);
       return;
     }
-    if (typeof window !== "undefined") window.location.hash = "app/btg";
+    if (typeof window !== "undefined") window.location.hash = "app/academy-plaza";
   };
 
   return (
@@ -325,9 +325,9 @@ function ReducedMotionStory({ chapter }: ScrollStoryStageProps) {
       tabIndex={-1}
     >
       {!isWineJourney || sceneIndex > 0 ? (
-        <nav aria-label="Beyond the Glass shortcuts" className="btg-reduced__toolbar">
+        <nav aria-label="Academy journey shortcuts" className="btg-reduced__toolbar">
           <button
-            aria-label="Return to the SIP Academy Plaza"
+            aria-label="Return to the Plaza"
             className="btg-academy-return"
             onClick={returnToAcademy}
             type="button"
@@ -347,7 +347,7 @@ function ReducedMotionStory({ chapter }: ScrollStoryStageProps) {
         srcSet={activeScene.artwork.srcSet}
       />
       <div className="btg-reduced__copy">
-        <p className="btg-kicker">Beyond The Glass · Reduced motion tour</p>
+        <p className="btg-kicker">Academy · Wine Academy</p>
         <h1 id="btg-reduced-title">{activeScene.title}</h1>
         <p>{activeScene.summary}</p>
         <div className="btg-reduced__steps" aria-label="Journey chapters">
@@ -389,10 +389,10 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
   const [activeLabId, setActiveLabId] = useState<string | null>(null);
   const [noteView, setNoteView] = useState<NoteDeckView>("guide");
   const [guideNotesOpen, setGuideNotesOpen] = useState(false);
-  // Every field atlas opens on its first, far-left study layer. That gives a
-  // student a dependable starting point on every stop instead of restoring a
-  // previously selected detail from a different visit.
-  const [atlasNodeIndex, setAtlasNodeIndex] = useState<number | null>(0);
+  // Each field atlas opens on its complete overview. Students get the full
+  // system before choosing a single node, and a prior node selection never
+  // drops a returning learner into the middle of a study plate.
+  const [atlasNodeIndex, setAtlasNodeIndex] = useState<number | null>(null);
   const [academyResumeJourneys, setAcademyResumeJourneys] = useState<string[]>([]);
   const manualCardAnchorRef = useRef<number | null>(null);
   const restoredJourneyRef = useRef<string | null>(null);
@@ -404,6 +404,12 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
   // name (`wine`) for journey switching.
   const progressStorageKey = `sipopedia:btg:${chapter.slug}:last-scene:v1`;
   const academyRoadmap = ACADEMY_ROADMAP.filter((landmark) => landmark.journey !== activeJourneyKey);
+  const isPlazaRoute =
+    typeof window !== "undefined" &&
+    ["app/academy-plaza", "academy-plaza", "app/wine-academy-plaza", "wine-academy-plaza"].includes(
+      window.location.hash.replace(/^#/, "").split("?")[0]
+    );
+  const shouldEnterWineJourneyDirectly = activeJourneyKey === "wine" && !isPlazaRoute;
 
   const activeSpeaker = activeScene.narration[0]?.speaker ?? "Sippy";
   const cardInteractionProgress = panelControlsCards ? panelNoteProgress : sceneProgress;
@@ -497,9 +503,9 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
     });
   };
 
-  const requestJourney = (journey: string) => {
+  const requestGlobalAcademyMap = () => {
     if (typeof window === "undefined") return;
-    window.location.hash = journeyHash(journey);
+    window.location.hash = "app/sip-academy-map?guild=cask&campus=wine";
   };
 
   const requestAcademy = () => {
@@ -520,13 +526,8 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
       }
       setResumeSceneIndex(sceneIndex);
     }
-    if (activeJourneyKey === "wine") {
-      // Jump directly so crossing intermediate scroll ranges cannot replace
-      // the student's saved stop while returning to the Plaza.
-      requestScene(0, "auto");
-      return;
-    }
-    requestJourney("wine");
+    if (typeof window !== "undefined") window.location.hash = "app/academy-plaza";
+    if (activeJourneyKey === "wine") requestScene(0, "auto");
   };
 
   const requestGuideCard = (index: number) => {
@@ -579,21 +580,34 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
     restoredJourneyRef.current = chapter.slug;
     try {
       const stored = window.localStorage.getItem(progressStorageKey);
-      if (!stored) return;
+      if (!stored) {
+        if (shouldEnterWineJourneyDirectly && chapter.scenes[1]) {
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => requestScene(1, "auto"));
+          });
+        }
+        return;
+      }
       const parsed = JSON.parse(stored) as { sceneId?: string };
       const storedIndex = chapter.scenes.findIndex((scene) => scene.id === parsed.sceneId);
       if (storedIndex > 0) {
         setResumeSceneIndex(storedIndex);
-        if (activeJourneyKey !== "wine") {
+        if (activeJourneyKey !== "wine" || shouldEnterWineJourneyDirectly) {
           window.requestAnimationFrame(() => {
             window.requestAnimationFrame(() => requestScene(storedIndex));
           });
         }
+        return;
+      }
+      if (shouldEnterWineJourneyDirectly && chapter.scenes[1]) {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => requestScene(1, "auto"));
+        });
       }
     } catch {
       window.localStorage.removeItem(progressStorageKey);
     }
-  }, [activeJourneyKey, chapter.scenes, chapter.slug, progressStorageKey]);
+  }, [activeJourneyKey, chapter.scenes, chapter.slug, progressStorageKey, shouldEnterWineJourneyDirectly]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !isAcademyPlazaScene) return;
@@ -653,10 +667,10 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
     setNoteView("guide");
     manualCardAnchorRef.current = null;
     setGuideNotesOpen(false);
-    // Preserve a clear learning sequence: each new scene begins on its
-    // leftmost rail item. Students may still explore any other node, but a
-    // saved selection never drops them into the middle of a study plate.
-    setAtlasNodeIndex(activeScene.fieldNotes.length > 0 ? 0 : null);
+    // Begin every overview-capable scene with the whole system in view.
+    // Learners then choose a node deliberately rather than being dropped
+    // into a detail as they scroll or navigate between scenes.
+    setAtlasNodeIndex(null);
     if (storyPanelRef.current) storyPanelRef.current.scrollTop = 0;
   }, [activeScene.fieldNotes.length, activeScene.id]);
 
@@ -758,7 +772,7 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
         <div className="btg-stage__hud">
           <header className="btg-stage__header">
             <div>
-              <p className="btg-kicker">Beyond The Glass · {chapter.chapterTitle}</p>
+              <p className="btg-kicker">Academy · {activeJourneyLabel}</p>
               <strong>{activeScene.number} · {activeScene.title}</strong>
             </div>
             <div className="btg-progress">
@@ -768,14 +782,22 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
             {activeScene.id !== "academy-plaza" ? (
               <div className="btg-stage__actions">
                 <button
-                  aria-label="Return to the SIP Academy Plaza"
+                  aria-label="Return to the Plaza"
                   className="btg-academy-return"
                   onClick={requestAcademy}
                   type="button"
                 >
+                  Plaza
+                </button>
+                <button
+                  aria-label="Return to the Academy map"
+                  className="btg-academy-return"
+                  onClick={requestGlobalAcademyMap}
+                  type="button"
+                >
                   Academy
                 </button>
-                {activeJourneyKey !== "wine" && sceneIndex > 0 ? (
+                {sceneIndex > 0 ? (
                   <button
                     aria-label={`Restart ${chapter.chapterTitle} from ${chapter.scenes[0]?.title ?? "the first stop"}`}
                     className="btg-journey-restart"
@@ -883,6 +905,9 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
               </p>
               <button onClick={() => requestScene(resumeSceneIndex ?? 1)} type="button">
                 {resumeSceneIndex ? "Continue this journey" : "Begin this journey"}
+              </button>
+              <button onClick={requestGlobalAcademyMap} type="button">
+                Return to Academy
               </button>
               <div aria-label="SIP Academy journeys">
                 <span>Choose another adventure</span>
@@ -1182,10 +1207,10 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
                 aria-label={
                   sceneIndex === 0
                     ? activeJourneyKey === "wine"
-                      ? "Already at the Academy Plaza"
+                      ? "Already at the Plaza"
                       : isDisconnectedJourney
                         ? "Exit this standalone field trip"
-                        : "Return to the SIP Academy Plaza"
+                        : "Return to the Plaza"
                     : `Go back to ${chapter.scenes[sceneIndex - 1]?.title ?? "the previous stop"}`
                 }
                 className="btg-dock-action btg-dock-action--back"
@@ -1196,7 +1221,7 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
                       window.location.hash = "app/launch";
                       return;
                     }
-                    requestJourney("wine");
+                    window.location.hash = "app/academy-plaza";
                     return;
                   }
                   requestScene(Math.max(0, sceneIndex - 1));
@@ -1208,7 +1233,7 @@ export function ScrollStoryStage({ chapter }: ScrollStoryStageProps) {
                   {sceneIndex === 0 && activeJourneyKey !== "wine"
                     ? isDisconnectedJourney
                       ? "Exit"
-                      : "Academy"
+                      : "Plaza"
                     : "Back"}
                 </span>
               </button>

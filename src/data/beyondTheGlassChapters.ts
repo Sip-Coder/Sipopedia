@@ -91,12 +91,12 @@ const scenes: BeyondTheGlassScene[] = [
   {
     id: "academy-plaza",
     number: "01",
-    title: "Academy Plaza",
+    title: "Wine Plaza",
     range: [0, 0.05],
-    eyebrow: "Choose your adventure",
+    eyebrow: "Wine Academy hub",
     summary:
-      "Winery, Brewery, Distillery, Coffee, Tea, Water, and Kombucha Adventures are open across SIP Academy.",
-    checkpoint: "Seven adventures ready",
+      "The Wine Plaza is the internal hub for the From Rain to First Sip field journey.",
+    checkpoint: "Wine journey ready",
     motion: "establish",
     artwork: {
       src: "/beyond-the-glass/sip-academy-1600.webp",
@@ -113,7 +113,7 @@ const scenes: BeyondTheGlassScene[] = [
         eyebrow: "Central field trip",
         title: "Winery Adventure · From Rain to First Sip",
         detail:
-          "Enter the glowing center to follow one drop across vineyard, winery, market, service, and the final table."
+          "Begin here after selecting Cask Guild and Wine Academy on the global Academy globe."
       }
     ],
     narration: [
@@ -121,7 +121,7 @@ const scenes: BeyondTheGlassScene[] = [
         speaker: "Sippy",
         durationSeconds: 7,
         text:
-          "The plaza is awake. Choose Winery, Brewery, Distillery, Coffee, Tea, Water, or Kombucha, and your field notes will remember the route."
+          "Welcome to the Wine Plaza. From here, we follow one drop across vineyard, winery, market, service, and the final table."
       }
     ]
   },
@@ -1331,7 +1331,7 @@ const sequencedScenes: BeyondTheGlassScene[] = scenes.map((scene, index) => ({
 
 export const journeyOfADrop: BeyondTheGlassChapter = {
   slug: "journey-of-a-drop",
-  title: "Beyond The Glass",
+  title: "Academy",
   chapterTitle: "From Rain to First Sip",
   subject: "One drop moving through the complete life of wine",
   description:

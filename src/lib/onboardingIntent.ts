@@ -36,9 +36,10 @@ export const onboardingPlans: {
 ];
 
 const onboardingRouteLabels: Record<string, string> = {
-  "academy-map": "Sip Academy Map",
+  "academy-map": "Academy",
   "beverage-news": "Beverage News",
   "beverage-quiz": "Beverage Quiz",
+  "academy-plaza": "Plaza",
   "beyond-the-glass": "Beyond The Glass",
   btg: "Beyond The Glass",
   cocktails: "Bev Recipes",
@@ -51,7 +52,7 @@ const onboardingRouteLabels: Record<string, string> = {
   recipes: "Bev Recipes",
   resources: "Resources",
   "sip-academy": "Sip Academy",
-  "sip-academy-map": "Sip Academy Map",
+  "sip-academy-map": "Academy",
   sipopedia: "Sipopedia",
   "sip-game": "Sip Game",
   starter: "Launch Pad"

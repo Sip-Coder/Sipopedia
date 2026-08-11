@@ -173,6 +173,7 @@ type WorkspacePage =
   | "starter"
   | "sip-academy"
   | "sip-academy-map"
+  | "academy-plaza"
   | "sip-game"
   | "beyond-the-glass"
   | "living-palate"
@@ -283,6 +284,7 @@ function normalizeWorkspacePage(value: string): WorkspacePage {
   if (value === "home") return "starter";
   if (value === "sip-academy") return "sip-academy";
   if (value === "sip-academy-map" || value === "academy-map") return "sip-academy-map";
+  if (value === "academy-plaza" || value === "wine-academy-plaza") return "academy-plaza";
   if (value === "sip-game") return "sip-game";
   if (value === "beyond-the-glass" || value === "BTG" || value === "btg") return "beyond-the-glass";
   if (value === "living-palate") return "living-palate";
@@ -415,6 +417,10 @@ function preloadWorkspacePage(target: WorkspacePage): void {
   }
   if (target === "sip-academy-map") {
     void loadSipAcademyMapPage();
+    return;
+  }
+  if (target === "academy-plaza") {
+    void loadBeyondTheGlassPage();
     return;
   }
   if (target === "sip-game") {
@@ -1197,10 +1203,12 @@ function WorkspaceShell({
       <SipAcademyWineLessons />
     ) : page === "sip-academy-map" ? (
       <SipAcademyMapPage />
+    ) : page === "academy-plaza" ? (
+      <BeyondTheGlassPage key="academy-plaza" onNavigate={(target) => onNavigate(target as WorkspacePage)} />
     ) : page === "sip-game" ? (
       <SipStudiosGame />
     ) : page === "beyond-the-glass" ? (
-      <BeyondTheGlassPage onNavigate={(target) => onNavigate(target as WorkspacePage)} />
+      <BeyondTheGlassPage key="wine-academy" onNavigate={(target) => onNavigate(target as WorkspacePage)} />
     ) : page === "living-palate" ? (
       <LivingPalatePage />
     ) : page === "sipopedia" ? (

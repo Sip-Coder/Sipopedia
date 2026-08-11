@@ -39,11 +39,9 @@ const triangle = (value: number, center: number, width: number) =>
 export function VineFieldAtlas({ onSelect }: VineFieldAtlasProps) {
   const nodeButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const onSelectRef = useRef(onSelect);
-  // Root is the leftmost study layer and the deliberate entry point for the
-  // vine sequence. Start there every time, then let learners travel freely.
-  const [selectedPartId, setSelectedPartId] = useState<string | null>(
-    vineAnatomyParts[0]?.id ?? null
-  );
+  // Start on the complete vine. Individual layers are a learner's deliberate
+  // next step, not an automatic first selection.
+  const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
   const activeIndex = selectedPartId
     ? vineAnatomyParts.findIndex((part) => part.id === selectedPartId)
     : -1;

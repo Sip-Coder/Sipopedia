@@ -3,6 +3,7 @@ export type WorkspaceSectionId = "learn" | "taste" | "connect";
 export type WorkspaceStaticPage =
   | "sip-academy"
   | "sip-academy-map"
+  | "academy-plaza"
   | "sip-game"
   | "beyond-the-glass"
   | "living-palate"
@@ -54,7 +55,7 @@ export const WORKSPACE_SECTIONS: WorkspaceSectionDefinition[] = [
     id: "learn",
     label: "Learn",
     description: "Academy routes, game drills, maps, and terminology.",
-    defaultPage: "sip-academy",
+    defaultPage: "sip-academy-map",
     paywallDetail: "Academy, game drills, maps, ingredients, recipes, and resources."
   },
   {
@@ -75,25 +76,27 @@ export const WORKSPACE_SECTIONS: WorkspaceSectionDefinition[] = [
 
 export const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
   {
-    id: "sip-academy",
-    route: "app/sip-academy",
-    label: "Sip Academy",
-    section: "learn",
-    signal: "Guided wine lessons",
-    description: "Progressive mission ladder with guided learning loops and milestone progression.",
-    keywords: ["academy", "lessons", "wine", "learn"],
-    previewBullets: ["Realm progression", "Mentor-guided loops", "Gamified mastery flow"]
-  },
-  {
     id: "sip-academy-map",
     route: "app/sip-academy-map",
-    label: "Sip Academy Map",
+    label: "Academy",
     section: "learn",
     signal: "360° guild world",
     description: "Orbit the Academy world, explore five guild territories, and enter each beverage campus.",
     keywords: ["academy", "map", "globe", "guilds", "campus", "world", "360"],
     previewBullets: ["Five guild territories", "Fifteen academy campuses", "360° world exploration"],
     previewImage: "/sip-academy-map/sip-academy-world-960.webp",
+    defaultRoom: "Lobby"
+  },
+  {
+    id: "academy-plaza",
+    route: "app/academy-plaza",
+    label: "Plaza",
+    section: "learn",
+    signal: "Wine academy hub",
+    description: "Revisit the Wine Plaza, meet the field team, and return to the Wine Academy journey.",
+    keywords: ["plaza", "wine plaza", "academy hub", "guides", "wine"],
+    previewBullets: ["Wine hub", "Field team", "Return point"],
+    previewImage: "/beyond-the-glass/sip-academy-960.webp",
     defaultRoom: "Lobby"
   },
   {
@@ -111,10 +114,10 @@ export const WORKSPACE_NAV_ITEMS: WorkspaceNavItem[] = [
     route: "app/beyond-the-glass",
     label: "Beyond The Glass",
     section: "learn",
-    signal: "Cinematic knowledge journeys",
-    description: "Scroll-controlled stories that reveal the connected systems inside every beverage.",
-    keywords: ["beyond the glass", "journey", "story", "water", "cinematic", "systems"],
-    previewBullets: ["Reversible scroll story", "Narrated learning layers", "Accessible chapter archive"],
+    signal: "Field-trip archive",
+    description: "Revisit the immersive Academy field-trip format, starting with Wine from Rain to First Sip.",
+    keywords: ["beyond the glass", "journey", "story", "wine", "cinematic", "field atlas", "systems"],
+    previewBullets: ["Wine Academy journey", "Interactive field atlas", "Guide notes"],
     previewImage: "/starter-thumbs/beyond-the-glass-960.webp",
     defaultRoom: "Lobby"
   },
@@ -392,12 +395,11 @@ export function workspaceLabelForRoute(route: string | null | undefined): string
   if (!route) return null;
   const routePart = route.replace(/^#/, "").split("?")[0].replace(/^app\//, "");
   if (!routePart || routePart === "starter" || routePart === "launch") return "Launch Pad";
+  if (routePart === "btg" || routePart === "beyond-the-glass") return "Beyond The Glass";
   const workspacePage =
     routePart === "recipes"
       ? "cocktails"
-      : routePart === "btg"
-        ? "beyond-the-glass"
-        : routePart === "academy-map"
+      : routePart === "academy-map"
           ? "sip-academy-map"
           : routePart;
   return WORKSPACE_NAV_ITEMS.find((item) => item.id === workspacePage || workspacePage.startsWith(`${item.id}/`))?.label ?? null;

@@ -1424,10 +1424,10 @@ export function SipStudiosGame() {
     setFinalCelebrationDismissed((current) => ({ ...current, [finalCelebrationKey]: true }));
   };
 
-  const navigateToWorkspace = (page: "sipopedia" | "beyond-the-glass" | "maps" | "recipes") => {
+  const navigateToWorkspace = (page: "sipopedia" | "wine-academy" | "maps" | "recipes") => {
     if (typeof window === "undefined") return;
     setRoomCompletionModalKey(null);
-    const routePage = page === "beyond-the-glass" ? "btg" : page;
+    const routePage = page === "wine-academy" ? "btg" : page;
     window.location.hash = `#app/${routePage}`;
   };
 
@@ -1877,8 +1877,8 @@ export function SipStudiosGame() {
               <button type="button" className="btn btn-light" onClick={() => navigateToWorkspace("sipopedia")}>
                 Sipopedia
               </button>
-              <button type="button" className="btn btn-light" onClick={() => navigateToWorkspace("beyond-the-glass")}>
-                Beyond The Glass
+              <button type="button" className="btn btn-light" onClick={() => navigateToWorkspace("wine-academy")}>
+                Wine Academy
               </button>
               <button type="button" className="btn btn-light" onClick={() => navigateToWorkspace("maps")}>
                 Maps

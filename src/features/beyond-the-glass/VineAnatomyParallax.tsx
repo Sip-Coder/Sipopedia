@@ -332,9 +332,7 @@ type VineAnatomyParallaxProps = {
 export function VineAnatomyParallax({
   opacity = 1
 }: VineAnatomyParallaxProps) {
-  const [selectedPartId, setSelectedPartId] = useState<string | null>(
-    vineAnatomyParts[0]?.id ?? null
-  );
+  const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
   const activeIndex = selectedPartId
     ? vineAnatomyParts.findIndex((part) => part.id === selectedPartId)
     : -1;
